@@ -4,6 +4,17 @@ Leitfaden für AI-Agenten und Entwickler, die an diesem Projekt arbeiten.
 Diese Datei beschreibt **verbindliche Konventionen**. Interne Dokumentation und
 Code-Kommentare sind auf **Deutsch**, sämtliche **Spieltexte (UI + Content) auf Englisch**.
 
+### Weitere Dokumentation (`docs/`)
+
+Diese Datei ist die **lebende Quelle für Regeln & Konventionen**. Das Spiel selbst
+und Entscheidungen sind ergänzend dokumentiert:
+
+- [`docs/DESIGN.md`](docs/DESIGN.md) — Vision, Design-Pillars, Player Experience („Warum / Wie soll es sich anfühlen?").
+- [`docs/SPEC.md`](docs/SPEC.md) — präzise Mechanik-Regeln, Formeln, Zustände („Wie verhält es sich exakt?").
+- [`docs/BALANCING.md`](docs/BALANCING.md) — Balancing-Philosophie & Begründung der Kurven/Werte. Umgesetzte Zahlen leben als Content unter `src/game/` (§4).
+- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — verbindliche Begriffe (DE interne Prosa ↔ EN Code/UI).
+- [`docs/adr/`](docs/adr/) — Architecture Decision Records: unveränderliches „Wann & warum"-Logbuch. Bei Konflikt gilt **AGENTS.md**; ADRs erklären nur das Warum dahinter.
+
 ---
 
 ## 1. Projektüberblick

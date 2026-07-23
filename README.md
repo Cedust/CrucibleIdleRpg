@@ -13,6 +13,7 @@ _Coming soon!_
 For conventions and architecture, see [AGENTS.md](AGENTS.md).
 
 ```
+docs/         # Documentation, ADRs
 src/
   features/   # Domain features (components, hooks, stores, tests)
   game/       # Declarative, typed balancing content

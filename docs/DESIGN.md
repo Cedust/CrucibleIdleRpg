@@ -46,30 +46,66 @@ Die Pillars sind die obersten Leitplanken. Jede Feature-Entscheidung wird an ihn
 
 ## 3. Player Experience — der Kern-Loop
 
-<!-- TODO: Ausformulieren, sobald die erste spielbare Version steht. -->
+Das Spiel ist ein **Idle-/Incremental Dungeon-Crawler** mit einem **festen Trio**
+(Korvin/Tank, Rhaya/Melee, Quinn/Ranged). Der Spieler kämpft sich **Floor für Floor**
+durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
 
-Grobe Schleife, die sich für den Spieler ergeben soll:
+**Der Loop:**
 
-1. Team stellt sich einem Kampf.
-2. Kampf wird Runde für Runde abgespielt und mitverfolgt.
-3. Sieg ⇒ Belohnung.
-4. Belohnung fließt in Fortschritt (Charaktere, Fähigkeiten, Upgrades …).
-5. Stärkeres Team ⇒ härtere Gegner ⇒ zurück zu 1.
+1. **Dungeon/Floor wählen und Kampf starten.** (Später per Crucible-Node auto-fortschreitend
+   innerhalb eines Dungeons.)
+2. **Kampf läuft automatisch**, Runde für Runde mitverfolgt — der Spieler greift **nicht**
+   ein (Auto-Battle, SPEC §1).
+3. **Sieg ⇒ Belohnung:** XP (Level), Gold, beim Erstsieg Crystals.
+4. **Zwischen den Kämpfen optimieren:** Attribute & Skilltree beim Level-Up, Ausrüstung
+   (Craften/Aufwerten/Verzaubern), globaler **Crucible**-Baum.
+5. **Stärkeres Team ⇒ tiefere Floors ⇒** zurück zu 1. Der „Numbers-go-big"-Effekt (Attack von
+   10 → 10.000 → 100.000.000) trägt die Motivation.
 
-**Offene Design-Fragen (noch zu klären):**
+**Wodurch entsteht Spannung, obwohl der Kampf automatisch läuft?**
 
-- Wie fühlt sich eine einzelne Runde an (Tempo, Feedback, Lesbarkeit)?
-- Wodurch entsteht Spannung, wenn der Kampf automatisch läuft?
-- Was ist die erste sinnvolle Prestige-/Reset-Schleife?
+- **Attrition statt Einzelkampf:** Es gibt **keine Heilung zwischen Floors** (SPEC §4.4). Ein
+  Dungeon ist ein Überlebens-Run — jeder Floor knabbert an der Health. Die Frage ist nicht
+  „gewinne ich diesen Kampf?", sondern „**wie tief trägt mein Build, bevor das Team fällt?**".
+- **Build-Entscheidung als eigentliches Gameplay:** Die Spannung liegt **vor** dem Kampf, in
+  der Optimierung (Offense-Attribute vs. Defensiv-/Sustain-Ausbau, Zielprioritäten über
+  Formation/Taunt/Bulwark, Tank-Mitigation als Power-Spike).
+- **Wipe & Checkpoint:** Ein Wipe wirft auf den Dungeon-/Akt-Checkpoint zurück (Rewards
+  bleiben) — ein sanfter, kein bestrafender Rückschlag, der zum Nachbessern einlädt.
+
+**Lesbarkeit einer Runde:** Klare, sichtbare Zug-Reihenfolge (Initiative), erkennbare Procs
+(Crit/Multi/Splash/Counter) und ein verständlicher Schadensfluss (Team-Verteilung → Block →
+Defense → Barrier → Health) — auch bei großen Zahlen.
+
+> Prestige/Reset ist **bewusst kein Ziel** (festes Team; siehe §5 und SPEC §4.6).
 
 ---
 
 ## 4. Zielgefühl & Tonalität
 
-<!-- TODO: Genre-Referenzen, Stimmung, visuelle Richtung festhalten. -->
+**Setting — „Crucible of Ashes".** Ein infernalischer Abstieg durch die Ruinen eines einst
+prächtigen Imperiums, das nun von dämonischen Mächten überrannt ist. Drei Akte:
+_The Ashen Depths_ → _The Ember Foundry_ → _The Forgotten Citadel_. Eine **lose Story** wird
+über Akte, Dungeons und kurze Charakter-Dialoge erzählt — Fokus bleibt aber klar auf **Gameplay
+und Fortschritt**.
+
+**Stimmung — „Gilded Ruins".** Hochfantasy, von Heldentum und altem Geheimnis durchzogen —
+edel, geheimnisvoll, aber **nie hoffnungslos**. Bewusst **nicht zu dunkel, nicht zu hell**.
+
+**Visuelle Richtung.** Zwischen **Diablo** (schwere, gemeißelte Steinarchitektur, gedämpftes
+Licht) und **World of Warcraft** (warme Heroik, klare Lesbarkeit). Amber/Gold als Akzent
+(„gilded"). Nur **Dark Mode**, eigene UI-Primitives (siehe Pillar 5, AGENTS.md §8).
+
+**Charakterdynamik.** Warmes **Found-Family-Feeling** im Trio (Korvin ruhig-beschützend, Rhaya
+heißblütig-impulsiv, Quinn trocken-analytisch) — emotionale Bindung an ein festes Team statt an
+austauschbare Einheiten.
+
+**Ton der Spieltexte.** In-universe, heroisch-edel und geheimnisvoll, **aber immer eindeutig**:
+kurz und atmosphärisch statt trocken-technisch, nie missverständlich. (Spieltexte **Englisch**,
+AGENTS.md §1.)
 
 - **Idle-Anspruch:** Das Spiel läuft angenehm nebenbei, belohnt aber Aufmerksamkeit
-  in Schlüsselmomenten.
+  in Schlüsselmomenten (Build-Anpassung, Wipe-Vermeidung).
 - **Lesbarkeit:** Der Kampfverlauf muss auf einen Blick verständlich bleiben, auch bei
   großen Zahlen (siehe SPEC — Zahlformatierung).
 

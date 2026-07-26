@@ -70,6 +70,10 @@ Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren
   entwerten.
 - **XP:** Pool pro Floor, Basisanteil je Charakter + individueller Rest (Schlüssel offen —
   Kandidat: verursachter Schaden).
+- **Gems (Amber/Sapphire/Diamond):** Loot-Hauptressource _und_ Level-Fodder (SPEC §4.5). Drop-Raten
+  je Floor-Tiefe und die **Aufleveln-Fodder-Kurve** (jedes Gem-Level braucht mehr) müssen so
+  liegen, dass Gem-Progression **kein Grind-Wall** wird (Leitplanke §1). Diamond bewusst knapp
+  (nur Elite/Boss).
 
 ## 5. Offene Balancing-Fragen / Tuning-Notizen
 
@@ -80,6 +84,16 @@ Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren
 - [ ] Bulwark-Prozentwerte (Tank/Melee-Beitrag) und Mitigation-`m` je Node-Stufe.
 - [ ] XP-Verteilungsschlüssel; Gold-Drop- und Respec-Kosten-Kurven.
 - [ ] Waffen-Damage-Range-Breiten je Seltenheit.
+- [ ] **Item-Level-Kurve:** Innate-Value je `+n` (Damage exp., Armor/Initiative linear?) und
+      Seltenheits-Aufstieg-Schwellen (Common→Legendary).
+- [ ] **Sockel-Zahlen je Seltenheit** (Vorschlag 1/2/3/4 + Unique 4+1) final bestätigen.
+- [ ] **Gem-Value-Ranges** je Pool-Affix + Range-Anhebung pro Gem-Level (relative Position bleibt).
+- [ ] **Amber-Pool-Reroll-Friction:** 8 Offensiv-Affixe in einem Pool → Reroll-Kosten (Gold) so
+      tunen, dass Ziel-Treffer erschwinglich bleibt.
+- [ ] **Gem-Drop-Raten** & Aufleveln-Fodder-Kurve (Grind-Wall-Vermeidung); Diamond-Drop-Rate.
+- [ ] **Prismatic/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (Attack-exp
+      vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als Sicherheitsgurt).
+- [ ] **Blacksmith/Enchanter-Gold-Kosten** (Aufwerten, Sockeln, Aufleveln, Reroll).
 
 ---
 

@@ -56,21 +56,22 @@ Gegnerische Einheit im Kampf. Deklarativer Content unter `src/game/enemies/`.
 
 ### Attribut (EN: _Attribute_)
 
-Eine der **vier rein offensiven** Level-Up-Achsen (**Finesse, Tempest, Dominance,
-Valor**), in die der Spieler pro Level einen Punkt investiert. **Nicht** synonym zu **Stat**
-verwenden. Regeln: SPEC §3.1.
+Eine der **drei** Level-Up-Achsen des **Core-Wachstums**: **Ferocity** (→ Attack),
+**Resilience** (→ Defense), **Vigor** (→ Health). Pro Level 1 Punkt, frei verteilbar,
+Respec gegen Gold. **Nicht** synonym zu **Stat** und **nicht** mit den Skilltree-**Zweigen**
+(Finesse/Tempest/Dominance/Valor) verwechseln. Regeln: SPEC §3.1.
 
 ### Stat (EN: _Stat_)
 
 Ein einzelner, granularer Kampfwert eines Charakters (z. B. Attack, Crit Damage,
-Evasion). Ein **Attribut** skaliert mehrere Stats; ein Stat ist die unterste
+Evasion). Ein **Attribut** skaliert einen Core-Stat; ein Stat ist die unterste
 Ebene. Abzugrenzen von **Attribut**.
 
-### Finesse / Tempest / Dominance / Valor
+### Zweig / Finesse / Tempest / Dominance / Valor (EN: _Branch_)
 
-Die vier **Attribute** (EN, Spieltext & Code). Zuordnung zum Schadens-Muster:
-**Finesse** = Crit, **Tempest** = Multi-Hit (**ein** Ziel), **Dominance** =
-Splash (**mehrere** Ziele), **Valor** = Counter.
+Die vier **Skilltree-Zweige** (EN, Spieltext & Code), je an ein offensives Schadens-Muster
+gekoppelt: **Finesse** = Crit, **Tempest** = Multi-Hit (**ein** Ziel), **Dominance** =
+Splash (**mehrere** Ziele), **Valor** = Counter. **Nicht** „Attribute" (SPEC §3.2).
 
 ### Belohnung (EN: _Reward_)
 
@@ -306,18 +307,77 @@ Elite 3, Boss 10; insgesamt **351** im Spiel).
 
 ### Ausrüstung (EN: _Equipment_)
 
-Items in Slots **Main Hand** (_Signature Slot_: Weapon/Shield), Head, Chest, Legs, Feet.
-Hauptmotor des Fortschritts. Seltenheiten: Common, Magic, Rare, Epic, Legendary.
+Items in sechs Slots **Main Hand**, **Off Hand**, Head, Chest, Legs, Feet. **Hauptmotor** des
+Fortschritts. Jedes Item trägt drei Schichten: **Basis** (+ **Innate**) + **Item-Level** +
+**Sockel/Gems** (SPEC §3.4). Seltenheiten (EN: _Rarity_): Common, Magic, Rare, Legendary, Unique.
+
+### Item-Basis (EN: _Base_)
+
+Item-Typ + Slot eines Items; legt den **Innate-Affix** und die (rollenspezifische) Slot-Rolle fest.
+**Reguläre Basen werden beim Blacksmith gecraftet** (droppen nicht); nur **Uniques** droppen
+(Elite/Boss) (SPEC §3.4/§4.5).
+
+### Innate (EN: _Innate_)
+
+Fester Basis-Stat je Slot, der mit dem **Item-Level** skaliert: **Damage** (Main Hand, DD-Off-Hand),
+**Armor** (Tank-Off-Hand/Schild, Head, Chest, Legs), **Initiative** (Feet). (SPEC §3.4)
+
+### Item-Level (EN: _Item Level_, `+n`)
+
+**Endlos** hochstufbare Basis-Power eines Items; skaliert den **Innate-Value** und trägt die
+**exponentielle** Incremental-Kurve. Wird beim **Blacksmith** gegen **Gold** gehoben (kein RNG) und
+hebt zugleich die **Seltenheit** (bis Legendary). Persistentes Item „wächst mit"; gedroppte
+**Uniques** können floor-skaliert **vorgelevelt** erscheinen (SPEC §3.4/§4.5).
+
+### Seltenheit (EN: _Rarity_)
+
+Stufe eines Items: **Common → Magic → Rare → Legendary → Unique**. Bestimmt die **Anzahl der
+Sockel** (1→4). **Unique** ist Drop-exklusiv (Elite/Boss), trägt einen **Implicit** + einen
+**Prismatic-Slot**. Konkrete Zahlen: SPEC §4.5.
+
+### Sockel (EN: _Socket_)
+
+Steckplatz eines Items für einen **Gem**. Zahl = Seltenheit. Zusätzlich hat ein **Unique** einen
+**Prismatic-Slot** (nur für **Diamond**). (SPEC §4.5)
+
+### Gem (EN: _Gem_)
+
+Affix-Träger. Un-gesockelte Gems sind eine **Ressource** (Bestands-Zähler pro Farbe, **kein
+Inventar**). Beim **Sockeln** (Enchanter) wird 1 Gem verbraucht und rollt einen zufälligen Affix
+aus dem **Farb-Pool** mit **Value-Range**; der gesockelte Gem ist dann **am Item gebunden**
+(Überschreiben des Sockels = alter Gem verloren). Farben: **Amber** (Offensive), **Sapphire**
+(Defensive), **Diamond** (Prismatic, nur Prismatic-Slot). Aufleveln (im Sockel,
+Seltenheit-gedeckelt) kostet gleichfarbige Gems als Fodder (SPEC §4.5).
+
+### Amber / Sapphire / Diamond
+
+Die drei **Gem-Farben**. **Amber** rollt Offensiv-Stats (Crit/Multi/Splash/Counter). **Sapphire**
+rollt Defensiv-Stats (Barrier, Block Chance, Sustain, Regeneration, Evasion). **Diamond**
+(Prismatic, Unique-Slot-only) trägt item-lokale **Meta-Multiplikatoren** (SPEC §3.0/§4.5).
+
+### Implicit (Unique-Sonder-Effekt)
+
+Fester Effekt eines **Unique**-Items (nicht neu rollbar), zusätzlich zu Sockeln + Prismatic-Slot.
+Uniques droppen mit **vordefinierter Affix-Identität** (nur Values würfeln) (SPEC §4.5).
+
+### Drop / Loot
+
+Aus einem Sieg gewonnene **Gems** (Amber/Sapphire; Diamond nur Elite/Boss) + **Uniques** (nur
+Elite/Boss). **Reguläre Item-Basen droppen nicht** (Blacksmith-Craft). (SPEC §4.2/§4.5)
+**Seedbasiert** (§2.5): reproduzierbar innerhalb eines Runs; beim **Farmen** neuer Seed pro Durchlauf.
 
 ### Blacksmith / Enchanter
 
-**Blacksmith** = Items herstellen/aufwerten/zerlegen. **Enchanter** = Items verzaubern
-(Zusatzeffekte). Details offen (SPEC §4.5).
+**Blacksmith** = Power-Achse: Item-Basen **craften** (einzige Basis-Quelle) und **aufwerten**
+(Item-Level `+n` → Innate, endlos, kein RNG, hebt Seltenheit).
+**Enchanter** = Gem-Achse: **Sockeln**, Gems **aufleveln**, **Values rerollen** (seed-PRNG). Beide
+kosten **Gold** (SPEC §4.5).
 
-### Amulet / Rune / Cube
+### Amulet / Rune
 
-Angedachte, **noch nicht spezifizierte** Systeme (Sonder-Slot Amulet, Runen ggf. ins Amulet
-gesockelt, Cube als Sockel-Station). Endgame-Anbindung an **Masterwork** (SPEC §4.5).
+Angedachte, **noch nicht spezifizierte** Endgame-Systeme (Sonder-Slot Amulet, Runen ggf. ins
+Amulet gesockelt) — bewusst **separate** spätere Runde, Anbindung an **Masterwork** (SPEC §4.5).
+_(Das früher angedachte „Cube"-Sockel-System entfällt — Sockeln übernimmt der Enchanter.)_
 
 ---
 

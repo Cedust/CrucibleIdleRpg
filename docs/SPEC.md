@@ -15,8 +15,9 @@
 
 - Kampf ist **rundenbasiert** zwischen **eigenem Team** (drei Charaktere, §3) und einer
   **Gegnerformation** (bis zu sechs Gegner, §1.3).
-- Der Kampf wird **vollständig simuliert** (deterministisch) und danach vom
-  Rendering Runde für Runde **abgespielt** — Simulation ≠ Rendering (siehe §5).
+- Der Kampf ist **deterministisch** und **render-unabhängig** simuliert: Die Engine erzeugt
+  die Runden **schrittweise auf Abruf** (eine reine „Zustand → nächste Runde"-Funktion), das
+  Rendering spielt sie Runde für Runde **ab** — Simulation ≠ Rendering (siehe §5).
 - Ergebnis eines Kampfes ist **Sieg** (alle Gegner besiegt) oder **Niederlage/Wipe**
   (alle Charaktere besiegt). Ein Sieg erzeugt eine **Belohnung** (einziger
   Fortschrittsweg, siehe DESIGN §2).
@@ -51,7 +52,9 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
      der Offensiv-Procs (§2.1). **Direkt nach der eigenen Handlung** heilt die
      **Regeneration** den Charakter.
    - **Gegner am Zug:** ein Angriff gegen das **gesamte Team** (Team-weit, verteilt über
-     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele.
+     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele. Ein durch
+     **Suppression** (Quinns Signatur-Skill, §3.5) **gestaggerter** Gegner **setzt seine
+     Aktion aus** (handelt in dieser Runde nicht).
 3. **Rundenende:** keine gesonderten Effekte (Regeneration triggert pro Akteur, nicht am
    Rundenende; Barrier verfällt implizit beim Neu-Setzen zu Rundenbeginn).
 
@@ -61,9 +64,13 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
 - **Niederlage/Wipe:** alle Charaktere besiegt → Kampf endet ohne Belohnung (siehe §4.4).
 - **Manueller Abbruch:** Der Spieler kann einen laufenden Kampf jederzeit abbrechen
   (verlässt den Dungeon, keine Belohnung für den laufenden Floor, §4.4).
-- **Kein Rundenlimit** vorgesehen.
-
-<!-- TODO: Verhalten bei extrem langen Kämpfen (Zeit-/Rundencap als Sicherheitsnetz?) offen. -->
+- **Kein Rundenlimit.** Ein Kampf endet ausschließlich durch **Sieg**, **Wipe** oder **manuellen
+  Abbruch** — es gibt keinen automatischen Runden-Cap. Ein unentscheidbarer Deadlock ist dennoch
+  ausgeschlossen: Gegner haben keine Heilung und Charakterangriffe verursachen stets vollen,
+  positiven Schaden (§2.2), die Gegner-Gesamt-Health sinkt also **monoton** → jeder Kampf ist in
+  **endlicher** Rundenzahl entschieden. Die inkrementelle Simulation rechnet zudem nur **eine Runde
+  pro Anzeige-Takt** (auch im Catch-up an Echtzeit gebunden, §5), sodass auch ein sehr langer Kampf
+  die Anwendung nie blockiert; einen zäh laufenden Kampf beendet der Spieler per manuellem Abbruch.
 
 ### 1.2 Zielauswahl
 
@@ -143,7 +150,7 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 
 1. **Basis-Verteilung.** `S` wird gleichmäßig auf die **lebenden** Charaktere verteilt:
    `Tick = S / (#lebende Charaktere)`.
-   - **Mitigation** (freigeschalteter **Tank-Skill** — siehe §3) modifiziert diese
+   - **Mitigation** (Korvins Signatur-Skill, §3.5) modifiziert diese
      Verteilung: Ein Anteil `m` des DD-Ticks wird auf den **Tank** umgeleitet.
      - **Tank lebt & Mitigation aktiv:** jeder lebende DD erhält `Tick × (1 − m)`; der Tank
        erhält `Tick + (#lebende DDs) × Tick × m`. → Summe bleibt exakt `S`.
@@ -168,6 +175,8 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
   Prozentwerte = Balancing (`src/game/`, BALANCING §). Ein Cap ist bei den vorgesehenen
   Werten nicht nötig.
 - Fällt die Frontline vollständig, entfällt der Bulwark-Malus.
+- **Sunder** (Rhayas Signatur-Skill, §3.5) baut den Bulwark-Beitrag einzelner
+  Frontline-Gegner **während des Kampfes** ab (siehe dort).
 
 ### 2.5 Feststehende Regeln
 
@@ -184,15 +193,15 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 - **Teamgröße:** genau **drei feste, namentliche Charaktere**, ab Start verfügbar (keine
   Freischaltung, keine Rekrutierung, kein Austausch).
 
-  | Rolle  | Name   | Anmerkung                             |
-  | ------ | ------ | ------------------------------------- |
-  | Tank   | Korvin | Signatur-Skill: **Mitigation** (§3.2) |
-  | Melee  | Rhaya  | Frontline-DD                          |
-  | Ranged | Quinn  | Backline-DD, umgeht Taunt (Bulwark)   |
+  | Rolle  | Name   | Sex        |
+  | ------ | ------ | ---------- |
+  | Tank   | Korvin | Male       |
+  | Melee  | Rhaya  | Female     |
+  | Ranged | Quinn  | Non-Binary |
 
 - **Leitprinzip — keine charakterexklusiven Stats.** Alle Stats sind für alle Charaktere
   verfügbar. Etwas, das nur für einen Archetyp sinnvoll ist (z. B. Mitigation), wird als
-  **Skill** im jeweiligen Skilltree gekapselt, nicht als Stat.
+  charaktergebundener **Signatur-Skill** (§3.5) gekapselt, nicht als Stat.
 - **Umgang mit besiegten Slots:** Index-Zugriffe auf Team-/Gegner-Slots liefern `| undefined`
   und erzwingen eine Prüfung (AGENTS.md §9). Besiegte Charaktere fallen aus Initiative-
   Reihenfolge und Schadensverteilung heraus.
@@ -211,7 +220,7 @@ Jeder Charakter hat Stats in vier Kategorien:
 - **Core:** _Health_ = Lebenspunkte; _Attack_ = Grundschaden; _Defense_ = flache Schadens-
   reduktion (§2.3, Schritt 4).
 - **Offensive:** paarweise **Chance + Damage** je Muster (Crit, Multi Hit, Splash, Counter);
-  Wirkung siehe §2.1. Die vier Paare sind an die vier **Attribute** gekoppelt (§3.1).
+  Wirkung siehe §2.1. Die vier Paare sind an die vier **Skilltree-Zweige** gekoppelt (§3.2).
 - **Defensive:** _Armor_ erhöht _Defense_; _Barrier_ = temporärer, pro Runde neu gesetzter
   Absorptionsschild; _Block Chance_ = partielle Reduktion (§2.3, Schritt 3); _Sustain_ =
   flache Heilung beim Anrichten von Schaden; _Regeneration_ = Heilung nach eigener Handlung.
@@ -221,27 +230,24 @@ Jeder Charakter hat Stats in vier Kategorien:
 
 ### 3.1 Attribute (Level-Up-Progression)
 
-Jeder Charakter hat vier **rein offensive** Attribute.
-Zweck: Jedes Level-Up ist eine aktive, selbstgewählte Verstärkung ("welche Art Offense").
+Jeder Charakter hat drei Attribute. Sie verteilen das **Core-Wachstum**: Jeder Punkt hebt
+direkt einen der drei Core-Stats. Zweck: Jedes Level-Up ist eine aktive, selbstgewählte
+Gewichtung zwischen **Offense, Verteidigung und Überleben** — besonders relevant durch die
+**Attrition** (keine Heilung zwischen Floors, §4.4).
 
-| Attribut (EN) | Schadens-Muster            | Gekoppelte Stats                    |
-| ------------- | -------------------------- | ----------------------------------- |
-| **Finesse**   | Crit (Einzeltreffer)       | Crit Chance + Crit Damage           |
-| **Tempest**   | Multi-Hit (**ein** Ziel)   | Multi Hit Chance + Multi Hit Damage |
-| **Dominance** | Splash (**mehrere** Ziele) | Splash Chance + Splash Damage       |
-| **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage     |
+| Attribut (EN)  | Gekoppelter Core-Stat |
+| -------------- | --------------------- |
+| **Ferocity**   | Attack                |
+| **Resilience** | Defense               |
+| **Vigor**      | Health                |
 
 **Mechanik**
 
-- 1 Punkt **addiert** einen **festen Prozentpunkt-Betrag** auf **beide** gekoppelten Stats
-  (additiv/linear — z. B. +0,5 pp Chance und +10 pp Damage; konkrete Werte = Balancing,
-  `src/game/`). Kein multiplikatives Stacking: Der Zuwachs ist konstant pro Punkt, unabhängig
-  vom aktuellen Wert.
-- Skalierungsstabil, weil die gekoppelten Stats selbst **Multiplikatoren** auf den
-  exponentiellen Base-Schaden sind.
-- **Chance** hat einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage** skaliert
-  **unbegrenzt** → ein Attribut wird nie wertlos.
-- Alle übrigen Stats (Core-, Defensive- & Utility-Stats) sind **nicht** an Attribute gekoppelt.
+- 1 Punkt **addiert** einen **festen Betrag** auf den gekoppelten Core-Stat (additiv/linear;
+  konkrete Werte = Balancing, `src/game/`). Der Zuwachs ist konstant pro Punkt, unabhängig vom
+  aktuellen Wert.
+- Die Attribut-Zuwächse liegen **über** dem automatischen Baseline-Wachstum (§3.3) — die
+  Baseline sichert einen spielbaren Sockel, die Attribute setzen die Gewichtung.
 
 **Progression**
 
@@ -251,35 +257,106 @@ Zweck: Jedes Level-Up ist eine aktive, selbstgewählte Verstärkung ("welche Art
 
 ### 3.2 Charakter-Skilltree
 
-- Jeder Charakter hat einen **eigenen Skilltree** mit **mehreren Pfaden** (unterschiedlicher
-  Fokus/Spielstil).
-- Knoten sind sowohl **Stat-Knoten** (passive Werte-Boosts) als auch
-  **Verhaltens-/Trigger-Knoten** (z. B. „Mitigation" für den Tank, „Stagger als Skill",
-  „Chance to Cast X", „Per-Hit-Crit").
-- **Skillpunkte:** analog zu Attributpunkten **1 pro Level** (→ 100 gesamt), frei im gesamten
-  Baum verteilbar. **Respec gegen Gold.**
-- **Mitigation** ist der Signatur-Skill des Tanks (Korvin): vor Freischaltung existiert **keine**
-  Umleitung; als Node mit Stufen (Level 1–5) steigt der Umleitungsanteil `m` — der Node-Maxlevel
-  wirkt als **natürlicher Cap** (kein künstlicher Cap nötig).
+- Jeder Charakter hat einen Skilltree mit **vier Zweigen** — je ein Zweig pro offensivem
+  Schadensmuster. Alle drei Charaktere teilen **dieselbe** Zweig-Struktur; Distinktheit kommt
+  aus der Rolle (§1.2) und den charaktergebundenen Signatur-Skills im Crucible (§3.5/§4.3).
+
+  | Zweig         | Schadens-Muster            | Gekoppelte Stats                                      |
+  | ------------- | -------------------------- | ----------------------------------------------------- |
+  | **Finesse**   | Crit (Einzeltreffer)       | Crit Chance + Crit Damage                             |
+  | **Tempest**   | Multi-Hit (**ein** Ziel)   | Multi Hit Chance + Multi Hit Damage + Multi Hit Chain |
+  | **Dominance** | Splash (**mehrere** Ziele) | Splash Chance + Splash Damage + Splash Radius         |
+  | **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage                       |
+
+- Jeder Zweig enthält **Stat-Knoten** (die gekoppelten Werte-Boosts) und
+  **Verhaltens-Knoten** (z. B. **Per-Hit-Crit**, Chain-/Radius-Erweiterungen).
+- **Chance**-Stats haben einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage**-Stats
+  skalieren **unbegrenzt** → ein Zweig wird nie wertlos. Die gekoppelten Stats sind selbst
+  **Multiplikatoren** auf den exponentiellen Base-Schaden (skalierungsstabil).
+- **Skillpunkte:** **1 pro Level** (→ 100 gesamt), frei im gesamten Baum verteilbar. **Respec
+  gegen Gold.**
 
 ### 3.3 Charakterlevel
 
 - Jeder Charakter hat ein **Level**; Maximallevel **100** (Erhöhung durch XP, §4.2).
 - **Ein Level-Up bewirkt dreierlei:**
-  1. **Automatisches Core-Stat-Wachstum** (Health/Attack/Defense nach fester Kurve, BALANCING).
-  2. **+1 Attributpunkt** (offensiv, §3.1).
-  3. **+1 Skillpunkt** (§3.2).
+  1. **Automatisches Core-Baseline-Wachstum** (Health/Attack/Defense nach fester Kurve,
+     BALANCING) — der spielbare Sockel, auf den die Attribute aufsetzen.
+  2. **+1 Attributpunkt** (Core-Gewichtung, §3.1).
+  3. **+1 Skillpunkt** (Offensiv-Zweige, §3.2).
 
 ### 3.4 Ausrüstung
 
 - Jeder Charakter trägt Ausrüstung, die Stats verbessert. Slots:
-  - **Main Hand** — **Signature Slot** (Weapon für DDs, Shield für Tank)
-  - **Head**, **Chest**, **Legs**, **Feet**
+  - **Main Hand** — **Waffe** (alle Charaktere): trägt Attack, **Damage-Range** und offensive
+    Affixe. Der offensiv prägende Slot.
+  - **Off Hand** — **Defensiv-/Utility-Slot**, stark **rollenspezifisch** (Korvin: Schild;
+    Rhaya: Parierdolch/Buckler; Quinn: Köcher/Fokus): trägt Block Chance, Armor, Barrier,
+    Evasion, Initiative u. Ä.
+  - **Head**, **Chest**, **Legs**, **Feet** — defensive Basis plus offene Affix-Slots.
+- Main Hand und Off Hand sind **item-typ-rollenspezifisch**; die getragenen **Stats bleiben
+  universell** (kein charakterexklusiver Stat, §3).
+- **Ausrüstung ist die Hauptquelle der Defensiv-Stats** (Armor, Barrier, Block Chance, Sustain,
+  Regeneration) und von **Evasion** — diese haben keine Attribut- oder Skilltree-Wahl.
 - **Waffen** haben eine prozentuale **Damage-Range**, die den Grundschaden moduliert (§2.1).
+- Affixe dürfen **quer zum Skilltree** rollen (z. B. ein Splash-Affix ohne Dominance-Investment)
+  → Drops können einen Build in ein zusätzliches Muster ziehen.
 - Ausrüstung ist einer der **Hauptmotoren** des Fortschritts (Crafting/Upgrades, §4.5).
 
 <!-- TODO (spätere Runde): Item-Stats im Detail, Amulet-Slot (Sonderrolle), Edelstein-/Sockel-
      System, Runen, Blacksmith/Enchanter/Cube. Siehe §4.5. -->
+
+### 3.5 Signatur-Skills
+
+Jeder der drei Charaktere besitzt **genau einen** Signatur-Skill, der (anders als ein
+Stat-Knoten) in einen **globalen Kampf-Hebel** eingreift und das Spielgeschehen verändert.
+Jeder Skill belegt einen eigenen, sonst unberührten Hebel; kein Signatur-Skill hebt die
+eigene Rollen-Penalty (Taunt/Bulwark/Frontline-Lock) auf. Zusammen bilden sie eine Kette:
+**halten → aufbrechen → verwerten & Zeit kaufen**.
+
+| Charakter      | Signatur-Skill        | Angegriffener Hebel        | Wirkrichtung        |
+| -------------- | --------------------- | -------------------------- | ------------------- |
+| Korvin (Tank)  | **Mitigation** (§3.2) | Schadensverteilung (§2.3)  | defensiv, Umleitung |
+| Rhaya (Melee)  | **Sunder**            | Bulwark / Formation (§2.4) | offensiv-enabling   |
+| Quinn (Ranged) | **Suppression**       | Zug-Ökonomie (§1.1)        | präventiv-defensiv  |
+
+Alle drei sind **charaktergebundene Crucible-Knoten** (§4.3) mit **Level 1–5**; der
+Node-Maxlevel wirkt als **natürlicher Cap** (kein künstlicher Cap nötig). Vor Freischaltung
+existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedbaren PRNG (§2.5)
+— die Skills führen **keinen** Zusatz-RNG ein.
+
+#### Mitigation (Korvin, Tank)
+
+- Siehe §2.3 (Schadenspipeline, Schritt 1). Leitet einen Anteil `m` des DD-Ticks
+  auf den Tank um; `m` steigt mit dem Node-Level.
+
+#### Sunder (Rhaya, Melee) — Bulwark-Bruch
+
+- Rhayas Treffer auf einen **Frontline-Gegner** reduzieren dessen **Bulwark-Beitrag** (§2.4).
+  Der Abbau ist **kumulativ pro Ziel** und gilt **nur für die Dauer des laufenden Kampfes** —
+  es gibt **keinen Übertrag** zwischen Floors (Formationen stehen pro Floor neu).
+- Wandelt Rhayas erzwungenen **Frontline-Lock + Taunt** (§1.2) in Team-Utility: Sie reißt die
+  Deckung ein → der eingehende Schaden auf die **Backline** steigt und damit Quinns Wirkung.
+  Der **Taunt** zwingt Rhaya vorrangig auf den gegnerischen Tank — der den **größten**
+  Bulwark-Anteil trägt (§2.4) und damit das lohnendste Sunder-Ziel ist.
+- **Node-Skalierung (Level 1–5):** steigender Bulwark-Abbau pro Treffer und/oder höheres
+  Abbau-Cap pro Ziel. Konkrete Werte = Balancing (`src/game/`, BALANCING).
+
+#### Suppression (Quinn, Ranged) — Stagger / Aktionsentzug
+
+- Quinns Treffer bauen auf dem getroffenen Gegner **Stagger-Stacks** auf. Erreicht der
+  Stack-Zähler eine **Schwelle**, wird der Gegner **gestaggert** und **setzt seine nächste
+  Aktion aus** (§1.1) → weniger team-weit eingehender Schaden (§2.3).
+- Quinn umgeht den Taunt und trifft die **Backline von Beginn an** (§1.2) → sie kann gezielt
+  den gefährlichsten Ranged-Gegner (höchste Initiative, handelt zuerst) stummschalten.
+- **Immunitäts-Fenster (kein Dauer-Lock):** Nach einem ausgelösten Stagger müssen sich die
+  Stacks des Ziels erst über **X Runden abbauen**, bevor derselbe Gegner erneut gestaggert
+  werden kann. Der Stack-Zähler ist rein deterministisch.
+- **Node-Skalierung (Level 1–5):** niedrigere Stagger-Schwelle und/oder längerer Aussetzer.
+  Konkrete Werte (Schwelle, Abbau-Rate `X`, Aussetz-Dauer) = Balancing (`src/game/`).
+
+<!-- TODO (Balancing): Sunder — Abbau-Betrag pro Treffer & Cap pro Ziel. Suppression —
+     Stagger-Schwelle, Stack-Abbau-Rate `X` (Runden bis erneut staggerbar), Aussetz-Dauer. -->
 
 ---
 
@@ -312,8 +389,11 @@ Zweck: Jedes Level-Up ist eine aktive, selbstgewählte Verstärkung ("welche Art
 
 ### 4.3 Crucible (globaler Skilltree)
 
-- Der **Crucible** ist ein **globaler, charakterübergreifender** Skilltree. Der Spieler
-  „schmilzt" **Crystals** ein, um **permanente** Verbesserungen freizuschalten.
+- Der **Crucible** ist ein weitgehend **globaler, charakterübergreifender** Skilltree. Der
+  Spieler „schmilzt" **Crystals** ein, um **permanente** Verbesserungen freizuschalten.
+- Zusätzlich beherbergt der Crucible die **charaktergebundenen Signatur-Skills** (§3.5) —
+  spielverändernde, an je einen Charakter gebundene Unlocks. Sie folgen dem Standard-Node-Modell
+  (Level 1–5), sind aber dem jeweiligen Charakter zugeordnet statt global wirksam.
 - Vier Trees (Schmiede-Wortfeld):
 
   | Tree             | Fokus                                                                            |
@@ -371,6 +451,13 @@ Diese Punkte sind bereits durch AGENTS.md §5 festgelegt und hier als Spec-Konte
 - **Simulation ≠ Rendering:** Die Kampf-Engine ist **reine, deterministische Logik**
   ohne Bezug zu Timern, DOM oder Echtzeit. Das Playback spielt die simulierten Runden
   mit visueller Verzögerung ab.
+- **Inkrementelle Simulation:** Der Kampf wird **nicht vorab vollständig** durchgerechnet;
+  die Engine erzeugt Runden **schrittweise auf Abruf** (reine „Zustand → nächste Runde"-Funktion).
+  **Dasselbe Schrittwerk** treibt beide Modi: das Playback (eine Runde pro Anzeige-Takt) und den
+  Catch-up (Runden ohne Animation im Schnelldurchlauf). Ergebnis: **keine Wartezeit** beim
+  Floor-Einstieg (es wird nur die jeweils nächste Runde gerechnet), bei erhaltenem Determinismus
+  und Catch-up. Der Kampfausgang steht erst mit der letzten Runde fest — er wird vorher nicht
+  benötigt (Attrition §4.4 nutzt die Health am Kampfende).
 - **Determinismus:** gleicher Seed + gleicher Input ⇒ exakt gleicher Verlauf.
 - **Catch-up:** Tab minimiert/gedrosselt ⇒ beim Wiederöffnen werden fehlende Runden
   **ohne Animation** nachgerechnet (Page Visibility API), danach Anzeige synchronisiert.

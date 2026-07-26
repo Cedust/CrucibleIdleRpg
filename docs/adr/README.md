@@ -59,6 +59,7 @@ AGENTS.md. ADRs sind für die **Zukunft**, nicht zum rückwirkenden Dokumentiere
 
 <!-- Neue ADRs hier eintragen: | NNNN | Titel | Status | -->
 
-| Nr. | Titel             | Status |
-| --- | ----------------- | ------ |
-| –   | _noch keine ADRs_ | –      |
+| Nr.  | Titel                                                                                   | Status     |
+| ---- | --------------------------------------------------------------------------------------- | ---------- |
+| 0001 | [Keine charakterexklusiven Stats](0001-keine-charakterexklusiven-stats.md)              | Akzeptiert |
+| 0002 | [Inkrementelle Kampfsimulation ohne Rundenlimit](0002-inkrementelle-kampfsimulation.md) | Akzeptiert |

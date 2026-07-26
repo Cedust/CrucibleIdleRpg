@@ -110,6 +110,12 @@ Spiellogik**.
   deterministische Logik**: gleicher Seed + gleicher Input ⇒ exakt gleicher Kampfverlauf.
   Sie hat **keinen** Bezug zu Timern, DOM oder Echtzeit.
 - Das **Rendering/Playback** spielt die simulierten Runden mit visueller Verzögerung ab.
+- Die Simulation läuft **inkrementell/auf Abruf** (reine „Zustand → nächste Runde"-Funktion),
+  **nicht** als Vorab-Komplettberechnung des Kampfes. **Dasselbe Schrittwerk** treibt Playback
+  (ein Schritt pro Anzeige-Takt) und Catch-up (Schritte ohne Animation) — daher kein Vorab-Wait
+  beim Floor-Einstieg. Ein **Rundenlimit** ist nicht nötig: Jeder Kampf ist endlich (Gegner
+  heilen nicht, Gegner-Health sinkt monoton), und die Simulation ist an Echtzeit gebunden
+  (eine Runde pro Takt).
 - Diese Trennung ist Voraussetzung für Catch-up (siehe unten), Testbarkeit und spätere
   interaktive Eingriffsmechaniken.
 

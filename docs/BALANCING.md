@@ -48,12 +48,16 @@ Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren
 
 ## 3. Wachstumsquellen (woher die Zahlen kommen)
 
-- **Base-Attack (exp.):** primär **Ausrüstung** (Hauptmotor via Crafting/Upgrades) + **Level**
-  (fester Per-Level-Sockel) + optional **Crucible/Tempering**. Weitere Quellen TBD.
-- **Health / Defense (linear):** **Level** (Sockel) + **Ausrüstung** (u. a. _Armor_ → _Defense_)
-  - optional **Crucible/Tempering**. Weitere Quellen TBD.
-- **Offensiv-Multiplikatoren** (Crit/Multi/Splash/Counter): **Attribute** (Level-Up) — Chance
-  soft-capped bei 100 %, Damage unbegrenzt (SPEC §3.1).
+Die drei zentralen Werte **Attack, Defense, Health** sind **Derived Stats** aus drei Quellen mit je
+eigener Kurve: **Baseline** (Level) + **Attribut** + **Core-Stat** (SPEC §3.0). Die eigenen Kurven
+je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achse auszubalancieren.
+
+- **Attack (Derived, exp.):** Baseline (Level) + **Ferocity** (Attribut) + **Might** (Core-Stat aus
+  **Ausrüstung-Innate** + **Emerald**-Gems) + optional **Crucible/Smelting Flames**. Ausrüstung = Hauptmotor.
+- **Defense / Health (Derived, linear):** Baseline (Level) + **Resilience/Vigor** (Attribut) +
+  **Toughness/Vitality** (Core-Stat aus Innate + Emerald-Gems) + optional **Crucible/Smelting Flames**.
+- **Offensiv-Multiplikatoren** (Crit/Multi/Splash/Counter): **Skilltree-Zweige** (§3.2) +
+  **Amber**/**Ruby**-Gems (§4.5) — Chance soft-capped bei 100 %, Damage ohne Soft-Cap (SPEC §3.1/§3.2).
 - **Feinschliff:** Skilltree-Knoten (Verhalten/Trigger) und Crucible-Trees.
 
 > **Leitplanke:** Ausrüstung = Hauptmotor, Level/Crucible = garantiertes Grundgerüst. Beim
@@ -65,35 +69,49 @@ Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren
 - **Crystals (Crucible):** endliche Ressource — **351** gesamt (285 normal + 36 elite + 30 boss),
   nur beim Erstsieg. Ein voll gestufter Node kostet **15** (1+2+3+4+5). ⇒ Der Crucible ist
   **bewusst knapp**; nicht alles ist gleichzeitig maximierbar (Priorisierungs-Entscheidung).
-- **Gold:** laufende Währung (Respecs für Attribute/Skills/Crucible, Crafting/Enchant). Muss so
+- **Gold:** laufende Währung (Respecs für Attribute/Skills/Crucible, Blacksmith/Jeweler). Muss so
   fließen, dass **Experimentieren** (Respec) erschwinglich bleibt, ohne Entscheidungen zu
   entwerten.
 - **XP:** Pool pro Floor, Basisanteil je Charakter + individueller Rest (Schlüssel offen —
   Kandidat: verursachter Schaden).
-- **Gems (Amber/Sapphire/Diamond):** Loot-Hauptressource _und_ Level-Fodder (SPEC §4.5). Drop-Raten
-  je Floor-Tiefe und die **Aufleveln-Fodder-Kurve** (jedes Gem-Level braucht mehr) müssen so
-  liegen, dass Gem-Progression **kein Grind-Wall** wird (Leitplanke §1). Diamond bewusst knapp
-  (nur Elite/Boss).
+- **Gems (Amber/Ruby/Sapphire/Emerald/Diamond):** Loot-Hauptressource _und_ Level-Fodder (SPEC §4.5).
+  Der Drop-Strom teilt sich auf **vier** Fodder-Farben (Amber/Ruby/Sapphire/Emerald) — Drop-Raten je
+  Floor-Tiefe und die **Aufleveln-Fodder-Kurve** (jedes Gem-Level braucht mehr) müssen so liegen, dass
+  keine Farbe zum Grind-Wall wird (Leitplanke §1). Diamond bewusst knapp (nur Elite/Boss). Da das
+  Item-Level bei **+100** cappt, tragen die Gems den **Endgame-Min-Max** — Tiefe der Gem-Achse geht
+  hier vor Schlankheit.
 
 ## 5. Offene Balancing-Fragen / Tuning-Notizen
 
-- [ ] Konkrete Basiswerte & Faktoren der Attribut-Kopplung (pp Chance / pp Damage pro Punkt).
-- [ ] Per-Level-Kurven für Core-Stats (Attack exp., Health/Defense linear).
+- [ ] **Derived-Stat-Kurven je Quelle** (SPEC §3.0): Baseline (Level), Attribut-Betrag je
+      Ferocity/Resilience/Vigor-Punkt und Core-Stat-Kurve (Might/Toughness/Vitality →
+      Attack/Defense/Health) — so normalisieren, dass beide Achsen über die ganze Kurve relevant
+      bleiben (der eigentliche Sinn der eigenen Kurve je Quelle).
+- [ ] Baseline-Kurvenform der Derived Stats (Attack exp., Health/Defense linear).
 - [ ] Gegner-Kurven pro Akt/Dungeon/Floor (Health exp., Attack/Accuracy linear) + Elite/Boss-
       Multiplikatoren.
 - [ ] Bulwark-Prozentwerte (Tank/Melee-Beitrag) und Mitigation-`m` je Node-Stufe.
 - [ ] XP-Verteilungsschlüssel; Gold-Drop- und Respec-Kosten-Kurven.
 - [ ] Waffen-Damage-Range-Breiten je Seltenheit.
-- [ ] **Item-Level-Kurve:** Innate-Value je `+n` (Damage exp., Armor/Initiative linear?) und
-      Seltenheits-Aufstieg-Schwellen (Common→Legendary).
-- [ ] **Sockel-Zahlen je Seltenheit** (Vorschlag 1/2/3/4 + Unique 4+1) final bestätigen.
+- [ ] **Item-Level-Kurve (Cap +100):** Innate-Value je `+n` (Might exp., Toughness/Vitality/Initiative
+      linear?), Verteilung der 100 Stufen.
+- [ ] **Cinder-Ökonomie:** Refine-Kosten (Vorschlag **C→M=1, M→R=3, R→L=6**) final bestätigen;
+      Cinder-Kosten der Unique-Sockel-Unlocks (1→4). Elite-Cinder-Drop-Chance als **monoton mit
+      globaler Floor-Tiefe** steigende Kurve (kein Akt-Reset; Boss stets 100 %/Kill). Gegen den
+      Gesamt-Sink balancieren (6 Slots × 3 Chars + Uniques).
+- [ ] **break_eternity.js nötig?** Da alle Achsen bei 100 bzw. `+100` cappen: prüfen, ob die steilste
+      Kombination (Item-Level `+100` × Multiplikatoren) `Number.MAX_SAFE_INTEGER` überhaupt noch reißt —
+      falls nicht, kann die Lib entfallen (AGENTS.md §5).
+- [ ] **Sockel-Zahlen je Seltenheit** (1/2/3/4 + Unique bis 4 +1 Prismatic) final bestätigen;
+      **Unique-Start-Sockel floor-skaliert** (A1=1, A2=2, A3=3), Rest per Cinder.
 - [ ] **Gem-Value-Ranges** je Pool-Affix + Range-Anhebung pro Gem-Level (relative Position bleibt).
-- [ ] **Amber-Pool-Reroll-Friction:** 8 Offensiv-Affixe in einem Pool → Reroll-Kosten (Gold) so
-      tunen, dass Ziel-Treffer erschwinglich bleibt.
+- [ ] **Offensiv-Gem-Targeting:** Amber (4 Chance) + Ruby (4 Damage) → je 25 % Chance auf den
+      Ziel-Stat beim Sockeln; Reroll-Kosten (Gold) so tunen, dass Ziel-Treffer erschwinglich bleibt.
 - [ ] **Gem-Drop-Raten** & Aufleveln-Fodder-Kurve (Grind-Wall-Vermeidung); Diamond-Drop-Rate.
 - [ ] **Prismatic/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (Attack-exp
       vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als Sicherheitsgurt).
-- [ ] **Blacksmith/Enchanter-Gold-Kosten** (Aufwerten, Sockeln, Aufleveln, Reroll).
+- [ ] **Blacksmith/Jeweler-Gold-Kosten** (Forge, Temper, Refine, Inlay, Recut, Attune) — Refine
+      zusätzlich in **Cinder**.
 
 ---
 

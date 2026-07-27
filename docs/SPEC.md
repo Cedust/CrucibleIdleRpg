@@ -161,8 +161,9 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 3. **Block** (pro Charakter). Mit _Block Chance_ → `Schaden × (1 − Block%)` (partielle
    Reduktion um einen festen %-Wert; **nicht** all-or-nothing). Ein geblockter Treffer bleibt
    ein Treffer → **löst Counter aus**.
-4. **Defense** (pro Charakter). **Flacher** Abzug (durch _Armor_ erhöht). Block wirkt **vor**
-   Defense: das % greift auf den rohen Schwung, die flache Rüstung zieht danach fix ab.
+4. **Defense** (pro Charakter). **Flacher** Abzug (_Defense_ ist ein Derived Stat, gespeist u. a.
+   aus _Toughness_, §3.0). Block wirkt **vor** Defense: das % greift auf den rohen Schwung, die
+   flache Rüstung zieht danach fix ab.
 5. **Barrier** (pro Charakter). Absorbiert den verbleibenden (bereits abgemilderten) Schaden,
    bevor Health reduziert wird.
 6. **Health** (pro Charakter). Wird um den Restschaden reduziert.
@@ -208,42 +209,58 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 
 ### 3.0 Stats
 
-Jeder Charakter hat Stats in vier Kategorien:
+Die drei zentralen Kampfwerte **Attack, Defense, Health** sind **Derived Stats** — sie werden
+nicht direkt vergeben, sondern aus **drei Quellen mit je eigener Kurve** zusammengesetzt:
+
+| Derived Stat | Baseline (Level, §3.3) | + Attribut (§3.1) | + Core-Stat (Gear/Gems) |
+| ------------ | ---------------------- | ----------------- | ----------------------- |
+| **Attack**   | Baseline-Kurve         | **Ferocity**      | **Might**               |
+| **Defense**  | Baseline-Kurve         | **Resilience**    | **Toughness**           |
+| **Health**   | Baseline-Kurve         | **Vigor**         | **Vitality**            |
+
+Jede Quelle skaliert über eine **eigene Kurve** (Werte = Balancing, `src/game/`), sodass sich der
+Beitrag der (gedeckelten) Level-Up-Achse und der Gear-Achse unabhängig austarieren lässt.
+
+Jeder Charakter hat Stats in folgenden Kategorien:
 
 | Kategorie     | Stats                                                                                                                      |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Core**      | Health, Attack, Defense                                                                                                    |
+| **Core**      | Might, Toughness, Vitality                                                                                                 |
+| **Derived**   | Attack, Defense, Health                                                                                                    |
 | **Offensive** | Crit Chance, Crit Damage, Multi Hit Chance, Multi Hit Damage, Splash Chance, Splash Damage, Counter Chance, Counter Damage |
-| **Defensive** | Armor, Barrier, Block Chance, Evasion, Sustain, Regeneration                                                               |
+| **Defensive** | Barrier, Block Chance, Evasion, Sustain, Regeneration                                                                      |
 | **Utility**   | Initiative, Multi Hit Chain, Splash Radius                                                                                 |
 
-- **Core:** _Health_ = Lebenspunkte; _Attack_ = Grundschaden; _Defense_ = flache Schadens-
-  reduktion (§2.3, Schritt 4).
+- **Core (Primär):** _Might_ speist _Attack_, _Toughness_ speist _Defense_, _Vitality_ speist
+  _Health_ (je über eine eigene Kurve). Core-Stats stammen aus **Item-Innate** (§3.4) und
+  **Emerald-Gems** (§4.5).
+- **Derived:** _Attack_ = Grundschaden; _Defense_ = flache Schadensreduktion (§2.3, Schritt 4);
+  _Health_ = Lebenspunkte. Zusammensetzung siehe Tabelle oben.
 - **Offensive:** paarweise **Chance + Damage** je Muster (Crit, Multi Hit, Splash, Counter);
   Wirkung siehe §2.1. Die vier Paare sind an die vier **Skilltree-Zweige** gekoppelt (§3.2).
-- **Defensive:** _Armor_ erhöht _Defense_; _Barrier_ = temporärer, pro Runde neu gesetzter
-  Absorptionsschild; _Block Chance_ = partielle Reduktion (§2.3, Schritt 3);
-  _Evasion_ = Ausweichchance gegen Accuracy (§2.3, Schritt 2); _Sustain_ =
-  flache Heilung beim Anrichten von Schaden; _Regeneration_ = Heilung nach eigener Handlung.
+- **Defensive:** _Barrier_ = temporärer, pro Runde neu gesetzter Absorptionsschild; _Block Chance_
+  = partielle Reduktion (§2.3, Schritt 3); _Evasion_ = Ausweichchance gegen Accuracy (§2.3,
+  Schritt 2); _Sustain_ = flache Heilung beim Anrichten von Schaden; _Regeneration_ = Heilung nach
+  eigener Handlung.
 - **Utility:** _Initiative_ = Zugreihenfolge; _Multi Hit Chain_ = maximale Multi-Hit-Kettenlänge;
   _Splash Radius_ = Anzahl Nebenziele (Lane-übergreifend).
 
 ### 3.1 Attribute (Level-Up-Progression)
 
-Jeder Charakter hat drei Attribute. Sie verteilen das **Core-Wachstum**: Jeder Punkt hebt
-direkt einen der drei Core-Stats. Zweck: Jedes Level-Up ist eine aktive, selbstgewählte
-Gewichtung zwischen **Offense, Verteidigung und Überleben** — besonders relevant durch die
-**Attrition** (keine Heilung zwischen Floors, §4.4).
+Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived Stats** (§3.0):
+Jeder Punkt hebt über eine eigene Kurve direkt einen der drei Derived Stats. Zweck: Jedes Level-Up
+ist eine aktive, selbstgewählte Gewichtung zwischen **Offense, Verteidigung und Überleben** —
+besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4).
 
-| Attribut (EN)  | Gekoppelter Core-Stat |
-| -------------- | --------------------- |
-| **Ferocity**   | Attack                |
-| **Resilience** | Defense               |
-| **Vigor**      | Health                |
+| Attribut (EN)  | Gekoppelter Derived Stat |
+| -------------- | ------------------------ |
+| **Ferocity**   | Attack                   |
+| **Resilience** | Defense                  |
+| **Vigor**      | Health                   |
 
 **Mechanik**
 
-- 1 Punkt **addiert** einen **festen Betrag** auf den gekoppelten Core-Stat (additiv/linear;
+- 1 Punkt **addiert** einen **festen Betrag** auf den gekoppelten Derived Stat (additiv/linear;
   konkrete Werte = Balancing, `src/game/`). Der Zuwachs ist konstant pro Punkt, unabhängig vom
   aktuellen Wert.
 - Die Attribut-Zuwächse liegen **über** dem automatischen Baseline-Wachstum (§3.3) — die
@@ -271,8 +288,8 @@ Gewichtung zwischen **Offense, Verteidigung und Überleben** — besonders relev
 - Jeder Zweig enthält **Stat-Knoten** (die gekoppelten Werte-Boosts) und
   **Verhaltens-Knoten** (z. B. **Per-Hit-Crit**, Chain-/Radius-Erweiterungen).
 - **Chance**-Stats haben einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage**-Stats
-  skalieren **unbegrenzt** → ein Zweig wird nie wertlos. Die gekoppelten Stats sind selbst
-  **Multiplikatoren** auf den exponentiellen Base-Schaden (skalierungsstabil).
+  haben **keinen Soft-Cap** (Zuwachs verpufft nie) → ein Zweig wird nie wertlos. Die gekoppelten
+  Stats sind selbst **Multiplikatoren** auf den Base-Schaden (skalierungsstabil).
 - **Skillpunkte:** **1 pro Level** (→ 100 gesamt), frei im gesamten Baum verteilbar. **Respec
   gegen Gold.**
 
@@ -280,8 +297,8 @@ Gewichtung zwischen **Offense, Verteidigung und Überleben** — besonders relev
 
 - Jeder Charakter hat ein **Level**; Maximallevel **100** (Erhöhung durch XP, §4.2).
 - **Ein Level-Up bewirkt dreierlei:**
-  1. **Automatisches Core-Baseline-Wachstum** (Health/Attack/Defense nach fester Kurve,
-     BALANCING) — der spielbare Sockel, auf den die Attribute aufsetzen.
+  1. **Automatisches Baseline-Wachstum der Derived Stats** (Attack/Defense/Health nach fester
+     Kurve, BALANCING) — der spielbare Sockel, auf den Attribute und Core-Stats aufsetzen (§3.0).
   2. **+1 Attributpunkt** (Core-Gewichtung, §3.1).
   3. **+1 Skillpunkt** (Offensiv-Zweige, §3.2).
 
@@ -290,14 +307,14 @@ Gewichtung zwischen **Offense, Verteidigung und Überleben** — besonders relev
 - Jeder Charakter trägt Ausrüstung in **sechs Slots**. Jeder Slot hat einen **Innate-Affix** —
   einen festen Basis-Stat, der mit dem **Item-Level** skaliert (§4.5):
 
-  | Slot          | Item-Typ (rollenspezifisch)                                        | Innate-Affix                       |
-  | ------------- | ------------------------------------------------------------------ | ---------------------------------- |
-  | **Main Hand** | Waffe (alle Charaktere) — trägt **Damage-Range**                   | **Damage**                         |
-  | **Off Hand**  | Rhaya/Quinn: Dolch/Köcher → **Damage**; Korvin: Schild → **Armor** | **Damage** (DD) / **Armor** (Tank) |
-  | **Head**      | Helm                                                               | **Armor**                          |
-  | **Chest**     | Rüstung                                                            | **Armor**                          |
-  | **Legs**      | Beinschutz                                                         | **Armor**                          |
-  | **Feet**      | Schuhe                                                             | **Initiative**                     |
+  | Slot          | Item-Typ (rollenspezifisch)                                           | Innate-Affix                          |
+  | ------------- | --------------------------------------------------------------------- | ------------------------------------- |
+  | **Main Hand** | Waffe (alle Charaktere) — trägt **Damage-Range**                      | **Might**                             |
+  | **Off Hand**  | Rhaya/Quinn: Dolch/Köcher → **Might**; Korvin: Schild → **Toughness** | **Might** (DD) / **Toughness** (Tank) |
+  | **Head**      | Helm                                                                  | **Vitality**                          |
+  | **Chest**     | Rüstung                                                               | **Toughness**                         |
+  | **Legs**      | Beinschutz                                                            | **Toughness**                         |
+  | **Feet**      | Schuhe                                                                | **Initiative**                        |
 
 - Item-Typen sind **item-typ-rollenspezifisch** (Schild nur Korvin usw.); die getragenen **Stats
   bleiben universell** (kein charakterexklusiver Stat, §3).
@@ -309,16 +326,17 @@ diese Trennung ist das Fundament des Loot-/Handwerk-Loops (§4.5):
 
 1. **Basis** — Item-Typ + Slot (z. B. „Schwert / Main Hand", „Schild / Off Hand"). Legt den
    **Innate-Affix** (Tabelle oben) und die Slot-Rolle fest. **Reguläre Basen werden beim
-   Blacksmith gecraftet** (§4.5) — sie droppen **nicht**; nur **Uniques** droppen (Elite/Boss).
-2. **Item-Level** (`+n`, **exponentielle Basis-Power**) — skaliert den **Innate-Value**; **endlos**
-   hochstufbar beim **Blacksmith** gegen Gold. Das persistente Item „wächst mit" — der **planbare**
-   Träger der Incremental-Kurve. Ein gedropptes **Unique** kann floor-skaliert **vorgelevelt**
-   erscheinen (§4.5, Wechsel-Glätter). Item-Level hebt zusätzlich die **Seltenheit**
-   (bis **Legendary**, §4.5).
-3. **Sockel & Gems** (**Min-Max-Achse**) — die **Seltenheit** (EN: _Rarity_) bestimmt die **Anzahl
-   der Sockel**; in jeden Sockel steckt man einen **Gem** aus dem **Gem-Bestand** (Ressourcen-Zähler,
-   kein Inventar), der einen zufälligen Affix aus seinem **Farb-Pool** rollt (seed-PRNG). Dies ist
-   die eigentliche **Loot-Jagd**. Details: §4.5.
+   Blacksmith geforged** (§4.5) — sie droppen **nicht**; nur **Uniques** droppen (Elite/Boss).
+2. **Item-Level** (`+n`, **exponentielle Basis-Power**, **Cap bei +100**) — skaliert den
+   **Innate-Value**; bis **+100** hochstufbar beim **Blacksmith** (**Temper**) gegen Gold. Das persistente Item
+   „wächst mit" — der **planbare** Träger der Incremental-Kurve. Ein gedropptes **Unique** kann
+   floor-skaliert **vorgelevelt** erscheinen (§4.5, Wechsel-Glätter).
+3. **Seltenheit & Sockel** (**Min-Max-Achse**) — die **Seltenheit** (EN: _Rarity_) ist der
+   **Master-Regler** dieser Achse: sie bestimmt die **Anzahl der Sockel** (Breite) **und** das
+   **Gem-Level-Cap** (Höhe, §4.5). In jeden Sockel steckt man einen **Gem** aus dem **Gem-Bestand**
+   (Ressourcen-Zähler, kein Inventar), der einen zufälligen Affix aus seinem **Farb-Pool** rollt
+   (seed-PRNG). Dies ist die eigentliche **Loot-Jagd**. Gesteigert per **Refine** beim Blacksmith
+   gegen **Cinder** (§4.5).
 
 - **Gems sind am Item gebunden:** Ein gesockelter (und im Sockel gelevelter) Gem bleibt im Item —
   auch bei Nichtbenutzung „friert" er dort ein (kein Verlust). Nur aktives **Ersetzen** zerstört ihn.
@@ -389,7 +407,7 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 ### 4.1 Struktur: Akte, Dungeons, Floors
 
 - **3 Akte** × **5 Dungeons** × **20 Floors** = **300 Floors**.
-- Notation: `A<Akt>-<Dungeon>-<Floor>` (Floor zweistellig), z. B. `A1-4-20`.
+- Notation: `A<Akt>-D<Dungeon>-<Floor>` (Floor zweistellig), z. B. `A1-D4-20`.
 - Ein **Floor** ist ein Kampf gegen eine Gegnerformation (2–6 Gegner, §1.3).
 - **Elite-Floor:** Floor 20 der Dungeons 1–4 eines Akts. **Boss-Floor:** Floor 20 des
   **letzten** Dungeons eines Akts.
@@ -405,17 +423,22 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
    Gegnerzahl), der auf die drei Charaktere verteilt wird: ein **Basisanteil** je Charakter,
    der Rest **individuell**.
    <!-- TODO: Verteilungsschlüssel des Rests (Kandidat: nach verursachtem Schaden). -->
-2. **Gold** — globale Währung (Respecs, Crafting/Enchant, Node-Respec).
+2. **Gold** — globale Währung (Respecs, Blacksmith/Jeweler, Node-Respec).
 3. **Crystals** — globale Währung für den **Crucible** (§4.3). **Nur beim allerersten Sieg**
    eines Floors:
    - Normal = 1, Elite = 3, Boss = 10.
    - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Crystals**.
-4. **Gems & Uniques** (Loot-Motor, §4.5) — jeder Sieg speist den Handwerk-Loop:
-   - **Gems** (Hauptdrop) — **Amber** & **Sapphire** als Sockel-Bestückung _und_ Level-Fodder;
-     nach Floor-Tiefe (Akt/Dungeon/Floor) gestaffelt. **Diamond** (Prismatic) nur bei Elite/Boss.
+4. **Gems, Cinder & Uniques** (Loot-Motor, §4.5) — jeder Sieg speist den Handwerk-Loop:
+   - **Gems** (Hauptdrop) — **Amber**, **Ruby**, **Sapphire** & **Emerald** als Sockel-Bestückung
+     _und_ Level-Fodder; nach Floor-Tiefe (Akt/Dungeon/Floor) gestaffelt. **Diamond** (Prismatic)
+     nur bei Elite/Boss.
+   - **Cinder** (Seltenheits-Währung, §4.5) — **Bosse droppen garantiert 1 Cinder pro Kill**
+     (100 %, jeder Durchlauf). **Elite-Gegner** (Dungeons 1–4) droppen Cinder als **Bonus** mit
+     einer **Chance, die monoton mit der globalen Floor-Tiefe steigt** (kein Akt-Reset). Cinder
+     finanziert **Refine** (Seltenheit) und das Freischalten weiterer **Unique-Sockel** (§4.5).
    - **Uniques** (nur Elite/Boss) — komplette Items mit vordefinierter Affix-Identität, floor-skaliert
-     **vorgelevelt** & **vorgesockelt** (§4.5). **Reguläre Item-Basen droppen nicht** — sie werden
-     beim **Blacksmith** gecraftet.
+     **vorgelevelt** & (teil-)**vorgesockelt** (§4.5). **Reguläre Item-Basen droppen nicht** — sie
+     werden beim **Blacksmith** geforged.
    - **Seedbasiert & wiederholbar:** Drops laufen über den seedbaren PRNG (§2.5); beim **Farmen**
      würfelt **jeder Durchlauf neu** (neuer Seed pro Run, §4.5/§5) → der Jagd-Reiz bleibt beim
      Wiederholen erhalten.
@@ -429,12 +452,12 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
   (Level 1–5), sind aber dem jeweiligen Charakter zugeordnet statt global wirksam.
 - Vier Trees (Schmiede-Wortfeld):
 
-  | Tree             | Fokus                                                                            |
-  | ---------------- | -------------------------------------------------------------------------------- |
-  | **Anvil Sparks** | Freischalten von Inhalten (Blacksmith, Enchanter, Ausrüstungsslots, Checkpoints) |
-  | **Tempering**    | Stat-Boosts der Charaktere                                                       |
-  | **Refining**     | Economy-Boosts (Gold-Drop, XP-Gewinn, Rabatte bei Blacksmith/Enchanter)          |
-  | **Masterwork**   | Endgame-Systeme (z. B. Runen)                                                    |
+  | Tree                | Fokus                                                                          |
+  | ------------------- | ------------------------------------------------------------------------------ |
+  | **Anvil Sparks**    | Freischalten von Inhalten (Blacksmith, Jeweler, Ausrüstungsslots, Checkpoints) |
+  | **Smelting Flames** | Stat-Boosts der Charaktere                                                     |
+  | **Molten Cast**     | Economy-Boosts (Gold-Drop, XP-Gewinn, Rabatte bei Blacksmith/Jeweler)          |
+  | **Masterwork**      | Endgame-Systeme (z. B. Runen)                                                  |
 
 - Manche Nodes sind **stufbar** (max. **5 Level**), Kosten **linear steigend** (Level `n` = `n`
   Crystals; 1+2+3+4+5 = 15 Crystals für einen voll gestuften Node).
@@ -464,74 +487,91 @@ Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts (BALANCING §
 **zwei bewusst getrennten Achsen**, die auf die zwei Handwerker abbilden — die exponentielle
 Basis-Power ist **planbar**, die Varianz-Jagd liegt auf den **Gems**:
 
-| Achse                    | Träger am Item (§3.4)      | Station        | Zufall    | Reiz                         |
-| ------------------------ | -------------------------- | -------------- | --------- | ---------------------------- |
-| **Exponentielle Power**  | Item-Level (`+n`) → Innate | **Blacksmith** | keiner    | „numbers go big", planbar    |
-| **Min-Max / Sidegrades** | Sockel + **Gems**          | **Enchanter**  | seed-PRNG | Loot-Jagd, Build-Optimierung |
+| Achse                     | Träger am Item (§3.4)         | Station                 | Zufall                 | Reiz                         |
+| ------------------------- | ----------------------------- | ----------------------- | ---------------------- | ---------------------------- |
+| **Exponentielle Power**   | Item-Level (`+n`) → Innate    | **Blacksmith** (Temper) | keiner                 | „numbers go big", planbar    |
+| **Min-Max / Sidegrades**  | Sockel + **Gems**             | **Jeweler**             | seed-PRNG              | Loot-Jagd, Build-Optimierung |
+| **Seltenheits-Kapazität** | Rarity → Sockelzahl + Gem-Cap | **Blacksmith** (Refine) | keiner (Cinder-Kosten) | Meilenstein, Boss-Chase      |
 
-Alle Handwerks-Aktionen (Blacksmith **und** Enchanter) kosten grundsätzlich **Gold**.
+Alle Handwerks-Aktionen (Blacksmith **und** Jeweler) kosten **Gold**; **Refine** und
+Unique-Sockel-Unlocks zusätzlich **Cinder** (§ „Seltenheit & Sockel").
 
 #### Seltenheit & Sockel
 
 - Jedes Item hat eine **Seltenheit** (EN: _Rarity_): **Common → Magic → Rare → Legendary → Unique**.
-  Die Seltenheit bestimmt die **Anzahl der Sockel**:
+  Die Seltenheit ist der **Master-Regler der Min-Max-Achse**:
+  sie bestimmt die **Anzahl der Sockel** (Breite) **und** das **Gem-Level-Cap** (Höhe, siehe
+  Jeweler). Sie wird per **Refine** erhöht (unten):
 
-  | Seltenheit    | Normale Sockel | Prismatic-Slot             | Herkunft                |
-  | ------------- | -------------- | -------------------------- | ----------------------- |
-  | **Common**    | 1              | —                          | Drop / Blacksmith       |
-  | **Magic**     | 2              | —                          | Drop / Blacksmith       |
-  | **Rare**      | 3              | —                          | Drop / Blacksmith       |
-  | **Legendary** | 4              | —                          | Drop / Blacksmith       |
-  | **Unique**    | 4              | **1** (nur Prismatic-Gems) | **nur Elite/Boss-Drop** |
+  | Seltenheit    | Normale Sockel | Prismatic-Slot             | Herkunft                        |
+  | ------------- | -------------- | -------------------------- | ------------------------------- |
+  | **Common**    | 1              | —                          | Blacksmith (Forge-Startzustand) |
+  | **Magic**     | 2              | —                          | Blacksmith (Refine)             |
+  | **Rare**      | 3              | —                          | Blacksmith (Refine)             |
+  | **Legendary** | 4              | —                          | Blacksmith (Refine)             |
+  | **Unique**    | 1–4 (§ unten)  | **1** (nur Prismatic-Gems) | **nur Elite/Boss-Drop**         |
 
-- **Common → Legendary** ist per Blacksmith **hochstufbar** (Aufstieg = +1 Sockel). **Unique** ist
-  **nicht** hochstufbar erreichbar — es **droppt exklusiv** bei Elite-/Boss-Gegnern, trägt einen
-  festen **Implicit** (§3.4) und den zusätzlichen **Prismatic-Slot**.
+- **Refine (Common → Legendary):** Der Blacksmith hebt die Seltenheit um **eine Stufe** (+1 Sockel,
+  höheres Gem-Cap). **Kein RNG**, aber Kosten in **Cinder** (Boss-Währung, §4.2), **eskalierend**:
+  **C→M = 1, M→R = 3, R→L = 6** (konkrete Werte = Balancing) — plus Gold wie bei allen Handwerks-Aktionen.
+- **Unique** droppt exklusiv bei Elite-/Boss-Gegnern, trägt einen festen **Implicit** (§3.4) und
+  als einziges den **Prismatic-Slot**. Uniques starten **floor-skaliert** mit **A1 = 1, A2 = 2,
+  A3 = 3** Normal-Sockeln; weitere Normal-Sockel (bis **4**) schaltet **Cinder** frei. Der
+  **Prismatic-Slot** ist ab Drop leer.
 
 #### Drop-Modell (seedbasiert)
 
-- Kämpfe droppen **Gems** (Farb-Fodder: Amber/Sapphire; **Diamond** nur Elite/Boss) und — **nur bei
+- Kämpfe droppen **Gems** (Farb-Fodder: Amber/Ruby/Sapphire/Emerald; **Diamond** nur Elite/Boss),
+  **Cinder** (Boss garantiert 1/Kill; Elite als tiefen-skalierter Bonus, §4.2) und — **nur bei
   Elite/Boss** — **Uniques**. **Reguläre Item-Basen droppen nicht**; sie entstehen beim Blacksmith.
 - **Aller Loot-Zufall** läuft über den **seedbaren PRNG** (§2.5) — reproduzierbar, testbar, kein
   Save-Scumming. **Determinismus gilt innerhalb eines Runs**; beim **Farmen** eines geschafften
   Dungeons würfelt **jeder Durchlauf mit neuem Seed** (frische Drops pro Run).
-- **Uniques** kommen mit **vordefinierten Affix-Identitäten** (nur die _Values_ werden gewürfelt) →
-  jedes Unique hat eine **wiedererkennbare Identität**, bleibt aber veränderbar. Sie droppen
-  **floor-skaliert vorgelevelt** (tiefer = höher) und bereits **vorgesockelt** (zufällige Gems,
-  austauschbar); nur der **Prismatic-Slot** ist leer → ein Umstieg beginnt nicht bei `+0`
-  (**Wechsel-Glätter**, §3.4).
+- **Uniques** kommen mit **vordefinierten Affix-Identitäten** (nur die _Values_ werden gewürfelt).
+  Sie droppen **floor-skaliert vorgelevelt** (tiefer = höher) und mit floor-skalierter Sockelzahl
+  (§ „Seltenheit & Sockel"). Die vorhandenen Normal-Sockel sind **vorgesockelt gemäß der
+  Unique-Identity** (Gems austauschbar); der **Prismatic-Slot** ist leer.
 
-#### Blacksmith (exponentielle Basis-Power)
+#### Blacksmith (Basis-Power & Seltenheit)
 
-- **Craften:** die **einzige Quelle** regulärer Item-Basen (reguläre Basen droppen nicht).
-  Rezepte/Materialien = TODO.
-- **Aufwerten (Upgrade):** hebt das **Item-Level** (`+n`) → skaliert den **Innate-Value** (§3.4).
-  **Endlos** stufbar → das persistente Item trägt die Incremental-Kurve. Kein RNG. Item-Level hebt
-  zugleich die **Seltenheit** (bis Legendary, +1 Sockel je Stufe).
+- **Forge:** die **einzige Quelle** regulärer Item-Basen (reguläre Basen droppen nicht). Eine
+  frisch geforgede Basis startet als **Common** (1 Sockel). Rezepte/Materialien = TODO.
+- **Temper (Item-Level):** hebt das **Item-Level** (`+n`, **Cap bei +100**) → skaliert den
+  **Innate-Value** (§3.4). Kein RNG, Kosten in **Gold**.
+- **Refine (Seltenheit):** hebt die **Seltenheit** um eine Stufe (Common → Legendary; +1 Sockel,
+  höheres Gem-Cap). Kein RNG, aber Kosten in **Cinder** (eskalierend
+  1/3/6, § „Seltenheit & Sockel") plus Gold. Bei **Uniques** schaltet dieselbe Cinder-Ausgabe
+  stattdessen die restlichen **Normal-Sockel** frei (§ „Drop-Modell").
 
-#### Enchanter (Gems / Min-Max-Jagd)
+#### Jeweler (Gems / Min-Max-Jagd)
 
-- **Sockeln:** verbraucht **1 Gem** der Farbe aus dem **Bestand** (Ressourcen-Zähler, kein Inventar)
+- **Inlay:** verbraucht **1 Gem** der Farbe aus dem **Bestand** (Ressourcen-Zähler, kein Inventar)
   und setzt ihn in einen Sockel; dabei wird ein **zufälliger Affix** aus dem **Farb-Pool** gerollt,
-  mit einer **Value-Range** — der konkrete Wert fällt beim Sockeln (seed-PRNG). Ein bereits belegter
+  mit einer **Value-Range** — der konkrete Wert fällt beim **Inlay** (seed-PRNG). Ein bereits belegter
   Sockel wird **überschrieben** (der alte, gebundene Gem ist **verloren**, §3.4).
-- **Gem aufleveln** (im Sockel, **gedeckelt durch die Item-Seltenheit**): hebt die **Value-Range**; die
-  **relative Position** in der vorherigen Range bleibt erhalten. Aufleveln kostet **Gems gleicher
+- **Recut** (Gem aufleveln, im Sockel, **gedeckelt durch die Item-Seltenheit**): hebt die **Value-Range**; die
+  **relative Position** in der vorherigen Range bleibt erhalten. Kostet **Gems gleicher
   Farbe** als Fodder — **jedes Level braucht mehr** (→ Fodder-Sink).
-- **Value rerollen:** würfelt den Wert innerhalb der aktuellen Range neu.
-- **Gem-Farben** (Farb-Pools = Stat-Kategorien, §3.0):
+- **Attune (Value-Reroll):** würfelt den Wert eines gesockelten Gems innerhalb seiner aktuellen
+  Range neu (seed-PRNG).
+- **Gem-Farben** (Farb-Pools entlang der Stat-Kategorien, §3.0). Die Offensiv-Pools sind bewusst in
+  **Chance** (Amber) und **Damage** (Ruby) getrennt — kleinere Pools erhöhen die Trefferchance auf
+  den gewünschten Stat beim **Inlay**, und ein reiner **Damage**-Pool bleibt auch dann wertvoll, wenn
+  die Chancen bereits am Soft-Cap liegen (§3.2):
 
-  | Gem                 | Kategorie | Pool                                                                                         | Sockel                 |
-  | ------------------- | --------- | -------------------------------------------------------------------------------------------- | ---------------------- |
-  | **Amber** (Gold)    | Offensive | Crit/Multi/Splash/Counter — je Chance + Damage (8)                                           | normal                 |
-  | **Sapphire** (Cyan) | Defensive | Barrier, Block Chance, Sustain, Regeneration, Evasion (5)                                    | normal                 |
-  | **Diamond**         | Prismatic | item-lokale **Meta-Multiplikatoren** (z. B. _+X % all gem effects_, _+Y % Sapphire-Effekte_) | **nur Prismatic-Slot** |
+  | Gem                 | Kategorie          | Pool                                                                                         | Sockel                 |
+  | ------------------- | ------------------ | -------------------------------------------------------------------------------------------- | ---------------------- |
+  | **Amber** (Gold)    | Offensive – Chance | Crit/Multi/Splash/Counter **Chance** (4)                                                     | normal                 |
+  | **Ruby** (Rot)      | Offensive – Damage | Crit/Multi/Splash/Counter **Damage** (4)                                                     | normal                 |
+  | **Sapphire** (Cyan) | Defensive          | Barrier, Block Chance, Sustain, Regeneration, Evasion (5)                                    | normal                 |
+  | **Emerald** (Grün)  | Core               | Might, Toughness, Vitality (3)                                                               | normal                 |
+  | **Diamond** (Weiß)  | Prismatic          | item-lokale **Meta-Multiplikatoren** (z. B. _+X % all gem effects_, _+Y % Sapphire-Effekte_) | **nur Prismatic-Slot** |
 
-- **Amber & Sapphire** sind die einzigen regulär gefarmten Gems (zwei Fodder-Farben, schlanke
-  Ökonomie); **Diamond** ist der seltene Elite/Boss-Chase. Base-Stats (Health/Attack/Defense),
-  Multi Hit Chain & Splash Radius (Skilltree) sowie Initiative (Innate Feet + Crucible) haben
-  **keine** Gem-Quelle. Konkrete Pool-Gewichte, Value-Ranges, Aufleveln-Kosten und Diamond-Effekte
-  = Balancing (`src/game/`, BALANCING).
+- **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
+  seltene Elite/Boss-Chase. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
+  Gem-Quelle (sie ergeben sich aus Core/Attribut/Baseline, §3.0); ebenso wenig Multi Hit Chain &
+  Splash Radius (Skilltree) sowie Initiative (Innate Feet + Crucible). Konkrete Pool-Gewichte,
+  Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing (`src/game/`, BALANCING).
 
 #### Noch offen (bewusst separate Interview-Runde — Endgame/Masterwork)
 
@@ -539,7 +579,7 @@ Alle Handwerks-Aktionen (Blacksmith **und** Enchanter) kosten grundsätzlich **G
 - **Runen-System** (evtl. ins Amulet gesockelt) — Anbindung an **Masterwork** (§4.3).
 - **Prismatic/Diamond-Effekte im Detail** (welche Meta-Multiplikatoren, Node-artige Sammlung).
 - **Unique-Katalog:** konkrete Uniques (Namen, vordefinierte Affix-Identitäten, Implicits).
-- **Craft-Rezepte & Materialien** (womit werden Basen gecraftet?).
+- **Forge-Rezepte & Materialien** (womit werden Basen geforged?).
 
 ### 4.6 Prestige
 
@@ -586,9 +626,9 @@ Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
 
 - [ ] Welche Felder umfasst der Save (Save-State-Form pro Version)? Mindestens: pro Charakter
       Level/XP/Attribut- & Skillpunkte-Verteilung/**getragene Ausrüstung**, Crucible-Node-Stände,
-      Gold, **Gem-Bestände** (Amber/Sapphire/Diamond), **Inventar** (Items mit Basis + Item-Level +
-      Seltenheit + gesockelten Gems inkl. deren Level/Value, §3.4/§4.5), freigeschaltete Checkpoints,
-      höchster erreichter Floor, erste-Sieg-Flags (Crystals).
+      Gold, **Cinder**, **Gem-Bestände** (Amber/Ruby/Sapphire/Emerald/Diamond), **Inventar** (Items mit Basis + Item-Level +
+      Seltenheit + freigeschalteten Unique-Sockeln + gesockelten Gems inkl. deren Level/Value, §3.4/§4.5),
+      freigeschaltete Checkpoints, höchster erreichter Floor, erste-Sieg-Flags (Crystals).
 - [ ] Auslöser für ein Speichern (nach Reward? in Intervallen?).
 
 ---

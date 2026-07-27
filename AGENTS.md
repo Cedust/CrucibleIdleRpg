@@ -4,6 +4,16 @@ Leitfaden für AI-Agenten und Entwickler, die an diesem Projekt arbeiten.
 Diese Datei beschreibt **verbindliche Konventionen**. Interne Dokumentation und
 Code-Kommentare sind auf **Deutsch**, sämtliche **Spieltexte (UI + Content) auf Englisch**.
 
+### Doku-Stil (verbindlich)
+
+- **Beschreibe den Ist-Zustand.** Schreib, was gilt — nicht, was nicht (mehr) gilt oder
+  wovon etwas unabhängig ist. Kontrast zu früheren Entwürfen gehört in die Diskussion,
+  nicht ins Dokument.
+- **Ein Fakt an genau einer Stelle.** Punkte nicht über Abschnitte/Dateien wiederholen —
+  stattdessen verweisen (`§x`).
+- **Knapp.** Kein rhetorisches Framing; Begründungen gehören nach DESIGN/BALANCING, nicht
+  ins SPEC.
+
 ### Weitere Dokumentation (`docs/`)
 
 Diese Datei ist die **lebende Quelle für Regeln & Konventionen**. Das Spiel selbst
@@ -65,7 +75,9 @@ src/
   features/          # Fachliche Features (je Feature: Components, Hooks, Stores, Tests)
     combat/
     team/
-    upgrades/
+    blacksmith/
+    jeweler/
+    crucible/
     ...
   game/              # Deklarativer, typisierter Balancing-Content (siehe §4)
     characters/

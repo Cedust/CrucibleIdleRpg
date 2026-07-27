@@ -549,10 +549,10 @@ Unique-Sockel-Unlocks zusätzlich **Cinder** (§ „Seltenheit & Sockel").
   und setzt ihn in einen Sockel; dabei wird ein **zufälliger Affix** aus dem **Farb-Pool** gerollt,
   mit einer **Value-Range** — der konkrete Wert fällt beim **Inlay** (seed-PRNG). Ein bereits belegter
   Sockel wird **überschrieben** (der alte, gebundene Gem ist **verloren**, §3.4).
-- **Recut** (Gem aufleveln, im Sockel, **gedeckelt durch die Item-Seltenheit**): hebt die **Value-Range**; die
+- **Attune** (Gem aufleveln, im Sockel, **gedeckelt durch die Item-Seltenheit**): hebt die **Value-Range**; die
   **relative Position** in der vorherigen Range bleibt erhalten. Kostet **Gems gleicher
   Farbe** als Fodder — **jedes Level braucht mehr** (→ Fodder-Sink).
-- **Attune (Value-Reroll):** würfelt den Wert eines gesockelten Gems innerhalb seiner aktuellen
+- **Recut (Value-Reroll):** würfelt den Wert eines gesockelten Gems innerhalb seiner aktuellen
   Range neu (seed-PRNG).
 - **Gem-Farben** (Farb-Pools entlang der Stat-Kategorien, §3.0). Die Offensiv-Pools sind bewusst in
   **Chance** (Amber) und **Damage** (Ruby) getrennt — kleinere Pools erhöhen die Trefferchance auf

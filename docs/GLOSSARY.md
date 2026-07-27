@@ -355,14 +355,14 @@ schaltet dieselbe Cinder-Ausgabe die restlichen Normal-Sockel frei (SPEC §4.5).
 
 ### Recut (EN: _Recut_)
 
-**Jeweler**-Aktion, die einen gesockelten Gem auflevelt (im Sockel, durch die Item-Seltenheit
-gedeckelt) → hebt die **Value-Range**, relative Position bleibt. Kostet gleichfarbige Gems als
-Fodder (jedes Level mehr) (SPEC §4.5).
+**Jeweler**-Aktion, die den **Value** eines gesockelten Gems innerhalb seiner Range neu würfelt
+(seed-PRNG) (SPEC §4.5).
 
 ### Attune (EN: _Attune_)
 
-**Jeweler**-Aktion, die den **Value** eines gesockelten Gems innerhalb seiner Range neu würfelt
-(seed-PRNG) (SPEC §4.5).
+**Jeweler**-Aktion, die einen gesockelten Gem auflevelt (im Sockel, durch die Item-Seltenheit
+gedeckelt) → hebt die **Value-Range**, relative Position bleibt. Kostet gleichfarbige Gems als
+Fodder (jedes Level mehr) (SPEC §4.5).
 
 ### Cinder (EN: _Cinder_)
 
@@ -411,7 +411,7 @@ Aus einem Sieg gewonnene **Gems** (Amber/Ruby/Sapphire/Emerald; Diamond nur Elit
 **Blacksmith** = Power- **und** Seltenheits-Achse: Item-Basen **Forge** (einzige Basis-Quelle),
 **Temper** (Item-Level `+n` → Innate, bis +100, Gold, kein RNG) und **Refine** (Seltenheit +1
 Stufe, Cinder + Gold).
-**Jeweler** = Gem-Achse: **Inlay** (sockeln), **Recut** (Gem aufleveln), **Attune** (Value-Reroll, seed-PRNG).
+**Jeweler** = Gem-Achse: **Inlay** (sockeln), **Recut** (Value-Reroll, seed-PRNG), **Attune** (Gem aufleveln).
 Alle Aktionen kosten **Gold** (Refine zusätzlich **Cinder**) (SPEC §4.5).
 
 ### Amulet / Rune

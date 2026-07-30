@@ -355,9 +355,8 @@ Schicht 1 steht mit dem Slot fest, die Schichten 2–4 sind der Handwerk-Loop (�
 - **Ein Item begleitet seinen Slot über das ganze Spiel.** Item-Level, Sockel-Investment und Brand
   leben auf **demselben** Item; es gibt **kein Item-Inventar** und **keinen Item-Tausch**. Das Item
   **ist** der Slot.
-
-<!-- TODO (spätere Runde, §4.5): Amulet-Slot (Sonderrolle). Bewusst separate Interview-Runde.
-     Runen sind kein Ausrüstungs-Slot — sie leben im Reliquary (§4.6). -->
+- **Sechs Slots, abschließend.** Runen laufen über den **Talisman** (§4.6), der **kein
+  Ausrüstungs-Slot** ist.
 
 ### 3.5 Signatur-Skills
 
@@ -460,10 +459,10 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
      mit einer **Chance, die monoton mit der globalen Floor-Tiefe steigt** (kein Akt-Reset). Die
      Ausschüttung **steigt in Akt 2 und Akt 3**. Cinder finanziert **Refine** (Seltenheit) und
      **Brand** (Sigil-Implicit).
-   - **Sigils** (Elite/Boss, ab dem ersten Elite-Floor `A1-D1-20`) — Einträge im **Kompendium** mit
+   - **Sigils** (Elite/Boss, ab dem ersten Elite-Floor `A1-D1-20`) — Einträge im **Sigil Codex** mit
      **Level 1–5**, Grundlage des **Brand** (§4.5). Der **erste Sigil-Drop eines Spielstands ist
      garantiert**.
-   - **Runedust** (Runen-Währung, §4.6) — droppt von **allen** Gegnern, **sobald der Grimoire-Node
+   - **Runedust** (Runen-Währung, §4.6) — droppt von **allen** Gegnern, **sobald der Rune-Grimoire-Node
      freigeschaltet ist**, mit Elite/Boss-Bonus und nach Floor-Tiefe gestaffelt. Finanziert
      **Inscribe** (neue Rune) und **Etch** (Rune aufleveln).
    - **Seedbasiert & wiederholbar:** Drops laufen über den seedbaren PRNG (§2.5); beim **Farmen**
@@ -560,9 +559,9 @@ Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind 
 - Unabhängig von Seltenheit und Brand. Ein Item mit **zwei Diamonds** ist der stärkste
   Min-Max-Träger des Spiels.
 
-#### Sigils, Kompendium & Brand
+#### Sigils, Sigil Codex & Brand
 
-- Ein **Sigil** ist ein Eintrag im **Kompendium** mit **Level 1–5** — ein binärer Wissensstand plus
+- Ein **Sigil** ist ein Eintrag im **Sigil Codex** mit **Level 1–5** — ein binärer Wissensstand plus
   Level, **kein Bestand und kein Inventar**. Jedes Sigil trägt eine **vordefinierte
   Implicit-Identität**, eine **Mindesttiefe** und eine **Slot(-Typ)-Bindung**.
 - **Quellen** (ab dem ersten Elite-Floor `A1-D1-20`; der **erste Sigil-Drop eines Spielstands ist
@@ -572,7 +571,7 @@ Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind 
   - **Jeder Akt-Boss** droppt beim **ersten Kill** garantiert sein **festes, namentliches
     Signatur-Sigil**. Bei Wiederholungen würfelt er wie ein Elite aus dem **obersten Tier** —
     inklusive des eigenen Signatur-Sigils als Level-Up-Kandidat.
-- **Drop-Fortschritt:** ein **unbekanntes** Sigil wird auf **Level 1** ins Kompendium
+- **Drop-Fortschritt:** ein **unbekanntes** Sigil wird auf **Level 1** in den Sigil Codex
   eingeschrieben, ein **bekanntes** um **+1 Level** gehoben. **Unbekannte Sigils sind im Wurf höher
   gewichtet** (Gewicht = Balancing).
 - **Ein Sigil auf Level 5 verlässt den Drop-Pool.** Sind alle Sigils auf Level 5, droppen keine
@@ -635,7 +634,6 @@ Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind 
 
 #### Noch offen (bewusst separate Interview-Runde — Endgame/Masterwork)
 
-- **Amulet-Slot** mit Sonderrolle (Kandidat: **Prismatic-nativ** — das „Diamond-Item").
 - **Prismatic/Diamond-Effekte im Detail** (welche Meta-Multiplikatoren, Node-artige Sammlung).
 - **Sigil-Katalog:** konkrete Sigils (Namen, Implicit-Identitäten, Mindesttiefe, Slot-Bindung,
   Level-Skalierung des Implicits) sowie die drei namentlichen **Boss-Signatur-Sigils**.
@@ -652,18 +650,21 @@ Sigils, Skilltree, Attribute) sind **permanente Werte**.
   Rundenbeginn gesetzt wird, §1.1), Schaden, der **Bulwark ignoriert** (§2.4), ein **temporärer**
   Buff oder eine Extra-Aktion.
 - Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet (§4.3);
-  vor dem `Grimoire`-Node existiert es nicht (kein Reliquary, keine Runen, kein Runedust-Drop).
+  vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runedust-Drop).
 
-#### Träger: Grimoire, Reliquary, Rite
+#### Träger: Rune Grimoire, Talisman, Rite
 
-| Begriff       | Rolle                                                                                                                                                |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Grimoire**  | Katalog **aller** Runen mit ihrem Wissensstand (bekannt/unbekannt) und **Level**. Zugleich die Station für **Inscribe** und **Etch**.                |
-| **Reliquary** | Behältnis, **eines pro Charakter**. Enthält genau **einen Rite**. Kein Ausrüstungs-Slot: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. |
-| **Rite**      | Die Zeile im Reliquary: **Trigger + Effect + Modifier**.                                                                                             |
+| Begriff           | Rolle                                                                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Rune Grimoire** | Katalog **aller** Runen mit ihrem Wissensstand (bekannt/unbekannt) und **Level**. Zugleich die Station für **Inscribe** und **Etch**.                                  |
+| **Talisman**      | Das eingravierte Schmuckstück, **eines pro Charakter**. Trägt genau **einen Rite**. Kein Ausrüstungs-Slot: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. |
+| **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                                                                           |
 
-- Der Grimoire ist ein **reiner Wissensstand — kein Bestand, kein Inventar** (Modellform wie das
-  Kompendium, §4.5). Man besitzt von jeder bekannten Rune **genau ein Exemplar** → sie steckt in
+- Der **Talisman ist kein siebter Ausrüstungs-Slot**: er trägt **keine** der vier Item-Schichten
+  (§3.4) und erscheint **nicht** in der Ausrüstungs-Ansicht, sondern ausschließlich in der
+  Runen-Ansicht.
+- Das Rune Grimoire ist ein **reiner Wissensstand — kein Bestand, kein Inventar** (Modellform wie
+  der Sigil Codex, §4.5). Man besitzt von jeder bekannten Rune **genau ein Exemplar** → sie steckt in
   **höchstens einem** Rite, teamweit. Keine Duplikate, keine Stacks.
 - Unentdeckte Runen sind als **Silhouette** mit ihrer **Kategorie** sichtbar, sobald ihre
   **Mindesttiefe** erreicht ist; der Katalog wächst also mit dem Fortschritt.
@@ -736,12 +737,12 @@ eines Rite lohnende Ziele sind:
 | **Trigger**  | einen **+% Magnitude**-Aufschlag auf den gesamten Rite (Attunement)             |
 | **Modifier** | die **Stärke der Modifikation** (Echo: Kraft der 2. Auslösung; Chain: Zielzahl) |
 
-- **Level-Cap = Stand des `Rune Mastery`-Nodes** (§ unten). Der `Grimoire`-Node bringt Cap **1**
+- **Level-Cap = Stand des `Rune Mastery`-Nodes** (§ unten). Der `Rune Grimoire`-Node bringt Cap **1**
   mit, `Rune Mastery` hebt es auf **2/3/4/5**.
 - Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
   vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
 
-#### Grimoire-Aktionen
+#### Rune-Grimoire-Aktionen
 
 - **Inscribe (neue Rune):** **pro Kategorie** ein eigenes Rezept — man wählt Trigger, Effect oder
   Modifier und erhält eine **zufällige noch unbekannte** Rune **dieser Kategorie**, gezogen aus
@@ -751,21 +752,21 @@ eines Rite lohnende Ziele sind:
   - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
 - **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
   Kosten: **Runedust + Gold**, pro Level steigend. Kein RNG.
-- Der **`Grimoire`-Node schenkt** einen Starter-**Trigger** und einen Starter-**Effect**, damit im
+- Der **`Rune Grimoire`-Node schenkt** einen Starter-**Trigger** und einen Starter-**Effect**, damit im
   Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
   ersten Sigil-Drop, §4.5).
 
 #### Masterwork-Nodes
 
-| Node             | Level | Wirkung                                                                           | Crystals |
-| ---------------- | ----- | --------------------------------------------------------------------------------- | -------- |
-| **Grimoire**     | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1        |
-| **Reliquary**    | 1–3   | Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                               | 6        |
-| **Runic Focus**  | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6        |
-| **Rune Mastery** | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10       |
-|                  |       |                                                                                   | **23**   |
+| Node              | Level | Wirkung                                                                           | Crystals |
+| ----------------- | ----- | --------------------------------------------------------------------------------- | -------- |
+| **Rune Grimoire** | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1        |
+| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                  | 6        |
+| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6        |
+| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10       |
+|                   |       |                                                                                   | **23**   |
 
-Die charakterweise Staffelung von `Reliquary` und `Runic Focus` erzeugt die Priorisierungsfrage,
+Die charakterweise Staffelung von `Talisman` und `Runic Focus` erzeugt die Priorisierungsfrage,
 für die der Crucible da ist (wer erhält zuerst seinen Rite bzw. Modifier-Slot).
 
 <!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
@@ -819,9 +820,9 @@ Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
       Level/XP/Attribut- & Skillpunkte-Verteilung; pro freigeschaltetem **Slot** das Item
       (Basis + Item-Level + Seltenheit + gesockelte Gems inkl. Level/Value + gebrandetes Sigil,
       §3.4/§4.5); Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände**
-      (Amber/Ruby/Sapphire/Emerald/Diamond); **Kompendium** (bekannte Sigils mit Level);
-      **Runedust**, **Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite**
-      (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6);
+      (Amber/Ruby/Sapphire/Emerald/Diamond); **Sigil Codex** (bekannte Sigils mit Level);
+      **Runedust**, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite**
+      auf dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6);
       freigeschaltete Checkpoints, höchster erreichter Floor, erste-Sieg-Flags (Crystals).
 - [ ] Auslöser für ein Speichern (nach Reward? in Intervallen?).
 

@@ -361,13 +361,13 @@ höheres Item-Level-Cap). **Kein RNG**, Kosten in **Cinder** (eskalierend **1/3/
 
 ### Sigil (EN: _Sigil_)
 
-Eintrag im **Kompendium** mit **Level 1–5**, der eine **vordefinierte Implicit-Identität**, eine
+Eintrag im **Sigil Codex** mit **Level 1–5**, der eine **vordefinierte Implicit-Identität**, eine
 **Mindesttiefe** und eine **Slot(-Typ)-Bindung** trägt. Droppt bei **Elite/Boss** ab dem ersten
 Elite-Floor; ein unbekanntes Sigil wird auf **Level 1** eingeschrieben, ein bekanntes um **+1 Level**
 gehoben. **Auf Level 5 verlässt es den Drop-Pool.** Jedes Sigil ist **teamweit genau einmal aktiv**.
 Kein Bestand, kein Inventar (SPEC §4.2/§4.5).
 
-### Kompendium (EN: _Compendium_)
+### Sigil Codex
 
 Sammlung der **bekannten Sigils** mit ihrem Level; unentdeckte Einträge sind als **Silhouette**
 sichtbar. Reiner Wissensstand — **keine Ressource** (SPEC §4.5).
@@ -447,11 +447,6 @@ auf ein Legendary, Cinder + Gold). Alle drei ohne RNG.
 **Attune** (Gem aufleveln).
 Alle Aktionen kosten **Gold** (Refine und Brand zusätzlich **Cinder**) (SPEC §4.5).
 
-### Amulet
-
-Angedachter, **noch nicht spezifizierter** Sonder-Slot — Kandidat: **Prismatic-nativ**
-(„das Diamond-Item"). Bewusst **separate** spätere Runde (SPEC §4.5).
-
 ---
 
 ## Runen (Endgame)
@@ -473,41 +468,42 @@ man besitzt von jeder bekannten Rune **genau ein Exemplar** → teamweit in **h�
 **Zielmenge** (Chain, Prism), **Magnitude** (Surge), **Dauer** (Lingering). Dadurch ist jede
 Kombination definiert (SPEC §4.6).
 
-### Grimoire (EN: _Grimoire_)
+### Rune Grimoire
 
 Katalog **aller** Runen mit Wissensstand (bekannt/unbekannt) und Level; unentdeckte Einträge sind
 ab ihrer **Mindesttiefe** als **Silhouette** sichtbar. Reiner Wissensstand — **kein Bestand, kein
-Inventar** (Modellform wie das **Kompendium**). Zugleich die **Station** für **Inscribe** und
+Inventar** (Modellform wie der **Sigil Codex**). Zugleich die **Station** für **Inscribe** und
 **Etch** — kein eigener NPC (SPEC §4.6).
 
-### Reliquary (EN: _Reliquary_)
+### Talisman
 
-Behältnis für Runen, **eines pro Charakter**, enthält genau **einen Rite**. **Kein
-Ausrüstungs-Slot**: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. Freischaltung
-ausschließlich über **Masterwork** (SPEC §4.6).
+Eingraviertes Schmuckstück, **eines pro Charakter**, trägt genau **einen Rite**. **Kein
+Ausrüstungs-Slot**: kein Innate, kein Item-Level, keine Seltenheit, keine Gems; erscheint in der
+**Runen-Ansicht**, nicht in der Ausrüstungs-Ansicht. Freischaltung ausschließlich über
+**Masterwork** (SPEC §4.6).
 
 ### Rite (EN: _Rite_)
 
-Die Zeile im **Reliquary**: **Trigger + Effect + Modifier**. **Löst maximal einmal pro Runde aus**
+Die Zeile auf dem **Talisman**: **Trigger + Effect + Modifier**. **Löst maximal einmal pro Runde aus**
 (erstes qualifizierendes Event, **ohne Ausnahme**) → Rune-Stärke skaliert über das **Rune-Level**,
 nicht über die Proc-Rate. Rune-erzeugte Effekte emittieren **keine** Events (keine Rune-Ketten)
 (SPEC §4.6).
 
 ### Runedust (EN: _Runedust_)
 
-Runen-Währung. Droppt von **allen** Gegnern, sobald der **`Grimoire`**-Node freigeschaltet ist
+Runen-Währung. Droppt von **allen** Gegnern, sobald der **`Rune Grimoire`**-Node freigeschaltet ist
 (Elite/Boss-Bonus, nach Floor-Tiefe gestaffelt). Finanziert **Inscribe** und **Etch**. Abgegrenzt
 von **Cinder** (Item-Kapazität/Identität) und **Crystals** (Crucible) (SPEC §4.2/§4.6).
 
 ### Inscribe (EN: _Inscribe_)
 
-**Grimoire**-Aktion: liefert **pro Kategorie** (eigenes Rezept) eine **zufällige noch unbekannte**
+**Rune-Grimoire**-Aktion: liefert **pro Kategorie** (eigenes Rezept) eine **zufällige noch unbekannte**
 Rune dieser Kategorie aus dem nach **Mindesttiefe** gestaffelten Pool. Kosten: **Runedust + Gold**.
 Ein **Kartenstapel, kein Automat** — keine Duplikate, keine Pech-Serien (SPEC §4.6).
 
 ### Etch (EN: _Etch_)
 
-**Grimoire**-Aktion, die das **Level** einer bekannten Rune um eine Stufe bis zum Cap hebt. **Kein
+**Rune-Grimoire**-Aktion, die das **Level** einer bekannten Rune um eine Stufe bis zum Cap hebt. **Kein
 RNG**, Kosten: **Runedust + Gold**, pro Level steigend. Cap = Stand des **`Rune Mastery`**-Nodes
 (SPEC §4.6).
 

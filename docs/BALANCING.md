@@ -88,7 +88,7 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
   **unter 18** (Slot-Zahl), damit der Verteilungsdruck bleibt. Das **Gewicht unbekannter Sigils** im
   Wurf tunt die Sammel-Geschwindigkeit; **Re-Brand-Kosten** entscheiden, ob das Neuverteilen ein
   laufender Hebel oder ein Luxus ist (Ziel: laufender Hebel).
-- **Runedust:** späte Endgame-Ressource (Drop erst ab dem `Grimoire`-Node, SPEC §4.6) mit zwei
+- **Runedust:** späte Endgame-Ressource (Drop erst ab dem `Rune Grimoire`-Node, SPEC §4.6) mit zwei
   **gestaffelten** Sinks: solange das Level-Cap 1 ist, zieht **Inscribe** allen Dust (Entdeckung);
   mit steigendem `Rune Mastery`-Node übernimmt **Etch** (Investition). Beide Sinks sind **endlich**
   (17 Runen × Cap 5) — der Dust-Strom muss so liegen, dass die Entdeckungsphase nicht in einen Grind
@@ -136,7 +136,7 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
       sie die Gem-Achse als Endgame-Min-Max verdrängen.
 - [ ] **Runedust:** Drop-Kurve je Encounter-Typ ab der Freischalttiefe, **Inscribe**-Kosten je
       Kategorie und **Etch**-Kostenkurve (Level 1→5).
-- [ ] **Trigger-Verlässlichkeit:** `OnRoundStart` (100 %, kein RNG) gegen die Proc-Trigger
+- [ ] **Trigger-Verlässlichkeit:** `OnEvade` (100 %, kein RNG) gegen die Proc-Trigger
       abwägen — der deterministische Trigger darf nicht ausnahmslos die beste Wahl sein.
 
 ---

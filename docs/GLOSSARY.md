@@ -40,7 +40,36 @@ für den Spieler abspielt. Klar getrennt von der Simulation.
 
 Eine Simulations-Einheit des Kampfes: **jeder lebende Akteur** (Charaktere + Gegner) handelt
 **genau einmal**, in absteigender **Initiative**-Reihenfolge (SPEC §1.1). **Nicht** mit einem
-Render-„Tick" oder Frame verwechseln — die Runde ist eine reine Simulations-Größe.
+Render-„Tick" oder Frame verwechseln — die Runde ist eine reine Simulations-Größe. Anzeigeeinheit
+ist dagegen der **Takt**.
+
+### Takt (EN: _Beat_)
+
+**Anzeige**-Einheit des Playbacks: **ein Akteur am Zug** — die Markierung in der Zugreihenfolge
+rückt einen Eintrag weiter, im Kampf-Log erscheint **ein Block** (Grundtreffer, Multi-Hit-Kette,
+Splash, ausgelöste Counter). Grundtakt **1000 ms**; Stufen: **Pause** ab Start, **2×** pro
+vollendetem Dungeon. Betrifft ausschließlich die Anzeige, nie den Kampfausgang (SPEC §5.1).
+
+### Pending-Queue (EN: _turn queue_)
+
+Die nach der Initiative-Ordnung sortierte Liste der **noch offenen** Aktionen einer Runde; Teil
+des Kampfzustands. Ein Zug entnimmt das vorderste Element, Sterbende fallen heraus.
+**Suppression** ist die einzige Operation, die sie umsortiert (SPEC §1.1/§3.5).
+
+### Rally
+
+Crucible-Node (Level 1–5), der einen **gefallenen** Charakter beim Betreten des **nächsten
+Floors** mit einem Anteil seiner Max-Health aufstehen lässt. Ohne den Node bleibt ein besiegter
+Charakter für den **restlichen Run** besiegt. Einzige Ausnahme von „keine Heilung zwischen
+Floors" (SPEC §4.4).
+
+### Run
+
+Ein Dungeon-Durchlauf von Floor 1 bis zu Sieg, **Wipe** oder Verlassen. Health- und Tod-Zustand
+gelten nur **innerhalb** eines Runs; ein Neustart beginnt mit vollem Team. Während eines Runs ist
+**jede Optimierung gesperrt** (Punkte, Blacksmith, Jeweler, Crucible, Respec) — der Run ist eine
+versiegelte Build-Wette. Reload oder Tab-Schließen beendet ihn; committete Belohnungen bleiben
+(SPEC §4.2/§4.4/§5.4).
 
 ### Team
 
@@ -98,12 +127,22 @@ dependency-frei in `src/shared/utils/`. **Kein** `Math.random()` in Spiellogik.
 ### Seed
 
 Startwert des PRNG. Gleicher Seed + gleicher Input ⇒ exakt gleicher Kampfverlauf.
-Grundlage für Tests, Bug-Reports („Seed 12345") und spätere Replays.
+Hierarchisch abgeleitet: `saveSeed → runSeed(dungeonId, runCounter) → floorSeed(floorIndex)` mit
+**getrennten Strömen** `combat`, `init` und `loot`. Bug-Report = das Tupel
+`(saveSeed, dungeonId, runCounter, floorIndex)` (SPEC §5.3).
+
+### runCounter
+
+Monoton steigender, **beim Run-Start persistierter** Zähler, der in den `runSeed` eingeht. Bewirkt
+zweierlei: Beim **Farmen** würfelt jeder Durchlauf frisch, und **Save-Scumming ist unmöglich** —
+ein Reload liefert denselben Zähler und damit denselben Verlauf (SPEC §5.3).
 
 ### Catch-up / Aufholen
 
-Nachrechnen fehlender Runden **ohne Animation**, wenn ein minimierter/gedrosselter Tab
-wieder sichtbar wird (Page Visibility API). Abzugrenzen von **Offline-Progress**.
+Nachrechnen fehlender Takte **ohne Animation**, wenn ein minimierter/gedrosselter Tab wieder
+sichtbar wird. Tragend ist ein **Zeit-Akkumulator**; die Page Visibility API löst das Aufholen nur
+sofort aus und unterdrückt die Animation. **Deckel: 5 Minuten** real vergangener Zeit, darüber
+verfällt sie. Abzugrenzen von **Offline-Progress** (SPEC §5.2).
 
 ### Offline-Progress
 
@@ -120,10 +159,11 @@ Abstrahierter Persistenz-Adapter (`src/shared/ports/`) mit `load()` / `save()` /
 `clear()`. Aktuelle Implementierung: `localStorage`; später gegen ein Cloud-Backend
 austauschbar, ohne Spiellogik anzufassen.
 
-### Große Zahl (EN: _big number_)
+### Zahlentyp
 
-Wert, der `Number.MAX_SAFE_INTEGER` überschreiten kann; wird über **break_eternity.js**
-geführt, nie über native `number`.
+Alle Werte laufen über native `number`. Die Achsen sind gedeckelt (Level 100, Item-Level `+100`,
+kein Prestige), die Spitzenwerte bleiben mit ~10⁸–10¹⁰ weit unter `Number.MAX_SAFE_INTEGER`
+(~9×10¹⁵). Siehe ADR-0004.
 
 ### Prestige
 
@@ -141,9 +181,10 @@ Ein am Kampf beteiligter Charakter **oder** Gegner, der in einer Runde eine Akti
 ### Initiative
 
 Wert, der die Zugreihenfolge bestimmt (höchste zuerst). Charaktere: fester Stat. Gegner:
-**einmalig pro Kampf** aus einer **Initiative-Range** per PRNG gewürfelt. Bei Gleichstand
-handelt der **Gegner** zuerst. Zugleich **Ziel-Priorisierungsschlüssel** der Charaktere
-(höchste Initiative zuerst).
+**einmalig pro Kampf** aus einer **Initiative-Range** per PRNG gewürfelt. Die Reihenfolge ist eine
+**totale Ordnung**: höhere Initiative → bei Gleichstand **Gegner vor Charakter** → bei Gleichstand
+innerhalb einer Seite **niedrigerer Slot-Index** (SPEC §1.1). Zugleich
+**Ziel-Priorisierungsschlüssel** der Charaktere (höchste Initiative zuerst).
 
 ### Archetyp / Rolle (EN: _Role_)
 
@@ -173,7 +214,8 @@ Charaktereigener Baum mit mehreren **Pfaden**; enthält **Stat-Knoten** und
 
 ### Skill (EN: _Skill_)
 
-Ein per Skilltree freigeschalteter Effekt — passiver Stat-Boost **oder** Verhaltensregel/Trigger (z. B. **Mitigation**, **Suppression**, Per-Hit-Crit).
+Ein per Skilltree freigeschalteter Effekt — passiver Stat-Boost **oder** Verhaltensregel/Trigger
+(z. B. **Mitigation**, **Suppression**, die Crit-Erweiterungen).
 
 ## Charakter-Kampfmechanik
 
@@ -189,28 +231,39 @@ Chance-basierter Zusatzeffekt eines Angriffs: **Crit**, **Multi Hit**, **Splash*
 
 ### Crit (EN: _Critical Hit_)
 
-Kritischer Treffer: mit _Crit Chance_ → Schaden `× Crit Damage`.
+Kritischer Treffer: mit _Crit Chance_ → Schaden `× Crit Damage`. _Crit Damage_ ist ein
+**Gesamt-Multiplikator**, kein Aufschlag (`200 %` = `× 2,0`, neutral = `100 %`). Standardmäßig
+nur auf dem **Grundtreffer**; je ein Skilltree-Knoten erweitert ihn auf Multi-Hit- (Tempest),
+Splash- (Dominance) und Counter-Treffer (Valor).
 
 ### Multi Hit / Multi Hit Chain
 
 Zusatztreffer **auf dasselbe Ziel**: mit _Multi Hit Chance_ bis zu _Multi Hit Chain_-mal in
-Folge nachgewürfelt, endet beim ersten Fehlwurf. Jeder Zusatztreffer macht _Multi Hit Damage_.
+Folge nachgewürfelt, endet beim ersten Fehlwurf. _Multi Hit Chain_ zählt nur die **Zusatztreffer**
+(Startwert 1). Jeder Zusatztreffer macht _Multi Hit Damage_ als Anteil des **rohen
+Grundschadens** — alle Kettentreffer gleich stark.
 
 ### Splash / Splash Radius
 
 Zusatztreffer auf **Nebenziele**: mit _Splash Chance_ bis zu _Splash Radius_ weitere Gegner
-(Lane-übergreifend, gleiche Lane zuerst). _Splash Damage_ = %-Anteil des tatsächlich
-verursachten Schadens (Bulwark-Malus darin bereits enthalten).
+(Lane-übergreifend, gleiche Lane zuerst). _Splash Damage_ = %-Anteil des **rohen Grundschadens**;
+jeder Splash-Treffer erhält den **Bulwark-Malus seines eigenen Ziels**.
 
 ### Counter (EN: _Counterattack_)
 
-**Reaktiver** Gegenangriff: Wird ein Charakter getroffen, löst er mit _Counter Chance_
-**sofort** einen Angriff aus. **Geblockter** Treffer löst Counter aus, **ausgewichener**
-(Evasion) nicht.
+**Reaktiver** Gegenangriff: Wird ein Charakter getroffen, löst er mit _Counter Chance_ einen
+**Flat-Hit** auf den **auslösenden Gegner** aus — unabhängig von Frontline-Lock und Taunt, also
+der einzige Weg für Tank und Melee an die Backline. Kein Multi Hit, kein Splash (Generatoren
+lösen einander nicht aus); Crit per Valor-Knoten möglich, **Bulwark gilt**. **Geblockter**
+Treffer löst Counter aus, **ausgewichener** (Evasion) nicht. Auflösung gesammelt **nach** der
+Team-Pipeline in Slot-Reihenfolge (SPEC §1.1/§2.1).
 
-### Sustain
+### Modifikator vs. Generator (Offensiv-Muster)
 
-Flache Selbstheilung pro getroffenem Gegner.
+**Crit** ist ein **Modifikator** — es multipliziert einen Treffer, erzeugt keinen. **Multi Hit**,
+**Splash** und **Counter** sind **Generatoren** — sie erzeugen Treffer. Verbindlich:
+**Generatoren lösen einander nie aus**, und **jeder erzeugte Treffer bemisst sich am rohen
+Grundschaden vor Crit** und würfelt seinen eigenen Crit (SPEC §2.1).
 
 ## Verteidigung & Schadenspipeline
 
@@ -233,17 +286,23 @@ Binäres Ausweichen: Miss-Roll _Gegner-Accuracy_ gegen _Evasion_ → **0 Schaden
 
 ### Defense (Derived) / Toughness (Core)
 
-_Defense_ = **flacher** Schadensabzug (nach Block); ein **Derived Stat** (§3.0). _Toughness_ =
-Core-Stat, der _Defense_ speist (aus Item-Innate + Emerald-Gems).
+_Defense_ = **flacher** Schadensabzug (nach Block) mit **prozentualem Boden** — der Abzug drückt
+einen Tick nie unter einen Mindestanteil seines Wertes (Vorschlag 10 %), damit Attrition immer
+greift und Defense bis dahin immer nützlich bleibt. Ein **Derived Stat** (§3.0), wird **pro
+Gegner-Angriff** abgezogen. _Toughness_ = Core-Stat, der _Defense_ speist (aus Item-Innate +
+Emerald-Gems). (SPEC §2.3, ADR-0003)
 
 ### Barrier
 
-Temporärer Absorptionsschild, **zu Rundenbeginn** neu gesetzt, verfällt durch Neu-Setzen
-(kein Stacking). Greift **nach** Block/Defense, **vor** Health.
+Temporärer Absorptionsschild-**Pool**, **zu Rundenbeginn** auf den Barrier-Stat **zurückgesetzt**
+(kein Stacking über Runden). Der Rune-Effect `Barrier` addiert auf den Rest und verfällt ebenso.
+Greift **nach** Block/Defense, **vor** Health.
 
 ### Regeneration
 
-Passive Heilung, triggert **direkt nach der eigenen Handlung** des Akteurs.
+**Flache** passive Heilung (kein %-Anteil), triggert **einmal** direkt nach der eigenen Handlung
+des Akteurs. Bis zur Freischaltung des Rune-Systems die **einzige Heilquelle** im Spiel.
+Überheilung verfällt; besiegte Charaktere sind nicht heilbar (SPEC §2.6).
 
 ### Health (EN: _Health / HP_)
 
@@ -293,7 +352,9 @@ Menge **freigeschalteter Dungeon-Einstiege** (Dungeon-Granularität, jeweils Flo
 
 ### Wipe / Attrition
 
-**Wipe** = alle Charaktere besiegt → Dungeon verlassen (Rewards bleiben). **Attrition** = keine Heilung zwischen Floors; Health wird über eine Auto-Progression-Kette mitgeschleppt.
+**Wipe** = alle Charaktere besiegt → Dungeon verlassen (Rewards bleiben). **Attrition** = keine
+Heilung zwischen Floors; Health wird über eine Auto-Progression-Kette mitgeschleppt, und ein
+gefallener Charakter bleibt für den restlichen **Run** gefallen (Ausnahme: **Rally**).
 
 ### XP (EN: _Experience_)
 
@@ -318,7 +379,8 @@ Elite 3, Boss 10; insgesamt **351** im Spiel).
 
 Items in sechs Slots **Main Hand**, **Off Hand**, Head, Chest, Legs, Feet. **Hauptmotor** des
 Fortschritts. Ein Slot wird über den **Crucible** (Anvil Sparks) freigeschaltet; dabei entsteht die
-Basis als **`Common +1`**. **Das Item ist der Slot** — es gibt **kein Item-Inventar** und keinen
+Basis als **`Common +1`**. Die **Main Hand** ist bei allen drei Charakteren **ab Spielstart**
+freigeschaltet — sie trägt die **Damage-Range** (SPEC §3.4). **Das Item ist der Slot** — es gibt **kein Item-Inventar** und keinen
 Item-Tausch. Jedes Item trägt vier Schichten: **Basis** (+ **Innate**) + **Item-Level** +
 **Seltenheit/Sockel** + **Implicit** (per **Brand**) (SPEC §3.4).
 
@@ -420,7 +482,7 @@ Prismatic-Slot). Aufleveln (im Sockel, Seltenheit-gedeckelt) kostet gleichfarbig
 
 Die fünf **Gem-Farben**. **Amber** rollt Offensiv-**Chance** (Crit/Multi/Splash/Counter Chance),
 **Ruby** rollt Offensiv-**Damage** (Crit/Multi/Splash/Counter Damage). **Sapphire** rollt
-Defensiv-Stats (Barrier, Block Chance, Sustain, Regeneration, Evasion). **Emerald** rollt
+Defensiv-Stats (Barrier, Block Chance, Evasion, Regeneration). **Emerald** rollt
 **Core**-Stats (Might, Toughness, Vitality). **Diamond** (Prismatic, nur **Prismatic-Sockel**) trägt
 item-lokale **Meta-Multiplikatoren**. Amber/Ruby/Sapphire/Emerald sind reguläre Fodder-Farben,
 Diamond der Elite/Boss-Chase **ab Akt 2** (SPEC §3.0/§4.5).

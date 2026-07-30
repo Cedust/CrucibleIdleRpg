@@ -12,7 +12,8 @@
 >   `src/game/` (siehe [../AGENTS.md](../AGENTS.md) §4) — **nicht** hier. Diese Datei
 >   ist Prosa/Begründung, kein zweiter Quellcode.
 >
-> Große Zahlen werden über **break_eternity.js** geführt (AGENTS.md §5).
+> Alle Werte laufen über native `number` — die Achsen sind gedeckelt, die Spitzenwerte bleiben
+> weit unter `Number.MAX_SAFE_INTEGER` (AGENTS.md §5, ADR-0004).
 > Interne Doku ist **Deutsch** (AGENTS.md §1).
 
 ---
@@ -46,6 +47,18 @@ Charaktere** (Struktur der Formeln: SPEC §2; Rohwerte: `src/game/`):
 Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren rein über
 **Akt/Dungeon/Floor** (kein separates „Gegnerlevel").
 
+**Leitplanke — Formationsgröße gegen Defense.** Defense ist ein flacher Abzug **pro
+Gegner-Angriff** (SPEC §2.3): Bei sechs Gegnern greift sie sechsmal pro Runde, bei zwei nur
+zweimal. Viele schwache Gegner werden von Defense also stark gekontert, wenige starke gehen an
+ihr vorbei. Beim Entwerfen der Formationen darauf achten, dass „sechs Gegner" nicht versehentlich
+leichter wird als „zwei Gegner".
+
+**Kurven als Tabellen, nicht als Laufzeit-Formeln.** Die exponentiellen Kurven (Item-Level,
+Gegner-Health) werden als **vorberechnete Werte je Stufe** im Content abgelegt statt zur Laufzeit
+über `Math.pow` gerechnet. `Math.pow` ist zwischen JS-Engines nicht bit-identisch garantiert und
+würde das Determinismus-Versprechen (SPEC §5.3) über Browser hinweg aufweichen. Nebeneffekt: die
+Kurven sind im Editor lesbar und diffbar.
+
 ## 3. Wachstumsquellen (woher die Zahlen kommen)
 
 Die drei zentralen Werte **Attack, Defense, Health** sind **Derived Stats** aus drei Quellen mit je
@@ -58,6 +71,12 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
   **Toughness/Vitality** (Core-Stat aus Innate + Emerald-Gems) + optional **Crucible/Smelting Flames**.
 - **Offensiv-Multiplikatoren** (Crit/Multi/Splash/Counter): **Skilltree-Zweige** (§3.2) +
   **Amber**/**Ruby**-Gems (§4.5) — Chance soft-capped bei 100 %, Damage ohne Soft-Cap (SPEC §3.1/§3.2).
+  Jeder erzeugte Treffer bemisst sich am **rohen Grundschaden** und würfelt seinen eigenen Crit
+  (SPEC §2.1) — die Zweige addieren sich also, statt sich gegenseitig zu multiplizieren. Die
+  Multiplikation findet **innerhalb** eines Zweigs statt (z. B. Multi Hit Chance × Chain).
+- **Heilung:** **Regeneration** ist die **einzige** Heilquelle, bis das Rune-System freigeschaltet
+  ist (SPEC §2.6). Ihre Kurve trägt damit allein, wie viel Attrition ein Run verzeiht — bei
+  flachem Wert und linear wachsender Health muss sie über Sapphire-Gems mitwachsen.
 - **Feinschliff:** Skilltree-Knoten (Verhalten/Trigger) und Crucible-Trees.
 
 > **Leitplanke:** Ausrüstung = Hauptmotor, Level/Crucible = garantiertes Grundgerüst. Beim
@@ -75,6 +94,8 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
 - **XP:** Pool pro Floor, Basisanteil je Charakter + individueller Rest (Schlüssel offen —
   Kandidat: verursachter Schaden).
 - **Gems (Amber/Ruby/Sapphire/Emerald/Diamond):** Loot-Hauptressource _und_ Level-Fodder (SPEC §4.5).
+  Pool-Größen: Amber 4, Ruby 4, Sapphire 4, Emerald 3 → die Trefferchance auf den Ziel-Affix beim
+  Inlay liegt für drei der vier Fodder-Farben bei 25 %.
   Der Drop-Strom teilt sich auf **vier** Fodder-Farben (Amber/Ruby/Sapphire/Emerald) — Drop-Raten je
   Floor-Tiefe und die **Aufleveln-Fodder-Kurve** (jedes Gem-Level braucht mehr) müssen so liegen, dass
   keine Farbe zum Grind-Wall wird (Leitplanke §1). Diamond bewusst knapp (Elite/Boss ab Akt 2) und
@@ -104,25 +125,39 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
 - [ ] Gegner-Kurven pro Akt/Dungeon/Floor (Health exp., Attack/Accuracy linear) + Elite/Boss-
       Multiplikatoren.
 - [ ] Bulwark-Prozentwerte (Tank/Melee-Beitrag) und Mitigation-`m` je Node-Stufe.
+- [ ] **Mindestanteil des Defense-Bodens** (SPEC §2.3, Schritt 4; Vorschlag 10 %): Der Wert
+      entscheidet, wie stark Defense maximal wirkt (Boden 10 % ⇒ höchstens 90 % Reduktion) und
+      damit, ob Attrition in jedem Zahlenregime greift. Zusammen mit der Formations-Leitplanke
+      (§2) prüfen.
+- [ ] **Rally-Anteil je Node-Stufe** (SPEC §4.4): Prozent der Max-Health beim Aufstehen an der
+      Floor-Grenze. Klein halten, sonst entsteht ein Sprung, bei dem Sterben besser ist als
+      knappes Überleben. Beachten: Die Floor-Kurven müssen **mit und ohne** Rally spielbar sein
+      (gleiche Lage wie bei Mitigation).
+- [ ] **Regeneration-Kurve** (flacher Wert): einzige Heilquelle vor dem Endgame (§3), muss gegen
+      linear wachsende Health über Sapphire-Gems mitwachsen.
 - [ ] XP-Verteilungsschlüssel; Gold-Drop- und Respec-Kosten-Kurven.
-- [ ] Waffen-Damage-Range-Breiten je Seltenheit.
+- [ ] Waffen-Damage-Range-Breiten je Seltenheit (einmal pro Angriff gewürfelt, SPEC §2.1).
+- [ ] **Multi-Hit-Werte:** _Multi Hit Damage_ als Anteil des rohen Grundschadens, _Multi Hit
+      Chance_ und die Chain-Stufen. Chance und Chain multiplizieren sich (SPEC §3.2) — die
+      Erwartungswerte über den Zweig hinweg durchrechnen, damit ein voll ausgebautes Tempest
+      nicht die anderen drei Zweige entwertet.
+- [ ] **Grundtakt und 2×** (SPEC §5.1): 1000 ms pro Akteur ist als Lesegeschwindigkeit gesetzt,
+      aber der klassische Playtest-Regler — gegen die Dauer eines 20-Floor-Runs prüfen.
 - [ ] **Item-Level-Kurve (Cap +100):** Innate-Value je `+n` (Might exp., Toughness/Vitality/Initiative
       linear?), Verteilung der 100 Stufen.
 - [ ] **Cinder-Ökonomie (vollständig durchrechnen):** Refine-Kette **1/3/6/10** gegen den Gesamt-Sink
       (18 Slots × 20 = **360** + Brand + Re-Brand). Elite-Cinder-Drop-Chance als **monoton mit
       globaler Floor-Tiefe** steigende Kurve (kein Akt-Reset; Boss stets 100 %/Kill) plus die
       **Erhöhung in Akt 2 & 3**. Brand- und Re-Brand-Kosten festlegen.
-- [ ] **break_eternity.js nötig?** Da alle Achsen bei 100 bzw. `+100` cappen: prüfen, ob die steilste
-      Kombination (Item-Level `+100` × Multiplikatoren) `Number.MAX_SAFE_INTEGER` überhaupt noch reißt —
-      falls nicht, kann die Lib entfallen (AGENTS.md §5).
 - [ ] **Item-Level-Caps je Seltenheit** (+20/+40/+60/+80/+100) und **Sockel-Zahlen** (0/1/2/3/4)
       gegen die Temper-Gold-Kurve prüfen: Liegen die Landmarken (20/40/50/60/80/100) angenehm im
       Spielverlauf, oder verschiebt die Exponentialkurve die späten Stufen zu weit nach hinten?
 - [ ] **Sigils:** Pool-Größe (< 18), **Mindesttiefen** je Sigil, Drop-Chance je Encounter-Typ,
       **Gewicht unbekannter Sigils** im Wurf, **Level-Skalierung des Implicits** (1→5).
 - [ ] **Gem-Value-Ranges** je Pool-Affix + Range-Anhebung pro Gem-Level (relative Position bleibt).
-- [ ] **Offensiv-Gem-Targeting:** Amber (4 Chance) + Ruby (4 Damage) → je 25 % Chance auf den
-      Ziel-Stat beim Sockeln; Reroll-Kosten (Gold) so tunen, dass Ziel-Treffer erschwinglich bleibt.
+- [ ] **Gem-Targeting:** Amber (4 Chance), Ruby (4 Damage) und Sapphire (4 Defensive) → je 25 %
+      Chance auf den Ziel-Stat beim Sockeln, Emerald (3 Core) → 33 %; Reroll-Kosten (Gold) so tunen,
+      dass Ziel-Treffer erschwinglich bleibt.
 - [ ] **Gem-Drop-Raten** & Aufleveln-Fodder-Kurve (Grind-Wall-Vermeidung); Diamond-Drop-Rate.
 - [ ] **Prismatic/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (Attack-exp
       vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als Sicherheitsgurt).
@@ -136,8 +171,10 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
       sie die Gem-Achse als Endgame-Min-Max verdrängen.
 - [ ] **Runedust:** Drop-Kurve je Encounter-Typ ab der Freischalttiefe, **Inscribe**-Kosten je
       Kategorie und **Etch**-Kostenkurve (Level 1→5).
-- [ ] **Trigger-Verlässlichkeit:** `OnEvade` (100 %, kein RNG) gegen die Proc-Trigger
-      abwägen — der deterministische Trigger darf nicht ausnahmslos die beste Wahl sein.
+- [ ] **Trigger-Verlässlichkeit:** Alle sechs Trigger hängen an einer Chance (`OnCrit`,
+      `OnMultiHit`, `OnSplash`, `OnCounter` an Offensiv-Stats; `OnBlock`, `OnEvade` an
+      Defensiv-Stats) — es gibt keinen deterministischen. Die Auslöse-Häufigkeiten so gegeneinander
+      abwägen, dass kein Trigger unabhängig vom Build die beste Wahl ist.
 
 ---
 

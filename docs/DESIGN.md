@@ -68,17 +68,23 @@ durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
 **Wodurch entsteht Spannung, obwohl der Kampf automatisch läuft?**
 
 - **Attrition statt Einzelkampf:** Es gibt **keine Heilung zwischen Floors** (SPEC §4.4). Ein
-  Dungeon ist ein Überlebens-Run — jeder Floor knabbert an der Health. Die Frage ist nicht
-  „gewinne ich diesen Kampf?", sondern „**wie tief trägt mein Build, bevor das Team fällt?**".
+  Dungeon ist ein Überlebens-Run — jeder Floor knabbert an der Health, und ein gefallener
+  Charakter bleibt für den restlichen Run gefallen. Die Frage ist nicht „gewinne ich diesen
+  Kampf?", sondern „**wie tief trägt mein Build, bevor das Team fällt?**".
+- **Der Run ist eine versiegelte Wette:** Während eines Dungeons lässt sich nichts optimieren
+  (SPEC §4.4) — Punkte und Drops laufen sichtbar auf, anfassen darf man sie erst danach. Der
+  Build, mit dem man eintritt, ist der Build, mit dem man es zu Ende bringt.
 - **Build-Entscheidung als eigentliches Gameplay:** Die Spannung liegt **vor** dem Kampf, in
-  der Optimierung (Offense-Attribute vs. Defensiv-/Sustain-Ausbau, Zielprioritäten über
+  der Optimierung (Offense-Attribute vs. Defensiv-Ausbau, Zielprioritäten über
   Formation/Taunt/Bulwark, Tank-Mitigation als Power-Spike).
 - **Wipe & Checkpoint:** Ein Wipe wirft auf den Dungeon-/Akt-Checkpoint zurück (Rewards
   bleiben) — ein sanfter, kein bestrafender Rückschlag, der zum Nachbessern einlädt.
 
 **Lesbarkeit einer Runde:** Klare, sichtbare Zug-Reihenfolge (Initiative), erkennbare Procs
 (Crit/Multi/Splash/Counter) und ein verständlicher Schadensfluss (Team-Verteilung → Block →
-Defense → Barrier → Health) — auch bei großen Zahlen.
+Defense → Barrier → Health) — auch bei großen Zahlen. Getaktet wird pro **Akteur**, nicht pro
+Runde: ein Zug, ein Log-Block, eine Sekunde Lesezeit (SPEC §5.1). **Pause** gibt es von Anfang
+an; **2×** verdient man sich pro Dungeon, weil dieselben Floors später gefarmt werden.
 
 > Prestige/Reset ist **bewusst kein Ziel** (festes Team; siehe §5 und SPEC §4.7).
 

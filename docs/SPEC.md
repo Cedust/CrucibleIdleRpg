@@ -37,11 +37,25 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
 - **Charaktere** haben einen festen Initiative-Wert (Stat, §3).
 - **Gegner** haben eine **Initiative-Range**; ihr konkreter Wert wird **einmalig zu
   Kampfbeginn** per PRNG innerhalb der Range gewürfelt und bleibt für den restlichen
-  Kampf fix.
-- **Bei Gleichstand handelt der Gegner zuerst.**
-- Die Reihenfolge ist damit für den gesamten Kampf stabil (nur unterbrochen durch
-  ausscheidende Akteure sowie durch **Suppression**, §3.5, die die Position eines Gegners
-  **innerhalb der laufenden Runde** nach hinten verschiebt).
+  Kampf fix. Gewürfelt wird in **Formations-Index-Reihenfolge** (Frontline 1–3, dann
+  Backline 1–3), damit die PRNG-Sequenz festliegt.
+- Die Reihenfolge ist eine **totale Ordnung** in drei Stufen:
+  1. **höhere Initiative** zuerst,
+  2. bei Gleichstand **Gegner vor Charakter**,
+  3. bei Gleichstand innerhalb einer Seite **niedrigerer Slot-Index** zuerst — Charaktere in
+     Team-Reihenfolge (Korvin → Rhaya → Quinn, §3), Gegner in Formations-Index-Reihenfolge.
+- Die Ordnung verbraucht **keinen** PRNG-Zug und ist damit für jeden Zustand eindeutig
+  bestimmt.
+
+**Zugreihenfolge als Pending-Queue:**
+
+- Zu Rundenbeginn wird aus allen **lebenden** Akteuren eine nach obiger Ordnung sortierte
+  Liste gebildet. Sie ist Teil des Kampfzustands.
+- Ein Zug entnimmt das **vorderste** Element. Die Queue enthält damit stets nur noch
+  **offene** Aktionen.
+- Stirbt ein Akteur, wird er aus der Queue entfernt — seine Aktion entfällt.
+- **Suppression** (§3.5) ist die einzige Operation, die die Queue umsortiert: Sie verschiebt
+  die noch offene Aktion eines Gegners **innerhalb der laufenden Runde** nach hinten.
 
 **Ablauf einer Runde:**
 
@@ -53,7 +67,9 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
      der Offensiv-Procs (§2.1). **Direkt nach der eigenen Handlung** heilt die
      **Regeneration** den Charakter.
    - **Gegner am Zug:** ein Angriff gegen das **gesamte Team** (Team-weit, verteilt über
-     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele.
+     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele. **Nachdem** die Pipeline
+     für **alle** Charaktere abgeschlossen ist, lösen die **Counter** aus (§2.1) — in
+     **Slot-Reihenfolge** (Korvin → Rhaya → Quinn), nicht verschachtelt in die Verteilung.
    - **Suppression** (Quinns Signatur-Skill, §3.5) kann die noch offene Aktion eines Gegners
      **innerhalb der Runde nach hinten** verschieben — maximal bis an das Rundenende. Jeder
      lebende Gegner handelt weiterhin **genau einmal** pro Runde; eine Aktion entfällt
@@ -114,31 +130,72 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
 
 ### 2.1 Charakter-Zug (ausgehender Schaden)
 
-Ein Charakter macht pro Zug **einen Basisangriff**. Reihenfolge der Procs:
+Ein Charakter macht pro Zug **einen Basisangriff**.
 
-1. **Basisschaden**
-   `Schaden = Attack × Waffen-Damage-Range` — die Damage-Range ist ein pro Treffer per
-   **PRNG** gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %).
-2. **Crit** — mit _Crit Chance_ wird auf einen kritischen Treffer geprüft; bei Erfolg
-   `× Crit Damage`-Multiplikator.
+**Grundregel — Modifikator vs. Generator.** Die vier Offensiv-Muster teilen sich in zwei Arten:
+
+| Muster        | Art             | Wirkung                                     |
+| ------------- | --------------- | ------------------------------------------- |
+| **Crit**      | **Modifikator** | multipliziert einen Treffer, erzeugt keinen |
+| **Multi Hit** | **Generator**   | erzeugt Treffer auf demselben Ziel          |
+| **Splash**    | **Generator**   | erzeugt Treffer auf Nebenzielen             |
+| **Counter**   | **Generator**   | erzeugt Treffer reaktiv                     |
+
+Daraus folgen zwei verbindliche Regeln:
+
+- **Generatoren lösen einander nie aus.** Ein Multi-Hit-Treffer splasht nicht, ein
+  Splash-Treffer kettet nicht, ein Counter tut keins von beidem. Die Treffererzeugung ist damit
+  ein Baum **fester Tiefe**.
+- **Jeder erzeugte Treffer bemisst sich am rohen Grundschaden (vor Crit)** und würfelt
+  **seinen eigenen** Crit-Wurf, sofern der zugehörige Skilltree-Knoten freigeschaltet ist
+  (§3.2). Crit wird dadurch pro Treffer **genau einmal** gezählt; es gibt keine Vererbung von
+  Multiplikatoren zwischen Treffern.
+
+**Ablauf eines Zuges:**
+
+1. **Roher Grundschaden**
+   `Grundschaden = Attack × Waffen-Damage-Range` — die Damage-Range ist ein **einmal pro
+   Angriff** per **PRNG** gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %). Alle
+   erzeugten Treffer bemessen sich an diesem einen Wert.
+2. **Crit (Grundtreffer)** — mit _Crit Chance_ wird geprüft; bei Erfolg `× Crit Damage`.
+   _Crit Damage_ ist ein **Gesamt-Multiplikator**, kein Aufschlag: `200 %` bedeutet `× 2,0`,
+   der neutrale Wert ist `100 %`.
 3. **Multi Hit** — mit _Multi Hit Chance_ wird auf einen Zusatztreffer **auf dasselbe Ziel**
    geprüft; bei Erfolg erneut, bis zu **_Multi Hit Chain_-mal in Folge**, endet beim ersten
-   Fehlwurf. Jeder Zusatztreffer verursacht _Multi Hit Damage_ (Anteil des Trefferschadens).
+   Fehlwurf. _Multi Hit Chain_ zählt ausschließlich die **Zusatztreffer** (Startwert **1**).
+   Jeder Zusatztreffer verursacht _Multi Hit Damage_ als Anteil des **rohen Grundschadens** —
+   alle Kettentreffer sind **gleich stark** — und würfelt seinen eigenen Crit.
 4. **Splash** — mit _Splash Chance_ trifft der Angriff zusätzlich bis zu _Splash Radius_
-   **Nebenziele**. _Splash Damage_ ist ein **prozentualer Anteil des tatsächlich verursachten
-   Schadens** (Bulwark-Malus ist darin bereits enthalten und wird so indirekt vererbt).
-   Auswahl der Nebenziele: **gleiche Lane zuerst**, dann reguläre Priorisierung (§1.2, höchste
-   Initiative zuerst).
-5. **Counter** — **rein reaktiv**: Wird ein Charakter selbst getroffen, löst er mit
-   _Counter Chance_ **sofort** (außerhalb der Initiative-Reihenfolge) einen Gegenangriff mit
-   _Counter Damage_ aus. Ein **geblockter** Treffer ist ein Treffer → löst Counter aus; ein
-   **ausgewichener** (Evasion) Treffer nicht.
+   **Nebenziele**. _Splash Damage_ ist ein Anteil des **rohen Grundschadens**; jeder
+   Splash-Treffer würfelt seinen eigenen Crit. Auswahl der Nebenziele: **gleiche Lane zuerst**,
+   dann reguläre Priorisierung (§1.2, höchste Initiative zuerst).
+5. **Counter** — **rein reaktiv** und kein Teil des eigenen Zuges: Wird ein Charakter
+   getroffen, löst er mit _Counter Chance_ einen Gegenangriff mit _Counter Damage_ aus (Anteil
+   des rohen Grundschadens, eigener Crit-Wurf). Details unten.
 
-- **Per-Hit-Crit (optionaler Skilltree-Knoten):** Standardmäßig wird der Crit-Wurf einmal auf
-  den Grundtreffer angewandt. Ein freischaltbarer Skill-Knoten lässt **jeden einzelnen Hit**
-  (Grund-, Multi-, Splash-Treffer) separat auf Crit prüfen.
-- **Sustain:** Ein Charakter mit _Sustain_ heilt sich **pro getroffenem Gegner** um seinen Sustain-Wert.
-- **Regeneration:** heilt den Charakter **direkt nach dessen eigener Handlung** (§1.1).
+**Bulwark wird pro Treffer und Ziel angewandt** (§2.4) — jeder Grund-, Multi-, Splash- und
+Counter-Treffer erhält den Malus **seines eigenen Ziels**.
+
+**PRNG-Zugreihenfolge (verbindlich, §2.5):** `Damage-Range` → `Crit (Grundtreffer)` → je
+Kettenstufe `Multi Hit Chance` → `Crit (Multi Hit)` (Abbruch beim ersten Fehlwurf) →
+`Splash Chance` → je Nebenziel `Crit (Splash)`.
+
+**Counter im Detail:**
+
+- **Ziel:** der **auslösende Gegner** — unabhängig von Frontline-Lock und Taunt (§1.2). Der
+  Counter ist damit der einzige Weg für Tank und Melee, die Backline zu erreichen.
+- **Schaden:** ein **Flat-Hit** (`roher Grundschaden × Counter Damage`) — **kein** Multi Hit,
+  **kein** Splash, da Generatoren einander nicht auslösen. Crit ist per Valor-Knoten möglich.
+- **Bulwark gilt** — der Counter ignoriert die Deckung nicht.
+- **Auslösung:** Ein **geblockter** Treffer ist ein Treffer → löst Counter aus; ein
+  **ausgewichener** (Evasion) Treffer nicht.
+- **Zeitpunkt:** gesammelt **nach** Abschluss der Team-Pipeline in **Slot-Reihenfolge** (§1.1),
+  damit ein Counter die noch laufende Schadensverteilung nicht beeinflusst.
+- Eine Counter-Rekursion ist strukturell unmöglich: Nur Charaktere countern, und nur Gegner
+  verursachen Schaden an Charakteren.
+
+**Regeneration:** heilt den Charakter **direkt nach dessen eigener Handlung** (§1.1); einmal
+pro Handlung, unabhängig von der Trefferzahl. Grenzen der Heilung: §2.6.
 
 ### 2.2 Treffermodell
 
@@ -149,7 +206,11 @@ Ein Charakter macht pro Zug **einen Basisangriff**. Reihenfolge der Procs:
 ### 2.3 Eingehender Schaden (Schadenspipeline)
 
 Ein einzelner Gegner-Angriff der Stärke `S` trifft das **ganze Team** und durchläuft je
-Charakter folgende Pipeline (Reihenfolge verbindlich):
+Charakter folgende Pipeline (Reihenfolge verbindlich).
+
+**`S` = Attack des Gegners** — flat, ohne Streuung. Der Zufall auf der eingehenden Seite liegt bei
+Evasion (Schritt 2) und Block (Schritt 3). `S` ist ein **team-weiter** Schwung: Ein sterbender
+Charakter **erhöht** den Tick der Überlebenden.
 
 1. **Basis-Verteilung.** `S` wird gleichmäßig auf die **lebenden** Charaktere verteilt:
    `Tick = S / (#lebende Charaktere)`.
@@ -165,8 +226,21 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
    Reduktion um einen festen %-Wert; **nicht** all-or-nothing). Ein geblockter Treffer bleibt
    ein Treffer → **löst Counter aus**.
 4. **Defense** (pro Charakter). **Flacher** Abzug (_Defense_ ist ein Derived Stat, gespeist u. a.
-   aus _Toughness_, §3.0). Block wirkt **vor** Defense: das % greift auf den rohen Schwung, die
-   flache Rüstung zieht danach fix ab.
+   aus _Toughness_, §3.0) mit **prozentualer Untergrenze**:
+
+   ```
+   nachDefense = max(nachBlock × Mindestanteil, nachBlock − Defense)
+   ```
+
+   Der **Mindestanteil** (Vorschlag 10 %, Wert = Balancing) verhindert, dass Defense den Schaden
+   je auf 0 drückt — Attrition (§4.4) bleibt in jedem Zahlenregime wirksam, und Defense bleibt
+   umgekehrt bis zur Untergrenze immer nützlich. Block wirkt **vor** Defense: das % greift auf
+   den rohen Schwung, die flache Rüstung zieht danach ab.
+
+   Die Pipeline läuft **pro Gegner-Angriff**: Defense wird so oft abgezogen, wie Gegner in der
+   Runde handeln. Formationen aus vielen schwachen Gegnern werden dadurch stark von Defense
+   gekontert, Formationen aus wenigen starken gehen an ihr vorbei (Leitplanke: BALANCING).
+
 5. **Barrier** (pro Charakter). Absorbiert den verbleibenden (bereits abgemilderten) Schaden,
    bevor Health reduziert wird.
 6. **Health** (pro Charakter). Wird um den Restschaden reduziert.
@@ -178,6 +252,8 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 - Der Malus ist **additiv pro Frontline-Gegnertyp** (Tank trägt mehr bei als Melee). Konkrete
   Prozentwerte = Balancing (`src/game/`, BALANCING §). Ein Cap ist bei den vorgesehenen
   Werten nicht nötig.
+- Der Malus wird **pro Treffer und Ziel** angewandt (§2.1) — jeder Grund-, Multi-, Splash- und
+  Counter-Treffer bekommt den Malus des Gegners, den er trifft.
 - Fällt die Frontline vollständig, entfällt der Bulwark-Malus.
 - **Sunder** (Rhayas Signatur-Skill, §3.5) baut den Bulwark-Beitrag einzelner
   Frontline-Gegner **während des Kampfes** ab (siehe dort).
@@ -186,12 +262,30 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
 
 - **Aller Zufall** in diesen Formeln (Treffer, Crit, Multi Hit, Splash, Counter,
   Damage-Range, Gegner-Initiative) läuft über den **seedbaren PRNG** — **kein**
-  `Math.random()` (AGENTS.md §5, §14).
-- Werte, die `Number.MAX_SAFE_INTEGER` überschreiten können (Schaden, Health, Ressourcen),
-  werden über **break_eternity.js** geführt, nicht über native `number` (AGENTS.md §5).
+  `Math.random()` (AGENTS.md §5, §14). Die **Ziehreihenfolge** ist Teil der Spezifikation
+  (§2.1); Kampf, Gegner-Initiative und Loot laufen über **getrennte Ströme** (§5).
+- Alle Werte laufen über native `number`. Die Achsen sind gedeckelt (Level 100, Item-Level
+  `+100`, kein Prestige), die Spitzenwerte bleiben weit unter `Number.MAX_SAFE_INTEGER`
+  (AGENTS.md §5).
 - Die Engine emittiert **Kampf-Events** (Crit, Multi Hit, Splash, Counter, Block, Rundenbeginn, …)
   in einer **deterministisch festen Reihenfolge**. Sie sind die Anbindung der **Rune-Trigger**
-  (§4.6) und unterliegen denselben Determinismus-Regeln wie der übrige Kampf.
+  (§4.6) und die Grundlage des Playbacks (§5) und unterliegen denselben Determinismus-Regeln
+  wie der übrige Kampf.
+
+### 2.6 Heilung — Grenzen und Auslösung
+
+Heilquellen sind **Regeneration** (Stat, §3.0) und im Endgame der Rune-Effect `Heal` (§4.6).
+
+- **Obergrenze:** Heilung nie über die maximale Health hinaus; **Überheilung verfällt** ohne
+  Ersatzeffekt.
+- **Besiegte Charaktere sind nicht heilbar** — auch nicht durch einen team-weiten Rune-Heal.
+  Aufstehen geschieht ausschließlich per **Rally** an der Floor-Grenze (§4.4).
+- **Regeneration ist ein flacher Wert**, kein Anteil der Max-Health, und triggert **einmal**
+  pro eigener Handlung (§1.1).
+- **Barrier** ist ein Pool: Der Rune-Effect `Barrier` **addiert** auf den vorhandenen Rest.
+  Zu Rundenbeginn wird der Pool auf den Barrier-Stat **zurückgesetzt** (nicht aufaddiert),
+  Rune-Barrier verfällt also ebenfalls (§1.1).
+- **Zwischen Floors wird nicht geheilt** (§4.4).
 
 ---
 
@@ -234,7 +328,7 @@ Jeder Charakter hat Stats in folgenden Kategorien:
 | **Core**      | Might, Toughness, Vitality                                                                                                 |
 | **Derived**   | Attack, Defense, Health                                                                                                    |
 | **Offensive** | Crit Chance, Crit Damage, Multi Hit Chance, Multi Hit Damage, Splash Chance, Splash Damage, Counter Chance, Counter Damage |
-| **Defensive** | Barrier, Block Chance, Evasion, Sustain, Regeneration                                                                      |
+| **Defensive** | Barrier, Block Chance, Evasion, Regeneration                                                                               |
 | **Utility**   | Initiative, Multi Hit Chain, Splash Radius                                                                                 |
 
 - **Core (Primär):** _Might_ speist _Attack_, _Toughness_ speist _Defense_, _Vitality_ speist
@@ -246,8 +340,8 @@ Jeder Charakter hat Stats in folgenden Kategorien:
   Wirkung siehe §2.1. Die vier Paare sind an die vier **Skilltree-Zweige** gekoppelt (§3.2).
 - **Defensive:** _Barrier_ = temporärer, pro Runde neu gesetzter Absorptionsschild; _Block Chance_
   = partielle Reduktion (§2.3, Schritt 3); _Evasion_ = Ausweichchance gegen Accuracy (§2.3,
-  Schritt 2); _Sustain_ = flache Heilung beim Anrichten von Schaden; _Regeneration_ = Heilung nach
-  eigener Handlung.
+  Schritt 2); _Regeneration_ = flache Heilung nach eigener Handlung (§2.6) und bis zur
+  Freischaltung des Rune-Systems (§4.6) die **einzige Heilquelle** im Spiel.
 - **Utility:** _Initiative_ = Zugreihenfolge; _Multi Hit Chain_ = maximale Multi-Hit-Kettenlänge;
   _Splash Radius_ = Anzahl Nebenziele (Lane-übergreifend).
 
@@ -292,7 +386,23 @@ besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4
   | **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage                       |
 
 - Jeder Zweig enthält **Stat-Knoten** (die gekoppelten Werte-Boosts) und
-  **Verhaltens-Knoten** (z. B. **Per-Hit-Crit**, Chain-/Radius-Erweiterungen).
+  **Verhaltens-Knoten** (Chain-/Radius-Erweiterungen und die Crit-Erweiterungen unten).
+- **Crit-Erweiterungen.** Standardmäßig wird der Crit-Wurf nur auf den **Grundtreffer**
+  angewandt. Je ein Knoten erweitert ihn auf eine Trefferklasse — und zwar im Zweig des
+  **Generators**, nicht in Finesse:
+
+  | Knoten                           | Zweig         |
+  | -------------------------------- | ------------- |
+  | Multi-Hit-Treffer können critten | **Tempest**   |
+  | Splash-Treffer können critten    | **Dominance** |
+  | Counter-Treffer können critten   | **Valor**     |
+
+  Damit zieht jeder Zweig aus eigener Kraft zu Finesse hin (der Knoten lohnt nur mit
+  investierter Crit Chance / Crit Damage), statt Finesse für alle Builds zur Pflicht zu machen.
+
+- **Innerhalb eines Zweigs multiplizieren sich die Knoten**, statt sich zu addieren: In Tempest
+  ist ein Chain-Knoten bei niedriger _Multi Hit Chance_ nahezu wertlos und wird erst mit hoher
+  Chance stark — daraus entsteht eine Reihenfolge-Entscheidung im Zweig (erst Chance, dann Chain).
 - **Chance**-Stats haben einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage**-Stats
   haben **keinen Soft-Cap** (Zuwachs verpufft nie) → ein Zweig wird nie wertlos. Die gekoppelten
   Stats sind selbst **Multiplikatoren** auf den Base-Schaden (skalierungsstabil).
@@ -313,6 +423,9 @@ besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4
 - Jeder Charakter trägt Ausrüstung in **sechs Slots**. Ein Slot wird über den **Crucible**
   (Anvil Sparks, §4.3) gegen **Crystals** freigeschaltet; dabei entsteht die rollenspezifische
   **Basis** als **`Common +1`** und bleibt dem Slot für das ganze Spiel erhalten.
+- **Die Main Hand ist bei allen drei Charakteren ab Spielstart freigeschaltet** (ebenfalls als
+  `Common +1`) — sie trägt die **Damage-Range** und damit den definierten Grundschaden (§2.1).
+  Die übrigen fünf Slots sowie **Blacksmith** und **Jeweler** sind Anvil-Sparks-Unlocks.
 - Jeder Slot hat einen **Innate-Affix** — einen festen Basis-Stat, der mit dem **Item-Level**
   skaliert (§4.5):
 
@@ -397,17 +510,29 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 #### Suppression (Quinn, Ranged) — Zugverschiebung
 
 - Quinns Treffer verschiebt die **noch offene Aktion** des getroffenen Gegners um `L` Plätze
-  **nach hinten** in der Initiative-Reihenfolge der **laufenden Runde** (`L` = Node-Level 1–5,
-  ein Slot pro Level).
-- **Verschiebung:** `Delay = min(L, verbleibende Slots bis Rundenende)` — die Aktion rutscht
-  maximal an das Rundenende und **verfällt nie**. **Kein Übertrag** in die nächste Runde. Steht
-  das Ziel bereits als Letztes oder hat es in dieser Runde schon gehandelt, ist der Delay `0`.
-- **Cap: pro Runde und Ziel maximal `L` Slots Gesamtverschiebung.** Der Delay wird pro Treffer
-  ab der **aktuellen** Position neu berechnet, nicht addiert → ein zweiter Treffer auf dasselbe
-  Ziel in derselben Runde verschiebt um `0` (innerhalb der Runde idempotent).
-- **Multi Hit** (§2.1) fällt unter dasselbe Cap: der erste Treffer verschiebt, die weiteren um
-  `0`. **Splash**-Nebenziele werden **nicht** verschoben — Suppression wirkt ausschließlich auf
-  das **primäre Ziel**.
+  **nach hinten** in der **Pending-Queue** der laufenden Runde (§1.1; `L` = Node-Level 1–5,
+  ein Platz pro Level).
+- **Operation** auf der Pending-Queue — `L` zählt in **offenen** Einträgen:
+
+  ```
+  idx = Position des Ziels in der Pending-Queue
+  Queue.remove(idx)
+  Queue.insert(min(idx + L, Queue.length))
+  ```
+
+  Die Aktion rutscht damit maximal an das Rundenende und **verfällt nie**. **Kein Übertrag** in
+  die nächste Runde. Steht das Ziel bereits als Letztes oder hat es in dieser Runde schon
+  gehandelt, ist die Verschiebung `0`.
+
+- **Cap: ein Gegner kann pro Runde höchstens einmal supprimiert werden** (Flag pro Ziel und
+  Runde). Damit ist auch **Multi Hit** (§2.1) abgedeckt — der erste Treffer verschiebt, alle
+  weiteren um `0`. **Splash**-Nebenziele werden **nicht** verschoben; Suppression wirkt
+  ausschließlich auf das **primäre Ziel**.
+- **Counter** (§2.1) suppresst strukturell nie: Ein Counter trifft immer einen Gegner, der
+  gerade gehandelt hat und damit nicht mehr in der Pending-Queue steht.
+- **Zeitpunkt:** nach dem vollständigen Angriff (Grundtreffer, Multi-Hit-Kette, Splash) — sofern
+  das Primärziel noch **lebt**, noch **nicht gehandelt** hat und in dieser Runde noch **nicht
+  supprimiert** wurde.
 - Wirkt nur auf **Gegner**; die Reihenfolge der eigenen Charaktere bleibt unberührt.
 - Quinn umgeht den Taunt und trifft die **Backline von Beginn an** (§1.2) → sie verschiebt
   gezielt den gefährlichsten Ranged-Gegner (höchste Initiative, handelt zuerst) hinter Korvin
@@ -440,6 +565,10 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 - Abgeschlossene Dungeons können jederzeit **wiederholt** werden (Farmen von XP/Gold).
 
 ### 4.2 Belohnungen aus einem Sieg
+
+**Belohnungen werden pro Floor-Sieg in den Speicherstand committet** (§6) — nicht erst am
+Run-Ende. Ein Absturz oder Reload kostet damit den laufenden Run (§5), aber nichts Verdientes.
+Verfügbar zum **Ausgeben** werden sie erst nach dem Run (§4.4).
 
 1. **XP** → Charakterlevel (§3.3). Pro Floor entsteht ein **XP-Pool** (abhängig von Floor &
    Gegnerzahl), der auf die drei Charaktere verteilt wird: ein **Basisanteil** je Charakter,
@@ -492,11 +621,29 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 ### 4.4 Checkpoints, Wipe & Abbruch
 
 - **Keine Heilung zwischen Floors:** Innerhalb einer Auto-Progression-Kette wird Health
-  mitgeschleppt (Attrition) — Defensiv-Stats und Sustain/Regeneration werden dadurch relevant.
+  mitgeschleppt (Attrition) — Defensiv-Stats und Regeneration werden dadurch relevant.
   <!-- Bewusste Entscheidung; nach Playtesting revidierbar. -->
+- **Tod gilt für den restlichen Run.** Ein besiegter Charakter bleibt besiegt und ist nicht
+  heilbar (§2.6).
+  - **Rally** (Crucible-Node, Level 1–5) ist die einzige Ausnahme: Ein gefallener Charakter steht
+    beim **Betreten des nächsten Floors** mit einem Anteil seiner Max-Health wieder auf (Wert =
+    Balancing). Vor der Freischaltung existiert der Effekt nicht.
+  - Der Anteil bleibt bewusst klein, damit kein Sprung entsteht, bei dem Sterben besser ist als
+    knappes Überleben.
+- **Health- und Tod-Zustand gelten nur innerhalb einer Run-Kette.** Ein Dungeon-Neustart beginnt
+  mit **vollem Team und voller Health**.
 - **Auto-Progression:** Der Spieler startet Kämpfe zunächst **einzeln**; ein Anvil-Sparks-Node
   schaltet das **automatische Starten** des nächsten Floors frei. Am **Dungeon-Ende** ist ein
-  manueller Neustart nötig (keine automatische Dungeon-Kette). **Keine Geschwindigkeitssteuerung.**
+  manueller Neustart nötig (keine automatische Dungeon-Kette).
+- **Geschwindigkeit des Playbacks** (Anzeige, ohne Einfluss auf den Kampfausgang, §5):
+  - **Pause** ist **ab Spielstart** verfügbar.
+  - **2×** wird **pro Dungeon** freigeschaltet, sobald dieser Dungeon einmal vollendet wurde.
+  - Kein Zurückspulen.
+- **Optimierung ist während eines Runs gesperrt.** Solange der Spieler in einem Dungeon ist,
+  lassen sich keine Attribut- oder Skillpunkte setzen, kein Blacksmith, Jeweler oder Crucible
+  benutzen und keine Respecs durchführen. Punkte und Ressourcen laufen sichtbar auf und werden
+  mit dem Ende des Runs verfügbar. Damit ist ein Run eine **versiegelte Build-Wette**, und ein
+  Level-Up mitten im Dungeon kann die Attrition nicht über einen Vigor-Zuwachs aushebeln.
 - **Wipe oder manuelles Verlassen:** Man verlässt den **kompletten** Dungeon. **Bereits
   erhaltene Belohnungen bleiben erhalten** (keine Penalty außer entgangenem Floor-Reward).
 - **Fortschritt innerhalb eines Dungeons wird nicht gespeichert** — ein Dungeon startet
@@ -622,12 +769,14 @@ Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind 
   | ------------------- | ------------------ | -------------------------------------------------------------------------------------------- | ---------------------- |
   | **Amber** (Gold)    | Offensive – Chance | Crit/Multi/Splash/Counter **Chance** (4)                                                     | normal                 |
   | **Ruby** (Rot)      | Offensive – Damage | Crit/Multi/Splash/Counter **Damage** (4)                                                     | normal                 |
-  | **Sapphire** (Cyan) | Defensive          | Barrier, Block Chance, Sustain, Regeneration, Evasion (5)                                    | normal                 |
+  | **Sapphire** (Cyan) | Defensive          | Barrier, Block Chance, Evasion, Regeneration (4)                                             | normal                 |
   | **Emerald** (Grün)  | Core               | Might, Toughness, Vitality (3)                                                               | normal                 |
   | **Diamond** (Weiß)  | Prismatic          | item-lokale **Meta-Multiplikatoren** (z. B. _+X % all gem effects_, _+Y % Sapphire-Effekte_) | **nur Prismatic-Slot** |
 
 - **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
-  seltene Elite/Boss-Chase **ab Akt 2**. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
+  seltene Elite/Boss-Chase **ab Akt 2**. Amber, Ruby und Sapphire haben je **vier** Pool-Affixe,
+  Emerald **drei** — die Trefferchance auf den Ziel-Stat beim **Inlay** liegt damit für drei der
+  vier Fodder-Farben gleich. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
   Gem-Quelle (sie ergeben sich aus Core/Attribut/Baseline, §3.0); ebenso wenig Multi Hit Chain &
   Splash Radius (Skilltree) sowie Initiative (Innate Feet + Crucible). Konkrete Pool-Gewichte,
   Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing (`src/game/`, BALANCING).
@@ -795,12 +944,68 @@ Diese Punkte sind bereits durch AGENTS.md §5 festgelegt und hier als Spec-Konte
   und Catch-up. Der Kampfausgang steht erst mit der letzten Runde fest — er wird vorher nicht
   benötigt (Attrition §4.4 nutzt die Health am Kampfende).
 - **Determinismus:** gleicher Seed + gleicher Input ⇒ exakt gleicher Verlauf.
-- **Catch-up:** Tab minimiert/gedrosselt ⇒ beim Wiederöffnen werden fehlende Runden
-  **ohne Animation** nachgerechnet (Page Visibility API), danach Anzeige synchronisiert.
 - **Kein Offline-Progress:** Tab geschlossen ⇒ kein Fortschritt.
-- **Loot ist ebenfalls seedbasiert:** Gem- und Item-Drops (§4.2/§4.5) laufen über denselben
-  seedbaren PRNG wie der Kampf. Der Determinismus gilt **innerhalb eines Runs**; beim **Farmen**
-  erhält jeder Durchlauf einen **neuen Seed** (bewusst frische Drops, kein Save-Scumming).
+
+### 5.1 Playback — Takt und Geschwindigkeit
+
+- **Anzeigeeinheit ist der Takt: ein Akteur am Zug.** Pro Takt rückt die Markierung in der
+  Zugreihenfolge einen Eintrag weiter und im Kampf-Log erscheint **ein Eintrag** — der
+  vollständige Zug als Block (Grundtreffer, Multi-Hit-Kette, Splash, ausgelöste Counter),
+  nicht als Einzelzeilen.
+- **Grundtakt: 1000 ms pro Akteur.** Eine Runde dauert damit so lange, wie sie Akteure hat.
+- **Stufen** (§4.4): **Pause** ab Spielstart, **2×** pro vollendetem Dungeon. Die Einstellung
+  liegt im Save.
+- Die Geschwindigkeit betrifft **ausschließlich die Anzeige**. Der Kampfverlauf ist durch den
+  Seed festgelegt und bei jeder Stufe identisch — es gibt keinen Balancing-Effekt und keinen
+  Exploit.
+
+### 5.2 Zeitverhalten & Catch-up
+
+- **Tragend ist ein Zeit-Akkumulator**, nicht die Page Visibility API: Jeder Anzeige-Takt
+  rechnet aus der real vergangenen Zeit, wie viele Takte fällig sind, und führt entsprechend
+  viele Schritte aus. Ein gedrosselter Tab feuert selten und holt bei jedem Feuern einen Batch
+  nach — das Verhalten ist damit von sich aus korrekt.
+- Die **Page Visibility API** liefert nur zwei Zusätze: sofortiges Aufholen beim Sichtbarwerden
+  (statt bis zum nächsten Feuern zu warten) und das **Unterdrücken der Animation** während des
+  Batches.
+- **Deckel: Der Catch-up holt höchstens 5 Minuten real vergangener Zeit nach**; darüber
+  hinausgehende Zeit **verfällt**, der Kampf läuft ab dort normal weiter. Damit bleibt „kein
+  Offline-Progress" auch bei einem über Nacht minimierten Tab gewahrt.
+- Ein Catch-up-Batch arbeitet in einem **Zeitbudget pro Frame** und gibt dazwischen an den
+  Browser ab, damit die UI reagiert. Maßstab ist die Zeit, nicht die Rundenzahl — die Kosten einer
+  Runde hängen an der Gegnerzahl.
+- Während des Catch-up werden Belohnungen regulär pro Floor committet (§4.2); ein **Wipe**
+  beendet den Batch sofort. Danach wird die Anzeige auf den Endzustand synchronisiert.
+
+### 5.3 Seeds und Zufalls-Ströme
+
+Der Zufall ist hierarchisch aus einem Save-Seed abgeleitet:
+
+```
+saveSeed              einmal bei Anlage des Spielstands erzeugt, im Save persistiert
+└─ runSeed            = derive(saveSeed, dungeonId, runCounter)
+   └─ floorSeed       = derive(runSeed, floorIndex)
+      ├─ combat       Kampfverlauf (§2.1)
+      ├─ init         Gegner-Initiative zu Kampfbeginn (§1.1)
+      └─ loot         Drops (§4.2/§4.5)
+```
+
+- Die drei Ströme sind **getrennt**: Änderungen an der Kampfformel lassen die Loot-Ergebnisse
+  unberührt (Begründung: AGENTS.md §5).
+- **`floorSeed`** erlaubt es, einen einzelnen Floor im Test zu reproduzieren. Ein Bug-Report ist
+  das Tupel `(saveSeed, dungeonId, runCounter, floorIndex)`.
+- **`runCounter`** ist ein monoton steigender, **beim Run-Start persistierter** Zähler: Beim
+  **Farmen** würfelt jeder Durchlauf frisch, und ein Reload liefert denselben Zähler und damit
+  denselben Verlauf (kein Save-Scumming).
+- Die Label der Ströme sind Teil des Determinismus und liegen als Konstanten an einer Stelle.
+
+### 5.4 Kampfzustand und Reload
+
+- **Der laufende Kampfzustand wird nie serialisiert** — weder Health, Floor-Index,
+  Pending-Queue noch PRNG-Zustand. Das folgt aus §4.4 (Fortschritt innerhalb eines Dungeons wird
+  nicht gespeichert, ein Dungeon startet immer bei Floor 1).
+- **Ein Reload oder Tab-Schließen beendet den laufenden Run**, gleichwertig zum manuellen
+  Verlassen. **Bereits committete Belohnungen bleiben erhalten** (§4.2).
 
 ---
 
@@ -814,17 +1019,29 @@ Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
 - Bei Validierungsfehler: **kontrollierter Fallback** (Migration oder definierter
   Reset auf Default) — **kein** Absturz mit korruptem State.
 
+**Speicher-Auslöser (festgelegt):**
+
+- **Nach jedem Floor-Sieg** — die Belohnungen werden pro Floor committet (§4.2).
+- **Beim Start eines Runs** — der `runCounter` muss vor dem ersten Kampf persistiert sein,
+  sonst greift die Anti-Save-Scumming-Zusicherung aus §5.3 nicht.
+- **Kein** Speichern des laufenden Kampfzustands (§5.4).
+
+**Save-Inhalt (Stand der Festlegungen):**
+
+- Global: **Save-Version**, **`saveSeed`**, **`runCounter`**, **Playback-Geschwindigkeit** (§5.1).
+- Pro Charakter: Level, XP, Attribut- und Skillpunkte-Verteilung.
+- Pro freigeschaltetem **Slot** das Item (Basis + Item-Level + Seltenheit + gesockelte Gems
+  inkl. Level/Value + gebrandetes Sigil, §3.4/§4.5). Die **Main Hand** ist ab Start belegt (§3.4).
+- Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände** (Amber/Ruby/Sapphire/Emerald/Diamond).
+- **Sigil Codex** (bekannte Sigils mit Level).
+- **Runedust**, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
+  dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6).
+- Freigeschaltete Checkpoints, **pro Dungeon ein Vollendet-Flag** (schaltet 2× frei, §4.4),
+  höchster erreichter Floor, **Erstsieg-Flags** je Floor (Crystals, §4.2).
+
 **Zu spezifizieren:**
 
-- [ ] Welche Felder umfasst der Save (Save-State-Form pro Version)? Mindestens: pro Charakter
-      Level/XP/Attribut- & Skillpunkte-Verteilung; pro freigeschaltetem **Slot** das Item
-      (Basis + Item-Level + Seltenheit + gesockelte Gems inkl. Level/Value + gebrandetes Sigil,
-      §3.4/§4.5); Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände**
-      (Amber/Ruby/Sapphire/Emerald/Diamond); **Sigil Codex** (bekannte Sigils mit Level);
-      **Runedust**, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite**
-      auf dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6);
-      freigeschaltete Checkpoints, höchster erreichter Floor, erste-Sieg-Flags (Crystals).
-- [ ] Auslöser für ein Speichern (nach Reward? in Intervallen?).
+- [ ] Die konkrete Feldstruktur je Save-Version (Zod-Schema-Form) samt Migrationspfad.
 
 ---
 

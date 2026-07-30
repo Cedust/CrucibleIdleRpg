@@ -49,7 +49,7 @@ Auto-Battle-Kämpfen** zwischen dem eigenen Team und Gegnern.
 | Build-Tool       | Vite                                                          |
 | Styling          | **Tailwind CSS v4** (CSS-first `@theme`, `@tailwindcss/vite`) |
 | State-Management | **Zustand**                                                   |
-| Große Zahlen     | **break_eternity.js**                                         |
+| Zahlen           | native `number` — **keine** Big-Number-Lib (§5, ADR-0004)     |
 | Validierung      | **Zod** (nur Save-Laufzeitvalidierung, siehe §7)              |
 | Package Manager  | **npm**                                                       |
 | Node             | **≥ 24** (`engines` in `package.json`, `.nvmrc`)              |
@@ -82,7 +82,7 @@ src/
   game/              # Deklarativer, typisierter Balancing-Content (siehe §4)
     characters/
     enemies/
-    abilities/
+    curves/          # Vorberechnete Wachstumskurven je Stufe (siehe §5)
   shared/            # Generische, feature-übergreifende Bausteine
     ui/              # Eigene UI-Primitives (Button, Panel, ProgressBar, Tooltip, …)
     ports/           # Austauschbare Schnittstellen (z. B. SavePort, siehe §7)
@@ -103,14 +103,17 @@ src/
 
 ## 4. Content & Balancing
 
-Aller Balancing-Content (Charaktere, Gegner, Fähigkeiten, Kosten-/Wachstumskurven) wird als
+Aller Balancing-Content (Charaktere, Gegner, Kosten-/Wachstumskurven) wird als
 **deklarative, typisierte TypeScript-Module** unter `src/game/` definiert — **getrennt von der
 Spiellogik**.
 
-- Gemeinsame Interfaces (`CharacterDefinition`, `EnemyDefinition`, `AbilityDefinition`, …)
-  garantieren Typsicherheit, Autovervollständigung und Refactoring-Sicherheit.
+- Gemeinsame Interfaces (`CharacterDefinition`, `EnemyDefinition`, …) garantieren Typsicherheit,
+  Autovervollständigung und Refactoring-Sicherheit.
 - Balancing-Änderungen dürfen **keine** Logik-Dateien (Kampf-Engine, Stores) berühren.
 - Kein JSON — volle TS-Typsicherheit hat Vorrang.
+- **Wachstumskurven liegen als vorberechnete Werte je Stufe** im Content, nicht als
+  `Math.pow`-Aufrufe zur Laufzeit. Grund: `Math.pow` ist zwischen JS-Engines nicht bit-identisch
+  garantiert und würde den Determinismus über Browser hinweg aufweichen (§5).
 
 ---
 
@@ -134,25 +137,44 @@ Spiellogik**.
 ### Zufall - seedbarer PRNG (Pflicht)
 
 - **Aller** Zufall im Spiel (Trefferchance, Krit, Schadensstreuung, …) läuft über einen
-  **seedbaren PRNG** (z. B. `mulberry32`/`sfc32`, klein und dependency-frei in
-  `src/shared/utils/`). **Kein** `Math.random()` in Spiellogik.
+  **seedbaren PRNG** (`mulberry32`, klein und dependency-frei in `src/shared/utils/`).
+  **Kein** `Math.random()` in Spiellogik.
+- **Getrennte Ströme, hierarchisch abgeleitet** (SPEC §5.3):
+  `saveSeed → runSeed(dungeonId, runCounter) → floorSeed(floorIndex)` mit je einem Strom für
+  `combat`, `init` und `loot`. Grund: Bei einem gemeinsamen Strom verschiebt jede Änderung an der
+  Kampfformel alle Loot-Ergebnisse und koppelt damit unabhängige Testsuiten aneinander.
+  Die Strom-Label sind Teil des Determinismus und liegen als Konstanten an einer Stelle.
+- Der `runCounter` wird **beim Run-Start persistiert** — daraus folgen frische Drops beim Farmen
+  **und** die Unmöglichkeit von Save-Scumming.
 - Vorteile: reproduzierbare Kämpfe (deterministische Tests statt Wertebereich-Asserts),
-  aussagekräftige Bug-Reports ("Seed 12345"), spätere Replay-Fähigkeit.
+  aussagekräftige Bug-Reports (`saveSeed, dungeonId, runCounter, floorIndex`), spätere
+  Replay-Fähigkeit.
 
 ### Zeitverhalten / Catch-up
 
 - **Tab geschlossen ⇒ kein Fortschritt.** Offline-Progress ist ein ausdrückliches **Non-Goal**
   (nicht implementieren, auch nicht "aus Best-Practice-Reflex").
-- **Tab offen, aber minimiert/vom Browser gedrosselt** ⇒ beim Wiederöffnen wird **aufgeholt**:
-  über die **Page Visibility API** erkennen, wenn der Tab wieder sichtbar/nicht gedrosselt ist,
-  und die fehlenden Runden **ohne Animation** nachrechnen (Simulation nachziehen, dann Anzeige
-  synchronisieren).
+- **Anzeigeeinheit ist der Takt: ein Akteur am Zug**, Grundtakt **1000 ms** (SPEC §5.1). Die
+  Geschwindigkeitsstufen (Pause, 2×) leben ausschließlich in der Anzeige-Schicht und dürfen den
+  Kampfverlauf nicht berühren.
+- **Tab offen, aber minimiert/vom Browser gedrosselt** ⇒ beim Wiederöffnen wird **aufgeholt**.
+  Tragend ist ein **Zeit-Akkumulator** (aus real vergangener Zeit die fälligen Takte ableiten);
+  die **Page Visibility API** löst das Aufholen nur sofort aus und unterdrückt die Animation.
+  Ein Batch arbeitet in einem **Zeitbudget pro Frame** und gibt dazwischen an den Browser ab.
+- **Deckel: höchstens 5 Minuten** real vergangener Zeit werden nachgeholt, darüber verfällt sie —
+  sonst wäre ein über Nacht minimierter Tab faktisch Offline-Progress.
+- **Der laufende Kampfzustand wird nie persistiert** (SPEC §5.4): Ein Reload beendet den Run,
+  bereits committete Belohnungen bleiben erhalten.
 
-### Große Zahlen
+### Zahlen
 
-- Werte, die `Number.MAX_SAFE_INTEGER` überschreiten können (Schaden, Ressourcen, Prestige-Skalen),
-  werden konsequent über **break_eternity.js** geführt — nicht über native `number`. Ein dünner
-  Wrapper/Helper in `src/shared/utils/` kapselt Formatierung und häufige Operationen.
+- Alle Werte laufen über native `number`. Die Progressions-Achsen sind gedeckelt (Level 100,
+  Item-Level `+100`, kein Prestige); die Spitzenwerte liegen bei ~10⁸–10¹⁰ und damit weit unter
+  `Number.MAX_SAFE_INTEGER` (~9×10¹⁵). Eine Big-Number-Bibliothek wird bewusst **nicht**
+  eingesetzt (ADR-0004).
+- **Revisions-Auslöser:** Kommt je eine Progressions-Achse **ohne Cap** hinzu (Prestige,
+  Endlos-Modus), ist diese Entscheidung neu zu bewerten.
+- Ein Helper in `src/shared/utils/` kapselt die **Formatierung** großer Zahlen für die UI.
 
 ---
 

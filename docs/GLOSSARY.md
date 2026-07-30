@@ -128,7 +128,7 @@ geführt, nie über native `number`.
 ### Prestige
 
 **Bewusstes Nicht-Ziel** — kein Reset-/Prestige-Loop geplant (festes Drei-Charakter-Team,
-SPEC §4.6).
+SPEC §4.7).
 
 ---
 
@@ -447,12 +447,69 @@ auf ein Legendary, Cinder + Gold). Alle drei ohne RNG.
 **Attune** (Gem aufleveln).
 Alle Aktionen kosten **Gold** (Refine und Brand zusätzlich **Cinder**) (SPEC §4.5).
 
-### Amulet / Rune
+### Amulet
 
-Angedachte, **noch nicht spezifizierte** Endgame-Systeme (Sonder-Slot Amulet — Kandidat:
-**Prismatic-nativ**; Runen ggf. ins Amulet gesockelt) — bewusst **separate** spätere Runde,
-Anbindung an **Masterwork** (SPEC §4.5).
-_(Das Sockeln übernimmt der **Jeweler** per **Inlay**.)_
+Angedachter, **noch nicht spezifizierter** Sonder-Slot — Kandidat: **Prismatic-nativ**
+(„das Diamond-Item"). Bewusst **separate** spätere Runde (SPEC §4.5).
+
+---
+
+## Runen (Endgame)
+
+### Rune (EN: _Rune_)
+
+Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse
+(alle anderen liefern permanente Werte). Eine Rune trägt **nie** „+X Stat". Drei Kategorien:
+**Trigger** (_wann?_), **Effect** (_was?_), **Modifier** (_wie?_). Jede Rune hat ein **Level**;
+man besitzt von jeder bekannten Rune **genau ein Exemplar** → teamweit in **höchstens einem**
+**Rite** (SPEC §4.6).
+
+### Trigger / Effect / Modifier (Runen-Kategorien)
+
+**Trigger** = Kampf-Event, das den Rite auslöst (`OnCrit`, `OnMultiHit`, `OnSplash`, `OnCounter`,
+`OnBlock`, `OnEvade`) — reagiert nur auf Events des **eigenen** Charakters.
+**Effect** = was passiert (Heal, Barrier, Bolt, Empower, Mark, Reprisal).
+**Modifier** = manipuliert **genau eine** von vier Facetten des Effects — **Frequenz** (Echo),
+**Zielmenge** (Chain, Prism), **Magnitude** (Surge), **Dauer** (Lingering). Dadurch ist jede
+Kombination definiert (SPEC §4.6).
+
+### Grimoire (EN: _Grimoire_)
+
+Katalog **aller** Runen mit Wissensstand (bekannt/unbekannt) und Level; unentdeckte Einträge sind
+ab ihrer **Mindesttiefe** als **Silhouette** sichtbar. Reiner Wissensstand — **kein Bestand, kein
+Inventar** (Modellform wie das **Kompendium**). Zugleich die **Station** für **Inscribe** und
+**Etch** — kein eigener NPC (SPEC §4.6).
+
+### Reliquary (EN: _Reliquary_)
+
+Behältnis für Runen, **eines pro Charakter**, enthält genau **einen Rite**. **Kein
+Ausrüstungs-Slot**: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. Freischaltung
+ausschließlich über **Masterwork** (SPEC §4.6).
+
+### Rite (EN: _Rite_)
+
+Die Zeile im **Reliquary**: **Trigger + Effect + Modifier**. **Löst maximal einmal pro Runde aus**
+(erstes qualifizierendes Event, **ohne Ausnahme**) → Rune-Stärke skaliert über das **Rune-Level**,
+nicht über die Proc-Rate. Rune-erzeugte Effekte emittieren **keine** Events (keine Rune-Ketten)
+(SPEC §4.6).
+
+### Runedust (EN: _Runedust_)
+
+Runen-Währung. Droppt von **allen** Gegnern, sobald der **`Grimoire`**-Node freigeschaltet ist
+(Elite/Boss-Bonus, nach Floor-Tiefe gestaffelt). Finanziert **Inscribe** und **Etch**. Abgegrenzt
+von **Cinder** (Item-Kapazität/Identität) und **Crystals** (Crucible) (SPEC §4.2/§4.6).
+
+### Inscribe (EN: _Inscribe_)
+
+**Grimoire**-Aktion: liefert **pro Kategorie** (eigenes Rezept) eine **zufällige noch unbekannte**
+Rune dieser Kategorie aus dem nach **Mindesttiefe** gestaffelten Pool. Kosten: **Runedust + Gold**.
+Ein **Kartenstapel, kein Automat** — keine Duplikate, keine Pech-Serien (SPEC §4.6).
+
+### Etch (EN: _Etch_)
+
+**Grimoire**-Aktion, die das **Level** einer bekannten Rune um eine Stufe bis zum Cap hebt. **Kein
+RNG**, Kosten: **Runedust + Gold**, pro Level steigend. Cap = Stand des **`Rune Mastery`**-Nodes
+(SPEC §4.6).
 
 ---
 

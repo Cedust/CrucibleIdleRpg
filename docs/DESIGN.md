@@ -60,7 +60,8 @@ durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
 4. **Zwischen den Kämpfen optimieren:** Attribute & Skilltree beim Level-Up; Ausrüstung nach dem
    **Stamm-Modell** — der **Blacksmith** treibt das Item-Level (planbare Power) und daran hängend
    **Seltenheit** (Kapazität) und **Brand** (Sigil-Implicit), der **Jeweler** die **Gems**
-   (Min-Max-Loot-Jagd); dazu der globale **Crucible**-Baum.
+   (Min-Max-Loot-Jagd); dazu der globale **Crucible**-Baum und im Endgame die **Runen** — die
+   einzige Achse, die dem Kampf **neues Verhalten** hinzufügt statt größerer Zahlen (SPEC §4.6).
 5. **Stärkeres Team ⇒ tiefere Floors ⇒** zurück zu 1. Der „Numbers-go-big"-Effekt (Attack von
    10 → 10.000 → 100.000.000) trägt die Motivation.
 
@@ -79,7 +80,7 @@ durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
 (Crit/Multi/Splash/Counter) und ein verständlicher Schadensfluss (Team-Verteilung → Block →
 Defense → Barrier → Health) — auch bei großen Zahlen.
 
-> Prestige/Reset ist **bewusst kein Ziel** (festes Team; siehe §5 und SPEC §4.6).
+> Prestige/Reset ist **bewusst kein Ziel** (festes Team; siehe §5 und SPEC §4.7).
 
 ---
 
@@ -121,8 +122,9 @@ Diese Entscheidungen sind **bewusst** getroffen — nicht implementieren, auch n
 - **Kein Endlos-Treadmill:** Alle Progressions-Achsen sind **endlich** — Charakterlevel,
   Attribut- und Skillpunkte (je 100) sowie Item-Level (`+100`) enden an einem Cap. Das Spiel ist
   bewusst ein abschließbares, endliches Erlebnis (~30–50 h), kein unendlicher Zahlen-Treadmill.
-  Der Endgame-Min-Max lebt danach auf der **Gem-Achse** (Jeweler) und dem **Verteilen der Sigils**
-  über die Slots (Re-Brand).
+  Der Endgame-Min-Max lebt danach auf der **Gem-Achse** (Jeweler), dem **Verteilen der Sigils**
+  über die Slots (Re-Brand) und dem **Kombinieren der Runen** (Rites, SPEC §4.6) — letzteres als
+  **kostenloses** Umsockeln, also reines Tüfteln ohne Ressourcen-Reue.
 - **Kein Offline-Progress:** Tab geschlossen ⇒ kein Fortschritt. Nur ein
   **Catch-up** bei minimiertem/gedrosseltem Tab.
 - **Keine passive Idle-Ressourcengenerierung** außerhalb des Kampfes.

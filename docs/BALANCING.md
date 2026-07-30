@@ -88,6 +88,11 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
   **unter 18** (Slot-Zahl), damit der Verteilungsdruck bleibt. Das **Gewicht unbekannter Sigils** im
   Wurf tunt die Sammel-Geschwindigkeit; **Re-Brand-Kosten** entscheiden, ob das Neuverteilen ein
   laufender Hebel oder ein Luxus ist (Ziel: laufender Hebel).
+- **Runedust:** späte Endgame-Ressource (Drop erst ab dem `Grimoire`-Node, SPEC §4.6) mit zwei
+  **gestaffelten** Sinks: solange das Level-Cap 1 ist, zieht **Inscribe** allen Dust (Entdeckung);
+  mit steigendem `Rune Mastery`-Node übernimmt **Etch** (Investition). Beide Sinks sind **endlich**
+  (17 Runen × Cap 5) — der Dust-Strom muss so liegen, dass die Entdeckungsphase nicht in einen Grind
+  kippt (Leitplanke §1) und der Katalog gegen Spielende **etwa vollständig** ist.
 
 ## 5. Offene Balancing-Fragen / Tuning-Notizen
 
@@ -123,6 +128,16 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
       vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als Sicherheitsgurt).
 - [ ] **Blacksmith/Jeweler-Gold-Kosten** (Temper, Refine, Brand, Inlay, Recut, Attune) — Refine und
       Brand zusätzlich in **Cinder**.
+- [ ] **Runen-Katalog** (SPEC §4.6): 17 Einträge (6 Trigger / 6 Effect / 5 Modifier) mit
+      **Mindesttiefe** und **Level-Skalierung** je Stufe; Dauer-Werte für Empower/Mark/Lingering,
+      Chain-Zielzahl je Modifier-Level, Bezugs-Stat von Surge.
+- [ ] **Rune-Wirkstärke gegen die Zahlen-Achsen:** Da ein Rite **max. 1×/Runde** auslöst, muss die
+      Magnitude **prozentual/skalierend** sein, damit Runen im Late-Game nicht verpuffen — ohne dass
+      sie die Gem-Achse als Endgame-Min-Max verdrängen.
+- [ ] **Runedust:** Drop-Kurve je Encounter-Typ ab der Freischalttiefe, **Inscribe**-Kosten je
+      Kategorie und **Etch**-Kostenkurve (Level 1→5).
+- [ ] **Trigger-Verlässlichkeit:** `OnRoundStart` (100 %, kein RNG) gegen die Proc-Trigger
+      abwägen — der deterministische Trigger darf nicht ausnahmslos die beste Wahl sein.
 
 ---
 

@@ -186,6 +186,9 @@ Charakter folgende Pipeline (Reihenfolge verbindlich):
   `Math.random()` (AGENTS.md §5, §14).
 - Werte, die `Number.MAX_SAFE_INTEGER` überschreiten können (Schaden, Health, Ressourcen),
   werden über **break_eternity.js** geführt, nicht über native `number` (AGENTS.md §5).
+- Die Engine emittiert **Kampf-Events** (Crit, Multi Hit, Splash, Counter, Block, Rundenbeginn, …)
+  in einer **deterministisch festen Reihenfolge**. Sie sind die Anbindung der **Rune-Trigger**
+  (§4.6) und unterliegen denselben Determinismus-Regeln wie der übrige Kampf.
 
 ---
 
@@ -350,8 +353,8 @@ Schicht 1 steht mit dem Slot fest, die Schichten 2–4 sind der Handwerk-Loop (�
   leben auf **demselben** Item; es gibt **kein Item-Inventar** und **keinen Item-Tausch**. Das Item
   **ist** der Slot.
 
-<!-- TODO (spätere Runde, §4.5): Amulet-Slot (Sonderrolle) und Runen (Masterwork-Endgame).
-     Bewusst separate Interview-Runde. -->
+<!-- TODO (spätere Runde, §4.5): Amulet-Slot (Sonderrolle). Bewusst separate Interview-Runde.
+     Runen sind kein Ausrüstungs-Slot — sie leben im Reliquary (§4.6). -->
 
 ### 3.5 Signatur-Skills
 
@@ -433,7 +436,7 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
    eines Floors:
    - Normal = 1, Elite = 3, Boss = 10.
    - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Crystals**.
-4. **Gems, Cinder & Sigils** (Loot-Motor, §4.5) — jeder Sieg speist den Handwerk-Loop:
+4. **Gems, Cinder, Sigils & Runedust** (Loot-Motor, §4.5/§4.6) — jeder Sieg speist den Handwerk-Loop:
    - **Gems** (Hauptdrop) — **Amber**, **Ruby**, **Sapphire** & **Emerald** als Sockel-Bestückung
      _und_ Level-Fodder; nach Floor-Tiefe (Akt/Dungeon/Floor) gestaffelt. **Diamond** (Prismatic)
      bei Elite/Boss **ab Akt 2**.
@@ -445,6 +448,9 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
    - **Sigils** (Elite/Boss, ab dem ersten Elite-Floor `A1-D1-20`) — Einträge im **Kompendium** mit
      **Level 1–5**, Grundlage des **Brand** (§4.5). Der **erste Sigil-Drop eines Spielstands ist
      garantiert**.
+   - **Runedust** (Runen-Währung, §4.6) — droppt von **allen** Gegnern, **sobald der Grimoire-Node
+     freigeschaltet ist**, mit Elite/Boss-Bonus und nach Floor-Tiefe gestaffelt. Finanziert
+     **Inscribe** (neue Rune) und **Etch** (Rune aufleveln).
    - **Seedbasiert & wiederholbar:** Drops laufen über den seedbaren PRNG (§2.5); beim **Farmen**
      würfelt **jeder Durchlauf neu** (neuer Seed pro Run, §4.5/§5) → der Jagd-Reiz bleibt beim
      Wiederholen erhalten.
@@ -463,7 +469,7 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
   | **Anvil Sparks**    | Freischalten von Inhalten (Blacksmith, Jeweler, Ausrüstungsslots, Checkpoints) |
   | **Smelting Flames** | Stat-Boosts der Charaktere                                                     |
   | **Molten Cast**     | Economy-Boosts (Gold-Drop, XP-Gewinn, Rabatte bei Blacksmith/Jeweler)          |
-  | **Masterwork**      | Endgame-Systeme (z. B. Runen)                                                  |
+  | **Masterwork**      | Endgame-Systeme (**Runen**, §4.6)                                              |
 
 - Manche Nodes sind **stufbar** (max. **5 Level**), Kosten **linear steigend** (Level `n` = `n`
   Crystals; 1+2+3+4+5 = 15 Crystals für einen voll gestuften Node).
@@ -615,13 +621,143 @@ Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind 
 #### Noch offen (bewusst separate Interview-Runde — Endgame/Masterwork)
 
 - **Amulet-Slot** mit Sonderrolle (Kandidat: **Prismatic-nativ** — das „Diamond-Item").
-- **Runen-System** (evtl. ins Amulet gesockelt) — Anbindung an **Masterwork** (§4.3).
 - **Prismatic/Diamond-Effekte im Detail** (welche Meta-Multiplikatoren, Node-artige Sammlung).
 - **Sigil-Katalog:** konkrete Sigils (Namen, Implicit-Identitäten, Mindesttiefe, Slot-Bindung,
   Level-Skalierung des Implicits) sowie die drei namentlichen **Boss-Signatur-Sigils**.
 - **Implicit-Abgrenzung:** welche Effekt-Klassen ein Implicit trägt, die kein Gem-Affix liefert.
 
-### 4.6 Prestige
+### 4.6 Runen (Endgame / Masterwork)
+
+Runen sind die einzige **qualitative** Fortschritts-Achse: Sie fügen dem Kampf **konditionale
+Ereignisse und temporäre Effekte** hinzu. Alle anderen Achsen (Item-Level, Seltenheit, Gems,
+Sigils, Skilltree, Attribute) sind **permanente Werte**.
+
+- **Verbindliche Abgrenzung:** Eine Rune trägt **nie** „+X Stat". Was eine Rune tut, muss etwas
+  sein, das kein Stat ausdrücken kann — z. B. Barrier **mitten in** der Runde (die sonst nur zu
+  Rundenbeginn gesetzt wird, §1.1), Schaden, der **Bulwark ignoriert** (§2.4), ein **temporärer**
+  Buff oder eine Extra-Aktion.
+- Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet (§4.3);
+  vor dem `Grimoire`-Node existiert es nicht (kein Reliquary, keine Runen, kein Runedust-Drop).
+
+#### Träger: Grimoire, Reliquary, Rite
+
+| Begriff       | Rolle                                                                                                                                                |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Grimoire**  | Katalog **aller** Runen mit ihrem Wissensstand (bekannt/unbekannt) und **Level**. Zugleich die Station für **Inscribe** und **Etch**.                |
+| **Reliquary** | Behältnis, **eines pro Charakter**. Enthält genau **einen Rite**. Kein Ausrüstungs-Slot: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. |
+| **Rite**      | Die Zeile im Reliquary: **Trigger + Effect + Modifier**.                                                                                             |
+
+- Der Grimoire ist ein **reiner Wissensstand — kein Bestand, kein Inventar** (Modellform wie das
+  Kompendium, §4.5). Man besitzt von jeder bekannten Rune **genau ein Exemplar** → sie steckt in
+  **höchstens einem** Rite, teamweit. Keine Duplikate, keine Stacks.
+- Unentdeckte Runen sind als **Silhouette** mit ihrer **Kategorie** sichtbar, sobald ihre
+  **Mindesttiefe** erreicht ist; der Katalog wächst also mit dem Fortschritt.
+- **Umsockeln ist kostenlos und jederzeit möglich.** Eine ausgebaute Rune geht dabei nicht
+  verloren und behält ihr Level.
+
+#### Aufbau eines Rite
+
+Ein Rite besteht aus drei Runen-Kategorien:
+
+| Kategorie    | Antwortet auf | Pool  | teamweit aktiv |
+| ------------ | ------------- | ----- | -------------- |
+| **Trigger**  | _Wann?_       | **6** | 3              |
+| **Effect**   | _Was?_        | **6** | 3              |
+| **Modifier** | _Wie?_        | **5** | 3              |
+
+Bei drei Charakteren mit je einem Rite sind **9 von 17** Runen gleichzeitig aktiv.
+
+**Trigger** — je einer pro Muster; die ersten vier sind an die vier Skilltree-Zweige gekoppelt
+(§3.2), der Rite liest damit den gebauten Build:
+
+`OnCrit` · `OnMultiHit` · `OnSplash` · `OnCounter` · `OnBlock` (§2.3, Schritt 3) ·
+`OnEvade`
+
+**Effect** — jeder Eintrag ist ein Effekt, den kein Stat leistet:
+
+| Effect       | Wirkung                                                                              |
+| ------------ | ------------------------------------------------------------------------------------ |
+| **Heal**     | heilt Health                                                                         |
+| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert (§1.1)       |
+| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** (§2.4)                   |
+| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel |
+| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                               |
+| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, §2.1)                                |
+
+**Modifier** — jeder Modifier manipuliert **genau eine** von vier Facetten eines Effects. Dadurch
+ist **jede** Trigger/Effect/Modifier-Kombination automatisch definiert und braucht keine
+Kompatibilitätsmatrix:
+
+| Modifier      | Facette       | Wirkung                                                        |
+| ------------- | ------------- | -------------------------------------------------------------- |
+| **Echo**      | **Frequenz**  | der Effect löst **2×** aus                                     |
+| **Chain**     | **Zielmenge** | der Effect erfasst **X weitere** Ziele                         |
+| **Prism**     | **Zielmenge** | ein auf den Träger wirkender Effect erfasst **das ganze Team** |
+| **Surge**     | **Magnitude** | Stärke skaliert mit einem **Stat des Trägers**                 |
+| **Lingering** | **Dauer**     | der Effect wiederholt sich zu Beginn der **nächsten Runde**    |
+
+#### Auslösung (verbindlich)
+
+- **Ein Rite löst maximal einmal pro Runde aus** — beim **ersten** qualifizierenden Event.
+  **Ohne Ausnahme:** Keine Rune und kein Modifier hebt dieses Limit.
+  Konsequenz: Rune-Stärke skaliert über das **Rune-Level**, nicht über die Proc-Rate. Ein
+  `OnCrit`-Rite ist bei 20 % und bei 100 % Crit Chance gleich stark, nur zuverlässiger.
+- Ein Trigger reagiert **ausschließlich auf Events des eigenen Charakters** (Korvins Rite feuert
+  nicht auf Rhayas Crit).
+- **Rune-erzeugte Effekte emittieren keine Trigger-Events.** Es gibt keine Rune-Ketten und keine
+  Selbst-Retriggerung.
+- **Keine Rune heilt oder belebt Gegner.** Der Endlichkeits-Beweis jedes Kampfes (§1.1) beruht
+  auf **monoton sinkender** Gegner-Gesamt-Health.
+- Aller Zufall bleibt beim seedbaren PRNG (§2.5).
+
+#### Rune-Level
+
+Jede Rune hat ein **Level**; jede Kategorie levelt ihre eigene Facette, damit alle drei Runen
+eines Rite lohnende Ziele sind:
+
+| Kategorie    | Was das Level hebt                                                              |
+| ------------ | ------------------------------------------------------------------------------- |
+| **Effect**   | die **Basis-Magnitude**                                                         |
+| **Trigger**  | einen **+% Magnitude**-Aufschlag auf den gesamten Rite (Attunement)             |
+| **Modifier** | die **Stärke der Modifikation** (Echo: Kraft der 2. Auslösung; Chain: Zielzahl) |
+
+- **Level-Cap = Stand des `Rune Mastery`-Nodes** (§ unten). Der `Grimoire`-Node bringt Cap **1**
+  mit, `Rune Mastery` hebt es auf **2/3/4/5**.
+- Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
+  vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
+
+#### Grimoire-Aktionen
+
+- **Inscribe (neue Rune):** **pro Kategorie** ein eigenes Rezept — man wählt Trigger, Effect oder
+  Modifier und erhält eine **zufällige noch unbekannte** Rune **dieser Kategorie**, gezogen aus
+  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: **Runedust + Gold**.
+  - Weil ausschließlich Unbekannte gezogen werden, ist Inscribe **ein Kartenstapel, kein
+    Automat**: keine Duplikate, keine Pech-Serien, jeder Zug ist Fortschritt.
+  - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
+- **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
+  Kosten: **Runedust + Gold**, pro Level steigend. Kein RNG.
+- Der **`Grimoire`-Node schenkt** einen Starter-**Trigger** und einen Starter-**Effect**, damit im
+  Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
+  ersten Sigil-Drop, §4.5).
+
+#### Masterwork-Nodes
+
+| Node             | Level | Wirkung                                                                           | Crystals |
+| ---------------- | ----- | --------------------------------------------------------------------------------- | -------- |
+| **Grimoire**     | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1        |
+| **Reliquary**    | 1–3   | Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                               | 6        |
+| **Runic Focus**  | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6        |
+| **Rune Mastery** | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10       |
+|                  |       |                                                                                   | **23**   |
+
+Die charakterweise Staffelung von `Reliquary` und `Runic Focus` erzeugt die Priorisierungsfrage,
+für die der Crucible da ist (wer erhält zuerst seinen Rite bzw. Modifier-Slot).
+
+<!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
+     Level-Skalierung je Stufe), Runedust-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für
+     Empower/Mark/Lingering, Chain-Zielzahl je Level, Surge-Bezugs-Stat je Rune. -->
+
+### 4.7 Prestige
 
 - **Kein Prestige-System** geplant. Das feste Drei-Charakter-Team und der Fokus auf deren
   Ausbau tragen die Langzeitmotivation; ein Reset-Loop ist bewusst kein Ziel.
@@ -669,6 +805,8 @@ Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
       (Basis + Item-Level + Seltenheit + gesockelte Gems inkl. Level/Value + gebrandetes Sigil,
       §3.4/§4.5); Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände**
       (Amber/Ruby/Sapphire/Emerald/Diamond); **Kompendium** (bekannte Sigils mit Level);
+      **Runedust**, **Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite**
+      (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6);
       freigeschaltete Checkpoints, höchster erreichter Floor, erste-Sieg-Flags (Crystals).
 - [ ] Auslöser für ein Speichern (nach Reward? in Intervallen?).
 

@@ -173,7 +173,7 @@ Charaktereigener Baum mit mehreren **Pfaden**; enthält **Stat-Knoten** und
 
 ### Skill (EN: _Skill_)
 
-Ein per Skilltree freigeschalteter Effekt — passiver Stat-Boost **oder** Verhaltensregel/Trigger (z. B. **Mitigation**, „Stagger als Skill", Per-Hit-Crit).
+Ein per Skilltree freigeschalteter Effekt — passiver Stat-Boost **oder** Verhaltensregel/Trigger (z. B. **Mitigation**, **Suppression**, Per-Hit-Crit).
 
 ## Charakter-Kampfmechanik
 

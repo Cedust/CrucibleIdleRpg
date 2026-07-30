@@ -40,7 +40,8 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
   Kampf fix.
 - **Bei Gleichstand handelt der Gegner zuerst.**
 - Die Reihenfolge ist damit für den gesamten Kampf stabil (nur unterbrochen durch
-  ausscheidende Akteure).
+  ausscheidende Akteure sowie durch **Suppression**, §3.5, die die Position eines Gegners
+  **innerhalb der laufenden Runde** nach hinten verschiebt).
 
 **Ablauf einer Runde:**
 
@@ -52,9 +53,11 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur*
      der Offensiv-Procs (§2.1). **Direkt nach der eigenen Handlung** heilt die
      **Regeneration** den Charakter.
    - **Gegner am Zug:** ein Angriff gegen das **gesamte Team** (Team-weit, verteilt über
-     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele. Ein durch
-     **Suppression** (Quinns Signatur-Skill, §3.5) **gestaggerter** Gegner **setzt seine
-     Aktion aus** (handelt in dieser Runde nicht).
+     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele.
+   - **Suppression** (Quinns Signatur-Skill, §3.5) kann die noch offene Aktion eines Gegners
+     **innerhalb der Runde nach hinten** verschieben — maximal bis an das Rundenende. Jeder
+     lebende Gegner handelt weiterhin **genau einmal** pro Runde; eine Aktion entfällt
+     ausschließlich, wenn der Gegner vor seinem verschobenen Zug **stirbt**.
 3. **Rundenende:** keine gesonderten Effekte (Regeneration triggert pro Akteur, nicht am
    Rundenende; Barrier verfällt implizit beim Neu-Setzen zu Rundenbeginn).
 
@@ -364,11 +367,11 @@ Jeder Skill belegt einen eigenen, sonst unberührten Hebel; kein Signatur-Skill 
 eigene Rollen-Penalty (Taunt/Bulwark/Frontline-Lock) auf. Zusammen bilden sie eine Kette:
 **halten → aufbrechen → verwerten & Zeit kaufen**.
 
-| Charakter      | Signatur-Skill        | Angegriffener Hebel        | Wirkrichtung        |
-| -------------- | --------------------- | -------------------------- | ------------------- |
-| Korvin (Tank)  | **Mitigation** (§3.2) | Schadensverteilung (§2.3)  | defensiv, Umleitung |
-| Rhaya (Melee)  | **Sunder**            | Bulwark / Formation (§2.4) | offensiv-enabling   |
-| Quinn (Ranged) | **Suppression**       | Zug-Ökonomie (§1.1)        | präventiv-defensiv  |
+| Charakter      | Signatur-Skill        | Angegriffener Hebel        | Wirkrichtung          |
+| -------------- | --------------------- | -------------------------- | --------------------- |
+| Korvin (Tank)  | **Mitigation** (§3.2) | Schadensverteilung (§2.3)  | defensiv, Umleitung   |
+| Rhaya (Melee)  | **Sunder**            | Bulwark / Formation (§2.4) | offensiv-enabling     |
+| Quinn (Ranged) | **Suppression**       | Zug-Ökonomie (§1.1)        | präventiv, Zeitgewinn |
 
 Alle drei sind **charaktergebundene Crucible-Knoten** (§4.3) mit **Level 1–5**; der
 Node-Maxlevel wirkt als **natürlicher Cap** (kein künstlicher Cap nötig). Vor Freischaltung
@@ -392,21 +395,33 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 - **Node-Skalierung (Level 1–5):** steigender Bulwark-Abbau pro Treffer und/oder höheres
   Abbau-Cap pro Ziel. Konkrete Werte = Balancing (`src/game/`, BALANCING).
 
-#### Suppression (Quinn, Ranged) — Stagger / Aktionsentzug
+#### Suppression (Quinn, Ranged) — Zugverschiebung
 
-- Quinns Treffer bauen auf dem getroffenen Gegner **Stagger-Stacks** auf. Erreicht der
-  Stack-Zähler eine **Schwelle**, wird der Gegner **gestaggert** und **setzt seine nächste
-  Aktion aus** (§1.1) → weniger team-weit eingehender Schaden (§2.3).
-- Quinn umgeht den Taunt und trifft die **Backline von Beginn an** (§1.2) → sie kann gezielt
-  den gefährlichsten Ranged-Gegner (höchste Initiative, handelt zuerst) stummschalten.
-- **Immunitäts-Fenster (kein Dauer-Lock):** Nach einem ausgelösten Stagger müssen sich die
-  Stacks des Ziels erst über **X Runden abbauen**, bevor derselbe Gegner erneut gestaggert
-  werden kann. Der Stack-Zähler ist rein deterministisch.
-- **Node-Skalierung (Level 1–5):** niedrigere Stagger-Schwelle und/oder längerer Aussetzer.
-  Konkrete Werte (Schwelle, Abbau-Rate `X`, Aussetz-Dauer) = Balancing (`src/game/`).
+- Quinns Treffer verschiebt die **noch offene Aktion** des getroffenen Gegners um `L` Plätze
+  **nach hinten** in der Initiative-Reihenfolge der **laufenden Runde** (`L` = Node-Level 1–5,
+  ein Slot pro Level).
+- **Verschiebung:** `Delay = min(L, verbleibende Slots bis Rundenende)` — die Aktion rutscht
+  maximal an das Rundenende und **verfällt nie**. **Kein Übertrag** in die nächste Runde. Steht
+  das Ziel bereits als Letztes oder hat es in dieser Runde schon gehandelt, ist der Delay `0`.
+- **Cap: pro Runde und Ziel maximal `L` Slots Gesamtverschiebung.** Der Delay wird pro Treffer
+  ab der **aktuellen** Position neu berechnet, nicht addiert → ein zweiter Treffer auf dasselbe
+  Ziel in derselben Runde verschiebt um `0` (innerhalb der Runde idempotent).
+- **Multi Hit** (§2.1) fällt unter dasselbe Cap: der erste Treffer verschiebt, die weiteren um
+  `0`. **Splash**-Nebenziele werden **nicht** verschoben — Suppression wirkt ausschließlich auf
+  das **primäre Ziel**.
+- Wirkt nur auf **Gegner**; die Reihenfolge der eigenen Charaktere bleibt unberührt.
+- Quinn umgeht den Taunt und trifft die **Backline von Beginn an** (§1.2) → sie verschiebt
+  gezielt den gefährlichsten Ranged-Gegner (höchste Initiative, handelt zuerst) hinter Korvin
+  und Rhaya. Ihr **Bulwark-Malus** (§2.4) bleibt bestehen; der Delay hängt **nicht am Schaden**,
+  der gedämpfte Deckungsschuss wirkt also voll.
+- **Turn Skip** entsteht ausschließlich über den **Kill**: stirbt das Ziel vor seinem
+  verschobenen Slot, ist seine Aktion endgültig verloren. Damit verwertet Suppression den
+  von **Sunder** geöffneten Schadensdurchsatz auf die Backline, ohne rechnerisch daran zu
+  hängen (eigener Hebel, keine Kopplung).
+- **Selbstregulierende Skalierung:** der Effekt wächst mit der Formationsgröße — gegen sechs
+  Gegner volle Umsortierung, gegen zwei Gegner nahezu wirkungslos.
 
-<!-- TODO (Balancing): Sunder — Abbau-Betrag pro Treffer & Cap pro Ziel. Suppression —
-     Stagger-Schwelle, Stack-Abbau-Rate `X` (Runden bis erneut staggerbar), Aussetz-Dauer. -->
+<!-- TODO (Balancing): Sunder — Abbau-Betrag pro Treffer & Cap pro Ziel. -->
 
 ---
 

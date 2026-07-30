@@ -304,8 +304,11 @@ besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4
 
 ### 3.4 Ausrüstung
 
-- Jeder Charakter trägt Ausrüstung in **sechs Slots**. Jeder Slot hat einen **Innate-Affix** —
-  einen festen Basis-Stat, der mit dem **Item-Level** skaliert (§4.5):
+- Jeder Charakter trägt Ausrüstung in **sechs Slots**. Ein Slot wird über den **Crucible**
+  (Anvil Sparks, §4.3) gegen **Crystals** freigeschaltet; dabei entsteht die rollenspezifische
+  **Basis** als **`Common +1`** und bleibt dem Slot für das ganze Spiel erhalten.
+- Jeder Slot hat einen **Innate-Affix** — einen festen Basis-Stat, der mit dem **Item-Level**
+  skaliert (§4.5):
 
   | Slot          | Item-Typ (rollenspezifisch)                                           | Innate-Affix                          |
   | ------------- | --------------------------------------------------------------------- | ------------------------------------- |
@@ -321,29 +324,31 @@ besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4
 - **Waffen** haben zusätzlich eine prozentuale **Damage-Range**, die den Grundschaden moduliert (§2.1).
 - Ausrüstung ist der **Hauptmotor** des Fortschritts (Loot & Handwerk, §4.5).
 
-**Item-Anatomie (drei Schichten).** Jedes Item trägt seine Werte auf drei getrennten Ebenen —
-diese Trennung ist das Fundament des Loot-/Handwerk-Loops (§4.5):
+**Item-Anatomie (vier Schichten).** Jedes Item trägt seine Werte auf vier getrennten Ebenen —
+Schicht 1 steht mit dem Slot fest, die Schichten 2–4 sind der Handwerk-Loop (§4.5):
 
 1. **Basis** — Item-Typ + Slot (z. B. „Schwert / Main Hand", „Schild / Off Hand"). Legt den
-   **Innate-Affix** (Tabelle oben) und die Slot-Rolle fest. **Reguläre Basen werden beim
-   Blacksmith geforged** (§4.5) — sie droppen **nicht**; nur **Uniques** droppen (Elite/Boss).
-2. **Item-Level** (`+n`, **exponentielle Basis-Power**, **Cap bei +100**) — skaliert den
-   **Innate-Value**; bis **+100** hochstufbar beim **Blacksmith** (**Temper**) gegen Gold. Das persistente Item
-   „wächst mit" — der **planbare** Träger der Incremental-Kurve. Ein gedropptes **Unique** kann
-   floor-skaliert **vorgelevelt** erscheinen (§4.5, Wechsel-Glätter).
+   **Innate-Affix** (Tabelle oben) und die Slot-Rolle fest. Entsteht beim Freischalten des Slots.
+2. **Item-Level** (`+n`, **exponentielle Basis-Power**) — skaliert den **Innate-Value**; per
+   **Temper** beim Blacksmith gegen Gold gehoben. Das erreichbare Maximum ergibt sich aus der
+   **Seltenheit** (Schicht 3), das absolute Maximum ist **`+100`**. Bei **`+50`** und **`+100`**
+   trägt das Item je einen **Prismatic-Sockel** (§4.5). Das persistente Item „wächst mit" — der
+   **planbare** Träger der Incremental-Kurve.
 3. **Seltenheit & Sockel** (**Min-Max-Achse**) — die **Seltenheit** (EN: _Rarity_) ist der
-   **Master-Regler** dieser Achse: sie bestimmt die **Anzahl der Sockel** (Breite) **und** das
-   **Gem-Level-Cap** (Höhe, §4.5). In jeden Sockel steckt man einen **Gem** aus dem **Gem-Bestand**
-   (Ressourcen-Zähler, kein Inventar), der einen zufälligen Affix aus seinem **Farb-Pool** rollt
-   (seed-PRNG). Dies ist die eigentliche **Loot-Jagd**. Gesteigert per **Refine** beim Blacksmith
-   gegen **Cinder** (§4.5).
+   **Master-Regler**: sie bestimmt die **Anzahl der Sockel** (Breite), das **Gem-Level-Cap**
+   (Höhe) **und** das **Item-Level-Cap** (§4.5). In jeden Sockel steckt man einen **Gem** aus dem
+   **Gem-Bestand** (Ressourcen-Zähler, kein Inventar), der einen zufälligen Affix aus seinem
+   **Farb-Pool** rollt (seed-PRNG). Dies ist die eigentliche **Loot-Jagd**. Gesteigert per
+   **Refine** beim Blacksmith gegen **Cinder** + Gold (§4.5).
+4. **Implicit** — ein **Legendary**-Item nimmt per **Brand** (Blacksmith) das **Implicit** eines
+   **Sigils** auf: ein Affix, den kein Gem liefert, skalierend mit dem **Sigil-Level** (§4.5).
+   Der Brand ist überschreibbar (**Re-Brand**).
 
 - **Gems sind am Item gebunden:** Ein gesockelter (und im Sockel gelevelter) Gem bleibt im Item —
   auch bei Nichtbenutzung „friert" er dort ein (kein Verlust). Nur aktives **Ersetzen** zerstört ihn.
-- **Kein erzwungener Item-Wechsel:** Item-Level **und** Sockel-Investment leben auf **demselben**
-  behaltenen Item. Ein Umstieg lohnt sich nur über eine höhere **Seltenheit** (mehr Sockel), ein
-  **Unique** (Implicit + Prismatic-Slot) oder einen anderen **Basis-Typ** — und **Uniques droppen
-  mit vorgesockelten Gems** (§4.5), sodass ein Umstieg nicht bei null beginnt.
+- **Ein Item begleitet seinen Slot über das ganze Spiel.** Item-Level, Sockel-Investment und Brand
+  leben auf **demselben** Item; es gibt **kein Item-Inventar** und **keinen Item-Tausch**. Das Item
+  **ist** der Slot.
 
 <!-- TODO (spätere Runde, §4.5): Amulet-Slot (Sonderrolle) und Runen (Masterwork-Endgame).
      Bewusst separate Interview-Runde. -->
@@ -428,17 +433,18 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
    eines Floors:
    - Normal = 1, Elite = 3, Boss = 10.
    - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Crystals**.
-4. **Gems, Cinder & Uniques** (Loot-Motor, §4.5) — jeder Sieg speist den Handwerk-Loop:
+4. **Gems, Cinder & Sigils** (Loot-Motor, §4.5) — jeder Sieg speist den Handwerk-Loop:
    - **Gems** (Hauptdrop) — **Amber**, **Ruby**, **Sapphire** & **Emerald** als Sockel-Bestückung
      _und_ Level-Fodder; nach Floor-Tiefe (Akt/Dungeon/Floor) gestaffelt. **Diamond** (Prismatic)
-     nur bei Elite/Boss.
-   - **Cinder** (Seltenheits-Währung, §4.5) — **Bosse droppen garantiert 1 Cinder pro Kill**
-     (100 %, jeder Durchlauf). **Elite-Gegner** (Dungeons 1–4) droppen Cinder als **Bonus** mit
-     einer **Chance, die monoton mit der globalen Floor-Tiefe steigt** (kein Akt-Reset). Cinder
-     finanziert **Refine** (Seltenheit) und das Freischalten weiterer **Unique-Sockel** (§4.5).
-   - **Uniques** (nur Elite/Boss) — komplette Items mit vordefinierter Affix-Identität, floor-skaliert
-     **vorgelevelt** & (teil-)**vorgesockelt** (§4.5). **Reguläre Item-Basen droppen nicht** — sie
-     werden beim **Blacksmith** geforged.
+     bei Elite/Boss **ab Akt 2**.
+   - **Cinder** (Kapazitäts- & Identitäts-Währung, §4.5) — **Bosse droppen garantiert 1 Cinder pro
+     Kill** (100 %, jeder Durchlauf). **Elite-Gegner** (Dungeons 1–4) droppen Cinder als **Bonus**
+     mit einer **Chance, die monoton mit der globalen Floor-Tiefe steigt** (kein Akt-Reset). Die
+     Ausschüttung **steigt in Akt 2 und Akt 3**. Cinder finanziert **Refine** (Seltenheit) und
+     **Brand** (Sigil-Implicit).
+   - **Sigils** (Elite/Boss, ab dem ersten Elite-Floor `A1-D1-20`) — Einträge im **Kompendium** mit
+     **Level 1–5**, Grundlage des **Brand** (§4.5). Der **erste Sigil-Drop eines Spielstands ist
+     garantiert**.
    - **Seedbasiert & wiederholbar:** Drops laufen über den seedbaren PRNG (§2.5); beim **Farmen**
      würfelt **jeder Durchlauf neu** (neuer Seed pro Run, §4.5/§5) → der Jagd-Reiz bleibt beim
      Wiederholen erhalten.
@@ -483,65 +489,98 @@ existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedba
 
 ### 4.5 Ausrüstung, Loot & Handwerk (Kern-Loop)
 
-Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts (BALANCING §3). Er ruht auf
-**zwei bewusst getrennten Achsen**, die auf die zwei Handwerker abbilden — die exponentielle
-Basis-Power ist **planbar**, die Varianz-Jagd liegt auf den **Gems**:
+Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts (BALANCING §3). Er folgt einem
+**Stamm-Modell**: das **Item-Level** ist der Stamm, an dem drei Äste hängen.
 
-| Achse                     | Träger am Item (§3.4)         | Station                 | Zufall                 | Reiz                         |
-| ------------------------- | ----------------------------- | ----------------------- | ---------------------- | ---------------------------- |
-| **Exponentielle Power**   | Item-Level (`+n`) → Innate    | **Blacksmith** (Temper) | keiner                 | „numbers go big", planbar    |
-| **Min-Max / Sidegrades**  | Sockel + **Gems**             | **Jeweler**             | seed-PRNG              | Loot-Jagd, Build-Optimierung |
-| **Seltenheits-Kapazität** | Rarity → Sockelzahl + Gem-Cap | **Blacksmith** (Refine) | keiner (Cinder-Kosten) | Meilenstein, Boss-Chase      |
+| Ebene                  | Träger am Item (§3.4)                       | Station               | Kosten            | Zufall    |
+| ---------------------- | ------------------------------------------- | --------------------- | ----------------- | --------- |
+| **Stamm: Basis-Power** | Item-Level (`+n`) → Innate                  | **Blacksmith** Temper | Gold              | keiner    |
+| **Ast: Kapazität**     | Seltenheit → Sockelzahl, Gem-Cap, Level-Cap | **Blacksmith** Refine | Cinder + Gold     | keiner    |
+| **Ast: Identität**     | Implicit aus einem **Sigil**                | **Blacksmith** Brand  | Cinder + Gold     | keiner    |
+| **Ast: Min-Max**       | Sockel + **Gems**                           | **Jeweler**           | Gold + Gem-Fodder | seed-PRNG |
 
-Alle Handwerks-Aktionen (Blacksmith **und** Jeweler) kosten **Gold**; **Refine** und
-Unique-Sockel-Unlocks zusätzlich **Cinder** (§ „Seltenheit & Sockel").
+Alle Handwerks-Aktionen kosten **Gold**; **Refine** und **Brand** zusätzlich **Cinder**. Der einzige
+Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind vollständig planbar.
 
-#### Seltenheit & Sockel
+#### Seltenheit, Sockel & Level-Cap
 
-- Jedes Item hat eine **Seltenheit** (EN: _Rarity_): **Common → Magic → Rare → Legendary → Unique**.
-  Die Seltenheit ist der **Master-Regler der Min-Max-Achse**:
-  sie bestimmt die **Anzahl der Sockel** (Breite) **und** das **Gem-Level-Cap** (Höhe, siehe
-  Jeweler). Sie wird per **Refine** erhöht (unten):
+- Jedes Item hat eine **Seltenheit** (EN: _Rarity_): **Common → Magic → Rare → Epic → Legendary**.
+  Sie ist der **Master-Regler** und bestimmt drei Dinge: **Sockelzahl**, **Gem-Level-Cap** (siehe
+  Jeweler) und **Item-Level-Cap**.
 
-  | Seltenheit    | Normale Sockel | Prismatic-Slot             | Herkunft                        |
-  | ------------- | -------------- | -------------------------- | ------------------------------- |
-  | **Common**    | 1              | —                          | Blacksmith (Forge-Startzustand) |
-  | **Magic**     | 2              | —                          | Blacksmith (Refine)             |
-  | **Rare**      | 3              | —                          | Blacksmith (Refine)             |
-  | **Legendary** | 4              | —                          | Blacksmith (Refine)             |
-  | **Unique**    | 1–4 (§ unten)  | **1** (nur Prismatic-Gems) | **nur Elite/Boss-Drop**         |
+  | Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für den Refine **auf** diese Stufe |
+  | ------------- | -------------- | -------------- | ----------------------------------------- |
+  | **Common**    | 0              | **+20**        | — (Startzustand)                          |
+  | **Magic**     | 1              | **+40**        | 1                                         |
+  | **Rare**      | 2              | **+60**        | 3                                         |
+  | **Epic**      | 3              | **+80**        | 6                                         |
+  | **Legendary** | 4              | **+100**       | 10                                        |
 
-- **Refine (Common → Legendary):** Der Blacksmith hebt die Seltenheit um **eine Stufe** (+1 Sockel,
-  höheres Gem-Cap). **Kein RNG**, aber Kosten in **Cinder** (Boss-Währung, §4.2), **eskalierend**:
-  **C→M = 1, M→R = 3, R→L = 6** (konkrete Werte = Balancing) — plus Gold wie bei allen Handwerks-Aktionen.
-- **Unique** droppt exklusiv bei Elite-/Boss-Gegnern, trägt einen festen **Implicit** (§3.4) und
-  als einziges den **Prismatic-Slot**. Uniques starten **floor-skaliert** mit **A1 = 1, A2 = 2,
-  A3 = 3** Normal-Sockeln; weitere Normal-Sockel (bis **4**) schaltet **Cinder** frei. Der
-  **Prismatic-Slot** ist ab Drop leer.
+- **Refine** hebt die Seltenheit um **eine Stufe**. **Kein RNG**, Kosten in **Cinder**
+  (eskalierend **1/3/6/10**, konkrete Werte = Balancing) plus Gold.
+- Die Seltenheit deckelt das Item-Level **nach oben**. Ein Refine ist **jederzeit** möglich, sobald
+  Cinder vorhanden ist — der Wechselrhythmus zwischen Temper und Refine entsteht aus der
+  **Cinder-Knappheit**, nicht aus einer Mindestlevel-Regel.
+- Ein frisch freigeschalteter Slot startet als **`Common +1` ohne Sockel**; der erste Sockel
+  entsteht mit dem ersten **Refine**.
+- Landmarken auf einem Item:
+
+  ```
+  +20 → Magic (1. Sockel)      +60 → Epic (3. Sockel)
+  +40 → Rare  (2. Sockel)      +80 → Legendary (4. Sockel)
+  +50 → Prismatic-Sockel 1    +100 → Prismatic-Sockel 2
+  ```
+
+#### Prismatic-Sockel
+
+- `Prismatic-Sockel = floor(Item-Level / 50)` → einer bei **`+50`**, ein zweiter bei **`+100`**.
+- Nimmt ausschließlich **Diamond**-Gems auf (item-lokale Meta-Multiplikatoren, siehe Jeweler).
+  **Diamonds droppen ab Akt 2.**
+- Unabhängig von Seltenheit und Brand. Ein Item mit **zwei Diamonds** ist der stärkste
+  Min-Max-Träger des Spiels.
+
+#### Sigils, Kompendium & Brand
+
+- Ein **Sigil** ist ein Eintrag im **Kompendium** mit **Level 1–5** — ein binärer Wissensstand plus
+  Level, **kein Bestand und kein Inventar**. Jedes Sigil trägt eine **vordefinierte
+  Implicit-Identität**, eine **Mindesttiefe** und eine **Slot(-Typ)-Bindung**.
+- **Quellen** (ab dem ersten Elite-Floor `A1-D1-20`; der **erste Sigil-Drop eines Spielstands ist
+  garantiert**):
+  - **Elite-Gegner** würfeln aus einem **tiefen-gestaffelten Pool** — ein Sigil ist erst ab seiner
+    **Mindesttiefe** ziehbar, der Pool wächst also mit dem Fortschritt.
+  - **Jeder Akt-Boss** droppt beim **ersten Kill** garantiert sein **festes, namentliches
+    Signatur-Sigil**. Bei Wiederholungen würfelt er wie ein Elite aus dem **obersten Tier** —
+    inklusive des eigenen Signatur-Sigils als Level-Up-Kandidat.
+- **Drop-Fortschritt:** ein **unbekanntes** Sigil wird auf **Level 1** ins Kompendium
+  eingeschrieben, ein **bekanntes** um **+1 Level** gehoben. **Unbekannte Sigils sind im Wurf höher
+  gewichtet** (Gewicht = Balancing).
+- **Ein Sigil auf Level 5 verlässt den Drop-Pool.** Sind alle Sigils auf Level 5, droppen keine
+  Sigils mehr.
+- **Brand** überträgt das **Implicit** eines bekannten Sigils auf ein **Legendary**-Item. Die Stärke
+  des Implicits skaliert mit dem **Sigil-Level**.
+- Jedes Sigil ist **teamweit genau einmal aktiv** und nur auf seinem gebundenen **Slot(-Typ)**
+  einsetzbar. Die **Pool-Größe liegt unter 18** (Zahl der Slots) → es tragen nie alle Slots ein Sigil.
+- **Re-Brand** überschreibt den Brand eines Items und kostet **deutlich weniger** als der
+  Erst-Brand → das Neuverteilen der Sigils bleibt über das ganze Spiel ein aktiver Hebel.
 
 #### Drop-Modell (seedbasiert)
 
-- Kämpfe droppen **Gems** (Farb-Fodder: Amber/Ruby/Sapphire/Emerald; **Diamond** nur Elite/Boss),
-  **Cinder** (Boss garantiert 1/Kill; Elite als tiefen-skalierter Bonus, §4.2) und — **nur bei
-  Elite/Boss** — **Uniques**. **Reguläre Item-Basen droppen nicht**; sie entstehen beim Blacksmith.
+- Kämpfe droppen **Gems** (Farb-Fodder: Amber/Ruby/Sapphire/Emerald; **Diamond** bei Elite/Boss ab
+  **Akt 2**), **Cinder** (Boss garantiert 1/Kill, Elite als tiefen-skalierter Bonus, in Akt 2 & 3
+  erhöht) und **Sigils** (Elite/Boss, § oben). **Item-Basen droppen nicht** — sie entstehen beim
+  Freischalten des Slots (§3.4).
 - **Aller Loot-Zufall** läuft über den **seedbaren PRNG** (§2.5) — reproduzierbar, testbar, kein
   Save-Scumming. **Determinismus gilt innerhalb eines Runs**; beim **Farmen** eines geschafften
   Dungeons würfelt **jeder Durchlauf mit neuem Seed** (frische Drops pro Run).
-- **Uniques** kommen mit **vordefinierten Affix-Identitäten** (nur die _Values_ werden gewürfelt).
-  Sie droppen **floor-skaliert vorgelevelt** (tiefer = höher) und mit floor-skalierter Sockelzahl
-  (§ „Seltenheit & Sockel"). Die vorhandenen Normal-Sockel sind **vorgesockelt gemäß der
-  Unique-Identity** (Gems austauschbar); der **Prismatic-Slot** ist leer.
 
-#### Blacksmith (Basis-Power & Seltenheit)
+#### Blacksmith (Stamm, Kapazität & Identität)
 
-- **Forge:** die **einzige Quelle** regulärer Item-Basen (reguläre Basen droppen nicht). Eine
-  frisch geforgede Basis startet als **Common** (1 Sockel). Rezepte/Materialien = TODO.
-- **Temper (Item-Level):** hebt das **Item-Level** (`+n`, **Cap bei +100**) → skaliert den
-  **Innate-Value** (§3.4). Kein RNG, Kosten in **Gold**.
-- **Refine (Seltenheit):** hebt die **Seltenheit** um eine Stufe (Common → Legendary; +1 Sockel,
-  höheres Gem-Cap). Kein RNG, aber Kosten in **Cinder** (eskalierend
-  1/3/6, § „Seltenheit & Sockel") plus Gold. Bei **Uniques** schaltet dieselbe Cinder-Ausgabe
-  stattdessen die restlichen **Normal-Sockel** frei (§ „Drop-Modell").
+- **Temper (Item-Level):** hebt das **Item-Level** um eine Stufe bis zum **Seltenheits-Cap** →
+  skaliert den **Innate-Value** (§3.4). Kein RNG, Kosten in **Gold**.
+- **Refine (Seltenheit):** hebt die **Seltenheit** um eine Stufe (+1 Sockel, höheres Gem-Cap,
+  höheres Item-Level-Cap). Kein RNG, Kosten in **Cinder** (1/3/6/10) plus Gold.
+- **Brand (Implicit):** überträgt das Implicit eines bekannten **Sigils** auf ein **Legendary**-Item.
+  Kein RNG, Kosten in **Cinder** plus Gold, überschreibbar per **Re-Brand**.
 
 #### Jeweler (Gems / Min-Max-Jagd)
 
@@ -568,18 +607,19 @@ Unique-Sockel-Unlocks zusätzlich **Cinder** (§ „Seltenheit & Sockel").
   | **Diamond** (Weiß)  | Prismatic          | item-lokale **Meta-Multiplikatoren** (z. B. _+X % all gem effects_, _+Y % Sapphire-Effekte_) | **nur Prismatic-Slot** |
 
 - **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
-  seltene Elite/Boss-Chase. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
+  seltene Elite/Boss-Chase **ab Akt 2**. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
   Gem-Quelle (sie ergeben sich aus Core/Attribut/Baseline, §3.0); ebenso wenig Multi Hit Chain &
   Splash Radius (Skilltree) sowie Initiative (Innate Feet + Crucible). Konkrete Pool-Gewichte,
   Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing (`src/game/`, BALANCING).
 
 #### Noch offen (bewusst separate Interview-Runde — Endgame/Masterwork)
 
-- **Amulet-Slot** mit Sonderrolle (eigener Innate? eigene Gem-Regeln?).
+- **Amulet-Slot** mit Sonderrolle (Kandidat: **Prismatic-nativ** — das „Diamond-Item").
 - **Runen-System** (evtl. ins Amulet gesockelt) — Anbindung an **Masterwork** (§4.3).
 - **Prismatic/Diamond-Effekte im Detail** (welche Meta-Multiplikatoren, Node-artige Sammlung).
-- **Unique-Katalog:** konkrete Uniques (Namen, vordefinierte Affix-Identitäten, Implicits).
-- **Forge-Rezepte & Materialien** (womit werden Basen geforged?).
+- **Sigil-Katalog:** konkrete Sigils (Namen, Implicit-Identitäten, Mindesttiefe, Slot-Bindung,
+  Level-Skalierung des Implicits) sowie die drei namentlichen **Boss-Signatur-Sigils**.
+- **Implicit-Abgrenzung:** welche Effekt-Klassen ein Implicit trägt, die kein Gem-Affix liefert.
 
 ### 4.6 Prestige
 
@@ -625,9 +665,10 @@ Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
 **Zu spezifizieren:**
 
 - [ ] Welche Felder umfasst der Save (Save-State-Form pro Version)? Mindestens: pro Charakter
-      Level/XP/Attribut- & Skillpunkte-Verteilung/**getragene Ausrüstung**, Crucible-Node-Stände,
-      Gold, **Cinder**, **Gem-Bestände** (Amber/Ruby/Sapphire/Emerald/Diamond), **Inventar** (Items mit Basis + Item-Level +
-      Seltenheit + freigeschalteten Unique-Sockeln + gesockelten Gems inkl. deren Level/Value, §3.4/§4.5),
+      Level/XP/Attribut- & Skillpunkte-Verteilung; pro freigeschaltetem **Slot** das Item
+      (Basis + Item-Level + Seltenheit + gesockelte Gems inkl. Level/Value + gebrandetes Sigil,
+      §3.4/§4.5); Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände**
+      (Amber/Ruby/Sapphire/Emerald/Diamond); **Kompendium** (bekannte Sigils mit Level);
       freigeschaltete Checkpoints, höchster erreichter Floor, erste-Sieg-Flags (Crystals).
 - [ ] Auslöser für ein Speichern (nach Reward? in Intervallen?).
 

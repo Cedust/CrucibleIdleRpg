@@ -57,9 +57,10 @@ durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
 2. **Kampf läuft automatisch**, Runde für Runde mitverfolgt — der Spieler greift **nicht**
    ein (Auto-Battle, SPEC §1).
 3. **Sieg ⇒ Belohnung:** XP (Level), Gold, beim Erstsieg Crystals.
-4. **Zwischen den Kämpfen optimieren:** Attribute & Skilltree beim Level-Up; Ausrüstung über
-   zwei getrennte Achsen — **Blacksmith** (Item-Level = planbare Power) und **Jeweler + Gems**
-   (Sockel = Min-Max-Loot-Jagd); dazu der globale **Crucible**-Baum.
+4. **Zwischen den Kämpfen optimieren:** Attribute & Skilltree beim Level-Up; Ausrüstung nach dem
+   **Stamm-Modell** — der **Blacksmith** treibt das Item-Level (planbare Power) und daran hängend
+   **Seltenheit** (Kapazität) und **Brand** (Sigil-Implicit), der **Jeweler** die **Gems**
+   (Min-Max-Loot-Jagd); dazu der globale **Crucible**-Baum.
 5. **Stärkeres Team ⇒ tiefere Floors ⇒** zurück zu 1. Der „Numbers-go-big"-Effekt (Attack von
    10 → 10.000 → 100.000.000) trägt die Motivation.
 
@@ -120,7 +121,8 @@ Diese Entscheidungen sind **bewusst** getroffen — nicht implementieren, auch n
 - **Kein Endlos-Treadmill:** Alle Progressions-Achsen sind **endlich** — Charakterlevel,
   Attribut- und Skillpunkte (je 100) sowie Item-Level (`+100`) enden an einem Cap. Das Spiel ist
   bewusst ein abschließbares, endliches Erlebnis (~30–50 h), kein unendlicher Zahlen-Treadmill.
-  Der Endgame-Min-Max lebt danach auf der **Gem-Achse** (Jeweler) und den **Uniques**.
+  Der Endgame-Min-Max lebt danach auf der **Gem-Achse** (Jeweler) und dem **Verteilen der Sigils**
+  über die Slots (Re-Brand).
 - **Kein Offline-Progress:** Tab geschlossen ⇒ kein Fortschritt. Nur ein
   **Catch-up** bei minimiertem/gedrosseltem Tab.
 - **Keine passive Idle-Ressourcengenerierung** außerhalb des Kampfes.

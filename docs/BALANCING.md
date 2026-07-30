@@ -77,9 +77,17 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
 - **Gems (Amber/Ruby/Sapphire/Emerald/Diamond):** Loot-Hauptressource _und_ Level-Fodder (SPEC §4.5).
   Der Drop-Strom teilt sich auf **vier** Fodder-Farben (Amber/Ruby/Sapphire/Emerald) — Drop-Raten je
   Floor-Tiefe und die **Aufleveln-Fodder-Kurve** (jedes Gem-Level braucht mehr) müssen so liegen, dass
-  keine Farbe zum Grind-Wall wird (Leitplanke §1). Diamond bewusst knapp (nur Elite/Boss). Da das
-  Item-Level bei **+100** cappt, tragen die Gems den **Endgame-Min-Max** — Tiefe der Gem-Achse geht
-  hier vor Schlankheit.
+  keine Farbe zum Grind-Wall wird (Leitplanke §1). Diamond bewusst knapp (Elite/Boss ab Akt 2) und
+  durch `floor(Item-Level / 50)` Prismatic-Sockel natürlich limitiert. Da das Item-Level bei **+100**
+  cappt, tragen die Gems den **Endgame-Min-Max** — Tiefe der Gem-Achse geht hier vor Schlankheit.
+- **Cinder:** der **einzige** harte Fortschrittsriegel — ohne Cinder steht die Gold-Achse am
+  Seltenheits-Cap. Dreifacher Sink: **Refine** (1/3/6/10 = **20 pro Item** × 18 Items = **360**),
+  **Brand** und **Re-Brand**. Quellen: Boss 1/Kill garantiert (farmbar) + Elite-Bonus-Chance, in
+  **Akt 2 & 3 erhöht**. Muss so liegen, dass der Riegel den Rhythmus taktet, ohne zur Wand zu werden.
+- **Sigils:** Sammel- **und** Tiefen-Achse (Level 1–5, auf Level 5 aus dem Pool). Pool-Größe
+  **unter 18** (Slot-Zahl), damit der Verteilungsdruck bleibt. Das **Gewicht unbekannter Sigils** im
+  Wurf tunt die Sammel-Geschwindigkeit; **Re-Brand-Kosten** entscheiden, ob das Neuverteilen ein
+  laufender Hebel oder ein Luxus ist (Ziel: laufender Hebel).
 
 ## 5. Offene Balancing-Fragen / Tuning-Notizen
 
@@ -95,23 +103,26 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
 - [ ] Waffen-Damage-Range-Breiten je Seltenheit.
 - [ ] **Item-Level-Kurve (Cap +100):** Innate-Value je `+n` (Might exp., Toughness/Vitality/Initiative
       linear?), Verteilung der 100 Stufen.
-- [ ] **Cinder-Ökonomie:** Refine-Kosten (Vorschlag **C→M=1, M→R=3, R→L=6**) final bestätigen;
-      Cinder-Kosten der Unique-Sockel-Unlocks (1→4). Elite-Cinder-Drop-Chance als **monoton mit
-      globaler Floor-Tiefe** steigende Kurve (kein Akt-Reset; Boss stets 100 %/Kill). Gegen den
-      Gesamt-Sink balancieren (6 Slots × 3 Chars + Uniques).
+- [ ] **Cinder-Ökonomie (vollständig durchrechnen):** Refine-Kette **1/3/6/10** gegen den Gesamt-Sink
+      (18 Slots × 20 = **360** + Brand + Re-Brand). Elite-Cinder-Drop-Chance als **monoton mit
+      globaler Floor-Tiefe** steigende Kurve (kein Akt-Reset; Boss stets 100 %/Kill) plus die
+      **Erhöhung in Akt 2 & 3**. Brand- und Re-Brand-Kosten festlegen.
 - [ ] **break_eternity.js nötig?** Da alle Achsen bei 100 bzw. `+100` cappen: prüfen, ob die steilste
       Kombination (Item-Level `+100` × Multiplikatoren) `Number.MAX_SAFE_INTEGER` überhaupt noch reißt —
       falls nicht, kann die Lib entfallen (AGENTS.md §5).
-- [ ] **Sockel-Zahlen je Seltenheit** (1/2/3/4 + Unique bis 4 +1 Prismatic) final bestätigen;
-      **Unique-Start-Sockel floor-skaliert** (A1=1, A2=2, A3=3), Rest per Cinder.
+- [ ] **Item-Level-Caps je Seltenheit** (+20/+40/+60/+80/+100) und **Sockel-Zahlen** (0/1/2/3/4)
+      gegen die Temper-Gold-Kurve prüfen: Liegen die Landmarken (20/40/50/60/80/100) angenehm im
+      Spielverlauf, oder verschiebt die Exponentialkurve die späten Stufen zu weit nach hinten?
+- [ ] **Sigils:** Pool-Größe (< 18), **Mindesttiefen** je Sigil, Drop-Chance je Encounter-Typ,
+      **Gewicht unbekannter Sigils** im Wurf, **Level-Skalierung des Implicits** (1→5).
 - [ ] **Gem-Value-Ranges** je Pool-Affix + Range-Anhebung pro Gem-Level (relative Position bleibt).
 - [ ] **Offensiv-Gem-Targeting:** Amber (4 Chance) + Ruby (4 Damage) → je 25 % Chance auf den
       Ziel-Stat beim Sockeln; Reroll-Kosten (Gold) so tunen, dass Ziel-Treffer erschwinglich bleibt.
 - [ ] **Gem-Drop-Raten** & Aufleveln-Fodder-Kurve (Grind-Wall-Vermeidung); Diamond-Drop-Rate.
 - [ ] **Prismatic/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (Attack-exp
       vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als Sicherheitsgurt).
-- [ ] **Blacksmith/Jeweler-Gold-Kosten** (Forge, Temper, Refine, Inlay, Recut, Attune) — Refine
-      zusätzlich in **Cinder**.
+- [ ] **Blacksmith/Jeweler-Gold-Kosten** (Temper, Refine, Brand, Inlay, Recut, Attune) — Refine und
+      Brand zusätzlich in **Cinder**.
 
 ---
 

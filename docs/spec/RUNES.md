@@ -1,12 +1,12 @@
-# SPEC — Runen (§4.6, Endgame / Masterwork)
+# SPEC — Runen (Endgame / Masterwork)
 
-> Teil der [SPEC](../SPEC.md). Verbindliche Regeln für Rune Grimoire, Talisman, Rite,
-> Auslösung, Rune-Level und die Masterwork-Nodes.
-> Verwandt: [Kampf](COMBAT.md) · [Crucible (§4.3)](PROGRESSION.md#43-crucible-globaler-skilltree)
+> Teil der [SPEC](../SPEC.md): Rune Grimoire, Talisman, Rite, Auslösung, Rune-Level und die
+> Masterwork-Nodes.
+> Verwandt: [Kampf](COMBAT.md) · [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)
 
 ---
 
-## 4.6 Runen (Endgame / Masterwork)
+## 1. Grundsatz & Abgrenzung
 
 Runen sind die einzige **qualitative** Fortschritts-Achse: Sie fügen dem Kampf **konditionale
 Ereignisse und temporäre Effekte** hinzu. Alle anderen Achsen (Item-Level, Seltenheit, Gems,
@@ -14,14 +14,14 @@ Sigils, Skilltree, Attribute) sind **permanente Werte**.
 
 - **Verbindliche Abgrenzung:** Eine Rune trägt **nie** „+X Stat". Was eine Rune tut, muss etwas
   sein, das kein Stat ausdrücken kann — z. B. Barrier **mitten in** der Runde (die sonst nur zu
-  Rundenbeginn gesetzt wird, [§1.1](COMBAT.md#11-rundenablauf)), Schaden, der **Bulwark ignoriert**
-  ([§2.4](COMBAT.md#24-bulwark-deckung-der-backline)), ein **temporärer**
+  Rundenbeginn gesetzt wird, [Rundenablauf](COMBAT.md#11-rundenablauf)), Schaden, der **Bulwark ignoriert**
+  ([Bulwark](COMBAT.md#24-bulwark-deckung-der-backline)), ein **temporärer**
   Buff oder eine Extra-Aktion.
 - Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet
-  ([§4.3](PROGRESSION.md#43-crucible-globaler-skilltree));
+  ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree));
   vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runedust-Drop).
 
-### Träger: Rune Grimoire, Talisman, Rite
+## 2. Träger: Rune Grimoire, Talisman, Rite
 
 | Begriff           | Rolle                                                                                                       |
 | ----------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -30,19 +30,19 @@ Sigils, Skilltree, Attribute) sind **permanente Werte**.
 | **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                |
 
 - Der **Talisman ist kein siebter Ausrüstungs-Slot**: er trägt **keine** der vier Item-Schichten
-  ([§3.4](CHARACTERS.md#34-ausrüstung)) — kein Innate, kein Item-Level, keine Seltenheit, keine
+  ([Ausrüstung](CHARACTERS.md#6-ausrüstung)) — kein Innate, kein Item-Level, keine Seltenheit, keine
   Gems — und erscheint **nicht** in der Ausrüstungs-Ansicht, sondern ausschließlich in der
   Runen-Ansicht.
 - Das Rune Grimoire ist ein **reiner Wissensstand — kein Bestand, kein Inventar** (Modellform wie
-  der Sigil Codex, [§4.5](CRAFTING.md#45-ausrüstung-loot--handwerk-kern-loop)). Man besitzt von
-  jeder bekannten Rune **genau ein Exemplar** → sie steckt in
-  **höchstens einem** Rite, teamweit. Keine Duplikate, keine Stacks.
-- Unentdeckte Runen sind als **Silhouette** mit ihrer **Kategorie** sichtbar, sobald ihre
+  der Sigil Codex, [Items, Loot & Handwerk](ITEMS.md)). Man besitzt von jeder bekannten Rune
+  **genau ein Exemplar** → sie steckt in **höchstens einem** Rite, teamweit. Keine Duplikate,
+  keine Stacks.
+- Unentdeckte Runen sind als Silhouette mit ihrer Kategorie sichtbar, sobald ihre
   **Mindesttiefe** erreicht ist; der Katalog wächst also mit dem Fortschritt.
 - **Umsockeln ist kostenlos und jederzeit möglich.** Eine ausgebaute Rune geht dabei nicht
   verloren und behält ihr Level.
 
-### Aufbau eines Rite
+## 3. Aufbau eines Rite
 
 Ein Rite besteht aus drei Runen-Kategorien:
 
@@ -55,22 +55,22 @@ Ein Rite besteht aus drei Runen-Kategorien:
 Bei drei Charakteren mit je einem Rite sind **9 von 17** Runen gleichzeitig aktiv.
 
 **Trigger** — je einer pro Muster; die ersten vier sind an die vier Skilltree-Zweige gekoppelt
-([§3.2](CHARACTERS.md#32-charakter-skilltree)), der Rite liest damit den gebauten Build:
+([Charakter-Skilltree](CHARACTERS.md#4-charakter-skilltree)), der Rite liest damit den gebauten Build:
 
 `OnCrit` · `OnMultiHit` · `OnSplash` · `OnCounter` ·
-`OnBlock` ([§2.3](COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 3) ·
+`OnBlock` ([Schadenspipeline](COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 3) ·
 `OnEvade`
 
 **Effect** — jeder Eintrag ist ein Effekt, den kein Stat leistet:
 
-| Effect       | Wirkung                                                                                                         |
-| ------------ | --------------------------------------------------------------------------------------------------------------- |
-| **Heal**     | heilt Health                                                                                                    |
-| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert ([§1.1](COMBAT.md#11-rundenablauf))     |
-| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** ([§2.4](COMBAT.md#24-bulwark-deckung-der-backline)) |
-| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel                            |
-| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                                                          |
-| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, [§2.1](COMBAT.md#21-charakter-zug-ausgehender-schaden))         |
+| Effect       | Wirkung                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **Heal**     | heilt Health                                                                                                        |
+| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert ([Rundenablauf](COMBAT.md#11-rundenablauf)) |
+| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** ([Bulwark](COMBAT.md#24-bulwark-deckung-der-backline))  |
+| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel                                |
+| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                                                              |
+| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, [Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden))    |
 
 **Modifier** — jeder Modifier manipuliert **genau eine** von vier Facetten eines Effects. Dadurch
 ist **jede** Trigger/Effect/Modifier-Kombination automatisch definiert und braucht keine
@@ -84,7 +84,7 @@ Kompatibilitätsmatrix:
 | **Surge**     | **Magnitude** | Stärke skaliert mit einem **Stat des Trägers**                 |
 | **Lingering** | **Dauer**     | der Effect wiederholt sich zu Beginn der **nächsten Runde**    |
 
-### Auslösung (verbindlich)
+## 4. Auslösung (verbindlich)
 
 - **Ein Rite löst maximal einmal pro Runde aus** — beim **ersten** qualifizierenden Event.
   **Ohne Ausnahme:** Keine Rune und kein Modifier hebt dieses Limit.
@@ -95,11 +95,11 @@ Kompatibilitätsmatrix:
 - **Rune-erzeugte Effekte emittieren keine Trigger-Events.** Es gibt keine Rune-Ketten und keine
   Selbst-Retriggerung.
 - **Keine Rune heilt oder belebt Gegner.** Der Endlichkeits-Beweis jedes Kampfes
-  ([§1.1](COMBAT.md#11-rundenablauf)) beruht
+  ([Rundenablauf](COMBAT.md#11-rundenablauf)) beruht
   auf **monoton sinkender** Gegner-Gesamt-Health.
-- Aller Zufall bleibt beim seedbaren PRNG ([§2.5](COMBAT.md#25-feststehende-regeln)).
+- Aller Zufall bleibt beim seedbaren PRNG ([Feststehende Regeln](COMBAT.md#25-feststehende-regeln)).
 
-### Rune-Level
+## 5. Rune-Level
 
 Jede Rune hat ein **Level**; jede Kategorie levelt ihre eigene Facette, damit alle drei Runen
 eines Rite lohnende Ziele sind:
@@ -110,35 +110,35 @@ eines Rite lohnende Ziele sind:
 | **Trigger**  | einen **+% Magnitude**-Aufschlag auf den gesamten Rite (Attunement)             |
 | **Modifier** | die **Stärke der Modifikation** (Echo: Kraft der 2. Auslösung; Chain: Zielzahl) |
 
-- **Level-Cap = Stand des `Rune Mastery`-Nodes** (§ unten). Der `Rune Grimoire`-Node bringt Cap **1**
-  mit, `Rune Mastery` hebt es auf **2/3/4/5**.
+- **Level-Cap = Stand des `Rune Mastery`-Nodes** ([§8](#8-masterwork-nodes)). Der
+  `Rune Grimoire`-Node bringt Cap **1** mit, `Rune Mastery` hebt es auf **2/3/4/5**.
 - Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
   vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
 
-### Runedust (Drop)
+## 6. Runedust (Drop)
 
 Verbindlicher Wohnort der Runedust-Drop-Regeln.
 
 - Droppt von **allen** Gegnern, **sobald der `Rune Grimoire`-Node freigeschaltet ist** — vorher
   gar nicht.
-- **Elite/Boss-Bonus**, Ausschüttung nach **Floor-Tiefe** gestaffelt (Kurve = Balancing).
+- Elite/Boss-Bonus, Ausschüttung nach Floor-Tiefe gestaffelt (Kurve = Balancing).
 - Finanziert **Inscribe** (neue Rune) und **Etch** (Rune aufleveln), siehe unten.
 
-### Rune-Grimoire-Aktionen
+## 7. Rune-Grimoire-Aktionen
 
 - **Inscribe (neue Rune):** **pro Kategorie** ein eigenes Rezept — man wählt Trigger, Effect oder
-  Modifier und erhält eine **zufällige noch unbekannte** Rune **dieser Kategorie**, gezogen aus
-  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: **Runedust + Gold**.
+  Modifier und erhält eine **zufällige noch unbekannte** Rune dieser Kategorie, gezogen aus
+  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: Runedust + Gold.
   - **Es werden ausschließlich Unbekannte gezogen** — keine Duplikate, keine Fehlzüge
-    (Design-Absicht: [DESIGN §5](../DESIGN.md)).
+    (Design-Absicht: [DESIGN §5](../DESIGN.md#5-bewusste-nicht-ziele-design-perspektive)).
   - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
 - **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
-  Kosten: **Runedust + Gold**, pro Level steigend. Kein RNG.
-- Der **`Rune Grimoire`-Node schenkt** einen Starter-**Trigger** und einen Starter-**Effect**, damit im
+  Kosten: Runedust + Gold, pro Level steigend. Kein RNG.
+- Der **`Rune Grimoire`-Node schenkt** einen Starter-Trigger und einen Starter-Effect, damit im
   Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
-  ersten Sigil-Drop, [§4.5](CRAFTING.md#45-ausrüstung-loot--handwerk-kern-loop)).
+  ersten Sigil-Drop, [Items, Loot & Handwerk](ITEMS.md)).
 
-### Masterwork-Nodes
+## 8. Masterwork-Nodes
 
 | Node              | Level | Wirkung                                                                           | Crystals |
 | ----------------- | ----- | --------------------------------------------------------------------------------- | -------- |
@@ -149,7 +149,7 @@ Verbindlicher Wohnort der Runedust-Drop-Regeln.
 |                   |       |                                                                                   | **23**   |
 
 `Talisman` und `Runic Focus` sind **charakterweise** gestaffelt — Stufe `n` schaltet den Slot für
-Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md)).
+Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md#32-build-entscheidungen-die-sich-unterscheiden-sollen)).
 
 <!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
      Level-Skalierung je Stufe), Runedust-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für

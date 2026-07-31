@@ -4,26 +4,27 @@ Leitfaden für AI-Agenten und Entwickler, die an diesem Projekt arbeiten.
 Diese Datei beschreibt **verbindliche Konventionen**. Interne Dokumentation und
 Code-Kommentare sind auf **Deutsch**, sämtliche **Spieltexte (UI + Content) auf Englisch**.
 
-### Doku-Stil (verbindlich)
-
-- **Beschreibe den Ist-Zustand.** Schreib, was gilt — nicht, was nicht (mehr) gilt oder
-  wovon etwas unabhängig ist. Kontrast zu früheren Entwürfen gehört in die Diskussion,
-  nicht ins Dokument.
-- **Ein Fakt an genau einer Stelle.** Punkte nicht über Abschnitte/Dateien wiederholen —
-  stattdessen verweisen (`§x`).
-- **Knapp.** Kein rhetorisches Framing; Begründungen gehören nach DESIGN/BALANCING, nicht
-  ins SPEC.
-
 ### Weitere Dokumentation (`docs/`)
 
-Diese Datei ist die **lebende Quelle für Regeln & Konventionen**. Das Spiel selbst
-und Entscheidungen sind ergänzend dokumentiert:
+Diese Datei ist die **lebende Quelle für technische Konventionen**: Stack, Projektstruktur,
+Werkzeuge, Arbeitsweise. Das Spiel selbst ist unter [`docs/`](docs/) dokumentiert.
 
-- [`docs/DESIGN.md`](docs/DESIGN.md) — Vision, Design-Pillars, Player Experience („Warum / Wie soll es sich anfühlen?").
-- [`docs/SPEC.md`](docs/SPEC.md) — präzise Mechanik-Regeln, Formeln, Zustände („Wie verhält es sich exakt?"). **Index mit den Invarianten**; der Inhalt liegt thematisch aufgeteilt in [`docs/spec/`](docs/spec/) (Kampf, Charaktere, Progression, Handwerk, Runen, Simulation, Persistenz). Die **§-Nummerierung ist über alle Teildateien hinweg eindeutig** — ein Verweis wie „SPEC §2.3" bleibt gültig, die Zuordnung § → Datei steht im Index.
-- [`docs/BALANCING.md`](docs/BALANCING.md) — Balancing-Philosophie & Begründung der Kurven/Werte. Umgesetzte Zahlen leben als Content unter `src/game/` (§4).
-- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — verbindliche Begriffe (DE interne Prosa ↔ EN Code/UI). **Namens-Register, keine Regel-Quelle:** ein Eintrag nennt, grenzt ab und verlinkt den Wohnort in der SPEC. Bei Konflikt zwischen Glossar und SPEC gilt die **SPEC**.
-- [`docs/adr/`](docs/adr/) — Architecture Decision Records: unveränderliches „Wann & warum"-Logbuch. Bei Konflikt gilt **AGENTS.md**; ADRs erklären nur das Warum dahinter.
+**Einstieg dort: [`docs/README.md`](docs/README.md)** — Landkarte aller Doku-Dateien
+(DESIGN, SPEC + [`docs/spec/`](docs/spec/), BALANCING, GLOSSARY, Backlog, ADRs), **Dokumentations-Stil**,
+Verweis-/Anker-Konvention und die Pflichten bei Doku-Änderungen. Wer Doku schreibt oder ändert,
+liest diese Datei zuerst.
+
+### Präzedenz bei Konflikten
+
+| Frage                                                              | Verbindlich                                                 |
+| ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Was das Spiel tut** — Regeln, Formeln, Zustände, Save-Verhalten  | [`docs/SPEC.md`](docs/SPEC.md) + [`docs/spec/`](docs/spec/) |
+| **Wie wir es bauen** — Stack, Struktur, Tooling, Workflow, Do-NOTs | **AGENTS.md** (diese Datei)                                 |
+| **Welche Zahl** ein Tuning-Wert hat                                | Content unter `src/game/`                                   |
+
+Diese Datei beschreibt Spielverhalten daher **nicht** — sie nennt nur die technische Konvention
+und verlinkt die Regel. Steht Spielverhalten trotzdem doppelt, gilt die **SPEC**; Glossar und
+ADRs sind der SPEC ebenfalls nachgeordnet.
 
 ---
 
@@ -42,17 +43,17 @@ Auto-Battle-Kämpfen** zwischen dem eigenen Team und Gegnern.
 
 ## 2. Tech-Stack
 
-| Bereich          | Wahl                                                          |
-| ---------------- | ------------------------------------------------------------- |
-| Framework        | React 19 **mit React Compiler** (automatische Memoisierung)   |
-| Sprache          | TypeScript 5, **strict mode** (siehe §9)                      |
-| Build-Tool       | Vite                                                          |
-| Styling          | **Tailwind CSS v4** (CSS-first `@theme`, `@tailwindcss/vite`) |
-| State-Management | **Zustand**                                                   |
-| Zahlen           | native `number` — **keine** Big-Number-Lib (§5, ADR-0004)     |
-| Validierung      | **Zod** (nur Save-Laufzeitvalidierung, siehe §7)              |
-| Package Manager  | **npm**                                                       |
-| Node             | **≥ 24** (`engines` in `package.json`, `.nvmrc`)              |
+| Bereich          | Wahl                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Framework        | React 19 **mit React Compiler** (automatische Memoisierung)                                |
+| Sprache          | TypeScript 5, **strict mode** (siehe [§9](#9-typescript-konfiguration))                    |
+| Build-Tool       | Vite                                                                                       |
+| Styling          | **Tailwind CSS v4** (CSS-first `@theme`, `@tailwindcss/vite`)                              |
+| State-Management | **Zustand**                                                                                |
+| Zahlen           | native `number` — **keine** Big-Number-Lib ([§5](#5-architektur-des-game-loops), ADR-0004) |
+| Validierung      | **Zod** (nur Save-Laufzeitvalidierung, siehe [§7](#7-persistenz--robustheit))              |
+| Package Manager  | **npm**                                                                                    |
+| Node             | **≥ 24** (`engines` in `package.json`, `.nvmrc`)                                           |
 
 ### Tooling
 
@@ -116,65 +117,62 @@ Spiellogik**.
 - Kein JSON — volle TS-Typsicherheit hat Vorrang.
 - **Wachstumskurven liegen als vorberechnete Werte je Stufe** im Content, nicht als
   `Math.pow`-Aufrufe zur Laufzeit. Grund: `Math.pow` ist zwischen JS-Engines nicht bit-identisch
-  garantiert und würde den Determinismus über Browser hinweg aufweichen (§5).
+  garantiert und würde den Determinismus über Browser hinweg aufweichen
+  ([§5](#5-architektur-des-game-loops)).
 
 ---
 
-## 5. Game-Loop & Kampf
+## 5. Architektur des Game-Loops
+
+Wie sich der Kampf **verhält**, steht in
+[`docs/spec/SIMULATION.md`](docs/spec/SIMULATION.md) und
+[`docs/spec/COMBAT.md`](docs/spec/COMBAT.md). Hier stehen die **Bauvorschriften**, die dieses
+Verhalten überhaupt erreichbar machen.
 
 ### Simulation ≠ Rendering (strikt getrennt)
 
-- Die **Kampf-Engine** (`src/features/combat/combatEngine.ts` o. ä.) ist **reine,
-  deterministische Logik**: gleicher Seed + gleicher Input ⇒ exakt gleicher Kampfverlauf.
-  Sie hat **keinen** Bezug zu Timern, DOM oder Echtzeit.
-- Das **Rendering/Playback** spielt die simulierten Runden mit visueller Verzögerung ab.
-- Die Simulation läuft **inkrementell/auf Abruf** (reine „Zustand → nächste Runde"-Funktion),
-  **nicht** als Vorab-Komplettberechnung des Kampfes. **Dasselbe Schrittwerk** treibt Playback
-  (ein Schritt pro Anzeige-Takt) und Catch-up (Schritte ohne Animation) — daher kein Vorab-Wait
-  beim Floor-Einstieg. Ein **Rundenlimit** ist nicht nötig: Jeder Kampf ist endlich (Gegner
-  heilen nicht, Gegner-Health sinkt monoton), und die Simulation ist an Echtzeit gebunden
-  (eine Runde pro Takt).
-- Diese Trennung ist Voraussetzung für Catch-up (siehe unten), Testbarkeit und spätere
-  interaktive Eingriffsmechaniken.
+- Die **Kampf-Engine** (`src/features/combat/combatEngine.ts` o. ä.) ist **reine Logik**: keine
+  Timer, kein DOM, kein `Date.now()`, kein Zugriff auf Stores. Nur so ist sie deterministisch
+  testbar.
+- Sie exponiert eine **„Zustand → nächster Schritt"-Funktion** und rechnet **keinen** Kampf
+  vorab durch. **Dasselbe Schrittwerk** bedient Playback und Catch-up — es gibt keine zweite
+  Code-Bahn für den Schnelldurchlauf.
+- Das **Playback** liegt in der Anzeige-Schicht und darf den Kampfverlauf nicht berühren:
+  Geschwindigkeitsstufen ändern die Darstellung, nie das Ergebnis.
+- Diese Trennung ist Voraussetzung für Catch-up, Testbarkeit und spätere interaktive
+  Eingriffsmechaniken.
 
-### Zufall - seedbarer PRNG (Pflicht)
+### Zufall — seedbarer PRNG (Pflicht)
 
-- **Aller** Zufall im Spiel (Trefferchance, Krit, Schadensstreuung, …) läuft über einen
-  **seedbaren PRNG** (`mulberry32`, klein und dependency-frei in `src/shared/utils/`).
-  **Kein** `Math.random()` in Spiellogik.
-- **Getrennte Ströme, hierarchisch abgeleitet** (SPEC §5.3):
-  `saveSeed → runSeed(dungeonId, runCounter) → floorSeed(floorIndex)` mit je einem Strom für
-  `combat`, `init` und `loot`. Grund: Bei einem gemeinsamen Strom verschiebt jede Änderung an der
-  Kampfformel alle Loot-Ergebnisse und koppelt damit unabhängige Testsuiten aneinander.
-  Die Strom-Label sind Teil des Determinismus und liegen als Konstanten an einer Stelle.
-- Der `runCounter` wird **beim Run-Start persistiert** — daraus folgen frische Drops beim Farmen
-  **und** die Unmöglichkeit von Save-Scumming.
-- Vorteile: reproduzierbare Kämpfe (deterministische Tests statt Wertebereich-Asserts),
-  aussagekräftige Bug-Reports (`saveSeed, dungeonId, runCounter, floorIndex`), spätere
-  Replay-Fähigkeit.
+- **Aller** Zufall der Spiellogik läuft über den **seedbaren PRNG** (`mulberry32`, klein und
+  dependency-frei in `src/shared/utils/`). **Kein** `Math.random()` in Spiellogik
+  ([§14](#14-do-not)).
+- Die Seed-Hierarchie und die **getrennten Ströme** (`combat`, `init`, `loot`) sind
+  Spielverhalten und in
+  [Seeds und Zufalls-Ströme](docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme) festgelegt. Konvention hier:
+  Die **Strom-Label sind Konstanten an genau einer Stelle** — sie gehören zum Determinismus, ein
+  Tippfehler im Label ist ein stiller Verhaltensbruch.
+- **Die Ziehreihenfolge ist Teil der Spezifikation**
+  ([Charakter-Zug](docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)). Ein zusätzlicher oder
+  entfallener Wurf ändert jeden Folgekampf — beim Umbau der Kampfformel sind die
+  Test-Vektoren der SPEC die Referenz.
 
-### Zeitverhalten / Catch-up
+### Zeitverhalten
 
-- **Tab geschlossen ⇒ kein Fortschritt.** Offline-Progress ist ein ausdrückliches **Non-Goal**
-  (nicht implementieren, auch nicht "aus Best-Practice-Reflex").
-- **Anzeigeeinheit ist der Takt: ein Akteur am Zug**, Grundtakt **1000 ms** (SPEC §5.1). Die
-  Geschwindigkeitsstufen (Pause, 2×) leben ausschließlich in der Anzeige-Schicht und dürfen den
-  Kampfverlauf nicht berühren.
-- **Tab offen, aber minimiert/vom Browser gedrosselt** ⇒ beim Wiederöffnen wird **aufgeholt**.
-  Tragend ist ein **Zeit-Akkumulator** (aus real vergangener Zeit die fälligen Takte ableiten);
-  die **Page Visibility API** löst das Aufholen nur sofort aus und unterdrückt die Animation.
-  Ein Batch arbeitet in einem **Zeitbudget pro Frame** und gibt dazwischen an den Browser ab.
-- **Deckel: höchstens 5 Minuten** real vergangener Zeit werden nachgeholt, darüber verfällt sie —
-  sonst wäre ein über Nacht minimierter Tab faktisch Offline-Progress.
-- **Der laufende Kampfzustand wird nie persistiert** (SPEC §5.4): Ein Reload beendet den Run,
-  bereits committete Belohnungen bleiben erhalten.
+- Tragend ist ein **Zeit-Akkumulator** (aus real vergangener Zeit die fälligen Takte ableiten);
+  die **Page Visibility API** ist nur Beschleuniger, nicht Grundlage. Ein Catch-up-Batch arbeitet
+  in einem **Zeitbudget pro Frame** und gibt dazwischen an den Browser ab.
+- Takt-Länge, Geschwindigkeitsstufen und der Catch-up-Deckel sind Spielverhalten:
+  [Playback](docs/spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit) /
+  [Catch-up](docs/spec/SIMULATION.md#3-zeitverhalten--catch-up).
+- **Offline-Progress ist ein Non-Goal** ([§13](#13-non-goals-bewusst-nicht-umsetzen)) — nicht implementieren, auch nicht „aus
+  Best-Practice-Reflex".
 
 ### Zahlen
 
-- Alle Werte laufen über native `number`. Die Progressions-Achsen sind gedeckelt (Level 100,
-  Item-Level `+100`, kein Prestige); die Spitzenwerte liegen bei ~10⁸–10¹⁰ und damit weit unter
-  `Number.MAX_SAFE_INTEGER` (~9×10¹⁵). Eine Big-Number-Bibliothek wird bewusst **nicht**
-  eingesetzt (ADR-0004).
+- Alle Werte laufen über native `number`; eine Big-Number-Bibliothek wird bewusst **nicht**
+  eingesetzt (ADR-0004). Die Progressions-Achsen sind gedeckelt, die Spitzenwerte liegen bei
+  ~10⁸–10¹⁰ und damit weit unter `Number.MAX_SAFE_INTEGER` (~9×10¹⁵).
 - **Revisions-Auslöser:** Kommt je eine Progressions-Achse **ohne Cap** hinzu (Prestige,
   Endlos-Modus), ist diese Entscheidung neu zu bewerten.
 - Ein Helper in `src/shared/utils/` kapselt die **Formatierung** großer Zahlen für die UI.
@@ -193,6 +191,9 @@ Spiellogik**.
 ---
 
 ## 7. Persistenz & Robustheit
+
+**Wann** gespeichert wird und **was** im Save liegt, steht in
+[Persistenz](docs/spec/PERSISTENCE.md). Hier steht, **womit**.
 
 ### Speicherstand
 

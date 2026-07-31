@@ -1,1053 +1,145 @@
-# SPEC.md — Crucible Idle RPG
+# SPEC.md — Crucible Idle RPG (Index)
 
-> **Zweck dieser Datei:** präzise, umsetzbare Mechanik-Regeln, Formeln und Zustände.
+> **Zweck dieser Spec:** präzise, umsetzbare Mechanik-Regeln, Formeln und Zustände.
 > Beantwortet **„Wie verhält sich das Spiel exakt?"**. Vision & Begründungen stehen
 > in [DESIGN.md](DESIGN.md), Begriffe in [GLOSSARY.md](GLOSSARY.md), technische
 > Konventionen in [../AGENTS.md](../AGENTS.md).
 >
-> Diese Datei beschreibt das **Verhalten**, nicht die **Balancing-Zahlen** —
-> konkrete Kurven, Kosten und Werte gehören als deklarativer Content unter
-> `src/game/` (siehe AGENTS.md §4). Offene Punkte sind mit `TODO` markiert.
+> **Welche Zahlen hier stehen.** Die Spec enthält die **strukturellen Konstanten**, die das
+> Verhalten definieren: Caps und Obergrenzen (Level 100, Item-Level `+100`), Stufenzahlen
+> (Seltenheiten, Node-Level 1–5), Mengen (3 Akte × 5 Dungeons × 20 Floors, sechs Slots,
+> Pool-Größen) und die Struktur der Formeln. **Tuning-Werte** — Kurven, Drop-Raten, Kosten,
+> Prozentsätze — leben als deklarativer Content unter `src/game/` (siehe AGENTS.md §4), ihre
+> Begründung in [BALANCING.md](BALANCING.md).
+>
+> _Faustregel:_ Ändert sich eine Zahl beim Balancing-Pass, gehört sie nach `src/game/`. Ändert
+> sich mit ihr die **Struktur** des Systems, gehört sie hierher.
+>
+> **Was hier nicht steht.** Begründungen für Design-Entscheidungen stehen in
+> [DESIGN.md](DESIGN.md), Begründungen für Zahlenverhalten in [BALANCING.md](BALANCING.md),
+> Entscheidungs-Historie in [adr/](adr/). Hier bleibt Begründung nur, wo sie eine
+> **Fehlimplementierung verhindert** (etwa: warum die PRNG-Ströme getrennt sind).
+> Offene Punkte sind mit `TODO` markiert.
+>
+> Diese Datei ist der **Index**. Der Inhalt liegt in [spec/](spec/), aufgeteilt nach
+> Themen; die **§-Nummerierung bleibt unverändert** und ist über alle Teildateien
+> hinweg eindeutig.
 
 ---
 
-## 1. Kampf — Grundmodell
+## Teildateien
 
-- Kampf ist **rundenbasiert** zwischen **eigenem Team** (drei Charaktere, §3) und einer
-  **Gegnerformation** (bis zu sechs Gegner, §1.3).
-- Der Kampf ist **deterministisch** und **render-unabhängig** simuliert: Die Engine erzeugt
-  die Runden **schrittweise auf Abruf** (eine reine „Zustand → nächste Runde"-Funktion), das
-  Rendering spielt sie Runde für Runde **ab** — Simulation ≠ Rendering (siehe §5).
-- Ergebnis eines Kampfes ist **Sieg** (alle Gegner besiegt) oder **Niederlage/Wipe**
-  (alle Charaktere besiegt). Ein Sieg erzeugt eine **Belohnung** (einziger
-  Fortschrittsweg, siehe DESIGN §2).
-- Es gibt **keine aktiven, vom Spieler ausgelösten Fähigkeiten** im Kampf. Der Kampf
-  läuft vollständig automatisch ab; der Spieler beeinflusst ihn ausschließlich **vor**
-  dem Kampf über Charakter-Builds und Ausrüstung. (Die Architektur bleibt für spätere
-  aktive Eingriffe offen, DESIGN-Pillar 4 — aktuell nicht umgesetzt.)
+| Datei                                      | §              | Inhalt                                                                      |
+| ------------------------------------------ | -------------- | --------------------------------------------------------------------------- |
+| [spec/COMBAT.md](spec/COMBAT.md)           | §1, §2         | Rundenablauf, Zielauswahl, Formation, Kampfwerte, Schadenspipeline, Heilung |
+| [spec/CHARACTERS.md](spec/CHARACTERS.md)   | §3             | Team, Stats, Attribute, Skilltree, Ausrüstung, Signatur-Skills              |
+| [spec/PROGRESSION.md](spec/PROGRESSION.md) | §4.1–4.4, §4.7 | Akte/Dungeons/Floors, Belohnungen, Crucible, Checkpoints, Prestige          |
+| [spec/CRAFTING.md](spec/CRAFTING.md)       | §4.5           | Item-Level, Seltenheit, Sockel, Gems, Sigils, Blacksmith & Jeweler          |
+| [spec/RUNES.md](spec/RUNES.md)             | §4.6           | Rune Grimoire, Talisman, Rite, Auslösung, Masterwork-Nodes                  |
+| [spec/SIMULATION.md](spec/SIMULATION.md)   | §5             | Simulation ≠ Rendering, Playback, Catch-up, Seeds, Reload                   |
+| [spec/PERSISTENCE.md](spec/PERSISTENCE.md) | §6             | Speicher-Auslöser und Save-Inhalt                                           |
 
-### 1.1 Rundenablauf
+**Konvention für Verweise:** `§X` innerhalb einer Teildatei bezieht sich auf dieselbe Datei.
+Verweise über Dateigrenzen hinweg sind verlinkt.
 
-Ein Kampf besteht aus **Runden**. In jeder Runde handelt **jeder lebende Akteur**
-(Charaktere **und** Gegner) **genau einmal**.
+### §-Index (flach)
 
-**Reihenfolge (Initiative):**
+Nachschlagetabelle für Verweise ohne Link — etwa `// siehe SPEC §4.6` in einem Code-Kommentar.
 
-- Alle lebenden Akteure handeln **absteigend nach Initiative**.
-- **Charaktere** haben einen festen Initiative-Wert (Stat, §3).
-- **Gegner** haben eine **Initiative-Range**; ihr konkreter Wert wird **einmalig zu
-  Kampfbeginn** per PRNG innerhalb der Range gewürfelt und bleibt für den restlichen
-  Kampf fix. Gewürfelt wird in **Formations-Index-Reihenfolge** (Frontline 1–3, dann
-  Backline 1–3), damit die PRNG-Sequenz festliegt.
-- Die Reihenfolge ist eine **totale Ordnung** in drei Stufen:
-  1. **höhere Initiative** zuerst,
-  2. bei Gleichstand **Gegner vor Charakter**,
-  3. bei Gleichstand innerhalb einer Seite **niedrigerer Slot-Index** zuerst — Charaktere in
-     Team-Reihenfolge (Korvin → Rhaya → Quinn, §3), Gegner in Formations-Index-Reihenfolge.
-- Die Ordnung verbraucht **keinen** PRNG-Zug und ist damit für jeden Zustand eindeutig
-  bestimmt.
+| §        | Datei                 | Abschnitt                                                                                |
+| -------- | --------------------- | ---------------------------------------------------------------------------------------- |
+| **§1**   | `spec/COMBAT.md`      | [Kampf — Grundmodell](spec/COMBAT.md#1-kampf--grundmodell)                               |
+| **§1.1** | `spec/COMBAT.md`      | [Rundenablauf](spec/COMBAT.md#11-rundenablauf)                                           |
+| **§1.2** | `spec/COMBAT.md`      | [Zielauswahl](spec/COMBAT.md#12-zielauswahl)                                             |
+| **§1.3** | `spec/COMBAT.md`      | [Gegnerformation](spec/COMBAT.md#13-gegnerformation)                                     |
+| **§2**   | `spec/COMBAT.md`      | [Kampfwerte & Formeln](spec/COMBAT.md#2-kampfwerte--formeln)                             |
+| **§2.1** | `spec/COMBAT.md`      | [Charakter-Zug (ausgehend)](spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)         |
+| **§2.2** | `spec/COMBAT.md`      | [Treffermodell](spec/COMBAT.md#22-treffermodell)                                         |
+| **§2.3** | `spec/COMBAT.md`      | [Schadenspipeline](spec/COMBAT.md#23-eingehender-schaden-schadenspipeline)               |
+| **§2.4** | `spec/COMBAT.md`      | [Bulwark](spec/COMBAT.md#24-bulwark-deckung-der-backline)                                |
+| **§2.5** | `spec/COMBAT.md`      | [Feststehende Regeln](spec/COMBAT.md#25-feststehende-regeln)                             |
+| **§2.6** | `spec/COMBAT.md`      | [Heilung](spec/COMBAT.md#26-heilung--grenzen-und-auslösung)                              |
+| **§3**   | `spec/CHARACTERS.md`  | [Team](spec/CHARACTERS.md#3-team)                                                        |
+| **§3.0** | `spec/CHARACTERS.md`  | [Stats](spec/CHARACTERS.md#30-stats)                                                     |
+| **§3.1** | `spec/CHARACTERS.md`  | [Attribute](spec/CHARACTERS.md#31-attribute-level-up-progression)                        |
+| **§3.2** | `spec/CHARACTERS.md`  | [Charakter-Skilltree](spec/CHARACTERS.md#32-charakter-skilltree)                         |
+| **§3.3** | `spec/CHARACTERS.md`  | [Charakterlevel](spec/CHARACTERS.md#33-charakterlevel)                                   |
+| **§3.4** | `spec/CHARACTERS.md`  | [Ausrüstung](spec/CHARACTERS.md#34-ausrüstung)                                           |
+| **§3.5** | `spec/CHARACTERS.md`  | [Signatur-Skills](spec/CHARACTERS.md#35-signatur-skills)                                 |
+| **§4.1** | `spec/PROGRESSION.md` | [Akte, Dungeons, Floors](spec/PROGRESSION.md#41-struktur-akte-dungeons-floors)           |
+| **§4.2** | `spec/PROGRESSION.md` | [Belohnungen](spec/PROGRESSION.md#42-belohnungen-aus-einem-sieg)                         |
+| **§4.3** | `spec/PROGRESSION.md` | [Crucible](spec/PROGRESSION.md#43-crucible-globaler-skilltree)                           |
+| **§4.4** | `spec/PROGRESSION.md` | [Checkpoints, Wipe & Abbruch](spec/PROGRESSION.md#44-checkpoints-wipe--abbruch)          |
+| **§4.5** | `spec/CRAFTING.md`    | [Ausrüstung, Loot & Handwerk](spec/CRAFTING.md#45-ausrüstung-loot--handwerk-kern-loop)   |
+| **§4.6** | `spec/RUNES.md`       | [Runen](spec/RUNES.md#46-runen-endgame--masterwork)                                      |
+| **§4.7** | `spec/PROGRESSION.md` | [Prestige](spec/PROGRESSION.md#47-prestige)                                              |
+| **§5**   | `spec/SIMULATION.md`  | [Simulation & Zeitverhalten](spec/SIMULATION.md#5-simulation--zeitverhalten-verbindlich) |
+| **§5.1** | `spec/SIMULATION.md`  | [Playback](spec/SIMULATION.md#51-playback--takt-und-geschwindigkeit)                     |
+| **§5.2** | `spec/SIMULATION.md`  | [Catch-up](spec/SIMULATION.md#52-zeitverhalten--catch-up)                                |
+| **§5.3** | `spec/SIMULATION.md`  | [Seeds & Ströme](spec/SIMULATION.md#53-seeds-und-zufalls-ströme)                         |
+| **§5.4** | `spec/SIMULATION.md`  | [Kampfzustand & Reload](spec/SIMULATION.md#54-kampfzustand-und-reload)                   |
+| **§6**   | `spec/PERSISTENCE.md` | [Persistenz](spec/PERSISTENCE.md#6-persistenz-save-verhalten)                            |
 
-**Zugreihenfolge als Pending-Queue:**
+**Wohnorte.** „Ein Fakt an genau einer Stelle" gilt projektweit
+([AGENTS.md](../AGENTS.md), Doku-Konventionen); Tabellen sind der Wohnort, Prosa verweist.
+Diese Wohnorte sind über die Teildateien hinweg leicht zu verfehlen:
 
-- Zu Rundenbeginn wird aus allen **lebenden** Akteuren eine nach obiger Ordnung sortierte
-  Liste gebildet. Sie ist Teil des Kampfzustands.
-- Ein Zug entnimmt das **vorderste** Element. Die Queue enthält damit stets nur noch
-  **offene** Aktionen.
-- Stirbt ein Akteur, wird er aus der Queue entfernt — seine Aktion entfällt.
-- **Suppression** (§3.5) ist die einzige Operation, die die Queue umsortiert: Sie verschiebt
-  die noch offene Aktion eines Gegners **innerhalb der laufenden Runde** nach hinten.
-
-**Ablauf einer Runde:**
-
-1. **Rundenbeginn:** Für jeden lebenden Charakter wird die **Barrier** neu gesetzt
-   (Höhe = Barrier-Stat). Nicht verbrauchte Barrier der Vorrunde **verfällt** — Barrier
-   **stackt nicht** über Runden.
-2. **Aktionen** in Initiative-Reihenfolge:
-   - **Charakter am Zug:** ein Basisangriff auf sein priorisiertes Ziel (§1.2), inklusive
-     der Offensiv-Procs (§2.1). **Direkt nach der eigenen Handlung** heilt die
-     **Regeneration** den Charakter.
-   - **Gegner am Zug:** ein Angriff gegen das **gesamte Team** (Team-weit, verteilt über
-     die Schadenspipeline §2.3). Gegner wählen **keine** Einzelziele. **Nachdem** die Pipeline
-     für **alle** Charaktere abgeschlossen ist, lösen die **Counter** aus (§2.1) — in
-     **Slot-Reihenfolge** (Korvin → Rhaya → Quinn), nicht verschachtelt in die Verteilung.
-   - **Suppression** (Quinns Signatur-Skill, §3.5) kann die noch offene Aktion eines Gegners
-     **innerhalb der Runde nach hinten** verschieben — maximal bis an das Rundenende. Jeder
-     lebende Gegner handelt weiterhin **genau einmal** pro Runde; eine Aktion entfällt
-     ausschließlich, wenn der Gegner vor seinem verschobenen Zug **stirbt**.
-3. **Rundenende:** keine gesonderten Effekte (Regeneration triggert pro Akteur, nicht am
-   Rundenende; Barrier verfällt implizit beim Neu-Setzen zu Rundenbeginn).
-
-**Abbruch-/Endbedingungen:**
-
-- **Sieg:** alle Gegner besiegt.
-- **Niederlage/Wipe:** alle Charaktere besiegt → Kampf endet ohne Belohnung (siehe §4.4).
-- **Manueller Abbruch:** Der Spieler kann einen laufenden Kampf jederzeit abbrechen
-  (verlässt den Dungeon, keine Belohnung für den laufenden Floor, §4.4).
-- **Kein Rundenlimit.** Ein Kampf endet ausschließlich durch **Sieg**, **Wipe** oder **manuellen
-  Abbruch** — es gibt keinen automatischen Runden-Cap. Ein unentscheidbarer Deadlock ist dennoch
-  ausgeschlossen: Gegner haben keine Heilung und Charakterangriffe verursachen stets vollen,
-  positiven Schaden (§2.2), die Gegner-Gesamt-Health sinkt also **monoton** → jeder Kampf ist in
-  **endlicher** Rundenzahl entschieden. Die inkrementelle Simulation rechnet zudem nur **eine Runde
-  pro Anzeige-Takt** (auch im Catch-up an Echtzeit gebunden, §5), sodass auch ein sehr langer Kampf
-  die Anwendung nie blockiert; einen zäh laufenden Kampf beendet der Spieler per manuellem Abbruch.
-
-### 1.2 Zielauswahl
-
-**Gegner → Team (bewusste Asymmetrie):**
-
-- Gegner wählen **kein** Einzelziel. Jeder Gegner-Angriff richtet sich gegen das
-  **gesamte Team** und wird über die Schadenspipeline (§2.3) auf die Charaktere verteilt.
-
-**Charakter → Gegner:**
-
-- Charaktere greifen **immer genau einen** Gegner an (plus mögliche Splash-Nebenziele, §2.1).
-- **Tank- & Melee-Charakter:** können **nur die Frontline** angreifen, solange dort Gegner
-  leben. Ein **Taunt** zwingt sie, einen **lebenden gegnerischen Tank vorrangig**
-  anzugreifen.
-- **Ranged-Charakter:** umgeht den Taunt und kann die **Backline von Beginn an** anvisieren,
-  zahlt dafür aber einen laufenden **Bulwark-Malus** (§2.4), solange Frontline-Gegner leben.
-- **Priorisierung innerhalb der wählbaren Ziele:** Gegner mit der **höchsten Initiative
-  zuerst**.
-
-### 1.3 Gegnerformation
-
-- Gegner stehen in einer **2×3-Formation**: zwei **Lanes** (Frontline, Backline) mit je
-  **drei Slots** → **maximal sechs Gegner** pro Kampf.
-- **Rollen:** **Tank** und **Melee** stehen in der **Frontline**, **Ranged** in der
-  **Backline**. **Maximal ein Tank-Gegner** pro Kampf.
-- Gegner-Stats: **Health, Attack, Accuracy, Initiative** (nur diese vier). Gegner haben
-  **keine** Defense und **keine** Evasion → Charakter-Angriffe treffen immer und werden
-  nicht gemindert (§2.2).
-- Die **Frontline schützt die Backline** (Bulwark, §2.4).
+| Thema                                 | Wohnort                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| Barrier (Setzen, Verfall, Pool)       | [§1.1 Rundenbeginn](spec/COMBAT.md#11-rundenablauf)                       |
+| Bulwark-Malus (Anwendung pro Treffer) | [§2.4](spec/COMBAT.md#24-bulwark-deckung-der-backline)                    |
+| Seltenheit → Sockel / Caps / Cinder   | [§4.5 Seltenheits-Tabelle](spec/CRAFTING.md#seltenheit-sockel--level-cap) |
+| Drops von Gems, Cinder, Sigils        | [§4.5 Drops](spec/CRAFTING.md#drops-gems-cinder--sigils)                  |
+| Runedust-Drop                         | [§4.6 Runedust](spec/RUNES.md#runedust-drop)                              |
+| Temper / Refine / Brand               | [§4.5 Blacksmith](spec/CRAFTING.md#blacksmith--temper-refine--brand)      |
+| Inlay / Attune / Recut, Gem-Pools     | [§4.5 Jeweler](spec/CRAFTING.md#jeweler--inlay-attune--recut)             |
+| XP, Gold, Crystals                    | [§4.2](spec/PROGRESSION.md#42-belohnungen-aus-einem-sieg)                 |
+| Simulation, Playback, Seeds           | [§5](spec/SIMULATION.md#5-simulation--zeitverhalten-verbindlich)          |
 
 ---
 
-## 2. Kampfwerte & Formeln
+## Invarianten
 
-> Formeln beschreiben die **Struktur** der Berechnung. Die einzelnen
-> **Faktoren/Konstanten** stammen aus dem Balancing-Content (`src/game/`, siehe
-> [BALANCING.md](BALANCING.md)).
+Diese Regeln gelten dateiübergreifend und sind bei **jeder** Implementierung einzuhalten.
+Sie stehen hier gesammelt, damit sie auch dann sichtbar sind, wenn nur eine Teildatei gelesen
+wird. Der verbindliche Wortlaut steht jeweils am verlinkten Ort.
 
-### 2.1 Charakter-Zug (ausgehender Schaden)
-
-Ein Charakter macht pro Zug **einen Basisangriff**.
-
-**Grundregel — Modifikator vs. Generator.** Die vier Offensiv-Muster teilen sich in zwei Arten:
-
-| Muster        | Art             | Wirkung                                     |
-| ------------- | --------------- | ------------------------------------------- |
-| **Crit**      | **Modifikator** | multipliziert einen Treffer, erzeugt keinen |
-| **Multi Hit** | **Generator**   | erzeugt Treffer auf demselben Ziel          |
-| **Splash**    | **Generator**   | erzeugt Treffer auf Nebenzielen             |
-| **Counter**   | **Generator**   | erzeugt Treffer reaktiv                     |
-
-Daraus folgen zwei verbindliche Regeln:
-
-- **Generatoren lösen einander nie aus.** Ein Multi-Hit-Treffer splasht nicht, ein
-  Splash-Treffer kettet nicht, ein Counter tut keins von beidem. Die Treffererzeugung ist damit
-  ein Baum **fester Tiefe**.
-- **Jeder erzeugte Treffer bemisst sich am rohen Grundschaden (vor Crit)** und würfelt
-  **seinen eigenen** Crit-Wurf, sofern der zugehörige Skilltree-Knoten freigeschaltet ist
-  (§3.2). Crit wird dadurch pro Treffer **genau einmal** gezählt; es gibt keine Vererbung von
-  Multiplikatoren zwischen Treffern.
-
-**Ablauf eines Zuges:**
-
-1. **Roher Grundschaden**
-   `Grundschaden = Attack × Waffen-Damage-Range` — die Damage-Range ist ein **einmal pro
-   Angriff** per **PRNG** gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %). Alle
-   erzeugten Treffer bemessen sich an diesem einen Wert.
-2. **Crit (Grundtreffer)** — mit _Crit Chance_ wird geprüft; bei Erfolg `× Crit Damage`.
-   _Crit Damage_ ist ein **Gesamt-Multiplikator**, kein Aufschlag: `200 %` bedeutet `× 2,0`,
-   der neutrale Wert ist `100 %`.
-3. **Multi Hit** — mit _Multi Hit Chance_ wird auf einen Zusatztreffer **auf dasselbe Ziel**
-   geprüft; bei Erfolg erneut, bis zu **_Multi Hit Chain_-mal in Folge**, endet beim ersten
-   Fehlwurf. _Multi Hit Chain_ zählt ausschließlich die **Zusatztreffer** (Startwert **1**).
-   Jeder Zusatztreffer verursacht _Multi Hit Damage_ als Anteil des **rohen Grundschadens** —
-   alle Kettentreffer sind **gleich stark** — und würfelt seinen eigenen Crit.
-4. **Splash** — mit _Splash Chance_ trifft der Angriff zusätzlich bis zu _Splash Radius_
-   **Nebenziele**. _Splash Damage_ ist ein Anteil des **rohen Grundschadens**; jeder
-   Splash-Treffer würfelt seinen eigenen Crit. Auswahl der Nebenziele: **gleiche Lane zuerst**,
-   dann reguläre Priorisierung (§1.2, höchste Initiative zuerst).
-5. **Counter** — **rein reaktiv** und kein Teil des eigenen Zuges: Wird ein Charakter
-   getroffen, löst er mit _Counter Chance_ einen Gegenangriff mit _Counter Damage_ aus (Anteil
-   des rohen Grundschadens, eigener Crit-Wurf). Details unten.
-
-**Bulwark wird pro Treffer und Ziel angewandt** (§2.4) — jeder Grund-, Multi-, Splash- und
-Counter-Treffer erhält den Malus **seines eigenen Ziels**.
-
-**PRNG-Zugreihenfolge (verbindlich, §2.5):** `Damage-Range` → `Crit (Grundtreffer)` → je
-Kettenstufe `Multi Hit Chance` → `Crit (Multi Hit)` (Abbruch beim ersten Fehlwurf) →
-`Splash Chance` → je Nebenziel `Crit (Splash)`.
-
-**Counter im Detail:**
-
-- **Ziel:** der **auslösende Gegner** — unabhängig von Frontline-Lock und Taunt (§1.2). Der
-  Counter ist damit der einzige Weg für Tank und Melee, die Backline zu erreichen.
-- **Schaden:** ein **Flat-Hit** (`roher Grundschaden × Counter Damage`) — **kein** Multi Hit,
-  **kein** Splash, da Generatoren einander nicht auslösen. Crit ist per Valor-Knoten möglich.
-- **Bulwark gilt** — der Counter ignoriert die Deckung nicht.
-- **Auslösung:** Ein **geblockter** Treffer ist ein Treffer → löst Counter aus; ein
-  **ausgewichener** (Evasion) Treffer nicht.
-- **Zeitpunkt:** gesammelt **nach** Abschluss der Team-Pipeline in **Slot-Reihenfolge** (§1.1),
-  damit ein Counter die noch laufende Schadensverteilung nicht beeinflusst.
-- Eine Counter-Rekursion ist strukturell unmöglich: Nur Charaktere countern, und nur Gegner
-  verursachen Schaden an Charakteren.
-
-**Regeneration:** heilt den Charakter **direkt nach dessen eigener Handlung** (§1.1); einmal
-pro Handlung, unabhängig von der Trefferzahl. Grenzen der Heilung: §2.6.
-
-### 2.2 Treffermodell
-
-- **Charakter → Gegner:** trifft **immer** und **voll** (Gegner haben keine Evasion/Defense).
-- **Gegner → Charakter:** pro Charakter wird **Gegner-Accuracy gegen Charakter-Evasion**
-  gewürfelt (§2.3, Schritt 2). _Accuracy_ wächst linear mit der Floor-Tiefe (BALANCING).
-
-### 2.3 Eingehender Schaden (Schadenspipeline)
-
-Ein einzelner Gegner-Angriff der Stärke `S` trifft das **ganze Team** und durchläuft je
-Charakter folgende Pipeline (Reihenfolge verbindlich).
-
-**`S` = Attack des Gegners** — flat, ohne Streuung. Der Zufall auf der eingehenden Seite liegt bei
-Evasion (Schritt 2) und Block (Schritt 3). `S` ist ein **team-weiter** Schwung: Ein sterbender
-Charakter **erhöht** den Tick der Überlebenden.
-
-1. **Basis-Verteilung.** `S` wird gleichmäßig auf die **lebenden** Charaktere verteilt:
-   `Tick = S / (#lebende Charaktere)`.
-   - **Mitigation** (Korvins Signatur-Skill, §3.5) modifiziert diese
-     Verteilung: Ein Anteil `m` des DD-Ticks wird auf den **Tank** umgeleitet.
-     - **Tank lebt & Mitigation aktiv:** jeder lebende DD erhält `Tick × (1 − m)`; der Tank
-       erhält `Tick + (#lebende DDs) × Tick × m`. → Summe bleibt exakt `S`.
-     - **Ohne Mitigation / Tank tot:** jeder lebende Charakter trägt seinen eigenen `Tick`;
-       kein Umleitungsziel.
-2. **Evasion** (pro Charakter). Miss-Roll _Gegner-Accuracy_ gegen _Evasion_. Bei Ausweichen:
-   **0 Schaden**, **kein Counter**.
-3. **Block** (pro Charakter). Mit _Block Chance_ → `Schaden × (1 − Block%)` (partielle
-   Reduktion um einen festen %-Wert; **nicht** all-or-nothing). Ein geblockter Treffer bleibt
-   ein Treffer → **löst Counter aus**.
-4. **Defense** (pro Charakter). **Flacher** Abzug (_Defense_ ist ein Derived Stat, gespeist u. a.
-   aus _Toughness_, §3.0) mit **prozentualer Untergrenze**:
-
-   ```
-   nachDefense = max(nachBlock × Mindestanteil, nachBlock − Defense)
-   ```
-
-   Der **Mindestanteil** (Vorschlag 10 %, Wert = Balancing) verhindert, dass Defense den Schaden
-   je auf 0 drückt — Attrition (§4.4) bleibt in jedem Zahlenregime wirksam, und Defense bleibt
-   umgekehrt bis zur Untergrenze immer nützlich. Block wirkt **vor** Defense: das % greift auf
-   den rohen Schwung, die flache Rüstung zieht danach ab.
-
-   Die Pipeline läuft **pro Gegner-Angriff**: Defense wird so oft abgezogen, wie Gegner in der
-   Runde handeln. Formationen aus vielen schwachen Gegnern werden dadurch stark von Defense
-   gekontert, Formationen aus wenigen starken gehen an ihr vorbei (Leitplanke: BALANCING).
-
-5. **Barrier** (pro Charakter). Absorbiert den verbleibenden (bereits abgemilderten) Schaden,
-   bevor Health reduziert wird.
-6. **Health** (pro Charakter). Wird um den Restschaden reduziert.
-
-### 2.4 Bulwark (Deckung der Backline)
-
-- Solange **Frontline-Gegner leben**, erleiden **Backline-Gegner** reduzierten Schaden
-  (Bulwark-Malus auf eingehenden Schaden).
-- Der Malus ist **additiv pro Frontline-Gegnertyp** (Tank trägt mehr bei als Melee). Konkrete
-  Prozentwerte = Balancing (`src/game/`, BALANCING §). Ein Cap ist bei den vorgesehenen
-  Werten nicht nötig.
-- Der Malus wird **pro Treffer und Ziel** angewandt (§2.1) — jeder Grund-, Multi-, Splash- und
-  Counter-Treffer bekommt den Malus des Gegners, den er trifft.
-- Fällt die Frontline vollständig, entfällt der Bulwark-Malus.
-- **Sunder** (Rhayas Signatur-Skill, §3.5) baut den Bulwark-Beitrag einzelner
-  Frontline-Gegner **während des Kampfes** ab (siehe dort).
-
-### 2.5 Feststehende Regeln
-
-- **Aller Zufall** in diesen Formeln (Treffer, Crit, Multi Hit, Splash, Counter,
-  Damage-Range, Gegner-Initiative) läuft über den **seedbaren PRNG** — **kein**
-  `Math.random()` (AGENTS.md §5, §14). Die **Ziehreihenfolge** ist Teil der Spezifikation
-  (§2.1); Kampf, Gegner-Initiative und Loot laufen über **getrennte Ströme** (§5).
-- Alle Werte laufen über native `number`. Die Achsen sind gedeckelt (Level 100, Item-Level
-  `+100`, kein Prestige), die Spitzenwerte bleiben weit unter `Number.MAX_SAFE_INTEGER`
-  (AGENTS.md §5).
-- Die Engine emittiert **Kampf-Events** (Crit, Multi Hit, Splash, Counter, Block, Rundenbeginn, …)
-  in einer **deterministisch festen Reihenfolge**. Sie sind die Anbindung der **Rune-Trigger**
-  (§4.6) und die Grundlage des Playbacks (§5) und unterliegen denselben Determinismus-Regeln
-  wie der übrige Kampf.
-
-### 2.6 Heilung — Grenzen und Auslösung
-
-Heilquellen sind **Regeneration** (Stat, §3.0) und im Endgame der Rune-Effect `Heal` (§4.6).
-
-- **Obergrenze:** Heilung nie über die maximale Health hinaus; **Überheilung verfällt** ohne
-  Ersatzeffekt.
-- **Besiegte Charaktere sind nicht heilbar** — auch nicht durch einen team-weiten Rune-Heal.
-  Aufstehen geschieht ausschließlich per **Rally** an der Floor-Grenze (§4.4).
-- **Regeneration ist ein flacher Wert**, kein Anteil der Max-Health, und triggert **einmal**
-  pro eigener Handlung (§1.1).
-- **Barrier** ist ein Pool: Der Rune-Effect `Barrier` **addiert** auf den vorhandenen Rest.
-  Zu Rundenbeginn wird der Pool auf den Barrier-Stat **zurückgesetzt** (nicht aufaddiert),
-  Rune-Barrier verfällt also ebenfalls (§1.1).
-- **Zwischen Floors wird nicht geheilt** (§4.4).
+1. **Aller Zufall läuft über den seedbaren PRNG** — kein `Math.random()`. Kampf,
+   Gegner-Initiative und Loot laufen über **getrennte Ströme**, und die **Ziehreihenfolge** ist
+   Teil der Spezifikation. → [§2.5](spec/COMBAT.md#25-feststehende-regeln),
+   [§5.3](spec/SIMULATION.md#53-seeds-und-zufalls-ströme)
+2. **Determinismus:** gleicher Seed + gleicher Input ⇒ exakt gleicher Verlauf.
+   → [§5](spec/SIMULATION.md#5-simulation--zeitverhalten-verbindlich)
+3. **Simulation ≠ Rendering.** Die Engine ist reine Logik ohne Timer, DOM oder Echtzeit und
+   erzeugt Runden **schrittweise auf Abruf**.
+   → [§5](spec/SIMULATION.md#5-simulation--zeitverhalten-verbindlich),
+   [ADR 0002](adr/0002-inkrementelle-kampfsimulation.md)
+4. **Generatoren lösen einander nie aus** (Multi Hit, Splash, Counter); **Crit ist Modifikator**,
+   kein Generator, und wird pro Treffer genau einmal gewürfelt.
+   → [§2.1](spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)
+5. **Keine charakterexklusiven Stats.** Archetyp-Spezifisches wird als Signatur-Skill gekapselt.
+   → [§3](spec/CHARACTERS.md#3-team),
+   [ADR 0001](adr/0001-keine-charakterexklusiven-stats.md)
+6. **Eine Rune trägt nie „+X Stat"**, und **ein Rite löst maximal einmal pro Runde aus** — ohne
+   Ausnahme. → [§4.6](spec/RUNES.md#46-runen-endgame--masterwork)
+7. **Die Gegner-Gesamt-Health sinkt monoton.** Nichts heilt oder belebt Gegner; darauf beruht die
+   Endlichkeit jedes Kampfes (es gibt kein Rundenlimit).
+   → [§1.1](spec/COMBAT.md#11-rundenablauf)
+8. **Der laufende Kampfzustand wird nie serialisiert**; ein Dungeon startet immer bei Floor 1,
+   Belohnungen werden **pro Floor-Sieg** committet.
+   → [§5.4](spec/SIMULATION.md#54-kampfzustand-und-reload),
+   [§4.2](spec/PROGRESSION.md#42-belohnungen-aus-einem-sieg)
+9. **Alle Werte laufen über native `number`**; die Achsen sind gedeckelt (Level 100, Item-Level
+   `+100`, kein Prestige). → [§2.5](spec/COMBAT.md#25-feststehende-regeln),
+   [§4.7](spec/PROGRESSION.md#47-prestige)
+10. **Kein Offline-Progress.** → [§5](spec/SIMULATION.md#5-simulation--zeitverhalten-verbindlich)
 
 ---
 
-## 3. Team
-
-- **Teamgröße:** genau **drei feste, namentliche Charaktere**, ab Start verfügbar (keine
-  Freischaltung, keine Rekrutierung, kein Austausch).
-
-  | Rolle  | Name   | Sex        |
-  | ------ | ------ | ---------- |
-  | Tank   | Korvin | Male       |
-  | Melee  | Rhaya  | Female     |
-  | Ranged | Quinn  | Non-Binary |
-
-- **Leitprinzip — keine charakterexklusiven Stats.** Alle Stats sind für alle Charaktere
-  verfügbar. Etwas, das nur für einen Archetyp sinnvoll ist (z. B. Mitigation), wird als
-  charaktergebundener **Signatur-Skill** (§3.5) gekapselt, nicht als Stat.
-- **Umgang mit besiegten Slots:** Index-Zugriffe auf Team-/Gegner-Slots liefern `| undefined`
-  und erzwingen eine Prüfung (AGENTS.md §9). Besiegte Charaktere fallen aus Initiative-
-  Reihenfolge und Schadensverteilung heraus.
-
-### 3.0 Stats
-
-Die drei zentralen Kampfwerte **Attack, Defense, Health** sind **Derived Stats** — sie werden
-nicht direkt vergeben, sondern aus **drei Quellen mit je eigener Kurve** zusammengesetzt:
-
-| Derived Stat | Baseline (Level, §3.3) | + Attribut (§3.1) | + Core-Stat (Gear/Gems) |
-| ------------ | ---------------------- | ----------------- | ----------------------- |
-| **Attack**   | Baseline-Kurve         | **Ferocity**      | **Might**               |
-| **Defense**  | Baseline-Kurve         | **Resilience**    | **Toughness**           |
-| **Health**   | Baseline-Kurve         | **Vigor**         | **Vitality**            |
-
-Jede Quelle skaliert über eine **eigene Kurve** (Werte = Balancing, `src/game/`), sodass sich der
-Beitrag der (gedeckelten) Level-Up-Achse und der Gear-Achse unabhängig austarieren lässt.
-
-Jeder Charakter hat Stats in folgenden Kategorien:
-
-| Kategorie     | Stats                                                                                                                      |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Core**      | Might, Toughness, Vitality                                                                                                 |
-| **Derived**   | Attack, Defense, Health                                                                                                    |
-| **Offensive** | Crit Chance, Crit Damage, Multi Hit Chance, Multi Hit Damage, Splash Chance, Splash Damage, Counter Chance, Counter Damage |
-| **Defensive** | Barrier, Block Chance, Evasion, Regeneration                                                                               |
-| **Utility**   | Initiative, Multi Hit Chain, Splash Radius                                                                                 |
-
-- **Core (Primär):** _Might_ speist _Attack_, _Toughness_ speist _Defense_, _Vitality_ speist
-  _Health_ (je über eine eigene Kurve). Core-Stats stammen aus **Item-Innate** (§3.4) und
-  **Emerald-Gems** (§4.5).
-- **Derived:** _Attack_ = Grundschaden; _Defense_ = flache Schadensreduktion (§2.3, Schritt 4);
-  _Health_ = Lebenspunkte. Zusammensetzung siehe Tabelle oben.
-- **Offensive:** paarweise **Chance + Damage** je Muster (Crit, Multi Hit, Splash, Counter);
-  Wirkung siehe §2.1. Die vier Paare sind an die vier **Skilltree-Zweige** gekoppelt (§3.2).
-- **Defensive:** _Barrier_ = temporärer, pro Runde neu gesetzter Absorptionsschild; _Block Chance_
-  = partielle Reduktion (§2.3, Schritt 3); _Evasion_ = Ausweichchance gegen Accuracy (§2.3,
-  Schritt 2); _Regeneration_ = flache Heilung nach eigener Handlung (§2.6) und bis zur
-  Freischaltung des Rune-Systems (§4.6) die **einzige Heilquelle** im Spiel.
-- **Utility:** _Initiative_ = Zugreihenfolge; _Multi Hit Chain_ = maximale Multi-Hit-Kettenlänge;
-  _Splash Radius_ = Anzahl Nebenziele (Lane-übergreifend).
-
-### 3.1 Attribute (Level-Up-Progression)
-
-Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived Stats** (§3.0):
-Jeder Punkt hebt über eine eigene Kurve direkt einen der drei Derived Stats. Zweck: Jedes Level-Up
-ist eine aktive, selbstgewählte Gewichtung zwischen **Offense, Verteidigung und Überleben** —
-besonders relevant durch die **Attrition** (keine Heilung zwischen Floors, §4.4).
-
-| Attribut (EN)  | Gekoppelter Derived Stat |
-| -------------- | ------------------------ |
-| **Ferocity**   | Attack                   |
-| **Resilience** | Defense                  |
-| **Vigor**      | Health                   |
-
-**Mechanik**
-
-- 1 Punkt **addiert** einen **festen Betrag** auf den gekoppelten Derived Stat (additiv/linear;
-  konkrete Werte = Balancing, `src/game/`). Der Zuwachs ist konstant pro Punkt, unabhängig vom
-  aktuellen Wert.
-- Die Attribut-Zuwächse liegen **über** dem automatischen Baseline-Wachstum (§3.3) — die
-  Baseline sichert einen spielbaren Sockel, die Attribute setzen die Gewichtung.
-
-**Progression**
-
-- **100 Punkte pro Charakter** (Level 1 = 1 Punkt, dann +1 je Level bis 100).
-- Alle Charaktere starten als **identische Blank Slates** (keine Affinitäten).
-- **Frei verteilbar** (suboptimale Builds erlaubt), **Respec gegen Gold** (analog Skillpunkte).
-
-### 3.2 Charakter-Skilltree
-
-- Jeder Charakter hat einen Skilltree mit **vier Zweigen** — je ein Zweig pro offensivem
-  Schadensmuster. Alle drei Charaktere teilen **dieselbe** Zweig-Struktur; Distinktheit kommt
-  aus der Rolle (§1.2) und den charaktergebundenen Signatur-Skills im Crucible (§3.5/§4.3).
-
-  | Zweig         | Schadens-Muster            | Gekoppelte Stats                                      |
-  | ------------- | -------------------------- | ----------------------------------------------------- |
-  | **Finesse**   | Crit (Einzeltreffer)       | Crit Chance + Crit Damage                             |
-  | **Tempest**   | Multi-Hit (**ein** Ziel)   | Multi Hit Chance + Multi Hit Damage + Multi Hit Chain |
-  | **Dominance** | Splash (**mehrere** Ziele) | Splash Chance + Splash Damage + Splash Radius         |
-  | **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage                       |
-
-- Jeder Zweig enthält **Stat-Knoten** (die gekoppelten Werte-Boosts) und
-  **Verhaltens-Knoten** (Chain-/Radius-Erweiterungen und die Crit-Erweiterungen unten).
-- **Crit-Erweiterungen.** Standardmäßig wird der Crit-Wurf nur auf den **Grundtreffer**
-  angewandt. Je ein Knoten erweitert ihn auf eine Trefferklasse — und zwar im Zweig des
-  **Generators**, nicht in Finesse:
-
-  | Knoten                           | Zweig         |
-  | -------------------------------- | ------------- |
-  | Multi-Hit-Treffer können critten | **Tempest**   |
-  | Splash-Treffer können critten    | **Dominance** |
-  | Counter-Treffer können critten   | **Valor**     |
-
-  Damit zieht jeder Zweig aus eigener Kraft zu Finesse hin (der Knoten lohnt nur mit
-  investierter Crit Chance / Crit Damage), statt Finesse für alle Builds zur Pflicht zu machen.
-
-- **Innerhalb eines Zweigs multiplizieren sich die Knoten**, statt sich zu addieren: In Tempest
-  ist ein Chain-Knoten bei niedriger _Multi Hit Chance_ nahezu wertlos und wird erst mit hoher
-  Chance stark — daraus entsteht eine Reihenfolge-Entscheidung im Zweig (erst Chance, dann Chain).
-- **Chance**-Stats haben einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage**-Stats
-  haben **keinen Soft-Cap** (Zuwachs verpufft nie) → ein Zweig wird nie wertlos. Die gekoppelten
-  Stats sind selbst **Multiplikatoren** auf den Base-Schaden (skalierungsstabil).
-- **Skillpunkte:** **1 pro Level** (→ 100 gesamt), frei im gesamten Baum verteilbar. **Respec
-  gegen Gold.**
-
-### 3.3 Charakterlevel
-
-- Jeder Charakter hat ein **Level**; Maximallevel **100** (Erhöhung durch XP, §4.2).
-- **Ein Level-Up bewirkt dreierlei:**
-  1. **Automatisches Baseline-Wachstum der Derived Stats** (Attack/Defense/Health nach fester
-     Kurve, BALANCING) — der spielbare Sockel, auf den Attribute und Core-Stats aufsetzen (§3.0).
-  2. **+1 Attributpunkt** (Core-Gewichtung, §3.1).
-  3. **+1 Skillpunkt** (Offensiv-Zweige, §3.2).
-
-### 3.4 Ausrüstung
-
-- Jeder Charakter trägt Ausrüstung in **sechs Slots**. Ein Slot wird über den **Crucible**
-  (Anvil Sparks, §4.3) gegen **Crystals** freigeschaltet; dabei entsteht die rollenspezifische
-  **Basis** als **`Common +1`** und bleibt dem Slot für das ganze Spiel erhalten.
-- **Die Main Hand ist bei allen drei Charakteren ab Spielstart freigeschaltet** (ebenfalls als
-  `Common +1`) — sie trägt die **Damage-Range** und damit den definierten Grundschaden (§2.1).
-  Die übrigen fünf Slots sowie **Blacksmith** und **Jeweler** sind Anvil-Sparks-Unlocks.
-- Jeder Slot hat einen **Innate-Affix** — einen festen Basis-Stat, der mit dem **Item-Level**
-  skaliert (§4.5):
-
-  | Slot          | Item-Typ (rollenspezifisch)                                           | Innate-Affix                          |
-  | ------------- | --------------------------------------------------------------------- | ------------------------------------- |
-  | **Main Hand** | Waffe (alle Charaktere) — trägt **Damage-Range**                      | **Might**                             |
-  | **Off Hand**  | Rhaya/Quinn: Dolch/Köcher → **Might**; Korvin: Schild → **Toughness** | **Might** (DD) / **Toughness** (Tank) |
-  | **Head**      | Helm                                                                  | **Vitality**                          |
-  | **Chest**     | Rüstung                                                               | **Toughness**                         |
-  | **Legs**      | Beinschutz                                                            | **Toughness**                         |
-  | **Feet**      | Schuhe                                                                | **Initiative**                        |
-
-- Item-Typen sind **item-typ-rollenspezifisch** (Schild nur Korvin usw.); die getragenen **Stats
-  bleiben universell** (kein charakterexklusiver Stat, §3).
-- **Waffen** haben zusätzlich eine prozentuale **Damage-Range**, die den Grundschaden moduliert (§2.1).
-- Ausrüstung ist der **Hauptmotor** des Fortschritts (Loot & Handwerk, §4.5).
-
-**Item-Anatomie (vier Schichten).** Jedes Item trägt seine Werte auf vier getrennten Ebenen —
-Schicht 1 steht mit dem Slot fest, die Schichten 2–4 sind der Handwerk-Loop (§4.5):
-
-1. **Basis** — Item-Typ + Slot (z. B. „Schwert / Main Hand", „Schild / Off Hand"). Legt den
-   **Innate-Affix** (Tabelle oben) und die Slot-Rolle fest. Entsteht beim Freischalten des Slots.
-2. **Item-Level** (`+n`, **exponentielle Basis-Power**) — skaliert den **Innate-Value**; per
-   **Temper** beim Blacksmith gegen Gold gehoben. Das erreichbare Maximum ergibt sich aus der
-   **Seltenheit** (Schicht 3), das absolute Maximum ist **`+100`**. Bei **`+50`** und **`+100`**
-   trägt das Item je einen **Prismatic-Sockel** (§4.5). Das persistente Item „wächst mit" — der
-   **planbare** Träger der Incremental-Kurve.
-3. **Seltenheit & Sockel** (**Min-Max-Achse**) — die **Seltenheit** (EN: _Rarity_) ist der
-   **Master-Regler**: sie bestimmt die **Anzahl der Sockel** (Breite), das **Gem-Level-Cap**
-   (Höhe) **und** das **Item-Level-Cap** (§4.5). In jeden Sockel steckt man einen **Gem** aus dem
-   **Gem-Bestand** (Ressourcen-Zähler, kein Inventar), der einen zufälligen Affix aus seinem
-   **Farb-Pool** rollt (seed-PRNG). Dies ist die eigentliche **Loot-Jagd**. Gesteigert per
-   **Refine** beim Blacksmith gegen **Cinder** + Gold (§4.5).
-4. **Implicit** — ein **Legendary**-Item nimmt per **Brand** (Blacksmith) das **Implicit** eines
-   **Sigils** auf: ein Affix, den kein Gem liefert, skalierend mit dem **Sigil-Level** (§4.5).
-   Der Brand ist überschreibbar (**Re-Brand**).
-
-- **Gems sind am Item gebunden:** Ein gesockelter (und im Sockel gelevelter) Gem bleibt im Item —
-  auch bei Nichtbenutzung „friert" er dort ein (kein Verlust). Nur aktives **Ersetzen** zerstört ihn.
-- **Ein Item begleitet seinen Slot über das ganze Spiel.** Item-Level, Sockel-Investment und Brand
-  leben auf **demselben** Item; es gibt **kein Item-Inventar** und **keinen Item-Tausch**. Das Item
-  **ist** der Slot.
-- **Sechs Slots, abschließend.** Runen laufen über den **Talisman** (§4.6), der **kein
-  Ausrüstungs-Slot** ist.
-
-### 3.5 Signatur-Skills
-
-Jeder der drei Charaktere besitzt **genau einen** Signatur-Skill, der (anders als ein
-Stat-Knoten) in einen **globalen Kampf-Hebel** eingreift und das Spielgeschehen verändert.
-Jeder Skill belegt einen eigenen, sonst unberührten Hebel; kein Signatur-Skill hebt die
-eigene Rollen-Penalty (Taunt/Bulwark/Frontline-Lock) auf. Zusammen bilden sie eine Kette:
-**halten → aufbrechen → verwerten & Zeit kaufen**.
-
-| Charakter      | Signatur-Skill        | Angegriffener Hebel        | Wirkrichtung          |
-| -------------- | --------------------- | -------------------------- | --------------------- |
-| Korvin (Tank)  | **Mitigation** (§3.2) | Schadensverteilung (§2.3)  | defensiv, Umleitung   |
-| Rhaya (Melee)  | **Sunder**            | Bulwark / Formation (§2.4) | offensiv-enabling     |
-| Quinn (Ranged) | **Suppression**       | Zug-Ökonomie (§1.1)        | präventiv, Zeitgewinn |
-
-Alle drei sind **charaktergebundene Crucible-Knoten** (§4.3) mit **Level 1–5**; der
-Node-Maxlevel wirkt als **natürlicher Cap** (kein künstlicher Cap nötig). Vor Freischaltung
-existiert der Effekt nicht. Aller Zufall bleibt deterministisch über den seedbaren PRNG (§2.5)
-— die Skills führen **keinen** Zusatz-RNG ein.
-
-#### Mitigation (Korvin, Tank)
-
-- Siehe §2.3 (Schadenspipeline, Schritt 1). Leitet einen Anteil `m` des DD-Ticks
-  auf den Tank um; `m` steigt mit dem Node-Level.
-
-#### Sunder (Rhaya, Melee) — Bulwark-Bruch
-
-- Rhayas Treffer auf einen **Frontline-Gegner** reduzieren dessen **Bulwark-Beitrag** (§2.4).
-  Der Abbau ist **kumulativ pro Ziel** und gilt **nur für die Dauer des laufenden Kampfes** —
-  es gibt **keinen Übertrag** zwischen Floors (Formationen stehen pro Floor neu).
-- Wandelt Rhayas erzwungenen **Frontline-Lock + Taunt** (§1.2) in Team-Utility: Sie reißt die
-  Deckung ein → der eingehende Schaden auf die **Backline** steigt und damit Quinns Wirkung.
-  Der **Taunt** zwingt Rhaya vorrangig auf den gegnerischen Tank — der den **größten**
-  Bulwark-Anteil trägt (§2.4) und damit das lohnendste Sunder-Ziel ist.
-- **Node-Skalierung (Level 1–5):** steigender Bulwark-Abbau pro Treffer und/oder höheres
-  Abbau-Cap pro Ziel. Konkrete Werte = Balancing (`src/game/`, BALANCING).
-
-#### Suppression (Quinn, Ranged) — Zugverschiebung
-
-- Quinns Treffer verschiebt die **noch offene Aktion** des getroffenen Gegners um `L` Plätze
-  **nach hinten** in der **Pending-Queue** der laufenden Runde (§1.1; `L` = Node-Level 1–5,
-  ein Platz pro Level).
-- **Operation** auf der Pending-Queue — `L` zählt in **offenen** Einträgen:
-
-  ```
-  idx = Position des Ziels in der Pending-Queue
-  Queue.remove(idx)
-  Queue.insert(min(idx + L, Queue.length))
-  ```
-
-  Die Aktion rutscht damit maximal an das Rundenende und **verfällt nie**. **Kein Übertrag** in
-  die nächste Runde. Steht das Ziel bereits als Letztes oder hat es in dieser Runde schon
-  gehandelt, ist die Verschiebung `0`.
-
-- **Cap: ein Gegner kann pro Runde höchstens einmal supprimiert werden** (Flag pro Ziel und
-  Runde). Damit ist auch **Multi Hit** (§2.1) abgedeckt — der erste Treffer verschiebt, alle
-  weiteren um `0`. **Splash**-Nebenziele werden **nicht** verschoben; Suppression wirkt
-  ausschließlich auf das **primäre Ziel**.
-- **Counter** (§2.1) suppresst strukturell nie: Ein Counter trifft immer einen Gegner, der
-  gerade gehandelt hat und damit nicht mehr in der Pending-Queue steht.
-- **Zeitpunkt:** nach dem vollständigen Angriff (Grundtreffer, Multi-Hit-Kette, Splash) — sofern
-  das Primärziel noch **lebt**, noch **nicht gehandelt** hat und in dieser Runde noch **nicht
-  supprimiert** wurde.
-- Wirkt nur auf **Gegner**; die Reihenfolge der eigenen Charaktere bleibt unberührt.
-- Quinn umgeht den Taunt und trifft die **Backline von Beginn an** (§1.2) → sie verschiebt
-  gezielt den gefährlichsten Ranged-Gegner (höchste Initiative, handelt zuerst) hinter Korvin
-  und Rhaya. Ihr **Bulwark-Malus** (§2.4) bleibt bestehen; der Delay hängt **nicht am Schaden**,
-  der gedämpfte Deckungsschuss wirkt also voll.
-- **Turn Skip** entsteht ausschließlich über den **Kill**: stirbt das Ziel vor seinem
-  verschobenen Slot, ist seine Aktion endgültig verloren. Damit verwertet Suppression den
-  von **Sunder** geöffneten Schadensdurchsatz auf die Backline, ohne rechnerisch daran zu
-  hängen (eigener Hebel, keine Kopplung).
-- **Selbstregulierende Skalierung:** der Effekt wächst mit der Formationsgröße — gegen sechs
-  Gegner volle Umsortierung, gegen zwei Gegner nahezu wirkungslos.
-
-<!-- TODO (Balancing): Sunder — Abbau-Betrag pro Treffer & Cap pro Ziel. -->
-
----
-
-## 4. Fortschritt & Belohnungen
-
-### 4.1 Struktur: Akte, Dungeons, Floors
-
-- **3 Akte** × **5 Dungeons** × **20 Floors** = **300 Floors**.
-- Notation: `A<Akt>-D<Dungeon>-<Floor>` (Floor zweistellig), z. B. `A1-D4-20`.
-- Ein **Floor** ist ein Kampf gegen eine Gegnerformation (2–6 Gegner, §1.3).
-- **Elite-Floor:** Floor 20 der Dungeons 1–4 eines Akts. **Boss-Floor:** Floor 20 des
-  **letzten** Dungeons eines Akts.
-  - Akt-Bosse: _The Ashen Warden_ (A1), _The Emberbound Sovereign_ (A2), _The Gilded Empress_ (A3).
-- **Ramp-Up:** Die volle Gegnervielfalt wird **einmal im ersten Dungeon eines Akts** in vier
-  Phasen eingeführt: (1) nur eine Lane, wenige Gegner → (2) beide Lanes, wenige → (3) beide
-  Lanes, mehrere → (4) beide Lanes, mehrere inkl. Tank-Gegner.
-- Abgeschlossene Dungeons können jederzeit **wiederholt** werden (Farmen von XP/Gold).
-
-### 4.2 Belohnungen aus einem Sieg
-
-**Belohnungen werden pro Floor-Sieg in den Speicherstand committet** (§6) — nicht erst am
-Run-Ende. Ein Absturz oder Reload kostet damit den laufenden Run (§5), aber nichts Verdientes.
-Verfügbar zum **Ausgeben** werden sie erst nach dem Run (§4.4).
-
-1. **XP** → Charakterlevel (§3.3). Pro Floor entsteht ein **XP-Pool** (abhängig von Floor &
-   Gegnerzahl), der auf die drei Charaktere verteilt wird: ein **Basisanteil** je Charakter,
-   der Rest **individuell**.
-   <!-- TODO: Verteilungsschlüssel des Rests (Kandidat: nach verursachtem Schaden). -->
-2. **Gold** — globale Währung (Respecs, Blacksmith/Jeweler, Node-Respec).
-3. **Crystals** — globale Währung für den **Crucible** (§4.3). **Nur beim allerersten Sieg**
-   eines Floors:
-   - Normal = 1, Elite = 3, Boss = 10.
-   - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Crystals**.
-4. **Gems, Cinder, Sigils & Runedust** (Loot-Motor, §4.5/§4.6) — jeder Sieg speist den Handwerk-Loop:
-   - **Gems** (Hauptdrop) — **Amber**, **Ruby**, **Sapphire** & **Emerald** als Sockel-Bestückung
-     _und_ Level-Fodder; nach Floor-Tiefe (Akt/Dungeon/Floor) gestaffelt. **Diamond** (Prismatic)
-     bei Elite/Boss **ab Akt 2**.
-   - **Cinder** (Kapazitäts- & Identitäts-Währung, §4.5) — **Bosse droppen garantiert 1 Cinder pro
-     Kill** (100 %, jeder Durchlauf). **Elite-Gegner** (Dungeons 1–4) droppen Cinder als **Bonus**
-     mit einer **Chance, die monoton mit der globalen Floor-Tiefe steigt** (kein Akt-Reset). Die
-     Ausschüttung **steigt in Akt 2 und Akt 3**. Cinder finanziert **Refine** (Seltenheit) und
-     **Brand** (Sigil-Implicit).
-   - **Sigils** (Elite/Boss, ab dem ersten Elite-Floor `A1-D1-20`) — Einträge im **Sigil Codex** mit
-     **Level 1–5**, Grundlage des **Brand** (§4.5). Der **erste Sigil-Drop eines Spielstands ist
-     garantiert**.
-   - **Runedust** (Runen-Währung, §4.6) — droppt von **allen** Gegnern, **sobald der Rune-Grimoire-Node
-     freigeschaltet ist**, mit Elite/Boss-Bonus und nach Floor-Tiefe gestaffelt. Finanziert
-     **Inscribe** (neue Rune) und **Etch** (Rune aufleveln).
-   - **Seedbasiert & wiederholbar:** Drops laufen über den seedbaren PRNG (§2.5); beim **Farmen**
-     würfelt **jeder Durchlauf neu** (neuer Seed pro Run, §4.5/§5) → der Jagd-Reiz bleibt beim
-     Wiederholen erhalten.
-
-### 4.3 Crucible (globaler Skilltree)
-
-- Der **Crucible** ist ein weitgehend **globaler, charakterübergreifender** Skilltree. Der
-  Spieler „schmilzt" **Crystals** ein, um **permanente** Verbesserungen freizuschalten.
-- Zusätzlich beherbergt der Crucible die **charaktergebundenen Signatur-Skills** (§3.5) —
-  spielverändernde, an je einen Charakter gebundene Unlocks. Sie folgen dem Standard-Node-Modell
-  (Level 1–5), sind aber dem jeweiligen Charakter zugeordnet statt global wirksam.
-- Vier Trees (Schmiede-Wortfeld):
-
-  | Tree                | Fokus                                                                          |
-  | ------------------- | ------------------------------------------------------------------------------ |
-  | **Anvil Sparks**    | Freischalten von Inhalten (Blacksmith, Jeweler, Ausrüstungsslots, Checkpoints) |
-  | **Smelting Flames** | Stat-Boosts der Charaktere                                                     |
-  | **Molten Cast**     | Economy-Boosts (Gold-Drop, XP-Gewinn, Rabatte bei Blacksmith/Jeweler)          |
-  | **Masterwork**      | Endgame-Systeme (**Runen**, §4.6)                                              |
-
-- Manche Nodes sind **stufbar** (max. **5 Level**), Kosten **linear steigend** (Level `n` = `n`
-  Crystals; 1+2+3+4+5 = 15 Crystals für einen voll gestuften Node).
-- **Respec gegen Gold.**
-
-### 4.4 Checkpoints, Wipe & Abbruch
-
-- **Keine Heilung zwischen Floors:** Innerhalb einer Auto-Progression-Kette wird Health
-  mitgeschleppt (Attrition) — Defensiv-Stats und Regeneration werden dadurch relevant.
-  <!-- Bewusste Entscheidung; nach Playtesting revidierbar. -->
-- **Tod gilt für den restlichen Run.** Ein besiegter Charakter bleibt besiegt und ist nicht
-  heilbar (§2.6).
-  - **Rally** (Crucible-Node, Level 1–5) ist die einzige Ausnahme: Ein gefallener Charakter steht
-    beim **Betreten des nächsten Floors** mit einem Anteil seiner Max-Health wieder auf (Wert =
-    Balancing). Vor der Freischaltung existiert der Effekt nicht.
-  - Der Anteil bleibt bewusst klein, damit kein Sprung entsteht, bei dem Sterben besser ist als
-    knappes Überleben.
-- **Health- und Tod-Zustand gelten nur innerhalb einer Run-Kette.** Ein Dungeon-Neustart beginnt
-  mit **vollem Team und voller Health**.
-- **Auto-Progression:** Der Spieler startet Kämpfe zunächst **einzeln**; ein Anvil-Sparks-Node
-  schaltet das **automatische Starten** des nächsten Floors frei. Am **Dungeon-Ende** ist ein
-  manueller Neustart nötig (keine automatische Dungeon-Kette).
-- **Geschwindigkeit des Playbacks** (Anzeige, ohne Einfluss auf den Kampfausgang, §5):
-  - **Pause** ist **ab Spielstart** verfügbar.
-  - **2×** wird **pro Dungeon** freigeschaltet, sobald dieser Dungeon einmal vollendet wurde.
-  - Kein Zurückspulen.
-- **Optimierung ist während eines Runs gesperrt.** Solange der Spieler in einem Dungeon ist,
-  lassen sich keine Attribut- oder Skillpunkte setzen, kein Blacksmith, Jeweler oder Crucible
-  benutzen und keine Respecs durchführen. Punkte und Ressourcen laufen sichtbar auf und werden
-  mit dem Ende des Runs verfügbar. Damit ist ein Run eine **versiegelte Build-Wette**, und ein
-  Level-Up mitten im Dungeon kann die Attrition nicht über einen Vigor-Zuwachs aushebeln.
-- **Wipe oder manuelles Verlassen:** Man verlässt den **kompletten** Dungeon. **Bereits
-  erhaltene Belohnungen bleiben erhalten** (keine Penalty außer entgangenem Floor-Reward).
-- **Fortschritt innerhalb eines Dungeons wird nicht gespeichert** — ein Dungeon startet
-  **immer bei Floor 1**.
-- **Checkpoint = Menge freigeschalteter Dungeon-Einstiege** (Dungeon-Granularität, jeweils
-  Floor 1). Beim Wiederbetreten **wählt** der Spieler frei einen freigeschalteten Dungeon.
-  - **Default pro Akt:** Dungeon 1, Floor 1 (`A<Akt>-1-01`).
-  - **Anvil-Sparks-Nodes** schalten spätere Dungeon-Einstiege frei (sobald ein Dungeon einmal
-    komplett war) → kein Rückfall an den Aktanfang.
-
-### 4.5 Ausrüstung, Loot & Handwerk (Kern-Loop)
-
-Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts (BALANCING §3). Er folgt einem
-**Stamm-Modell**: das **Item-Level** ist der Stamm, an dem drei Äste hängen.
-
-| Ebene                  | Träger am Item (§3.4)                       | Station               | Kosten            | Zufall    |
-| ---------------------- | ------------------------------------------- | --------------------- | ----------------- | --------- |
-| **Stamm: Basis-Power** | Item-Level (`+n`) → Innate                  | **Blacksmith** Temper | Gold              | keiner    |
-| **Ast: Kapazität**     | Seltenheit → Sockelzahl, Gem-Cap, Level-Cap | **Blacksmith** Refine | Cinder + Gold     | keiner    |
-| **Ast: Identität**     | Implicit aus einem **Sigil**                | **Blacksmith** Brand  | Cinder + Gold     | keiner    |
-| **Ast: Min-Max**       | Sockel + **Gems**                           | **Jeweler**           | Gold + Gem-Fodder | seed-PRNG |
-
-Alle Handwerks-Aktionen kosten **Gold**; **Refine** und **Brand** zusätzlich **Cinder**. Der einzige
-Zufall im Handwerk liegt beim **Jeweler** — die drei Blacksmith-Aktionen sind vollständig planbar.
-
-#### Seltenheit, Sockel & Level-Cap
-
-- Jedes Item hat eine **Seltenheit** (EN: _Rarity_): **Common → Magic → Rare → Epic → Legendary**.
-  Sie ist der **Master-Regler** und bestimmt drei Dinge: **Sockelzahl**, **Gem-Level-Cap** (siehe
-  Jeweler) und **Item-Level-Cap**.
-
-  | Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für den Refine **auf** diese Stufe |
-  | ------------- | -------------- | -------------- | ----------------------------------------- |
-  | **Common**    | 0              | **+20**        | — (Startzustand)                          |
-  | **Magic**     | 1              | **+40**        | 1                                         |
-  | **Rare**      | 2              | **+60**        | 3                                         |
-  | **Epic**      | 3              | **+80**        | 6                                         |
-  | **Legendary** | 4              | **+100**       | 10                                        |
-
-- **Refine** hebt die Seltenheit um **eine Stufe**. **Kein RNG**, Kosten in **Cinder**
-  (eskalierend **1/3/6/10**, konkrete Werte = Balancing) plus Gold.
-- Die Seltenheit deckelt das Item-Level **nach oben**. Ein Refine ist **jederzeit** möglich, sobald
-  Cinder vorhanden ist — der Wechselrhythmus zwischen Temper und Refine entsteht aus der
-  **Cinder-Knappheit**, nicht aus einer Mindestlevel-Regel.
-- Ein frisch freigeschalteter Slot startet als **`Common +1` ohne Sockel**; der erste Sockel
-  entsteht mit dem ersten **Refine**.
-- Landmarken auf einem Item:
-
-  ```
-  +20 → Magic (1. Sockel)      +60 → Epic (3. Sockel)
-  +40 → Rare  (2. Sockel)      +80 → Legendary (4. Sockel)
-  +50 → Prismatic-Sockel 1    +100 → Prismatic-Sockel 2
-  ```
-
-#### Prismatic-Sockel
-
-- `Prismatic-Sockel = floor(Item-Level / 50)` → einer bei **`+50`**, ein zweiter bei **`+100`**.
-- Nimmt ausschließlich **Diamond**-Gems auf (item-lokale Meta-Multiplikatoren, siehe Jeweler).
-  **Diamonds droppen ab Akt 2.**
-- Unabhängig von Seltenheit und Brand. Ein Item mit **zwei Diamonds** ist der stärkste
-  Min-Max-Träger des Spiels.
-
-#### Sigils, Sigil Codex & Brand
-
-- Ein **Sigil** ist ein Eintrag im **Sigil Codex** mit **Level 1–5** — ein binärer Wissensstand plus
-  Level, **kein Bestand und kein Inventar**. Jedes Sigil trägt eine **vordefinierte
-  Implicit-Identität**, eine **Mindesttiefe** und eine **Slot(-Typ)-Bindung**.
-- **Quellen** (ab dem ersten Elite-Floor `A1-D1-20`; der **erste Sigil-Drop eines Spielstands ist
-  garantiert**):
-  - **Elite-Gegner** würfeln aus einem **tiefen-gestaffelten Pool** — ein Sigil ist erst ab seiner
-    **Mindesttiefe** ziehbar, der Pool wächst also mit dem Fortschritt.
-  - **Jeder Akt-Boss** droppt beim **ersten Kill** garantiert sein **festes, namentliches
-    Signatur-Sigil**. Bei Wiederholungen würfelt er wie ein Elite aus dem **obersten Tier** —
-    inklusive des eigenen Signatur-Sigils als Level-Up-Kandidat.
-- **Drop-Fortschritt:** ein **unbekanntes** Sigil wird auf **Level 1** in den Sigil Codex
-  eingeschrieben, ein **bekanntes** um **+1 Level** gehoben. **Unbekannte Sigils sind im Wurf höher
-  gewichtet** (Gewicht = Balancing).
-- **Ein Sigil auf Level 5 verlässt den Drop-Pool.** Sind alle Sigils auf Level 5, droppen keine
-  Sigils mehr.
-- **Brand** überträgt das **Implicit** eines bekannten Sigils auf ein **Legendary**-Item. Die Stärke
-  des Implicits skaliert mit dem **Sigil-Level**.
-- Jedes Sigil ist **teamweit genau einmal aktiv** und nur auf seinem gebundenen **Slot(-Typ)**
-  einsetzbar. Die **Pool-Größe liegt unter 18** (Zahl der Slots) → es tragen nie alle Slots ein Sigil.
-- **Re-Brand** überschreibt den Brand eines Items und kostet **deutlich weniger** als der
-  Erst-Brand → das Neuverteilen der Sigils bleibt über das ganze Spiel ein aktiver Hebel.
-
-#### Drop-Modell (seedbasiert)
-
-- Kämpfe droppen **Gems** (Farb-Fodder: Amber/Ruby/Sapphire/Emerald; **Diamond** bei Elite/Boss ab
-  **Akt 2**), **Cinder** (Boss garantiert 1/Kill, Elite als tiefen-skalierter Bonus, in Akt 2 & 3
-  erhöht) und **Sigils** (Elite/Boss, § oben). **Item-Basen droppen nicht** — sie entstehen beim
-  Freischalten des Slots (§3.4).
-- **Aller Loot-Zufall** läuft über den **seedbaren PRNG** (§2.5) — reproduzierbar, testbar, kein
-  Save-Scumming. **Determinismus gilt innerhalb eines Runs**; beim **Farmen** eines geschafften
-  Dungeons würfelt **jeder Durchlauf mit neuem Seed** (frische Drops pro Run).
-
-#### Blacksmith (Stamm, Kapazität & Identität)
-
-- **Temper (Item-Level):** hebt das **Item-Level** um eine Stufe bis zum **Seltenheits-Cap** →
-  skaliert den **Innate-Value** (§3.4). Kein RNG, Kosten in **Gold**.
-- **Refine (Seltenheit):** hebt die **Seltenheit** um eine Stufe (+1 Sockel, höheres Gem-Cap,
-  höheres Item-Level-Cap). Kein RNG, Kosten in **Cinder** (1/3/6/10) plus Gold.
-- **Brand (Implicit):** überträgt das Implicit eines bekannten **Sigils** auf ein **Legendary**-Item.
-  Kein RNG, Kosten in **Cinder** plus Gold, überschreibbar per **Re-Brand**.
-
-#### Jeweler (Gems / Min-Max-Jagd)
-
-- **Inlay:** verbraucht **1 Gem** der Farbe aus dem **Bestand** (Ressourcen-Zähler, kein Inventar)
-  und setzt ihn in einen Sockel; dabei wird ein **zufälliger Affix** aus dem **Farb-Pool** gerollt,
-  mit einer **Value-Range** — der konkrete Wert fällt beim **Inlay** (seed-PRNG). Ein bereits belegter
-  Sockel wird **überschrieben** (der alte, gebundene Gem ist **verloren**, §3.4).
-- **Attune** (Gem aufleveln, im Sockel, **gedeckelt durch die Item-Seltenheit**): hebt die **Value-Range**; die
-  **relative Position** in der vorherigen Range bleibt erhalten. Kostet **Gems gleicher
-  Farbe** als Fodder — **jedes Level braucht mehr** (→ Fodder-Sink).
-- **Recut (Value-Reroll):** würfelt den Wert eines gesockelten Gems innerhalb seiner aktuellen
-  Range neu (seed-PRNG).
-- **Gem-Farben** (Farb-Pools entlang der Stat-Kategorien, §3.0). Die Offensiv-Pools sind bewusst in
-  **Chance** (Amber) und **Damage** (Ruby) getrennt — kleinere Pools erhöhen die Trefferchance auf
-  den gewünschten Stat beim **Inlay**, und ein reiner **Damage**-Pool bleibt auch dann wertvoll, wenn
-  die Chancen bereits am Soft-Cap liegen (§3.2):
-
-  | Gem                 | Kategorie          | Pool                                                                                         | Sockel                 |
-  | ------------------- | ------------------ | -------------------------------------------------------------------------------------------- | ---------------------- |
-  | **Amber** (Gold)    | Offensive – Chance | Crit/Multi/Splash/Counter **Chance** (4)                                                     | normal                 |
-  | **Ruby** (Rot)      | Offensive – Damage | Crit/Multi/Splash/Counter **Damage** (4)                                                     | normal                 |
-  | **Sapphire** (Cyan) | Defensive          | Barrier, Block Chance, Evasion, Regeneration (4)                                             | normal                 |
-  | **Emerald** (Grün)  | Core               | Might, Toughness, Vitality (3)                                                               | normal                 |
-  | **Diamond** (Weiß)  | Prismatic          | item-lokale **Meta-Multiplikatoren** (z. B. _+X % all gem effects_, _+Y % Sapphire-Effekte_) | **nur Prismatic-Slot** |
-
-- **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
-  seltene Elite/Boss-Chase **ab Akt 2**. Amber, Ruby und Sapphire haben je **vier** Pool-Affixe,
-  Emerald **drei** — die Trefferchance auf den Ziel-Stat beim **Inlay** liegt damit für drei der
-  vier Fodder-Farben gleich. Die **Derived Stats** (Attack/Defense/Health) haben **keine** direkte
-  Gem-Quelle (sie ergeben sich aus Core/Attribut/Baseline, §3.0); ebenso wenig Multi Hit Chain &
-  Splash Radius (Skilltree) sowie Initiative (Innate Feet + Crucible). Konkrete Pool-Gewichte,
-  Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing (`src/game/`, BALANCING).
-
-#### Noch offen (bewusst separate Interview-Runde — Endgame/Masterwork)
-
-- **Prismatic/Diamond-Effekte im Detail** (welche Meta-Multiplikatoren, Node-artige Sammlung).
-- **Sigil-Katalog:** konkrete Sigils (Namen, Implicit-Identitäten, Mindesttiefe, Slot-Bindung,
-  Level-Skalierung des Implicits) sowie die drei namentlichen **Boss-Signatur-Sigils**.
-- **Implicit-Abgrenzung:** welche Effekt-Klassen ein Implicit trägt, die kein Gem-Affix liefert.
-
-### 4.6 Runen (Endgame / Masterwork)
-
-Runen sind die einzige **qualitative** Fortschritts-Achse: Sie fügen dem Kampf **konditionale
-Ereignisse und temporäre Effekte** hinzu. Alle anderen Achsen (Item-Level, Seltenheit, Gems,
-Sigils, Skilltree, Attribute) sind **permanente Werte**.
-
-- **Verbindliche Abgrenzung:** Eine Rune trägt **nie** „+X Stat". Was eine Rune tut, muss etwas
-  sein, das kein Stat ausdrücken kann — z. B. Barrier **mitten in** der Runde (die sonst nur zu
-  Rundenbeginn gesetzt wird, §1.1), Schaden, der **Bulwark ignoriert** (§2.4), ein **temporärer**
-  Buff oder eine Extra-Aktion.
-- Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet (§4.3);
-  vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runedust-Drop).
-
-#### Träger: Rune Grimoire, Talisman, Rite
-
-| Begriff           | Rolle                                                                                                                                                                  |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Rune Grimoire** | Katalog **aller** Runen mit ihrem Wissensstand (bekannt/unbekannt) und **Level**. Zugleich die Station für **Inscribe** und **Etch**.                                  |
-| **Talisman**      | Das eingravierte Schmuckstück, **eines pro Charakter**. Trägt genau **einen Rite**. Kein Ausrüstungs-Slot: kein Innate, kein Item-Level, keine Seltenheit, keine Gems. |
-| **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                                                                           |
-
-- Der **Talisman ist kein siebter Ausrüstungs-Slot**: er trägt **keine** der vier Item-Schichten
-  (§3.4) und erscheint **nicht** in der Ausrüstungs-Ansicht, sondern ausschließlich in der
-  Runen-Ansicht.
-- Das Rune Grimoire ist ein **reiner Wissensstand — kein Bestand, kein Inventar** (Modellform wie
-  der Sigil Codex, §4.5). Man besitzt von jeder bekannten Rune **genau ein Exemplar** → sie steckt in
-  **höchstens einem** Rite, teamweit. Keine Duplikate, keine Stacks.
-- Unentdeckte Runen sind als **Silhouette** mit ihrer **Kategorie** sichtbar, sobald ihre
-  **Mindesttiefe** erreicht ist; der Katalog wächst also mit dem Fortschritt.
-- **Umsockeln ist kostenlos und jederzeit möglich.** Eine ausgebaute Rune geht dabei nicht
-  verloren und behält ihr Level.
-
-#### Aufbau eines Rite
-
-Ein Rite besteht aus drei Runen-Kategorien:
-
-| Kategorie    | Antwortet auf | Pool  | teamweit aktiv |
-| ------------ | ------------- | ----- | -------------- |
-| **Trigger**  | _Wann?_       | **6** | 3              |
-| **Effect**   | _Was?_        | **6** | 3              |
-| **Modifier** | _Wie?_        | **5** | 3              |
-
-Bei drei Charakteren mit je einem Rite sind **9 von 17** Runen gleichzeitig aktiv.
-
-**Trigger** — je einer pro Muster; die ersten vier sind an die vier Skilltree-Zweige gekoppelt
-(§3.2), der Rite liest damit den gebauten Build:
-
-`OnCrit` · `OnMultiHit` · `OnSplash` · `OnCounter` · `OnBlock` (§2.3, Schritt 3) ·
-`OnEvade`
-
-**Effect** — jeder Eintrag ist ein Effekt, den kein Stat leistet:
-
-| Effect       | Wirkung                                                                              |
-| ------------ | ------------------------------------------------------------------------------------ |
-| **Heal**     | heilt Health                                                                         |
-| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert (§1.1)       |
-| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** (§2.4)                   |
-| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel |
-| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                               |
-| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, §2.1)                                |
-
-**Modifier** — jeder Modifier manipuliert **genau eine** von vier Facetten eines Effects. Dadurch
-ist **jede** Trigger/Effect/Modifier-Kombination automatisch definiert und braucht keine
-Kompatibilitätsmatrix:
-
-| Modifier      | Facette       | Wirkung                                                        |
-| ------------- | ------------- | -------------------------------------------------------------- |
-| **Echo**      | **Frequenz**  | der Effect löst **2×** aus                                     |
-| **Chain**     | **Zielmenge** | der Effect erfasst **X weitere** Ziele                         |
-| **Prism**     | **Zielmenge** | ein auf den Träger wirkender Effect erfasst **das ganze Team** |
-| **Surge**     | **Magnitude** | Stärke skaliert mit einem **Stat des Trägers**                 |
-| **Lingering** | **Dauer**     | der Effect wiederholt sich zu Beginn der **nächsten Runde**    |
-
-#### Auslösung (verbindlich)
-
-- **Ein Rite löst maximal einmal pro Runde aus** — beim **ersten** qualifizierenden Event.
-  **Ohne Ausnahme:** Keine Rune und kein Modifier hebt dieses Limit.
-  Konsequenz: Rune-Stärke skaliert über das **Rune-Level**, nicht über die Proc-Rate. Ein
-  `OnCrit`-Rite ist bei 20 % und bei 100 % Crit Chance gleich stark, nur zuverlässiger.
-- Ein Trigger reagiert **ausschließlich auf Events des eigenen Charakters** (Korvins Rite feuert
-  nicht auf Rhayas Crit).
-- **Rune-erzeugte Effekte emittieren keine Trigger-Events.** Es gibt keine Rune-Ketten und keine
-  Selbst-Retriggerung.
-- **Keine Rune heilt oder belebt Gegner.** Der Endlichkeits-Beweis jedes Kampfes (§1.1) beruht
-  auf **monoton sinkender** Gegner-Gesamt-Health.
-- Aller Zufall bleibt beim seedbaren PRNG (§2.5).
-
-#### Rune-Level
-
-Jede Rune hat ein **Level**; jede Kategorie levelt ihre eigene Facette, damit alle drei Runen
-eines Rite lohnende Ziele sind:
-
-| Kategorie    | Was das Level hebt                                                              |
-| ------------ | ------------------------------------------------------------------------------- |
-| **Effect**   | die **Basis-Magnitude**                                                         |
-| **Trigger**  | einen **+% Magnitude**-Aufschlag auf den gesamten Rite (Attunement)             |
-| **Modifier** | die **Stärke der Modifikation** (Echo: Kraft der 2. Auslösung; Chain: Zielzahl) |
-
-- **Level-Cap = Stand des `Rune Mastery`-Nodes** (§ unten). Der `Rune Grimoire`-Node bringt Cap **1**
-  mit, `Rune Mastery` hebt es auf **2/3/4/5**.
-- Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
-  vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
-
-#### Rune-Grimoire-Aktionen
-
-- **Inscribe (neue Rune):** **pro Kategorie** ein eigenes Rezept — man wählt Trigger, Effect oder
-  Modifier und erhält eine **zufällige noch unbekannte** Rune **dieser Kategorie**, gezogen aus
-  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: **Runedust + Gold**.
-  - Weil ausschließlich Unbekannte gezogen werden, ist Inscribe **ein Kartenstapel, kein
-    Automat**: keine Duplikate, keine Pech-Serien, jeder Zug ist Fortschritt.
-  - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
-- **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
-  Kosten: **Runedust + Gold**, pro Level steigend. Kein RNG.
-- Der **`Rune Grimoire`-Node schenkt** einen Starter-**Trigger** und einen Starter-**Effect**, damit im
-  Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
-  ersten Sigil-Drop, §4.5).
-
-#### Masterwork-Nodes
-
-| Node              | Level | Wirkung                                                                           | Crystals |
-| ----------------- | ----- | --------------------------------------------------------------------------------- | -------- |
-| **Rune Grimoire** | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1        |
-| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                  | 6        |
-| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6        |
-| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10       |
-|                   |       |                                                                                   | **23**   |
-
-Die charakterweise Staffelung von `Talisman` und `Runic Focus` erzeugt die Priorisierungsfrage,
-für die der Crucible da ist (wer erhält zuerst seinen Rite bzw. Modifier-Slot).
-
-<!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
-     Level-Skalierung je Stufe), Runedust-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für
-     Empower/Mark/Lingering, Chain-Zielzahl je Level, Surge-Bezugs-Stat je Rune. -->
-
-### 4.7 Prestige
-
-- **Kein Prestige-System** geplant. Das feste Drei-Charakter-Team und der Fokus auf deren
-  Ausbau tragen die Langzeitmotivation; ein Reset-Loop ist bewusst kein Ziel.
-
----
-
-## 5. Simulation & Zeitverhalten (verbindlich)
-
-Diese Punkte sind bereits durch AGENTS.md §5 festgelegt und hier als Spec-Kontext gespiegelt:
-
-- **Simulation ≠ Rendering:** Die Kampf-Engine ist **reine, deterministische Logik**
-  ohne Bezug zu Timern, DOM oder Echtzeit. Das Playback spielt die simulierten Runden
-  mit visueller Verzögerung ab.
-- **Inkrementelle Simulation:** Der Kampf wird **nicht vorab vollständig** durchgerechnet;
-  die Engine erzeugt Runden **schrittweise auf Abruf** (reine „Zustand → nächste Runde"-Funktion).
-  **Dasselbe Schrittwerk** treibt beide Modi: das Playback (eine Runde pro Anzeige-Takt) und den
-  Catch-up (Runden ohne Animation im Schnelldurchlauf). Ergebnis: **keine Wartezeit** beim
-  Floor-Einstieg (es wird nur die jeweils nächste Runde gerechnet), bei erhaltenem Determinismus
-  und Catch-up. Der Kampfausgang steht erst mit der letzten Runde fest — er wird vorher nicht
-  benötigt (Attrition §4.4 nutzt die Health am Kampfende).
-- **Determinismus:** gleicher Seed + gleicher Input ⇒ exakt gleicher Verlauf.
-- **Kein Offline-Progress:** Tab geschlossen ⇒ kein Fortschritt.
-
-### 5.1 Playback — Takt und Geschwindigkeit
-
-- **Anzeigeeinheit ist der Takt: ein Akteur am Zug.** Pro Takt rückt die Markierung in der
-  Zugreihenfolge einen Eintrag weiter und im Kampf-Log erscheint **ein Eintrag** — der
-  vollständige Zug als Block (Grundtreffer, Multi-Hit-Kette, Splash, ausgelöste Counter),
-  nicht als Einzelzeilen.
-- **Grundtakt: 1000 ms pro Akteur.** Eine Runde dauert damit so lange, wie sie Akteure hat.
-- **Stufen** (§4.4): **Pause** ab Spielstart, **2×** pro vollendetem Dungeon. Die Einstellung
-  liegt im Save.
-- Die Geschwindigkeit betrifft **ausschließlich die Anzeige**. Der Kampfverlauf ist durch den
-  Seed festgelegt und bei jeder Stufe identisch — es gibt keinen Balancing-Effekt und keinen
-  Exploit.
-
-### 5.2 Zeitverhalten & Catch-up
-
-- **Tragend ist ein Zeit-Akkumulator**, nicht die Page Visibility API: Jeder Anzeige-Takt
-  rechnet aus der real vergangenen Zeit, wie viele Takte fällig sind, und führt entsprechend
-  viele Schritte aus. Ein gedrosselter Tab feuert selten und holt bei jedem Feuern einen Batch
-  nach — das Verhalten ist damit von sich aus korrekt.
-- Die **Page Visibility API** liefert nur zwei Zusätze: sofortiges Aufholen beim Sichtbarwerden
-  (statt bis zum nächsten Feuern zu warten) und das **Unterdrücken der Animation** während des
-  Batches.
-- **Deckel: Der Catch-up holt höchstens 5 Minuten real vergangener Zeit nach**; darüber
-  hinausgehende Zeit **verfällt**, der Kampf läuft ab dort normal weiter. Damit bleibt „kein
-  Offline-Progress" auch bei einem über Nacht minimierten Tab gewahrt.
-- Ein Catch-up-Batch arbeitet in einem **Zeitbudget pro Frame** und gibt dazwischen an den
-  Browser ab, damit die UI reagiert. Maßstab ist die Zeit, nicht die Rundenzahl — die Kosten einer
-  Runde hängen an der Gegnerzahl.
-- Während des Catch-up werden Belohnungen regulär pro Floor committet (§4.2); ein **Wipe**
-  beendet den Batch sofort. Danach wird die Anzeige auf den Endzustand synchronisiert.
-
-### 5.3 Seeds und Zufalls-Ströme
-
-Der Zufall ist hierarchisch aus einem Save-Seed abgeleitet:
-
-```
-saveSeed              einmal bei Anlage des Spielstands erzeugt, im Save persistiert
-└─ runSeed            = derive(saveSeed, dungeonId, runCounter)
-   └─ floorSeed       = derive(runSeed, floorIndex)
-      ├─ combat       Kampfverlauf (§2.1)
-      ├─ init         Gegner-Initiative zu Kampfbeginn (§1.1)
-      └─ loot         Drops (§4.2/§4.5)
-```
-
-- Die drei Ströme sind **getrennt**: Änderungen an der Kampfformel lassen die Loot-Ergebnisse
-  unberührt (Begründung: AGENTS.md §5).
-- **`floorSeed`** erlaubt es, einen einzelnen Floor im Test zu reproduzieren. Ein Bug-Report ist
-  das Tupel `(saveSeed, dungeonId, runCounter, floorIndex)`.
-- **`runCounter`** ist ein monoton steigender, **beim Run-Start persistierter** Zähler: Beim
-  **Farmen** würfelt jeder Durchlauf frisch, und ein Reload liefert denselben Zähler und damit
-  denselben Verlauf (kein Save-Scumming).
-- Die Label der Ströme sind Teil des Determinismus und liegen als Konstanten an einer Stelle.
-
-### 5.4 Kampfzustand und Reload
-
-- **Der laufende Kampfzustand wird nie serialisiert** — weder Health, Floor-Index,
-  Pending-Queue noch PRNG-Zustand. Das folgt aus §4.4 (Fortschritt innerhalb eines Dungeons wird
-  nicht gespeichert, ein Dungeon startet immer bei Floor 1).
-- **Ein Reload oder Tab-Schließen beendet den laufenden Run**, gleichwertig zum manuellen
-  Verlassen. **Bereits committete Belohnungen bleiben erhalten** (§4.2).
-
----
-
-## 6. Persistenz (Save-Verhalten)
-
-Festgelegt durch AGENTS.md §7, hier als Verhaltens-Referenz:
-
-- Save in **`localStorage`** mit **Versionsfeld** und **Migrations-Mechanismus**,
-  Zugriff nur über den **`SavePort`-Adapter**.
-- Beim **Laden** Validierung gegen ein **Zod-Schema** (pro Save-Version eines).
-- Bei Validierungsfehler: **kontrollierter Fallback** (Migration oder definierter
-  Reset auf Default) — **kein** Absturz mit korruptem State.
-
-**Speicher-Auslöser (festgelegt):**
-
-- **Nach jedem Floor-Sieg** — die Belohnungen werden pro Floor committet (§4.2).
-- **Beim Start eines Runs** — der `runCounter` muss vor dem ersten Kampf persistiert sein,
-  sonst greift die Anti-Save-Scumming-Zusicherung aus §5.3 nicht.
-- **Kein** Speichern des laufenden Kampfzustands (§5.4).
-
-**Save-Inhalt (Stand der Festlegungen):**
-
-- Global: **Save-Version**, **`saveSeed`**, **`runCounter`**, **Playback-Geschwindigkeit** (§5.1).
-- Pro Charakter: Level, XP, Attribut- und Skillpunkte-Verteilung.
-- Pro freigeschaltetem **Slot** das Item (Basis + Item-Level + Seltenheit + gesockelte Gems
-  inkl. Level/Value + gebrandetes Sigil, §3.4/§4.5). Die **Main Hand** ist ab Start belegt (§3.4).
-- Crucible-Node-Stände; Gold, **Cinder**, **Gem-Bestände** (Amber/Ruby/Sapphire/Emerald/Diamond).
-- **Sigil Codex** (bekannte Sigils mit Level).
-- **Runedust**, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
-  dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, §4.6).
-- Freigeschaltete Checkpoints, **pro Dungeon ein Vollendet-Flag** (schaltet 2× frei, §4.4),
-  höchster erreichter Floor, **Erstsieg-Flags** je Floor (Crystals, §4.2).
-
-**Zu spezifizieren:**
-
-- [ ] Die konkrete Feldstruktur je Save-Version (Zod-Schema-Form) samt Migrationspfad.
-
----
-
-## 7. Verweise
+## Verweise
 
 - Vision & Design-Begründungen → [DESIGN.md](DESIGN.md)
 - Balancing-Philosophie & Kurven → [BALANCING.md](BALANCING.md)
 - Verbindliche Begriffe → [GLOSSARY.md](GLOSSARY.md)
+- Architektur-Entscheidungen → [adr/](adr/)
 - Technischer Leitfaden für Agenten → [../AGENTS.md](../AGENTS.md)

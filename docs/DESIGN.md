@@ -88,6 +88,52 @@ an; **2×** verdient man sich pro Dungeon, weil dieselben Floors später gefarmt
 
 > Prestige/Reset ist **bewusst kein Ziel** (festes Team; siehe §5 und SPEC §4.7).
 
+### 3.1 Rollen mit Preis — und die Signatur-Skills, die ihn verwerten
+
+- **Jede Rolle bekommt ihre Fähigkeit gegen eine feste Penalty.** Korvin und Rhaya sind an die
+  Frontline gebunden und werden vom Taunt gezogen; Quinn erreicht die Backline von Beginn an,
+  zahlt dafür aber laufend den Bulwark-Malus. Die Penalty **ist** die Identität der Rolle — kein
+  Signatur-Skill hebt die eigene Penalty auf (SPEC §1.2, §3.5).
+- **Die drei Signatur-Skills bilden eine Kette: halten → aufbrechen → verwerten & Zeit kaufen.**
+  Mitigation hält das Team am Leben, Sunder reißt die Deckung der Backline ein, Suppression
+  verwertet den entstehenden Durchsatz, indem sie Gegnerzüge nach hinten schiebt — ein Kill vor
+  dem verschobenen Zug löscht ihn.
+- **Sunder dreht Rhayas Nachteil ins Positive.** Der Taunt zwingt sie auf den gegnerischen Tank —
+  genau den Gegner, der den größten Bulwark-Anteil trägt. Der erzwungene Zielzwang wird damit zur
+  Team-Utility.
+- **Suppression begrenzt sich selbst.** Der Effekt wächst mit der Formationsgröße: gegen sechs
+  Gegner eine volle Umsortierung, gegen zwei fast wirkungslos. Kein künstlicher Cap nötig.
+- **Drei Hebel, keine Kopplung.** Die Skills greifen an Schadensverteilung, Formation und
+  Zug-Ökonomie an und hängen rechnerisch nicht aneinander — sie verstärken sich im Spiel, ohne
+  sich in der Formel zu verketten.
+
+### 3.2 Build-Entscheidungen, die sich unterscheiden sollen
+
+Dieser Abschnitt begründet, **warum** die Mechanik so geschnitten ist. Die Regeln und Zahlen selbst
+stehen in der Spec (Links jeweils am Ende der Punkte).
+
+- **Level-Up ist eine Gewichtung, keine Belohnung.** Jeder Punkt geht entweder in Offense,
+  Verteidigung oder Überleben. Durch die Attrition ist das eine echte Wette statt einer freien
+  Zugabe. → [SPEC §3.1](spec/CHARACTERS.md#31-attribute-level-up-progression)
+- **Knoten multiplizieren sich innerhalb eines Zweigs, statt sich zu addieren.** Das erzeugt eine
+  **Reihenfolge**-Entscheidung im Zweig statt beliebiger Punkte-Streuung: ein Chain-Knoten ist bei
+  niedriger Multi-Hit-Chance fast wertlos und wird erst mit hoher Chance stark.
+  → [SPEC §3.2](spec/CHARACTERS.md#32-charakter-skilltree)
+- **Die Crit-Erweiterungen sitzen im Zweig des Generators.** So zieht jeder Zweig aus eigener Kraft
+  zu Finesse hin, statt Finesse für jeden Build zur Pflicht zu machen.
+  → [SPEC §3.2](spec/CHARACTERS.md#32-charakter-skilltree)
+- **Chance-Stats sind soft-capped, Damage-Stats nicht.** Kein Zweig wird dadurch je wertlos, und
+  kein Investment fühlt sich verschwendet an. → [SPEC §3.2](spec/CHARACTERS.md#32-charakter-skilltree)
+- **Die Gem-Pools sind absichtlich klein und Chance von Damage getrennt.** Kleinere Pools machen
+  den Loot zielgerichteter, und ein reiner Damage-Pool bleibt wertvoll, wenn die Chancen am
+  Soft-Cap liegen. → [SPEC §4.5](spec/CRAFTING.md#jeweler--inlay-attune--recut)
+- **Am Ende der Item-Achse steht ein Chase, kein Plateau.** Die Prismatic-Sockel liegen so weit
+  oben auf der Item-Level-Kurve, dass ein voll ausgebautes Item mit beiden Diamonds der stärkste
+  Min-Max-Träger des Spiels bleibt. → [SPEC §4.5](spec/CRAFTING.md#prismatic-sockel)
+- **Talisman und Runic Focus sind charakterweise gestaffelt.** Wer zuerst seinen Rite bzw.
+  Modifier-Slot bekommt, ist genau die Priorisierungsfrage, für die der Crucible da ist.
+  → [SPEC §4.6](spec/RUNES.md#masterwork-nodes)
+
 ---
 
 ## 4. Zielgefühl & Tonalität
@@ -126,7 +172,10 @@ Diese Entscheidungen sind **bewusst** getroffen — nicht implementieren, auch n
 „aus Best-Practice-Reflex". (Technische Liste: [AGENTS.md §13](../AGENTS.md).)
 
 - **Kein Endlos-Treadmill:** Alle Progressions-Achsen sind **endlich** — Charakterlevel,
-  Attribut- und Skillpunkte (je 100) sowie Item-Level (`+100`) enden an einem Cap. Das Spiel ist
+  Attribut- und Skillpunkte sowie Item-Level enden an einem Cap (Werte:
+  [SPEC §3.1](spec/CHARACTERS.md#31-attribute-level-up-progression),
+  [§3.3](spec/CHARACTERS.md#33-charakterlevel),
+  [§4.5](spec/CRAFTING.md#seltenheit-sockel--level-cap)). Das Spiel ist
   bewusst ein abschließbares, endliches Erlebnis (~30–50 h), kein unendlicher Zahlen-Treadmill.
   Der Endgame-Min-Max lebt danach auf der **Gem-Achse** (Jeweler), dem **Verteilen der Sigils**
   über die Slots (Re-Brand) und dem **Kombinieren der Runen** (Rites, SPEC §4.6) — letzteres als
@@ -134,6 +183,12 @@ Diese Entscheidungen sind **bewusst** getroffen — nicht implementieren, auch n
 - **Kein Offline-Progress:** Tab geschlossen ⇒ kein Fortschritt. Nur ein
   **Catch-up** bei minimiertem/gedrosseltem Tab.
 - **Keine passive Idle-Ressourcengenerierung** außerhalb des Kampfes.
+- **Kein Runden-Cap im Kampf:** Ein Kampf endet durch Sieg, Wipe oder manuellen Abbruch. Ein Cap
+  wäre ein verstecktes Balancing-Instrument; die Endlichkeit garantiert stattdessen die **monoton
+  sinkende Gegner-Health** (SPEC §1.1). Einen zäh laufenden Kampf beendet der Spieler selbst.
+- **Kein Frust-RNG bei der Entdeckung:** **Inscribe** zieht ausschließlich noch **unbekannte**
+  Runen — ein Kartenstapel, kein Automat. Keine Duplikate, keine Pech-Serien, jeder Zug ist
+  Fortschritt (SPEC §4.6). Dieselbe Logik trägt den garantierten **ersten Sigil-Drop**.
 - **Kein Router / keine URL-adressierbaren Views** — Ansichtswechsel über State.
 - **Kein Light-/System-Theme** — nur Dark Mode.
 

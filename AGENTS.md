@@ -20,9 +20,9 @@ Diese Datei ist die **lebende Quelle für Regeln & Konventionen**. Das Spiel sel
 und Entscheidungen sind ergänzend dokumentiert:
 
 - [`docs/DESIGN.md`](docs/DESIGN.md) — Vision, Design-Pillars, Player Experience („Warum / Wie soll es sich anfühlen?").
-- [`docs/SPEC.md`](docs/SPEC.md) — präzise Mechanik-Regeln, Formeln, Zustände („Wie verhält es sich exakt?").
+- [`docs/SPEC.md`](docs/SPEC.md) — präzise Mechanik-Regeln, Formeln, Zustände („Wie verhält es sich exakt?"). **Index mit den Invarianten**; der Inhalt liegt thematisch aufgeteilt in [`docs/spec/`](docs/spec/) (Kampf, Charaktere, Progression, Handwerk, Runen, Simulation, Persistenz). Die **§-Nummerierung ist über alle Teildateien hinweg eindeutig** — ein Verweis wie „SPEC §2.3" bleibt gültig, die Zuordnung § → Datei steht im Index.
 - [`docs/BALANCING.md`](docs/BALANCING.md) — Balancing-Philosophie & Begründung der Kurven/Werte. Umgesetzte Zahlen leben als Content unter `src/game/` (§4).
-- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — verbindliche Begriffe (DE interne Prosa ↔ EN Code/UI).
+- [`docs/GLOSSARY.md`](docs/GLOSSARY.md) — verbindliche Begriffe (DE interne Prosa ↔ EN Code/UI). **Namens-Register, keine Regel-Quelle:** ein Eintrag nennt, grenzt ab und verlinkt den Wohnort in der SPEC. Bei Konflikt zwischen Glossar und SPEC gilt die **SPEC**.
 - [`docs/adr/`](docs/adr/) — Architecture Decision Records: unveränderliches „Wann & warum"-Logbuch. Bei Konflikt gilt **AGENTS.md**; ADRs erklären nur das Warum dahinter.
 
 ---

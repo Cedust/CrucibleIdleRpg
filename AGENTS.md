@@ -60,7 +60,10 @@ Auto-Battle-Kämpfen** zwischen dem eigenen Team und Gegnern.
   - aktive Plugins u. a.: `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`
   - Prettier = reine Formatierung, ESLint = Code-Qualität
 - **Tests**: Vitest + React Testing Library (Unit/Component), Playwright (E2E)
-- **Git-Hooks**: Husky + lint-staged (Lint/Format auf gestagte Dateien vor jedem Commit)
+- **Doku**: `npm run docs:links` prüft alle relativen Markdown-Links auf tote Dateien und Anker
+  ([`scripts/check-doc-links.js`](scripts/check-doc-links.js), dependency-frei). Die Doku lebt von
+  dichten Querverweisen — ohne den Check verrotten Anker still, sobald eine Überschrift umbenannt
+  wird. Läuft über das **ganze** Repo, nicht nur über geänderte Dateien.
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`, …)
 
 ---
@@ -260,7 +263,8 @@ Bevor eine Aufgabe als **erledigt** gilt, müssen lokal **grün** sein:
 2. **Typecheck** (`tsc --noEmit`)
 3. **Tests** (Vitest; relevante Suites)
 4. **Build** (Vite) - bei Änderungen mit Build-Relevanz
-5. **Browser Smoke Test** (Playwright) - optional, aber empfohlen
+5. **Doc-Links** (`npm run docs:links`) - bei Änderungen an `*.md` (läuft auch im pre-commit-Hook)
+6. **Browser Smoke Test** (Playwright) - optional, aber empfohlen
 
 ### Weiteres
 
@@ -273,7 +277,7 @@ Bevor eine Aufgabe als **erledigt** gilt, müssen lokal **grün** sein:
 
 ## 12. CI/CD
 
-- **GitHub Actions** bei Push/PR: **Lint · Typecheck · Vitest · Build**.
+- **GitHub Actions** bei Push/PR: **Doc-Links · Lint · Typecheck · Vitest · Build**.
 - **GitHub-Pages-Deploy** wird **erst mit der ersten spielbaren Version** eingeführt
   (dann inkl. korrektem `base`-Pfad in `vite.config.ts`, z. B. `/CrucibleIdleRpg/`).
 

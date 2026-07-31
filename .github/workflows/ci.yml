@@ -18,6 +18,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Doc-Links
+        run: npm run docs:links
+
       - name: Lint
         run: npm run lint
 

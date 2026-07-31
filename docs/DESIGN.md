@@ -117,8 +117,10 @@ stehen in der Spec (Links jeweils am Ende der Punkte).
   Verteidigung oder Überleben. Durch die Attrition ist das eine echte Wette statt einer freien
   Zugabe. → [Attribute](spec/CHARACTERS.md#3-attribute-level-up-progression)
 - **Knoten multiplizieren sich innerhalb eines Zweigs, statt sich zu addieren.** Das erzeugt eine
-  **Reihenfolge**-Entscheidung im Zweig statt beliebiger Punkte-Streuung: ein Chain-Knoten ist bei
-  niedriger Multi-Hit-Chance fast wertlos und wird erst mit hoher Chance stark.
+  **Reihenfolge**-Entscheidung im Zweig statt beliebiger Punkte-Streuung: In Tempest entscheidet
+  der _Multi Hit Chain Factor_, was ein Chain-Knoten wert ist — bei niedrigem Faktor klingt die
+  Kette so schnell ab, dass die hinteren Stufen kaum tragen. Der Zusammenhang ist im Kampflog
+  ablesbar, weil jede ausgelöste Kette in voller Länge mit fallenden Zahlen erscheint.
   → [Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree)
 - **Die Crit-Erweiterungen sitzen im Zweig des Generators.** So zieht jeder Zweig aus eigener Kraft
   zu Finesse hin, statt Finesse für jeden Build zur Pflicht zu machen.

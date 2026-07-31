@@ -51,10 +51,20 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
 - [ ] Waffen-Damage-Range-Breiten je Seltenheit (einmal pro Angriff gewürfelt,
       [Charakter-Zug](../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)).
 - [ ] **Multi-Hit-Werte:** _Multi Hit Damage_ als Anteil des rohen Grundschadens, _Multi Hit
-      Chance_ und die Chain-Stufen. Chance und Chain multiplizieren sich
-      ([Charakter-Skilltree](../spec/CHARACTERS.md#4-charakter-skilltree)) — die Erwartungswerte
+      Chance_, die Chain-Stufen und der **_Multi Hit Chain Factor_**
+      ([Charakter-Zug](../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden), Schritt 3;
+      [ADR-0006](../adr/0006-multi-hit-kette-garantierte-laenge.md)). Der ADR nennt als
+      Startvorschlag Basis **40 %** und Skilltree-Maximum **90 %** — das ist keine Festlegung.
+      Der Zweigertrag ist `Multi Hit Chance × Multi Hit Damage × Σₖ f^(k−1)`; die Erwartungswerte
       über den Zweig hinweg durchrechnen, damit ein voll ausgebautes Tempest nicht die anderen
       drei Zweige entwertet.
+- [ ] **Valor als Zwei-Faktor-Zweig:** Tempest und Dominance sind Produkte aus drei wachsenden
+      Stats, Finesse und Valor aus zwei
+      ([Charakter-Skilltree](../spec/CHARACTERS.md#4-charakter-skilltree)). Finesse gleicht das
+      über die globale Wirkung des Crit-Faktors aus
+      ([BALANCING §3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen)), Valor über die
+      Zahl der Gegner-Angriffe. Prüfen, ob die Kurven das tragen oder Valor einen dritten Faktor
+      braucht.
 - [ ] **Grundtakt und 2×**
       ([Playback](../spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit)): 1000 ms pro
       Akteur ist als Lesegeschwindigkeit gesetzt, aber der klassische Playtest-Regler — gegen die
@@ -118,6 +128,11 @@ Hier fehlt **Struktur**, nicht nur ein Wert — diese Punkte gehören nach Klär
       Implicits) sowie die drei namentlichen **Boss-Signatur-Sigils**.
 - [ ] **Implicit-Abgrenzung:** welche Effekt-Klassen ein Implicit trägt, die kein Gem-Affix
       liefert.
+- [ ] **Mehrfachzug für Boss-Gegner:** Die Leitplanke „mindestens drei Gegner-Aktionen pro Runde"
+      ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)) wird unter dem
+      Ein-Zug-pro-Akteur-Modell ([Rundenablauf](../spec/COMBAT.md#11-rundenablauf)) über Adds
+      erfüllt. Ein Boss mit **mehreren Zügen pro Runde** wäre die Alternative — sie berührt
+      Pending-Queue, Initiative-Ordnung und Suppression und ist als Strukturfrage offen.
 - [ ] **Save-Feldstruktur je Version**
       ([Persistenz](../spec/PERSISTENCE.md)): konkrete Zod-Schema-Form
       samt Migrationspfad.

@@ -66,3 +66,4 @@ AGENTS.md. ADRs sind für die **Zukunft**, nicht zum rückwirkenden Dokumentiere
 | 0003 | [Defense als flacher Abzug mit prozentualem Boden](0003-defense-flacher-abzug-mit-boden.md) | Akzeptiert |
 | 0004 | [Keine Big-Number-Bibliothek — native `number`](0004-keine-big-number-bibliothek.md)        | Akzeptiert |
 | 0005 | [Proc-Matrix — Crit ist Modifikator](0005-proc-matrix-modifikator-vs-generator.md)          | Akzeptiert |
+| 0006 | [Multi-Hit-Kette — garantierte Länge](0006-multi-hit-kette-garantierte-laenge.md)           | Akzeptiert |

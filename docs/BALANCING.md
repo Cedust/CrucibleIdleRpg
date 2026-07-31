@@ -44,6 +44,16 @@ zweimal. Viele schwache Gegner werden von Defense also stark gekontert, wenige s
 ihr vorbei. Beim Entwerfen der Formationen darauf achten, dass „sechs Gegner" nicht versehentlich
 leichter wird als „zwei Gegner".
 
+**Leitplanke — mindestens zwei Gegner-Aktionen pro Runde.** Zwei der vier Skilltree-Zweige
+skalieren mit der Gegnerzahl ([Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree)):
+Der Dominance-Ertrag hängt an der Zahl lebender Nebenziele, der Valor-Ertrag an der Zahl der
+Gegner-Angriffe — bei sechs Gegnern entstehen bis zu 18 Counter-Würfe pro Runde, bei einem Gegner
+drei. Ein Pflicht-Encounter mit einem einzelnen Gegner setzt damit zwei Zweige auf Nebenrolle.
+Jeder Pflicht-Encounter — **Boss-Floors eingeschlossen** — trägt deshalb mindestens **zwei
+Gegner-Aktionen pro Runde**; unter dem Ein-Zug-pro-Akteur-Modell
+([Rundenablauf](spec/COMBAT.md#11-rundenablauf)) heißt das: Boss plus Adds, bei Bedarf
+nachrückend. Der konkrete Formationsentwurf ist Content.
+
 **Kurven als Tabellen, nicht als Laufzeit-Formeln.** Die exponentiellen Kurven (Item-Level,
 Gegner-Health) werden als **vorberechnete Werte je Stufe** im Content abgelegt statt zur Laufzeit
 über `Math.pow` gerechnet. `Math.pow` ist zwischen JS-Engines nicht bit-identisch garantiert und
@@ -66,11 +76,26 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
   soft-capped bei 100 %, Damage ohne Soft-Cap.
   Jeder erzeugte Treffer bemisst sich am **rohen Grundschaden** und würfelt seinen eigenen Crit
   ([Charakter-Zug](spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)) — die Zweige addieren sich also, statt sich gegenseitig zu multiplizieren. Die
-  Multiplikation findet **innerhalb** eines Zweigs statt (z. B. Multi Hit Chance × Chain).
+  Multiplikation findet **innerhalb** eines Zweigs statt.
+
 - **Heilung:** **Regeneration** ist die **einzige** Heilquelle, bis das Rune-System freigeschaltet
   ist ([Heilung](spec/COMBAT.md#26-heilung--grenzen-und-auslösung)). Ihre Kurve trägt damit allein, wie viel Attrition ein Run verzeiht — bei
   flachem Wert und linear wachsender Health muss sie über Sapphire-Gems mitwachsen.
 - **Feinschliff:** Skilltree-Knoten (Verhalten/Trigger) und Crucible-Trees.
+
+**Warum _Crit Damage_ ohne Soft-Cap bleibt.** Der Ausstoß eines Zuges ist
+`Grundschaden × [1 + Multi-Anteil + Splash-Anteil] × Crit-Faktor`
+([Charakter-Zug](spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)): Die Generator-Anteile
+addieren sich in der Klammer, der Crit-Faktor multipliziert die Summe und wirkt zusätzlich auf den
+Counter. Der feste Summand `1` (der Grundtreffer) verschafft Crit einen Vorsprung, solange die
+Generator-Anteile klein sind — bei Anteilen um `0,7` bringt ein verdoppelter Crit-Faktor `+100 %`,
+ein verdoppelter Generator-Anteil `+58 %`. Der Vorsprung schmilzt mit dem Ausbaustand: bei
+Anteilen um `10` stehen `+100 %` gegen `+95 %`. Tempest und Dominance sind deshalb als **Produkt
+dreier wachsender Stats** gebaut ([Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree),
+[ADR-0006](adr/0006-multi-hit-kette-garantierte-laenge.md)) und erreichen diesen Bereich. Der
+Ausgleich liegt damit in den Zweig-Kurven; die verbleibende Frühspiel-Asymmetrie wird über die
+Punktekosten der ersten Finesse-Knoten getragen. Beim Tuning ist der Ausstoß daher über den
+**gesamten** Ausbaupfad zu prüfen, nicht nur am Endpunkt.
 
 > **Leitplanke:** Ausrüstung = Hauptmotor, Level/Crucible = garantiertes Grundgerüst. Beim
 > Tuning darauf achten, dass ein loot-unabhängiger Sockel existiert (sonst hängt die gesamte

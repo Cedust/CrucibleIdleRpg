@@ -177,8 +177,8 @@ im Handwerk**.
 - **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
   seltene Elite/Boss-Chase (Drop-Bedingungen: [§6](#6-drops-gems-cinder--sigils)).
 - **Ohne Gem-Quelle:** die **Derived Stats** (Attack/Defense/Health — sie ergeben sich aus
-  Core/Attribut/Baseline, [Stats](CHARACTERS.md#2-stats)), **Multi Hit Chain** und **Splash
-  Radius** (Skilltree) sowie **Initiative** (Innate Feet + Crucible).
+  Core/Attribut/Baseline, [Stats](CHARACTERS.md#2-stats)), **Multi Hit Chain**, **Multi Hit Chain
+  Factor** und **Splash Radius** (Skilltree) sowie **Initiative** (Innate Feet + Crucible).
 - Konkrete Pool-Gewichte, Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing
   (`src/game/`, [BALANCING §4](../BALANCING.md#4-ökonomie-anker)).
 

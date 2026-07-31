@@ -48,7 +48,7 @@ Jeder Charakter hat Stats in folgenden Kategorien:
 | **Derived**   | Attack, Defense, Health                                                                                                    |
 | **Offensive** | Crit Chance, Crit Damage, Multi Hit Chance, Multi Hit Damage, Splash Chance, Splash Damage, Counter Chance, Counter Damage |
 | **Defensive** | Barrier, Block Chance, Evasion, Regeneration                                                                               |
-| **Utility**   | Initiative, Multi Hit Chain, Splash Radius                                                                                 |
+| **Utility**   | Initiative, Multi Hit Chain, Multi Hit Chain Factor, Splash Radius                                                         |
 
 - **Core (Primär):** _Might_ speist _Attack_, _Toughness_ speist _Defense_, _Vitality_ speist
   _Health_ (je über eine eigene Kurve). Core-Stats stammen aus **Item-Innate**
@@ -67,7 +67,9 @@ Jeder Charakter hat Stats in folgenden Kategorien:
   _Regeneration_ = flache Heilung nach eigener Handlung
   ([Heilung](COMBAT.md#26-heilung--grenzen-und-auslösung)) und bis zur
   Freischaltung des Rune-Systems ([Runen](RUNES.md)) die **einzige Heilquelle** im Spiel.
-- **Utility:** _Initiative_ = Zugreihenfolge; _Multi Hit Chain_ = maximale Multi-Hit-Kettenlänge;
+- **Utility:** _Initiative_ = Zugreihenfolge; _Multi Hit Chain_ = Länge der Multi-Hit-Kette;
+  _Multi Hit Chain Factor_ = Abklingfaktor je Kettenstufe, echt unter 100 %
+  ([Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden), Schritt 3);
   _Splash Radius_ = Anzahl Nebenziele (Lane-übergreifend).
 
 ---
@@ -109,12 +111,12 @@ Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived
   Signatur-Skills im Crucible ([§7](#7-signatur-skills) /
   [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)).
 
-  | Zweig         | Schadens-Muster            | Gekoppelte Stats                                      |
-  | ------------- | -------------------------- | ----------------------------------------------------- |
-  | **Finesse**   | Crit (Einzeltreffer)       | Crit Chance + Crit Damage                             |
-  | **Tempest**   | Multi-Hit (**ein** Ziel)   | Multi Hit Chance + Multi Hit Damage + Multi Hit Chain |
-  | **Dominance** | Splash (**mehrere** Ziele) | Splash Chance + Splash Damage + Splash Radius         |
-  | **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage                       |
+  | Zweig         | Schadens-Muster            | Gekoppelte Stats                                                               |
+  | ------------- | -------------------------- | ------------------------------------------------------------------------------ |
+  | **Finesse**   | Crit (Einzeltreffer)       | Crit Chance + Crit Damage                                                      |
+  | **Tempest**   | Multi-Hit (**ein** Ziel)   | Multi Hit Chance + Multi Hit Damage + Multi Hit Chain + Multi Hit Chain Factor |
+  | **Dominance** | Splash (**mehrere** Ziele) | Splash Chance + Splash Damage + Splash Radius                                  |
+  | **Valor**     | Counter (Vergeltung)       | Counter Chance + Counter Damage                                                |
 
 - Jeder Zweig enthält **Stat-Knoten** (die gekoppelten Werte-Boosts) und
   **Verhaltens-Knoten** (Chain-/Radius-Erweiterungen und die Crit-Erweiterungen unten).
@@ -128,11 +130,15 @@ Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived
   | Splash-Treffer können critten    | **Dominance** |
   | Counter-Treffer können critten   | **Valor**     |
 
-- **Innerhalb eines Zweigs multiplizieren sich die Knoten**, statt sich zu addieren (z. B. in
-  Tempest _Multi Hit Chance_ × _Multi Hit Chain_).
+- **Innerhalb eines Zweigs multiplizieren sich die Knoten**, statt sich zu addieren — jeder
+  Zweig-Ertrag ist ein **Produkt** seiner gekoppelten Stats: Tempest aus _Multi Hit Chance_ ×
+  _Multi Hit Damage_ × Kettenlänge/-stärke (_Chain_ + _Chain Factor_), Dominance aus
+  _Splash Chance_ × _Splash Damage_ × _Splash Radius_.
 - **Chance**-Stats haben einen **Soft-Cap bei 100 %** (Überschuss verpufft), **Damage**-Stats
   haben **keinen Soft-Cap** (Zuwachs verpufft nie). Die gekoppelten Stats sind selbst
-  Multiplikatoren auf den Base-Schaden (skalierungsstabil).
+  Multiplikatoren auf den Base-Schaden (skalierungsstabil). _Multi Hit Chain Factor_ ist als
+  Utility-Stat mit einer eigenen Obergrenze unter 100 % geführt
+  ([§2](#2-stats), [Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden)).
 - Design-Absicht hinter der Zweig-Struktur, der Knoten-Multiplikation und der Platzierung der
   Crit-Erweiterungen: [DESIGN §3.2](../DESIGN.md#32-build-entscheidungen-die-sich-unterscheiden-sollen).
 - **Skillpunkte:** **1 pro Level** (→ 100 gesamt), frei im gesamten Baum verteilbar. **Respec

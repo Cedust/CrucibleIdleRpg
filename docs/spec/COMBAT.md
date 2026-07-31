@@ -154,35 +154,50 @@ Daraus folgen zwei verbindliche Regeln:
   **seinen eigenen** Crit-Wurf, sofern der zugehörige Skilltree-Knoten freigeschaltet ist
   ([Charakter-Skilltree](CHARACTERS.md#4-charakter-skilltree)). Crit wird dadurch pro Treffer
   **genau einmal** gezählt; es gibt keine Vererbung von Multiplikatoren zwischen Treffern.
+  Multi Hit und Splash beziehen sich auf den Grundschaden **des Zuges**; der reaktive Counter
+  würfelt seinen eigenen (unten).
 
 **Ablauf eines Zuges:**
 
 1. **Roher Grundschaden**
    `Grundschaden = Attack × Waffen-Damage-Range` — die Damage-Range ist ein **einmal pro
-   Angriff** per PRNG gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %). Alle
-   erzeugten Treffer bemessen sich an diesem einen Wert.
+   Angriff** per PRNG gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %). Alle **in diesem
+   Zug** erzeugten Treffer bemessen sich an diesem einen Wert.
 2. **Crit (Grundtreffer)** — mit _Crit Chance_ wird geprüft; bei Erfolg `× Crit Damage`.
    _Crit Damage_ ist ein **Gesamt-Multiplikator**, kein Aufschlag: `200 %` bedeutet `× 2,0`,
    der neutrale Wert ist `100 %`.
-3. **Multi Hit** — mit _Multi Hit Chance_ wird auf einen Zusatztreffer **auf dasselbe Ziel**
-   geprüft; bei Erfolg erneut, bis zu **_Multi Hit Chain_-mal in Folge**, endet beim ersten
-   Fehlwurf. _Multi Hit Chain_ zählt ausschließlich die Zusatztreffer (Startwert **1**).
-   Jeder Zusatztreffer verursacht _Multi Hit Damage_ als Anteil des **rohen Grundschadens** —
-   alle Kettentreffer sind gleich stark — und würfelt seinen eigenen Crit.
+3. **Multi Hit** — mit _Multi Hit Chance_ wird **einmal** auf eine Zusatztreffer-Kette **auf
+   dasselbe Ziel** geprüft. Bei Erfolg entsteht die Kette in **voller Länge**: _Multi Hit Chain_
+   Zusatztreffer. _Multi Hit Chain_ zählt ausschließlich die Zusatztreffer (Startwert **1**).
+
+   Der erste Kettentreffer verursacht _Multi Hit Damage_ als Anteil des **rohen Grundschadens**,
+   jeder weitere den _Multi Hit Chain Factor_-fachen Anteil seines Vorgängers — die Kette klingt
+   also ab:
+
+   ```
+   Kettentreffer k  (k = 1 … Multi Hit Chain):
+     Schaden = roher Grundschaden × Multi Hit Damage × Multi Hit Chain Factor^(k−1)
+   ```
+
+   Der _Multi Hit Chain Factor_ ist **echt kleiner als 100 %** (Wert = Balancing); der Wert wird
+   auf diese Obergrenze geklemmt. Jeder Kettentreffer würfelt seinen eigenen Crit.
+
 4. **Splash** — mit _Splash Chance_ trifft der Angriff zusätzlich bis zu _Splash Radius_
    **Nebenziele**. _Splash Damage_ ist ein Anteil des **rohen Grundschadens**; jeder
    Splash-Treffer würfelt seinen eigenen Crit. Auswahl der Nebenziele: **gleiche Lane zuerst**,
    dann reguläre Priorisierung ([§1.2](#12-zielauswahl), höchste Initiative zuerst).
 5. **Counter** — **rein reaktiv** und kein Teil des eigenen Zuges: Wird ein Charakter
    getroffen, löst er mit _Counter Chance_ einen Gegenangriff mit _Counter Damage_ aus (Anteil
-   des rohen Grundschadens, eigener Crit-Wurf). Details unten.
+   eines **eigens gewürfelten** Grundschadens, eigener Crit-Wurf). Details unten.
 
 Auf **jeden** so erzeugten Treffer wird anschließend der **Bulwark-Malus seines eigenen Ziels**
 angewandt ([§2.4](#24-bulwark-deckung-der-backline)).
 
 **PRNG-Zugreihenfolge (verbindlich, [§2.5](#25-feststehende-regeln)):** `Damage-Range` →
-`Crit (Grundtreffer)` → je Kettenstufe `Multi Hit Chance` → `Crit (Multi Hit)` (Abbruch beim
-ersten Fehlwurf) → `Splash Chance` → je Nebenziel `Crit (Splash)`.
+`Crit (Grundtreffer)` → `Multi Hit Chance` → je Kettentreffer `Crit (Multi Hit)` →
+`Splash Chance` → je Nebenziel `Crit (Splash)`. Die Kettenlänge steht mit dem einen
+`Multi Hit Chance`-Wurf fest; die Zahl der folgenden `Crit (Multi Hit)`-Würfe ist damit
+_Multi Hit Chain_ oder `0`. Der Counter hat eine eigene Sequenz (unten).
 
 **Rechenbeispiel (Test-Vektor).** Die Eingangswerte sind frei gewählt, nicht Balancing —
 verbindlich ist die **Struktur**: Zugreihenfolge, Bezug auf den rohen Grundschaden und der
@@ -191,32 +206,42 @@ Crit-Wurf pro Treffer.
 ```
 Gegeben: Attack 100, Damage-Range 90–110 %, Crit Chance 25 %, Crit Damage 200 %,
          Multi Hit Chance 40 %, Multi Hit Damage 50 %, Multi Hit Chain 2,
+         Multi Hit Chain Factor 60 %,
          Splash Chance 30 %, Splash Damage 40 %, Splash Radius 1,
          Multi-Hit- und Splash-Crit-Knoten freigeschaltet, Bulwark-Malus 0 %
 
 PRNG-Züge (combat-Strom) in dieser Reihenfolge:
   1. Damage-Range      → 1.05    ⇒ roher Grundschaden = 100 × 1.05 = 105
   2. Crit Grundtreffer → 0.10 < 0.25  ⇒ Treffer A = 105 × 2.0 = 210
-  3. Multi Hit Chance  → 0.22 < 0.40  ⇒ Kettentreffer 1
-  4. Crit Multi Hit    → 0.80 ≥ 0.25  ⇒ Treffer B = 105 × 0.5 = 52.5
-  5. Multi Hit Chance  → 0.65 ≥ 0.40  ⇒ Kette endet (Chain 2 nicht ausgeschöpft)
+  3. Multi Hit Chance  → 0.22 < 0.40  ⇒ Kette in voller Länge: 2 Kettentreffer
+  4. Crit Kette 1      → 0.80 ≥ 0.25  ⇒ Treffer B = 105 × 0.5 = 52.5
+  5. Crit Kette 2      → 0.15 < 0.25  ⇒ Treffer C = 105 × 0.5 × 0.6 × 2.0 = 63
   6. Splash Chance     → 0.11 < 0.30  ⇒ 1 Nebenziel
-  7. Crit Splash       → 0.05 < 0.25  ⇒ Treffer C = 105 × 0.4 × 2.0 = 84
+  7. Crit Splash       → 0.05 < 0.25  ⇒ Treffer D = 105 × 0.4 × 2.0 = 84
 
-Ergebnis: Primärziel 210 + 52.5 = 262.5   Nebenziel 84
+Ergebnis: Primärziel 210 + 52.5 + 63 = 325.5   Nebenziel 84
 ```
 
-Was der Vektor absichert: Treffer B bemisst sich an `105`, **nicht** an den gecritteten `210`
-(kein vererbter Multiplikator); Zug 5 wird trotz Kettenabbruch gezogen; Zug 7 findet statt,
-obwohl Zug 2 bereits gecrittet hat (eigener Wurf pro Treffer).
+Was der Vektor absichert: Treffer B und C bemessen sich an `105`, **nicht** an den gecritteten
+`210` (kein vererbter Multiplikator); die Kettenlänge steht nach dem einen Wurf in Zug 3 fest,
+weitere `Multi Hit Chance`-Würfe gibt es nicht; Treffer C trägt den Chain Factor **einmal**
+(`0.6^1`), während Treffer B ihn nicht trägt (`0.6^0`); Zug 7 findet statt, obwohl Zug 2 bereits
+gecrittet hat (eigener Wurf pro Treffer).
 
 **Counter im Detail:**
 
 - **Ziel:** der **auslösende Gegner** — unabhängig von Frontline-Lock und Taunt
   ([§1.2](#12-zielauswahl)). Der Counter ist damit der einzige Weg für Tank und Melee, die
   Backline zu erreichen.
-- **Schaden:** ein Flat-Hit (`roher Grundschaden × Counter Damage`) — **kein** Multi Hit,
-  **kein** Splash, da Generatoren einander nicht auslösen. Crit ist per Valor-Knoten möglich.
+- **Schaden:** Der Counter würfelt seinen **eigenen** Grundschaden — `Attack × Waffen-Damage-Range`,
+  neu gezogen wie bei einem regulären Angriff (Schritt 1 oben). Daraus ein Flat-Hit
+  (`Grundschaden × Counter Damage`) — **kein** Multi Hit, **kein** Splash, da Generatoren einander
+  nicht auslösen. Crit ist per Valor-Knoten möglich.
+- **PRNG-Zugreihenfolge (verbindlich, [§2.5](#25-feststehende-regeln)):** je Charakter, der von
+  diesem Gegner-Angriff getroffen wurde, in **Slot-Reihenfolge**:
+  `Counter Chance` → bei Erfolg `Damage-Range` → bei freigeschaltetem Valor-Knoten `Counter Crit`.
+  Ein Charakter countert pro Gegner-Angriff höchstens einmal, die Sequenz enthält je Charakter
+  also höchstens diese drei Züge.
 - **Bulwark gilt** — der Counter ignoriert die Deckung nicht.
 - **Auslösung:** Ein geblockter Treffer ist ein Treffer → löst Counter aus; ein
   ausgewichener (Evasion) Treffer nicht.
@@ -318,16 +343,47 @@ Angriff dieselben `S = 300` **vollständig** auf Korvin.
 
 - Solange **Frontline-Gegner leben**, erleiden **Backline-Gegner** reduzierten Schaden
   (Bulwark-Malus auf eingehenden Schaden).
-- Der Malus ist **additiv pro Frontline-Gegnertyp** (Tank trägt mehr bei als Melee). Konkrete
-  Prozentwerte = Balancing (`src/game/`,
-  [BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)). Ein Cap ist bei den vorgesehenen
-  Werten nicht nötig.
+- Jeder lebende Frontline-Gegner trägt einen **eigenen Beitrag** `bᵢ` (Tank trägt mehr bei als
+  Melee). Die Beiträge stapeln **multiplikativ**:
+
+  ```
+  Bulwark-Malus = 1 − Π (1 − bᵢ)     über alle lebenden Frontline-Gegner
+  ```
+
+  Der Malus bleibt damit strukturell unter 100 %, und jeder Frontline-Gegner hebt die effektive
+  Health der Backline um denselben Faktor. Konkrete `bᵢ` = Balancing (`src/game/`,
+  [BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+
 - Der Malus wird **pro Treffer und Ziel** angewandt
   ([§2.1](#21-charakter-zug-ausgehender-schaden)) — jeder Grund-, Multi-, Splash- und
   Counter-Treffer bekommt den Malus des Gegners, den er trifft.
 - Fällt die Frontline vollständig, entfällt der Bulwark-Malus.
-- **Sunder** ([§3.2](#32-sunder-rhaya-melee)) baut den Bulwark-Beitrag einzelner
-  Frontline-Gegner **während des Kampfes** ab.
+- **Sunder** ([§3.2](#32-sunder-rhaya-melee)) senkt das `bᵢ` einzelner Frontline-Gegner
+  **während des Kampfes**.
+
+**Rechenbeispiel (Test-Vektor).** Eingangswerte frei gewählt, nicht Balancing — verbindlich ist
+die **multiplikative** Stapelung.
+
+```
+Gegeben: Frontline lebt mit Tank (b = 0.30) und zwei Melee (b = 0.15);
+         ein Treffer von 1000 auf ein Backline-Ziel
+
+  Malus   = 1 − 0.70 × 0.85 × 0.85 = 1 − 0.505750 = 0.494250
+  Schaden = 1000 × 0.505750 = 505.75
+
+Nach Sunder auf den Tank (b: 0.30 → 0.10):
+  Malus   = 1 − 0.90 × 0.85 × 0.85 = 1 − 0.650250 = 0.349750
+  Schaden = 1000 × 0.650250 = 650.25
+
+Ein Melee stirbt (statt Sunder, Ausgangswerte):
+  Malus   = 1 − 0.70 × 0.85 = 1 − 0.595000 = 0.405000
+  Schaden = 1000 × 0.595000 = 595.00
+```
+
+Was der Vektor absichert: Die Beiträge werden **multipliziert**, nicht summiert (additiv wäre der
+Malus `0.60` statt `0.494250`); der Wegfall eines Frontline-Gegners und die Absenkung seines `bᵢ`
+wirken über dieselbe Formel; für jedes `bᵢ < 1` bleibt der Malus unter `100 %` und braucht daher
+keinen Cap.
 
 ### 2.5 Feststehende Regeln
 
@@ -390,7 +446,7 @@ Design-Absicht in
 
 ### 3.2 Sunder (Rhaya, Melee)
 
-- Rhayas Treffer auf einen **Frontline-Gegner** reduzieren dessen **Bulwark-Beitrag**
+- Rhayas Treffer auf einen **Frontline-Gegner** reduzieren dessen **Bulwark-Beitrag** `bᵢ`
   ([§2.4](#24-bulwark-deckung-der-backline)).
 - Der Abbau ist **kumulativ pro Ziel** und gilt **nur für die Dauer des laufenden Kampfes** —
   es gibt **keinen Übertrag** zwischen Floors (Formationen stehen pro Floor neu).

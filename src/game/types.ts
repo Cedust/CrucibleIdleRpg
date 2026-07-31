@@ -8,6 +8,10 @@
 
 export type CharacterId = 'korvin' | 'rhaya' | 'quinn';
 export type EnemyId = string;
+export type FormationId = string;
+
+/** Floor-Kennung in der Notation `A<Akt>-D<Dungeon>-<Floor>`, Floor zweistellig (SPEC §4.1). */
+export type FloorId = string;
 
 /** Rolle bestimmt Zielregeln und Formationsplatz (SPEC §1.2/§1.3). */
 export type Role = 'tank' | 'melee' | 'ranged';
@@ -57,6 +61,13 @@ export interface DefensiveStats {
 export interface UtilityStats {
   initiative: number;
   multiHitChain: number;
+  /**
+   * Abklingfaktor der Multi-Hit-Kette, echt kleiner als 1 — Kettentreffer k verursacht
+   * multiHitDamage * multiHitChainFactor^(k-1) des rohen Grundschadens.
+   * Siehe docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden (Schritt 3) und
+   * docs/adr/0006-multi-hit-kette-garantierte-laenge.md.
+   */
+  multiHitChainFactor: number;
   splashRadius: number;
 }
 
@@ -89,4 +100,17 @@ export interface EnemyDefinition {
   initiativeRange: { min: number; max: number };
   /** Beitrag zum Bulwark-Malus, solange dieser Gegner in der Frontline lebt (SPEC §2.4). */
   bulwarkContribution: number;
+}
+
+/** Die drei Slots einer Lane; `null` = unbesetzt. Als Tuple, damit der Index typsicher greift. */
+export type LaneSlots = readonly [EnemyId | null, EnemyId | null, EnemyId | null];
+
+/**
+ * Eine Formations-Vorlage der 2×3-Aufstellung (SPEC §1.3): zwei Lanes mit je drei Slots,
+ * 2–6 besetzte Slots, höchstens ein Tank-Gegner. Die Vorlage nennt nur die Besetzung —
+ * die Gegner-Stats skaliert die Floor-Kurve.
+ */
+export interface FormationDefinition {
+  id: FormationId;
+  slots: Record<Lane, LaneSlots>;
 }

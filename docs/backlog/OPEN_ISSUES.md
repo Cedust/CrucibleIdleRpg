@@ -28,6 +28,18 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
 - [ ] Gegner-Kurven pro Akt/Dungeon/Floor (Health auf der Offense-Achse, Attack auf der
       Defense-Achse, Accuracy als gedeckelte Rampe); Elite-/Boss-eHP über die
       TTK-Ziel-Korridore ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+- [ ] **Gegner-Basiswerte je Gegnertyp** ([Gegnerformation](../spec/COMBAT.md#13-gegnerformation)):
+      Health, Attack, Accuracy und Initiative-Range als Floor-1-Anker, auf denen die
+      Gegner-Kurven aufsetzen. `attack` ist die team-weite Angriffsstärke `S`
+      ([Schadenspipeline](../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline)) — die
+      defensive Schwere hängt an ihrer **Summe** pro Runde, nicht am Einzelwert
+      ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+- [ ] **Formations-Besetzung je Floor**
+      ([Struktur](../spec/PROGRESSION.md#1-struktur-akte-dungeons-floors)): welche Gegnertypen in
+      den vier Ramp-Up-Phasen stehen, wie die 20 Floors des ersten Dungeons auf die Phasen
+      aufteilen und welche Vorlage die übrigen 280 Floors tragen. Gegen die Leitplanke
+      „mindestens zwei Gegner-Aktionen pro Runde" prüfen
+      ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
 - [ ] **Regeneration-Kurve** (flacher Wert): einzige Heilquelle vor dem Endgame, muss über
       Sapphire-Gems mit der Health-Kurve mitwachsen; Sustain-Deckel gegen den erwarteten
       Durchlass beachten ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
@@ -43,6 +55,11 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
       gegen die Toughness- und Gegner-Attack-Kurven der Defense-Achse tunen.
       **Achtung:** Der Test-Vektor der Schadenspipeline verwendet `K = 100` als frei gewählten
       Eingangswert — das ist keine Festlegung.
+- [ ] **Block-Reduktion (`Block%`)**
+      ([Schadenspipeline](../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 3):
+      Ein Block mindert den Schaden um einen **festen** Prozentsatz. _Block Chance_ ist ein
+      Stat ([Stats](../spec/CHARACTERS.md#2-stats)), dieser Prozentsatz ist eine globale
+      Konstante und noch offen.
 - [ ] **Rally-Anteil je Node-Stufe**
       ([Checkpoints, Wipe & Abbruch](../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch)):
       Prozent der Max-Health beim Aufstehen an der Floor-Grenze. Klein halten, sonst entsteht ein

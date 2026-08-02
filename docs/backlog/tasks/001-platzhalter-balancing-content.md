@@ -1,10 +1,10 @@
 # 001 — Platzhalter-Balancing-Content
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -41,12 +41,12 @@ Bulwark-Beitrag `bᵢ` je Frontline-Rolle, Gegner-Stats für die Floors des erst
 
 ## Akzeptanzkriterien
 
-- [ ] Jeder Platzhalter-Wert ist im Content als provisorisch kommentiert und verweist auf
+- [x] Jeder Platzhalter-Wert ist im Content als provisorisch kommentiert und verweist auf
       seinen Eintrag in [OPEN_ISSUES.md](../OPEN_ISSUES.md)
-- [ ] Kurven liegen als vorberechnete Werte je Stufe vor, nicht als Laufzeit-Formel
-- [ ] Keine Logik-Datei enthält eine Balancing-Zahl — die Engine liest sie ausschließlich
+- [x] Kurven liegen als vorberechnete Werte je Stufe vor, nicht als Laufzeit-Formel
+- [x] Keine Logik-Datei enthält eine Balancing-Zahl — die Engine liest sie ausschließlich
       aus `src/game/`
-- [ ] Die Werte tragen einen Kampf auf `A1-D1-01`, der weder in einer Runde noch in
+- [x] Die Werte tragen einen Kampf auf `A1-D1-01`, der weder in einer Runde noch in
       dreistelliger Rundenzahl endet (grobe Plausibilität, kein Tuning)
 
 ## Betroffene Dateien

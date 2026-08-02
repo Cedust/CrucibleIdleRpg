@@ -19,6 +19,25 @@ export type Role = 'tank' | 'melee' | 'ranged';
 /** Die beiden Lanes der 2×3-Gegnerformation (SPEC §1.3). */
 export type Lane = 'frontline' | 'backline';
 
+/**
+ * Seltenheitsstufen eines Items — Master-Regler für Sockel, Gem-Level-Cap und Item-Level-Cap
+ * (docs/spec/ITEMS.md#3-seltenheit-sockel--level-cap).
+ */
+export type Rarity = 'common' | 'magic' | 'rare' | 'epic' | 'legendary';
+
+/** Geschlossenes Intervall, beide Grenzen inklusive. */
+export interface Range {
+  min: number;
+  max: number;
+}
+
+/**
+ * Damage-Range einer Waffe: Faktor auf den Grundschaden, **einmal pro Angriff** per PRNG
+ * innerhalb dieser Grenzen gewürfelt (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden).
+ * `1` ist der neutrale Wert — `{ min: 0.9, max: 1.1 }` entspricht 90 %–110 %.
+ */
+export type DamageRange = Range;
+
 /** Core-Stats speisen die Derived Stats über je eigene Kurven (SPEC §3.0). */
 export interface CoreStats {
   might: number;
@@ -99,8 +118,8 @@ export interface EnemyDefinition {
   health: number;
   attack: number;
   accuracy: number;
-  /** Einmalig zu Kampfbeginn innerhalb dieser Grenzen gewürfelt (inklusive). */
-  initiativeRange: { min: number; max: number };
+  /** Einmalig zu Kampfbeginn innerhalb dieser Grenzen gewürfelt (SPEC §1.1). */
+  initiativeRange: Range;
   /** Beitrag zum Bulwark-Malus, solange dieser Gegner in der Frontline lebt (SPEC §2.4). */
   bulwarkContribution: number;
 }

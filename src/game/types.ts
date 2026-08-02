@@ -56,6 +56,23 @@ export interface DerivedStats {
 }
 
 /**
+ * Prozentuale Ebene je Derived Stat — `0` ist neutral, `0.1` sind `+10 %`
+ * (docs/spec/CHARACTERS.md#2-stats).
+ */
+export type DerivedStatPercent = Record<keyof DerivedStats, number>;
+
+/**
+ * Attributpunkte je Charakter. Jeder Punkt hebt den gekoppelten Derived Stat um einen festen
+ * Prozentsatz: Ferocity → Attack, Resilience → Defense, Vigor → Health
+ * (docs/spec/CHARACTERS.md#3-attribute-level-up-progression).
+ */
+export interface AttributePoints {
+  ferocity: number;
+  resilience: number;
+  vigor: number;
+}
+
+/**
  * Offensive Stats — paarweise Chance + Damage je Muster (SPEC §3.0).
  * Chancen als Anteil 0..1; Damage-Werte als Anteil des rohen Grundschadens (SPEC §2.1).
  * critDamage ist ein Gesamt-Multiplikator: 2 = 200 %, neutral ist 1.
@@ -104,6 +121,19 @@ export interface CharacterDefinition {
   baseOffensive: OffensiveStats;
   baseDefensive: DefensiveStats;
   baseUtility: UtilityStats;
+}
+
+/**
+ * Die effektiven Kampfwerte eines Charakters — die fünf Stat-Kategorien aus
+ * docs/spec/CHARACTERS.md#2-stats, fertig zusammengesetzt und Eingabe jeder Kampfformel.
+ * Hergeleitet in src/features/combat/characterStats.ts.
+ */
+export interface CharacterStats {
+  core: CoreStats;
+  derived: DerivedStats;
+  offensive: OffensiveStats;
+  defensive: DefensiveStats;
+  utility: UtilityStats;
 }
 
 /**

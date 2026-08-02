@@ -1,10 +1,10 @@
 # 002 — Kampfwert-Herleitung
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 001     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 001    |
 
 ## Ziel
 
@@ -28,12 +28,12 @@ folgt in M2/M3.
 
 ## Akzeptanzkriterien
 
-- [ ] Reine Funktion ohne Store-, Timer- oder DOM-Zugriff
-- [ ] Die multiplikative Schichtung ist als solche testbar: Core-Zuwachs und Attribut-Prozent
+- [x] Reine Funktion ohne Store-, Timer- oder DOM-Zugriff
+- [x] Die multiplikative Schichtung ist als solche testbar: Core-Zuwachs und Attribut-Prozent
       wirken auf verschiedenen Ebenen und sind im Test unterscheidbar
-- [ ] Der Level-1-Fall reproduziert die Startwerte aus `src/game/characters/characters.ts`
-- [ ] Unit-Tests decken alle fünf Stat-Kategorien ab
-- [ ] Kein Balancing-Wert steht in der Funktion
+- [x] Der Level-1-Fall reproduziert die Startwerte aus `src/game/characters/characters.ts`
+- [x] Unit-Tests decken alle fünf Stat-Kategorien ab
+- [x] Kein Balancing-Wert steht in der Funktion
 
 ## Betroffene Dateien
 

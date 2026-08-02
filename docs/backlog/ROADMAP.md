@@ -44,7 +44,7 @@ der Kampf endet mit Sieg oder Wipe, und der Ausgang überlebt einen Reload.
 | Reihenfolge | Task                                                                              | Status | Hängt ab von |
 | ----------- | --------------------------------------------------------------------------------- | ------ | ------------ |
 | 1           | [001 — Platzhalter-Balancing-Content](tasks/001-platzhalter-balancing-content.md) | done   | —            |
-| 2           | [002 — Kampfwert-Herleitung](tasks/002-kampfwert-herleitung.md)                   | ready  | 001          |
+| 2           | [002 — Kampfwert-Herleitung](tasks/002-kampfwert-herleitung.md)                   | done   | 001          |
 | 3           | [003 — Kampfzustand & Rundenordnung](tasks/003-kampfzustand-und-rundenordnung.md) | ready  | 002          |
 | 4           | [004 — Ausgehender Schaden](tasks/004-ausgehender-schaden.md)                     | ready  | 003          |
 | 5           | [005 — Eingehender Schaden](tasks/005-eingehender-schaden.md)                     | ready  | 003          |

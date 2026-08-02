@@ -20,8 +20,8 @@ import {
   derivePrng,
   deriveSeed,
   PRNG_STREAM,
-  type Prng,
   type PrngStream,
+  type ResumablePrng,
 } from '@/shared/utils/prng';
 import { deriveCharacterStats, type CharacterProgression } from './characterStats';
 import { buildPendingQueue } from './turnOrder';
@@ -35,8 +35,11 @@ import { buildPendingQueue } from './turnOrder';
  * Speichern ist trotzdem verboten (docs/spec/SIMULATION.md#5-kampfzustand-und-reload), der
  * Zustand lebt nur zur Laufzeit.
  *
- * Der laufende PRNG liegt bewusst **nicht** im Zustand: Der Zustand trägt den `floorSeed`,
- * aus dem sich jeder Strom über `combatStreamPrng` reproduzieren lässt.
+ * Der Zustand trägt den `floorSeed` — daraus lässt sich jeder Strom reproduzieren — und die
+ * **Position** im `combat`-Strom als Zahl (`combatPrngState`). Damit hängt ein Takt der Engine
+ * ausschließlich an seinem Eingangszustand und braucht keine mitgeschleppte PRNG-Instanz
+ * (`combatEngine.ts`). Der `init`-Strom taucht nicht auf: Er wird einmalig beim Aufbau
+ * verbraucht (COMBAT §1.1).
  */
 
 /** Welche Seite ein Akteur besetzt — Stufe 2 der Zugordnung (COMBAT §1.1). */
@@ -94,6 +97,11 @@ export interface CombatState {
   floorIndex: number;
   /** Wurzel aller Ströme dieses Kampfes (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme). */
   floorSeed: number;
+  /**
+   * Position im `combat`-Strom: der PRNG-Zustand **vor** dem nächsten Zug. Über `resumePrng`
+   * wird die Sequenz an genau dieser Stelle fortgesetzt (COMBAT §2.1).
+   */
+  combatPrngState: number;
   /** Genau drei Charaktere in Slot-Reihenfolge. */
   characters: readonly CombatCharacter[];
   /** Nur besetzte Formations-Slots, aufsteigend nach `formationIndex`. */
@@ -144,17 +152,17 @@ export function deriveFloorSeed(runSeed: number, floorIndex: number): number {
  * PRNG eines benannten Stroms unterhalb des Floor-Seeds. Das Label kommt ausschließlich aus
  * `PRNG_STREAM` — ein Tippfehler wäre ein stiller Verhaltensbruch (AGENTS.md §5).
  */
-export function deriveStreamPrng(floorSeed: number, stream: PrngStream): Prng {
+export function deriveStreamPrng(floorSeed: number, stream: PrngStream): ResumablePrng {
   return derivePrng(floorSeed, stream);
 }
 
 /** Der `combat`-Strom eines Floors (COMBAT §2.1). */
-export function combatStreamPrng(floorSeed: number): Prng {
+export function combatStreamPrng(floorSeed: number): ResumablePrng {
   return deriveStreamPrng(floorSeed, PRNG_STREAM.combat);
 }
 
 /** Der `init`-Strom eines Floors — nur die Gegner-Initiative (COMBAT §1.1). */
-export function initStreamPrng(floorSeed: number): Prng {
+export function initStreamPrng(floorSeed: number): ResumablePrng {
   return deriveStreamPrng(floorSeed, PRNG_STREAM.init);
 }
 
@@ -293,6 +301,8 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     floorId: setup.floorId,
     floorIndex: setup.floorIndex,
     floorSeed: setup.floorSeed,
+    // Der Strom steht am Anfang; jeder Takt schreibt seine Position zurück (combatEngine.ts).
+    combatPrngState: combatStreamPrng(setup.floorSeed).state(),
     characters,
     enemies,
     round: 0,

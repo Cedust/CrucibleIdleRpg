@@ -17,6 +17,19 @@ export interface Prng {
 }
 
 /**
+ * Ein PRNG, dessen Sequenz sich exakt fortsetzen lässt: `resumePrng(prng.state())` liefert
+ * einen Generator, der genau dort weiterzieht.
+ *
+ * Grundlage der reinen Takt-Funktion der Kampf-Engine (AGENTS.md §5): Der Fortschritt im
+ * `combat`-Strom liegt als Zahl im Kampfzustand, statt als mitgeschleppte Instanz. Damit hängt
+ * ein Takt ausschließlich an seinem Eingangszustand.
+ */
+export interface ResumablePrng extends Prng {
+  /** Der interne Zustand **vor** dem nächsten Zug. */
+  state(): number;
+}
+
+/**
  * Namen der Zufalls-Ströme (siehe SPEC.md §5.3). Der Determinismus hängt daran, dass diese
  * Label stabil bleiben — deshalb liegen sie hier als Konstanten und nicht als Literale
  * in den Aufrufern.
@@ -56,11 +69,11 @@ export function deriveSeed(parentSeed: number, ...parts: (string | number)[]): n
 }
 
 /** Erzeugt einen abgeleiteten PRNG für einen benannten Strom (SPEC.md §5.3). */
-export function derivePrng(parentSeed: number, ...parts: (string | number)[]): Prng {
+export function derivePrng(parentSeed: number, ...parts: (string | number)[]): ResumablePrng {
   return createPrng(deriveSeed(parentSeed, ...parts));
 }
 
-export function createPrng(seed: number): Prng {
+export function createPrng(seed: number): ResumablePrng {
   let state = seed >>> 0;
 
   const next = (): number => {
@@ -75,5 +88,18 @@ export function createPrng(seed: number): Prng {
     next,
     nextInt: (min, max) => min + Math.floor(next() * (max - min + 1)),
     chance: (p) => next() < p,
+    state: () => state >>> 0,
   };
+}
+
+/**
+ * Nimmt eine Sequenz an einem festgehaltenen Zustand wieder auf. Mulberry32 trägt seinen
+ * gesamten Zustand in einer uint32-Zahl — `createPrng` startet damit an genau dieser Stelle,
+ * unabhängig davon, wie viele Züge davor lagen.
+ *
+ * Das gelieferte `seed` ist der **Fortsetzungspunkt**, nicht der ursprüngliche Strom-Seed; für
+ * Bug-Reports zählt der Floor-Seed (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme).
+ */
+export function resumePrng(state: number): ResumablePrng {
+  return createPrng(state);
 }

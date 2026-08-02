@@ -115,6 +115,7 @@ function state(characters: CombatCharacter[], enemies: CombatEnemy[]): CombatSta
     floorId: 'A1-D1-01',
     floorIndex: 0,
     floorSeed: 1,
+    combatPrngState: 1,
     characters,
     enemies,
     round: 1,

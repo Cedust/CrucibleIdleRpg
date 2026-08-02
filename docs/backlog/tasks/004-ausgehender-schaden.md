@@ -1,10 +1,10 @@
 # 004 — Ausgehender Schaden (Charakter-Zug)
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 003     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 003    |
 
 ## Ziel
 
@@ -32,16 +32,16 @@ Teil von M1 ([Signatur-Skills](../../spec/CHARACTERS.md#7-signatur-skills)).
 
 ## Akzeptanzkriterien
 
-- [ ] Der Test-Vektor aus [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)
+- [x] Der Test-Vektor aus [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)
       läuft als Unit-Test mit gestelltem PRNG durch und trifft `210 / 52.5 / 63` sowie `84`
-- [ ] Der Test-Vektor aus [Bulwark](../../spec/COMBAT.md#24-bulwark-deckung-der-backline)
+- [x] Der Test-Vektor aus [Bulwark](../../spec/COMBAT.md#24-bulwark-deckung-der-backline)
       läuft als Unit-Test durch, inklusive der Variante mit gefallenem Frontline-Gegner
-- [ ] Ein Test zählt die **Zahl und Reihenfolge** der PRNG-Züge — ein zusätzlicher oder
+- [x] Ein Test zählt die **Zahl und Reihenfolge** der PRNG-Züge — ein zusätzlicher oder
       entfallener Wurf schlägt fehl
-- [ ] Generatoren lösen einander nicht aus: Multi-Hit-Treffer splashen nicht, Splash kettet nicht
-- [ ] Die Multi-Hit-Kettenlänge steht mit dem **einen** Chance-Wurf fest
-- [ ] `multiHitChainFactor` wird auf `< 1` geklemmt
-- [ ] Splash-Nebenziele: gleiche Lane zuerst, dann reguläre Priorisierung
+- [x] Generatoren lösen einander nicht aus: Multi-Hit-Treffer splashen nicht, Splash kettet nicht
+- [x] Die Multi-Hit-Kettenlänge steht mit dem **einen** Chance-Wurf fest
+- [x] `multiHitChainFactor` wird auf `< 1` geklemmt
+- [x] Splash-Nebenziele: gleiche Lane zuerst, dann reguläre Priorisierung
 
 ## Betroffene Dateien
 

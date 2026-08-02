@@ -150,6 +150,12 @@ Hier fehlt **Struktur**, nicht nur ein Wert — diese Punkte gehören nach Klär
       Ein-Zug-pro-Akteur-Modell ([Rundenablauf](../spec/COMBAT.md#11-rundenablauf)) über Adds
       erfüllt. Ein Boss mit **mehreren Zügen pro Runde** wäre die Alternative — sie berührt
       Pending-Queue, Initiative-Ordnung und Suppression und ist als Strukturfrage offen.
+- [ ] **Tiebreak der Zielpriorisierung** ([Zielauswahl](../spec/COMBAT.md#12-zielauswahl)): Die
+      Priorisierung nennt nur „höchste Initiative zuerst". Zwei Gegner können denselben
+      Initiative-Wert würfeln ([Rundenablauf](../spec/COMBAT.md#11-rundenablauf)) — welcher dann
+      Ziel wird, ist offen. Die Implementierung nimmt den **niedrigeren Formations-Index**, also
+      dieselbe Stufe, mit der die Zugordnung ihren Gleichstand auflöst; das hält die Auswahl
+      deterministisch, ist aber als Regel nicht festgeschrieben.
 - [ ] **Save-Feldstruktur je Version**
       ([Persistenz](../spec/PERSISTENCE.md)): konkrete Zod-Schema-Form
       samt Migrationspfad.

@@ -52,3 +52,14 @@ export const BULWARK_CONTRIBUTION_BY_ROLE: Record<Role, number> = {
   melee: 0.1,
   ranged: 0,
 };
+
+/**
+ * Obergrenze des _Multi Hit Chain Factor_ — der Abklingfaktor der Multi-Hit-Kette ist **echt
+ * kleiner als 100 %** und wird auf diesen Wert geklemmt
+ * (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden, Schritt 3). Damit klingt jede Kette
+ * ab und der Zweigertrag `Σₖ f^(k−1)` bleibt endlich.
+ *
+ * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#kampf-stellgrößen (Multi-Hit-Werte).
+ * Hier gewählt: das Skilltree-Maximum, das ADR-0006 als Startvorschlag nennt.
+ */
+export const MULTI_HIT_CHAIN_FACTOR_CAP = 0.9;

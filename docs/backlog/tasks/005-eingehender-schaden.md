@@ -1,10 +1,10 @@
 # 005 — Eingehender Schaden (Schadenspipeline & Counter)
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 003     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 003    |
 
 ## Ziel
 
@@ -35,16 +35,22 @@ Verteilung — in M1 konstant `0`, damit die Summen-Erhaltung von Anfang an test
 
 ## Akzeptanzkriterien
 
-- [ ] Der Test-Vektor aus
+- [x] Der Test-Vektor aus
       [Schadenspipeline](../../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline) läuft als
       Unit-Test durch (Korvin `−10`, Rhaya `0`, Quinn `−56`)
-- [ ] Summen-Erhaltung: die verteilten Ticks ergeben exakt `S`, auch bei `m > 0`
-- [ ] Ein sterbender Charakter erhöht den Tick der Überlebenden — Test mit zwei Toten
-- [ ] Defense drückt den Schaden nie auf `0`
-- [ ] Block ist partiell, nicht all-or-nothing; ein geblockter Treffer löst Counter aus,
+- [x] Summen-Erhaltung: die verteilten Ticks ergeben exakt `S`, auch bei `m > 0`
+- [x] Ein sterbender Charakter erhöht den Tick der Überlebenden — Test mit zwei Toten
+- [x] Defense drückt den Schaden nie auf `0`
+- [x] Block ist partiell, nicht all-or-nothing; ein geblockter Treffer löst Counter aus,
       ein ausgewichener nicht
-- [ ] Counter-Rekursion ist strukturell ausgeschlossen (Test: ein Counter erzeugt keinen Counter)
-- [ ] Ein Test zählt Zahl und Reihenfolge der PRNG-Züge über einen vollständigen Gegner-Zug
+- [x] Counter-Rekursion ist strukturell ausgeschlossen (Test: ein Counter erzeugt keinen Counter)
+- [x] Ein Test zählt Zahl und Reihenfolge der PRNG-Züge über einen vollständigen Gegner-Zug
+
+## Anmerkung zur Umsetzung
+
+Ob ein Charakter, der durch **diesen** Gegner-Angriff fällt, noch countert, legt die SPEC nicht
+ausdrücklich fest. Die Umsetzung lässt ihn nicht countern; der Punkt steht als Klarstellung in
+[OPEN_ISSUES §2](../OPEN_ISSUES.md#2-offene-spec-punkte).
 
 ## Betroffene Dateien
 

@@ -156,6 +156,14 @@ Hier fehlt **Struktur**, nicht nur ein Wert — diese Punkte gehören nach Klär
       Ziel wird, ist offen. Die Implementierung nimmt den **niedrigeren Formations-Index**, also
       dieselbe Stufe, mit der die Zugordnung ihren Gleichstand auflöst; das hält die Auswahl
       deterministisch, ist aber als Regel nicht festgeschrieben.
+- [ ] **Counter eines gefallenen Charakters**
+      ([Charakter-Zug](../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden), „Counter im
+      Detail"): Die Counter lösen **nach** Abschluss der Team-Pipeline aus
+      ([Rundenablauf](../spec/COMBAT.md#11-rundenablauf)). Ob ein Charakter, der durch **diesen**
+      Gegner-Angriff fällt, noch countert, steht nicht ausdrücklich da. Die Implementierung lässt
+      ihn **nicht** countern — dieselbe Linie, nach der ein sterbender Akteur aus der
+      Pending-Queue fällt und nur lebende Akteure handeln; als Regel ist sie aber nicht
+      festgeschrieben.
 - [ ] **Save-Feldstruktur je Version**
       ([Persistenz](../spec/PERSISTENCE.md)): konkrete Zod-Schema-Form
       samt Migrationspfad.

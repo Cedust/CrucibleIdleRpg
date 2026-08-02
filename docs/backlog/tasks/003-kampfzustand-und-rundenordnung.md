@@ -1,10 +1,10 @@
 # 003 — Kampfzustand & Rundenordnung
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 002     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 002    |
 
 ## Ziel
 
@@ -33,14 +33,14 @@ die Reihenfolge, in der gehandelt wird — nicht das Handeln selbst.
 
 ## Akzeptanzkriterien
 
-- [ ] `deriveSeed`/`derivePrng` aus `src/shared/utils/prng.ts` bilden die Kette
+- [x] `deriveSeed`/`derivePrng` aus `src/shared/utils/prng.ts` bilden die Kette
       `saveSeed → runSeed → floorSeed → Strom`; Strom-Label nur über `PRNG_STREAM`
-- [ ] Der Aufbau desselben Floors mit demselben Seed liefert bit-identische Initiative-Werte
-- [ ] Die Ordnung verbraucht **keinen** PRNG-Zug — Test mit erzwungenem Initiative-Gleichstand
+- [x] Der Aufbau desselben Floors mit demselben Seed liefert bit-identische Initiative-Werte
+- [x] Die Ordnung verbraucht **keinen** PRNG-Zug — Test mit erzwungenem Initiative-Gleichstand
       über alle drei Stufen
-- [ ] Ein Todesfall entfernt den Akteur aus der offenen Queue
-- [ ] Barrier wird zu Rundenbeginn neu gesetzt; Rest der Vorrunde verfällt
-- [ ] Der Kampfzustand enthält keine Referenz auf Timer, DOM oder Store
+- [x] Ein Todesfall entfernt den Akteur aus der offenen Queue
+- [x] Barrier wird zu Rundenbeginn neu gesetzt; Rest der Vorrunde verfällt
+- [x] Der Kampfzustand enthält keine Referenz auf Timer, DOM oder Store
 
 ## Betroffene Dateien
 

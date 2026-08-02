@@ -256,6 +256,19 @@ Verhalten überhaupt erreichbar machen.
 
 ## 11. Entwicklungs-Workflow (für Agenten verbindlich)
 
+### Woher die Arbeit kommt
+
+- Die **Reihenfolge** steht in [`docs/backlog/ROADMAP.md`](docs/backlog/ROADMAP.md), der
+  einzelne Auftrag in [`docs/backlog/tasks/`](docs/backlog/tasks/). Ein Task = eine
+  Agenten-Session = ein PR; Format, Status-Vokabular und Arbeitsweise stehen in
+  [`docs/backlog/README.md`](docs/backlog/README.md).
+- Ein Task **verlinkt** die Regeln, gegen die er gebaut wird — er ist keine Regelquelle. Bei
+  Widerspruch gilt die SPEC ([§ Präzedenz](#präzedenz-bei-konflikten)).
+- Innerhalb eines Tasks wird **von unten nach oben** gebaut: reine, seedbare Logik mit
+  Unit-Tests, dann Store, dann UI ([§5](#5-architektur-des-game-loops), [§10](#10-tests)).
+- Fehlt eine Regel, wird sie nicht erfunden: Eintrag in
+  [`docs/backlog/OPEN_ISSUES.md`](docs/backlog/OPEN_ISSUES.md), Task auf `blocked`.
+
 ### Definition of Done
 
 Bevor eine Aufgabe als **erledigt** gilt, müssen lokal **grün** sein:

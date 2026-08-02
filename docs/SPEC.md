@@ -79,3 +79,6 @@ Teildatei gelesen wird. Der verbindliche Wortlaut steht jeweils am verlinkten Or
    `+100`, kein Prestige). → [Feststehende Regeln](spec/COMBAT.md#25-feststehende-regeln),
    [Prestige](spec/PROGRESSION.md#5-prestige)
 10. **Kein Offline-Progress.** → [Grundmodell](spec/SIMULATION.md#1-grundmodell-verbindlich)
+11. **Achsen-Trennung:** Offensive Magnituden skalieren ausschließlich aus Attack, defensive
+    ausschließlich aus defensiven Quellen; kein Stat und kein Effekt konvertiert zwischen den
+    Achsen. → [Feststehende Regeln](spec/COMBAT.md#25-feststehende-regeln)

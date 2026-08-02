@@ -16,33 +16,64 @@
   **eingeplanter** Teil des Fortschritts — aber niemand soll **tagelang** einen Dungeon farmen
   müssen, nur um den nächsten zu bestehen. Ein „einfaches Durchlaufen" ohne Optimierung soll
   ebenfalls **nicht** möglich sein.
-- **Incremental-Fantasie:** Der Reiz ist „Numbers go big" (Attack 10 → 10.000 → 100.000.000)
-  durch **Min-Maxing** von Stats und Ausrüstung. Die Kurven müssen diesen Sog tragen, ohne den
-  Attrition-Anspruch (kein Heilen zwischen Floors) zu untergraben.
+- **Lesbare Zahlen, spürbare Spikes:** Der Zahlenraum ist komprimiert — Attack startet
+  zweistellig und endet fünfstellig, der größte Wert im Spiel (Boss-eHP) bleibt im einstelligen
+  Millionenbereich ([ADR 0007](adr/0007-zwei-geometrische-wachstumsachsen.md)). Das
+  Progressionsgefühl tragen **klumpige Power-Spikes** (Refine-Stufen, Verhaltens-Knoten,
+  Signatur- und Runen-Unlocks) und die sichtbaren Procs. Flache Content-Werte (Barrier,
+  Regeneration, Sigil-Beträge) bleiben dadurch über Akte hinweg spürbar und autorierbar —
+  ohne den Attrition-Anspruch (kein Heilen zwischen Floors) zu untergraben.
 
 ## 2. Kern-Wachstumsachsen
 
-Zwei bewusst **getrennte** Skalierungs-Achsen halten den Fokus auf der **Offensive der
-Charaktere** (Struktur der Formeln: [Kampfwerte & Formeln](spec/COMBAT.md#2-kampfwerte--formeln);
-Rohwerte: `src/game/`):
+Alle Zahlenkurven des Spiels erben ihre Steigung von genau **zwei geometrischen Achsen**
+(konstanter Prozent-Zuwachs pro Floor; Entscheidung:
+[ADR 0007](adr/0007-zwei-geometrische-wachstumsachsen.md)). Geometrisch, weil der **relative**
+Druck damit auf jeder Tiefe gleich bleibt — Attrition und Farm-Ertrag fühlen sich auf Floor 280
+an wie auf Floor 40. Struktur der Formeln:
+[Kampfwerte & Formeln](spec/COMBAT.md#2-kampfwerte--formeln); Rohwerte: `src/game/`.
 
-| Größe                | Skalierung         | Absicht                                             |
-| -------------------- | ------------------ | --------------------------------------------------- |
-| **Charakter-Attack** | **exponentiell**   | trägt die Incremental-Fantasie                      |
-| **Gegner-Health**    | **exponentiell**   | Gegengewicht zur Attack-Explosion                   |
-| **Charakter-Health** | **linear**         | hält das Team verwundbar (Attrition bleibt spürbar) |
-| **Gegner-Attack**    | **linear**         | Bedrohung wächst planbar, nicht explosiv            |
-| **Gegner-Accuracy**  | **linear (Floor)** | erhöht Druck auf Evasion mit der Tiefe              |
+| Achse              | Zuwachs pro Floor (Ziel) | über 300 Floors | Mitglieder                                                                                |
+| ------------------ | ------------------------ | --------------- | ----------------------------------------------------------------------------------------- |
+| **Offense-Rennen** | ~+3 %                    | ×~5.000         | Gegner-Health; Attack-Quellen (Baseline, Might aus Innate + Emeralds); Gold-/XP-Einkommen |
+| **Defense-Rennen** | ~+1,8 %                  | ×~200           | Gegner-Attack `S`; Health-/Defense-Quellen (Vitality, Toughness), Regeneration, Barrier   |
+
+- Die **steile Offense-Achse** trägt das Wachstumsgefühl, die **flache Defense-Achse** hält das
+  Team verwundbar — die Attrition bleibt über das ganze Spiel die Kernspannung.
+- **Gegner-Accuracy** steigt als gedeckelte Rampe mit der Tiefe (Trefferchance-Formel:
+  [Treffermodell](spec/COMBAT.md#22-treffermodell)).
+- **Chance-Stats gehören keiner Achse an:** Alles mit Cap (Crit/Multi/Splash/Counter/Block
+  Chance, Evasion) wächst über endliche Budgets (Skillpunkte, Gem-Slots). Damage-Stats ohne
+  Cap bilden den **Proc-Multiplikator** des Team-Schadens (~×4 übers Spiel), begrenzt durch
+  den endlichen Content-Vorrat (Skilltree, Amber/Ruby, Diamonds/Runen) statt durch einen
+  Soft-Cap.
 
 **Wichtig — keine Floor-Skalierung der Charaktere:** Charakterwerte wachsen **nicht** mit der
 Floor-Tiefe, sondern nur über die eigenen Quellen (unten). Die Gegner skalieren rein über
 **Akt/Dungeon/Floor** (kein separates „Gegnerlevel").
 
-**Leitplanke — Formationsgröße gegen Defense.** Defense ist ein flacher Abzug **pro
-Gegner-Angriff** ([Schadenspipeline](spec/COMBAT.md#23-eingehender-schaden-schadenspipeline)): Bei sechs Gegnern greift sie sechsmal pro Runde, bei zwei nur
-zweimal. Viele schwache Gegner werden von Defense also stark gekontert, wenige starke gehen an
-ihr vorbei. Beim Entwerfen der Formationen darauf achten, dass „sechs Gegner" nicht versehentlich
-leichter wird als „zwei Gegner".
+**Leitplanke — Achsen-Trennung.** Offensive Magnituden skalieren ausschließlich aus Attack,
+defensive ausschließlich aus defensiven Quellen (verbindlich:
+[Feststehende Regeln](spec/COMBAT.md#25-feststehende-regeln)). Ein Effekt, der zwischen den
+Achsen konvertiert (Lifesteal: Offense → Heilung; Reflekt: erlittener Schaden → Gegner-Health),
+skaliert zwangsläufig mit der falschen Achse und wird über die Spielzeit übermächtig oder
+wertlos. Jede Stat-, Sigil-, Diamond- und Runen-Idee ist gegen diese Regel zu prüfen.
+
+**Leitplanke — Tuning gegen Korridore.** Getunt wird gegen zwei Kenngrößen:
+
+- **TTK** (Runden bis zum Floor-Sieg) bei Par-Ausbau: normaler Floor 4–6, Elite 8–12,
+  Akt-Boss 15–25. **Elite-/Boss-eHP wird direkt aus dem TTK-Ziel abgeleitet**
+  (`eHP = Ziel-Runden × Par-Team-Schaden pro Runde`), nicht als fester Kurven-Multiplikator —
+  Bosse bleiben damit gegen jede spätere Kurvenänderung stabil.
+- **Netto-Attrition:** Der über einen 20-Floor-Run summierte Netto-Health-Verlust liegt bei
+  Par-Ausbau bei ~60–80 % des Pools. Sustain (Barrier + Regeneration) deckt den erwarteten
+  Durchlass höchstens etwa zur Hälfte — darüber kippt das System binär in „unsterblich oder
+  blutet", und die Run-Tiefen-Frage verliert ihre Spannung.
+
+**Leitplanke — Formationsgröße ist defensiv neutral.** Die Mitigation ist proportional
+([ADR 0008](adr/0008-defense-ratio-mitigation.md)); die defensive Schwere einer Formation hängt
+allein an der **Summe `S` pro Runde**. Die Gegnerzahl ist damit frei für offensive Textur
+(Splash-Nebenziele, Counter-Auslöser).
 
 **Leitplanke — mindestens zwei Gegner-Aktionen pro Runde.** Zwei der vier Skilltree-Zweige
 skalieren mit der Gegnerzahl ([Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree)):
@@ -54,7 +85,7 @@ Gegner-Aktionen pro Runde**; unter dem Ein-Zug-pro-Akteur-Modell
 ([Rundenablauf](spec/COMBAT.md#11-rundenablauf)) heißt das: Boss plus Adds, bei Bedarf
 nachrückend. Der konkrete Formationsentwurf ist Content.
 
-**Kurven als Tabellen, nicht als Laufzeit-Formeln.** Die exponentiellen Kurven (Item-Level,
+**Kurven als Tabellen, nicht als Laufzeit-Formeln.** Die geometrischen Kurven (Item-Level,
 Gegner-Health) werden als **vorberechnete Werte je Stufe** im Content abgelegt statt zur Laufzeit
 über `Math.pow` gerechnet. `Math.pow` ist zwischen JS-Engines nicht bit-identisch garantiert und
 würde das Determinismus-Versprechen ([Seeds und Zufalls-Ströme](spec/SIMULATION.md#4-seeds-und-zufalls-ströme)) über Browser hinweg aufweichen. Nebeneffekt: die
@@ -62,14 +93,22 @@ Kurven sind im Editor lesbar und diffbar.
 
 ## 3. Wachstumsquellen (woher die Zahlen kommen)
 
-Die drei zentralen Werte **Attack, Defense, Health** sind **Derived Stats** aus drei Quellen mit je
-eigener Kurve: **Baseline** (Level) + **Attribut** + **Core-Stat** ([Stats](spec/CHARACTERS.md#2-stats)). Die eigenen Kurven
-je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achse auszubalancieren.
+Die drei zentralen Werte **Attack, Defense, Health** sind **Derived Stats** aus multiplikativ
+geschichteten Quellen: `(Baseline + Core-Stat) × Attribut-% × Crucible-%`
+([Stats](spec/CHARACTERS.md#2-stats)). Die %-Ebenen halten die gedeckelte Level-Up- und
+Crucible-Achse über die gesamte Gear-Kurve relevant — jeder Attributpunkt ist auf Level 5 und
+auf Level 100 gleich viel wert.
 
-- **Attack (Derived, exp.):** Baseline (Level) + **Ferocity** (Attribut) + **Might** (Core-Stat aus
-  **Ausrüstung-Innate** + **Emerald**-Gems) + optional **Crucible/Smelting Flames**. Ausrüstung = Hauptmotor.
-- **Defense / Health (Derived, linear):** Baseline (Level) + **Resilience/Vigor** (Attribut) +
-  **Toughness/Vitality** (Core-Stat aus Innate + Emerald-Gems) + optional **Crucible/Smelting Flames**.
+- **Attack (Offense-Achse):** Basis aus Baseline (Level) + **Might** (Core-Stat aus
+  **Ausrüstung-Innate** + **Emerald**-Gems), multipliziert mit **Ferocity**- und
+  **Crucible/Smelting-Flames**-Prozenten. Ausrüstung = Hauptmotor.
+- **Defense / Health (Defense-Achse):** Basis aus Baseline (Level) + **Toughness/Vitality**
+  (Core-Stat aus Innate + Emerald-Gems), multipliziert mit **Resilience/Vigor**- und
+  Crucible-Prozenten. Defense wirkt als proportionale Mitigation und hebt die effektive Health
+  linear pro Punkt
+  ([Schadenspipeline](spec/COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 4) —
+  Health ist der rohe Puffer, Defense der eHP-Multiplikator, beide bleiben dadurch getrennt
+  fühlbare Hebel.
 - **Offensiv-Multiplikatoren** (Crit/Multi/Splash/Counter): **Skilltree-Zweige**
   ([Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree)) +
   **Amber**/**Ruby**-Gems ([Jeweler](spec/ITEMS.md#8-jeweler--inlay-attune--recut)) — Chance
@@ -80,7 +119,8 @@ je Quelle sind der Hebel, um die (gedeckelte) Level-Up-Achse gegen die Gear-Achs
 
 - **Heilung:** **Regeneration** ist die **einzige** Heilquelle, bis das Rune-System freigeschaltet
   ist ([Heilung](spec/COMBAT.md#26-heilung--grenzen-und-auslösung)). Ihre Kurve trägt damit allein, wie viel Attrition ein Run verzeiht — bei
-  flachem Wert und linear wachsender Health muss sie über Sapphire-Gems mitwachsen.
+  flachem Wert muss sie über Sapphire-Gems mit der Health-Kurve mitwachsen; ihr Deckel gegen
+  den erwarteten Durchlass steht in [§2](#2-kern-wachstumsachsen).
 - **Feinschliff:** Skilltree-Knoten (Verhalten/Trigger) und Crucible-Trees.
 
 **Warum _Crit Damage_ ohne Soft-Cap bleibt.** Der Ausstoß eines Zuges ist
@@ -90,7 +130,7 @@ addieren sich in der Klammer, der Crit-Faktor multipliziert die Summe und wirkt 
 Counter. Der feste Summand `1` (der Grundtreffer) verschafft Crit einen Vorsprung, solange die
 Generator-Anteile klein sind — bei Anteilen um `0,7` bringt ein verdoppelter Crit-Faktor `+100 %`,
 ein verdoppelter Generator-Anteil `+58 %`. Der Vorsprung schmilzt mit dem Ausbaustand: bei
-Anteilen um `10` stehen `+100 %` gegen `+95 %`. Tempest und Dominance sind deshalb als **Produkt
+Anteilen um `3` stehen `+100 %` gegen `+75 %`. Tempest und Dominance sind deshalb als **Produkt
 dreier wachsender Stats** gebaut ([Charakter-Skilltree](spec/CHARACTERS.md#4-charakter-skilltree),
 [ADR-0006](adr/0006-multi-hit-kette-garantierte-laenge.md)) und erreichen diesen Bereich. Der
 Ausgleich liegt damit in den Zweig-Kurven; die verbleibende Frühspiel-Asymmetrie wird über die

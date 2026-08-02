@@ -21,27 +21,27 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
 
 ### Charakter- und Gegner-Kurven
 
-- [ ] **Derived-Stat-Kurven je Quelle** ([Stats](../spec/CHARACTERS.md#2-stats)): Baseline
-      (Level), Attribut-Betrag je Ferocity/Resilience/Vigor-Punkt und Core-Stat-Kurve
-      (Might/Toughness/Vitality → Attack/Defense/Health) — so normalisieren, dass beide Achsen
-      über die ganze Kurve relevant bleiben (der eigentliche Sinn der eigenen Kurve je Quelle).
-- [ ] Baseline-Kurvenform der Derived Stats (Attack exp., Health/Defense linear).
-- [ ] Gegner-Kurven pro Akt/Dungeon/Floor (Health exp., Attack/Accuracy linear) +
-      Elite/Boss-Multiplikatoren.
-- [ ] **Regeneration-Kurve** (flacher Wert): einzige Heilquelle vor dem Endgame, muss gegen
-      linear wachsende Health über Sapphire-Gems mitwachsen.
+- [ ] **Derived-Stat-Kurven je Quelle** ([Stats](../spec/CHARACTERS.md#2-stats)):
+      Baseline-Tabellen (Level 1–100), Attribut-Prozentsatz je Punkt und Core-Stat-Kurven
+      (Might/Toughness/Vitality → Attack/Defense/Health) — je aus der Achsen-Basis abgeleitet
+      ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+- [ ] Gegner-Kurven pro Akt/Dungeon/Floor (Health auf der Offense-Achse, Attack auf der
+      Defense-Achse, Accuracy als gedeckelte Rampe); Elite-/Boss-eHP über die
+      TTK-Ziel-Korridore ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+- [ ] **Regeneration-Kurve** (flacher Wert): einzige Heilquelle vor dem Endgame, muss über
+      Sapphire-Gems mit der Health-Kurve mitwachsen; Sustain-Deckel gegen den erwarteten
+      Durchlass beachten ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
 
 ### Kampf-Stellgrößen
 
 - [ ] Bulwark-Prozentwerte (Tank-/Melee-Beitrag) und Mitigation-`m` je Node-Stufe.
 - [ ] **Sunder-Werte** ([Sunder](../spec/COMBAT.md#32-sunder-rhaya-melee)):
       Bulwark-Abbau pro Treffer und Abbau-Cap pro Ziel, je Node-Stufe 1–5.
-- [ ] **Mindestanteil des Defense-Bodens**
+- [ ] **Defense-Konstante `K`**
       ([Schadenspipeline](../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 4):
-      Der Wert entscheidet, wie stark Defense maximal wirkt (Boden 10 % ⇒ höchstens 90 %
-      Reduktion) und damit, ob Attrition in jedem Zahlenregime greift. Zusammen mit der
-      Formations-Leitplanke ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)) prüfen.
-      **Achtung:** Der Test-Vektor der Schadenspipeline verwendet 10 % als frei gewählten
+      legt fest, wie schnell die Mitigation mit Defense wächst (`Mitigation = D / (D + K)`);
+      gegen die Toughness- und Gegner-Attack-Kurven der Defense-Achse tunen.
+      **Achtung:** Der Test-Vektor der Schadenspipeline verwendet `K = 100` als frei gewählten
       Eingangswert — das ist keine Festlegung.
 - [ ] **Rally-Anteil je Node-Stufe**
       ([Checkpoints, Wipe & Abbruch](../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch)):
@@ -75,8 +75,8 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
 - [ ] XP-Verteilungsschlüssel des individuellen Rests
       ([Belohnungen aus einem Sieg](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg));
       Kandidat: nach verursachtem Schaden. Dazu Gold-Drop- und Respec-Kosten-Kurven.
-- [ ] **Item-Level-Kurve (Cap +100):** Innate-Value je `+n` (Might exp.,
-      Toughness/Vitality/Initiative linear?), Verteilung der 100 Stufen.
+- [ ] **Item-Level-Kurve (Cap +100):** Innate-Value je `+n` (Might auf der Offense-Achse,
+      Toughness/Vitality/Initiative auf der Defense-Achse), Verteilung der 100 Stufen.
 - [ ] **Item-Level-Caps je Seltenheit** (+20/+40/+60/+80/+100) und **Sockel-Zahlen** (0/1/2/3/4)
       gegen die Temper-Gold-Kurve prüfen: Liegen die Landmarken (20/40/50/60/80/100) angenehm im
       Spielverlauf, oder verschiebt die Exponentialkurve die späten Stufen zu weit nach hinten?
@@ -99,9 +99,9 @@ und [§3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen) (Wachstums
 
 ### Endgame & Gesamtbild
 
-- [ ] **Prismatic-/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (Attack-exp
-      vs. Defense-linear; nötigenfalls Sockel-Typ-Split oder Gegner-Accuracy-Kurve als
-      Sicherheitsgurt).
+- [ ] **Prismatic-/Diamond-Effekte** (Meta-Multiplikatoren) + **Glass-Cannon-Check** (steile
+      Offense- vs. flache Defense-Achse; nötigenfalls Sockel-Typ-Split oder
+      Gegner-Accuracy-Rampe als Sicherheitsgurt).
 - [ ] **Runen-Katalog** ([Runen](../spec/RUNES.md)): 17 Einträge
       (6 Trigger / 6 Effect / 5 Modifier) mit **Mindesttiefe** und **Level-Skalierung** je Stufe;
       Dauer-Werte für Empower/Mark/Lingering, Chain-Zielzahl je Modifier-Level, Bezugs-Stat von

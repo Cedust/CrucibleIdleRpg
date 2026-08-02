@@ -258,9 +258,16 @@ Heilung: [§2.6](#26-heilung--grenzen-und-auslösung).
 ### 2.2 Treffermodell
 
 - **Charakter → Gegner:** trifft **immer** und **voll** (Gegner haben keine Evasion/Defense).
-- **Gegner → Charakter:** pro Charakter wird **Gegner-Accuracy gegen Charakter-Evasion**
-  gewürfelt ([§2.3](#23-eingehender-schaden-schadenspipeline), Schritt 2). _Accuracy_ wächst
-  linear mit der Floor-Tiefe (BALANCING).
+- **Gegner → Charakter:** pro Charakter wird die **Trefferchance** gewürfelt
+  ([§2.3](#23-eingehender-schaden-schadenspipeline), Schritt 2):
+
+  ```
+  Trefferchance = Accuracy × (1 − Evasion)
+  ```
+
+  _Accuracy_ steigt mit der Floor-Tiefe
+  ([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)); _Evasion_ wirkt als Faktor und
+  behält damit auf jeder Tiefe ihren relativen Wert.
 
 ### 2.3 Eingehender Schaden (Schadenspipeline)
 
@@ -280,26 +287,23 @@ Charakter **erhöht** damit den Tick der Überlebenden.
        erhält `Tick + (#lebende DDs) × Tick × m`. → Summe bleibt exakt `S`.
      - **Ohne Mitigation / Tank tot:** jeder lebende Charakter trägt seinen eigenen `Tick`;
        kein Umleitungsziel.
-2. **Evasion** (pro Charakter). Miss-Roll _Gegner-Accuracy_ gegen _Evasion_. Bei Ausweichen:
-   **0 Schaden**, **kein Counter**.
+2. **Evasion** (pro Charakter). Miss-Roll gegen die **Trefferchance**
+   ([§2.2](#22-treffermodell)). Bei Ausweichen: **0 Schaden**, **kein Counter**.
 3. **Block** (pro Charakter). Mit _Block Chance_ → `Schaden × (1 − Block%)` (partielle
    Reduktion um einen festen %-Wert; **nicht** all-or-nothing). Ein geblockter Treffer bleibt
    ein Treffer → **löst Counter aus**.
-4. **Defense** (pro Charakter). **Flacher** Abzug (_Defense_ ist ein Derived Stat, gespeist u. a.
-   aus _Toughness_, [Stats](CHARACTERS.md#2-stats)) mit **prozentualer Untergrenze**:
+4. **Defense** (pro Charakter). **Proportionale Mitigation** über die globale
+   **Defense-Konstante** `K` (Wert = Balancing); _Defense_ ist ein Derived Stat, gespeist u. a.
+   aus _Toughness_ ([Stats](CHARACTERS.md#2-stats)):
 
    ```
-   nachDefense = max(nachBlock × Mindestanteil, nachBlock − Defense)
+   nachDefense = nachBlock × K / (K + Defense)
    ```
 
-   Der **Mindestanteil** (Wert = Balancing) sorgt dafür, dass Defense den Schaden **nie auf 0**
-   drückt (Begründung: [ADR 0003](../adr/0003-defense-flacher-abzug-mit-boden.md)).
-   Block wirkt **vor** Defense: das % greift auf den rohen Schwung, die flache Rüstung zieht
-   danach ab.
-
-   Die Pipeline läuft **pro Gegner-Angriff**: Defense wird so oft abgezogen, wie Gegner in der
-   Runde handeln (Folgen für den Formations-Entwurf:
-   [BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)).
+   Die Mitigation bleibt strukturell unter 100 % — Defense drückt den Schaden **nie auf 0**,
+   und jeder Defense-Punkt hebt die effektive Health um denselben Betrag
+   (Begründung: [ADR 0008](../adr/0008-defense-ratio-mitigation.md)). Die Mitigation ist
+   unabhängig von Trefferhöhe und Gegnerzahl.
 
 5. **Barrier** (pro Charakter). Absorbiert den verbleibenden (bereits abgemilderten) Schaden,
    bevor Health reduziert wird.
@@ -309,8 +313,7 @@ Charakter **erhöht** damit den Tick der Überlebenden.
 die **Summen-Erhaltung** in Schritt 1 und die **Reihenfolge** Block → Defense → Barrier → Health.
 
 ```
-Gegeben: S = 300, drei lebende Charaktere, Mitigation m = 0.3,
-         Mindestanteil (Defense-Boden) = 10 %
+Gegeben: S = 300, drei lebende Charaktere, Mitigation m = 0.3, Defense-Konstante K = 100
 
 Schritt 1 — Verteilung:   Tick = 300 / 3 = 100
   Korvin (Tank): 100 + 2 × 100 × 0.3 = 160
@@ -319,25 +322,26 @@ Schritt 1 — Verteilung:   Tick = 300 / 3 = 100
   Summe: 160 + 70 + 70 = 300 = S  ✓
 
 Schritt 2–6 pro Charakter:
-  Korvin — Evasion-Wurf trifft, Block-Wurf trifft (Block 40 %), Defense 90, Barrier 30
+  Korvin — Evasion-Wurf trifft, Block-Wurf trifft (Block 40 %), Defense 140, Barrier 30
     Block:    160 × (1 − 0.40) = 96
-    Defense:  max(96 × 0.10, 96 − 90) = max(9.6, 6) = 9.6   ← Boden greift
-    Barrier:  30 − 9.6 = 20.4 Rest, Health unverändert
+    Defense:  96 × 100 / (100 + 140) = 40
+    Barrier:  40 − 30 = 10 Rest → Health −10
     → Counter-Wurf findet statt (geblockt ist getroffen)
 
   Rhaya — Evasion-Wurf weicht aus
     → 0 Schaden, kein Counter-Wurf
 
-  Quinn — Evasion-Wurf trifft, Block-Wurf verfehlt, Defense 20, Barrier 0
+  Quinn — Evasion-Wurf trifft, Block-Wurf verfehlt, Defense 25, Barrier 0
     Block:    70
-    Defense:  max(70 × 0.10, 70 − 20) = max(7, 50) = 50
-    Barrier:  0 → Health −50
+    Defense:  70 × 100 / (100 + 25) = 56
+    Barrier:  0 → Health −56
 ```
 
 Was der Vektor absichert: Der Tank-Anteil ist ein **Zuschlag pro lebendem DD** (nicht `Tick × 3`);
-der Defense-Boden greift **relativ zum Wert nach Block**, nicht zum rohen `Tick`; ein ausgewichener
-Treffer erzeugt keinen Counter, ein geblockter schon. Sterben Rhaya und Quinn, verteilt der nächste
-Angriff dieselben `S = 300` **vollständig** auf Korvin.
+die Mitigation greift auf den Wert **nach Block** (`96`, nicht `160`) und rechnet mit dem
+Defense-Wert des jeweiligen Charakters; ein ausgewichener Treffer erzeugt keinen Counter, ein
+geblockter schon. Sterben Rhaya und Quinn, verteilt der nächste Angriff dieselben `S = 300`
+**vollständig** auf Korvin.
 
 ### 2.4 Bulwark (Deckung der Backline)
 
@@ -396,6 +400,13 @@ keinen Cap.
 - Alle Werte laufen über native `number`. Die Achsen sind gedeckelt (Level 100, Item-Level
   `+100`, kein Prestige), die Spitzenwerte bleiben weit unter `Number.MAX_SAFE_INTEGER`
   ([AGENTS.md §5](../../AGENTS.md#5-architektur-des-game-loops)).
+- **Achsen-Trennung:** Offensive Schadens-Magnituden skalieren ausschließlich aus **Attack**,
+  defensive Magnituden (Heilung, Absorption, Reduktion) ausschließlich aus defensiven Quellen.
+  Kein Stat und kein Effekt konvertiert zwischen den Achsen — insbesondere kein Lifesteal
+  („X % des verursachten Schadens als Heilung") und kein Schadensreflekt („X % des erlittenen
+  Schadens als Gegner-Schaden"). Begründung:
+  [BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen),
+  [ADR 0007](../adr/0007-zwei-geometrische-wachstumsachsen.md).
 - Die Engine emittiert **Kampf-Events** (Crit, Multi Hit, Splash, Counter, Block, Rundenbeginn, …)
   in einer **deterministisch festen Reihenfolge**. Sie sind die Anbindung der Rune-Trigger
   ([Runen](RUNES.md)) und die Grundlage des Playbacks

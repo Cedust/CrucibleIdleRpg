@@ -53,8 +53,8 @@ die drei übrigen Handwerks-Schichten hängen.
 | 4   | **Gems in den Sockeln** | je ein gerollter Affix mit Value             | **Ast: Min-Max**       | **Jeweler**            | Gold + Gem-Fodder | seed-PRNG |
 | 5   | **Implicit**            | Affix eines **Sigils**, den kein Gem liefert | **Ast: Identität**     | **Blacksmith** Brand   | Cinder + Gold     | keiner    |
 
-- **Schicht 2 ist die exponentielle Basis-Power** und der **planbare** Träger der
-  Incremental-Kurve — das persistente Item „wächst mit".
+- **Schicht 2 ist die geometrisch wachsende Basis-Power** und der **planbare** Träger der
+  Progressions-Kurve — das persistente Item „wächst mit".
 - **Schicht 4 ist die Min-Max-Achse** und damit die eigentliche Loot-Jagd: Der Affix eines
   Gems wird beim Einsetzen gewürfelt.
 - Alle Handwerks-Aktionen kosten Gold; Refine und Brand zusätzlich Cinder. Der

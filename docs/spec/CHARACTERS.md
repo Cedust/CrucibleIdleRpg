@@ -29,16 +29,22 @@
 ## 2. Stats
 
 Die drei zentralen Kampfwerte **Attack, Defense, Health** sind **Derived Stats** — sie werden
-nicht direkt vergeben, sondern aus **drei Quellen mit je eigener Kurve** zusammengesetzt:
+nicht direkt vergeben, sondern aus **multiplikativ geschichteten Quellen** zusammengesetzt:
 
-| Derived Stat | Baseline ([§5](#5-charakterlevel)) | + Attribut ([§3](#3-attribute-level-up-progression)) | + Core-Stat (Gear/Gems) |
-| ------------ | ---------------------------------- | ---------------------------------------------------- | ----------------------- |
-| **Attack**   | Baseline-Kurve                     | **Ferocity**                                         | **Might**               |
-| **Defense**  | Baseline-Kurve                     | **Resilience**                                       | **Toughness**           |
-| **Health**   | Baseline-Kurve                     | **Vigor**                                            | **Vitality**            |
+```
+Derived Stat = (Baseline + Core-Stat-Beitrag) × (1 + Attribut-Bonus) × (1 + Crucible-Bonus)
+```
 
-Jede Quelle skaliert über eine **eigene Kurve** (Werte = Balancing, `src/game/`;
-Begründung: [BALANCING §3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen)).
+| Derived Stat | Basis: Baseline ([§5](#5-charakterlevel)) + Core-Stat (Gear/Gems) | %-Ebene: Attribut ([§3](#3-attribute-level-up-progression)) |
+| ------------ | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Attack**   | Baseline-Kurve + **Might**                                        | **Ferocity**                                                |
+| **Defense**  | Baseline-Kurve + **Toughness**                                    | **Resilience**                                              |
+| **Health**   | Baseline-Kurve + **Vitality**                                     | **Vigor**                                                   |
+
+Baseline- und Core-Stat-Kurve liegen auf der Wachstumsachse des jeweiligen Stats
+([BALANCING §2](../BALANCING.md#2-kern-wachstumsachsen)); Attribut- und Crucible-Ebene sind
+Prozent-Multiplikatoren (Werte = Balancing, `src/game/`; Begründung:
+[BALANCING §3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen)).
 
 Jeder Charakter hat Stats in folgenden Kategorien:
 
@@ -54,7 +60,7 @@ Jeder Charakter hat Stats in folgenden Kategorien:
   _Health_ (je über eine eigene Kurve). Core-Stats stammen aus **Item-Innate**
   ([Slots, Basen & Innate-Affixe](ITEMS.md#1-slots-basen--innate-affixe)) und **Emerald-Gems**
   ([Jeweler](ITEMS.md#8-jeweler--inlay-attune--recut)).
-- **Derived:** _Attack_ = Grundschaden; _Defense_ = flache Schadensreduktion
+- **Derived:** _Attack_ = Grundschaden; _Defense_ = proportionale Mitigation
   ([Schadenspipeline](COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 4);
   _Health_ = Lebenspunkte. Zusammensetzung siehe Tabelle oben.
 - **Offensive:** paarweise **Chance + Damage** je Muster (Crit, Multi Hit, Splash, Counter);
@@ -88,12 +94,11 @@ Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived
 
 **Mechanik**
 
-- 1 Punkt **addiert** einen **festen Betrag** auf den gekoppelten Derived Stat (additiv/linear;
-  konkrete Werte = Balancing, `src/game/`). Der Zuwachs ist konstant pro Punkt, unabhängig vom
-  aktuellen Wert.
-- Die Attribut-Zuwächse liegen **über** dem automatischen Baseline-Wachstum
-  ([§5](#5-charakterlevel)) — die Baseline sichert einen spielbaren Sockel, die Attribute setzen
-  die Gewichtung.
+- 1 Punkt hebt den gekoppelten Derived Stat um einen **festen Prozentsatz** — die %-Ebene der
+  Zusammensetzung ([§2](#2-stats)); konkreter Satz = Balancing, `src/game/`. Der relative
+  Zuwachs pro Punkt ist damit auf jeder Ausbaustufe gleich viel wert.
+- Die %-Ebene multipliziert auf Baseline **und** Core-Stat — die Baseline sichert einen
+  spielbaren Sockel, die Attribute setzen die Gewichtung.
 
 **Progression**
 

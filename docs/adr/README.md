@@ -59,11 +59,13 @@ AGENTS.md. ADRs sind für die **Zukunft**, nicht zum rückwirkenden Dokumentiere
 
 <!-- Neue ADRs hier eintragen: | NNNN | Titel | Status | -->
 
-| Nr.  | Titel                                                                                       | Status     |
-| ---- | ------------------------------------------------------------------------------------------- | ---------- |
-| 0001 | [Keine charakterexklusiven Stats](0001-keine-charakterexklusiven-stats.md)                  | Akzeptiert |
-| 0002 | [Inkrementelle Kampfsimulation ohne Rundenlimit](0002-inkrementelle-kampfsimulation.md)     | Akzeptiert |
-| 0003 | [Defense als flacher Abzug mit prozentualem Boden](0003-defense-flacher-abzug-mit-boden.md) | Akzeptiert |
-| 0004 | [Keine Big-Number-Bibliothek — native `number`](0004-keine-big-number-bibliothek.md)        | Akzeptiert |
-| 0005 | [Proc-Matrix — Crit ist Modifikator](0005-proc-matrix-modifikator-vs-generator.md)          | Akzeptiert |
-| 0006 | [Multi-Hit-Kette — garantierte Länge](0006-multi-hit-kette-garantierte-laenge.md)           | Akzeptiert |
+| Nr.  | Titel                                                                                                      | Status                  |
+| ---- | ---------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 0001 | [Keine charakterexklusiven Stats](0001-keine-charakterexklusiven-stats.md)                                 | Akzeptiert              |
+| 0002 | [Inkrementelle Kampfsimulation ohne Rundenlimit](0002-inkrementelle-kampfsimulation.md)                    | Akzeptiert              |
+| 0003 | [Defense als flacher Abzug mit prozentualem Boden](0003-defense-flacher-abzug-mit-boden.md)                | Abgelöst durch ADR-0008 |
+| 0004 | [Keine Big-Number-Bibliothek — native `number`](0004-keine-big-number-bibliothek.md)                       | Akzeptiert              |
+| 0005 | [Proc-Matrix — Crit ist Modifikator](0005-proc-matrix-modifikator-vs-generator.md)                         | Akzeptiert              |
+| 0006 | [Multi-Hit-Kette — garantierte Länge](0006-multi-hit-kette-garantierte-laenge.md)                          | Akzeptiert              |
+| 0007 | [Zwei geometrische Wachstumsachsen im komprimierten Zahlenraum](0007-zwei-geometrische-wachstumsachsen.md) | Akzeptiert              |
+| 0008 | [Defense als Ratio-Mitigation mit globaler Konstante](0008-defense-ratio-mitigation.md)                    | Akzeptiert              |

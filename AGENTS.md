@@ -172,7 +172,7 @@ Verhalten überhaupt erreichbar machen.
 
 - Alle Werte laufen über native `number`; eine Big-Number-Bibliothek wird bewusst **nicht**
   eingesetzt (ADR-0004). Die Progressions-Achsen sind gedeckelt, die Spitzenwerte liegen bei
-  ~10⁸–10¹⁰ und damit weit unter `Number.MAX_SAFE_INTEGER` (~9×10¹⁵).
+  ~10⁶–10⁷ (ADR-0007) und damit weit unter `Number.MAX_SAFE_INTEGER` (~9×10¹⁵).
 - **Revisions-Auslöser:** Kommt je eine Progressions-Achse **ohne Cap** hinzu (Prestige,
   Endlos-Modus), ist diese Entscheidung neu zu bewerten.
 - Ein Helper in `src/shared/utils/` kapselt die **Formatierung** großer Zahlen für die UI.

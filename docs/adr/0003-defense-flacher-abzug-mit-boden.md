@@ -1,6 +1,6 @@
 # ADR-0003: Defense als flacher Abzug mit prozentualem Boden
 
-- **Status:** Akzeptiert
+- **Status:** Abgelöst durch [ADR-0008](0008-defense-ratio-mitigation.md)
 - **Datum:** 2026-07-30
 - **Betrifft:** SPEC.md §2.3 (Schritt 4); BALANCING.md §2, §5; Feature-Ordner `src/features/combat/`
 

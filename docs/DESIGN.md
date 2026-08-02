@@ -57,8 +57,10 @@ durch Dungeons; **aller Fortschritt** kommt aus gewonnenen Auto-Battles.
    Seltenheit (Kapazität) und Brand (Sigil-Implicit), der Jeweler die Gems
    (Min-Max-Loot-Jagd); dazu der globale Crucible-Baum und im Endgame die Runen — die
    einzige Achse, die dem Kampf **neues Verhalten** hinzufügt statt größerer Zahlen ([Runen](spec/RUNES.md)).
-5. **Stärkeres Team ⇒ tiefere Floors ⇒** zurück zu 1. Der „Numbers-go-big"-Effekt (Attack von
-   10 → 10.000 → 100.000.000) trägt die Motivation.
+5. **Stärkeres Team ⇒ tiefere Floors ⇒** zurück zu 1. Spürbare **Power-Spikes** — Refine-Stufen,
+   neue Verhaltens-Knoten, Signatur- und Runen-Unlocks — tragen die Motivation; die Kampfzahlen
+   bleiben auf jeder Tiefe auf einen Blick lesbar
+   ([BALANCING §1](BALANCING.md#1-balancing-philosophie)).
 
 **Wodurch entsteht Spannung, obwohl der Kampf automatisch läuft?**
 

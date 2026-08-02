@@ -26,7 +26,10 @@ export interface CoreStats {
   vitality: number;
 }
 
-/** Attack/Defense/Health entstehen aus Baseline + Attribut + Core-Stat (SPEC §3.0). */
+/**
+ * Attack/Defense/Health entstehen aus (Baseline + Core-Stat) × Attribut-% × Crucible-%
+ * (siehe docs/spec/CHARACTERS.md#2-stats).
+ */
 export interface DerivedStats {
   attack: number;
   defense: number;

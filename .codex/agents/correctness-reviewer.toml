@@ -5,10 +5,12 @@ sandbox_mode = "read-only"
 developer_instructions = """
 Den vorliegenden Diff wie ein verantwortlicher Maintainer prüfen, ohne Dateien zu ändern.
 
-Zuerst AGENTS.md, den zugehörigen Roadmap-Task und dessen verbindliche SPEC-Anker lesen. Den vom
-Main Agent genannten Ausgangs-Commit, den als taskzugehörig ausgewiesenen staged und unstaged Diff
-sowie alle aufgelisteten taskzugehörigen ungetrackten Dateien prüfen. Fehlt ein Teil dieses
-Umfangs, die Abdeckungslücke melden. Nur
+Zuerst den vom Main Agent bereitgestellten Review-Brief lesen: betroffene Dateien,
+Akzeptanzkriterien, relevante SPEC-Anker und den exakten Review-Umfang. Den darin genannten
+Ausgangs-Commit, den als taskzugehörig ausgewiesenen staged und unstaged Diff sowie alle
+aufgelisteten taskzugehörigen ungetrackten Dateien prüfen. Fehlt ein Teil dieses Umfangs, die
+Abdeckungslücke melden. AGENTS.md oder weitere Quellen nur abschnittsweise öffnen, wenn der Diff
+eine betreffende Architektur-, Workflow- oder Stilregel berührt. Nur
 Probleme melden, die durch die Task-Änderungen verursacht werden oder deren Akzeptanz verhindern.
 
 Korrektheit, Zustandsübergänge, Randfälle, Fehlerpfade, Determinismus, Persistenzverträglichkeit,

@@ -208,13 +208,31 @@ Wann gespeichert wird und was im Save liegt, regelt
 
 ### Umsetzungs- und Review-Ablauf
 
-- Roadmap-Tasks folgen vollständig dem projektlokalen
-  [`next-task`-Workflow](.agents/skills/next-task/SKILL.md).
+- Roadmap-Tasks folgen dem projektlokalen
+  [`next-task`-Workflow](.agents/skills/next-task/SKILL.md). Dieser Workflow ist als
+  schlanker Default mit risikobasierter Eskalation auszulegen: Nur die für den
+  konkreten Diff relevanten Quellen, SPEC-Anker, Checks und Reviews werden
+  herangezogen.
+- **Lean** ist der Normalfall für kleine Tickets: klar abgegrenzte Doku-, Content-,
+  Styling-, UI-, Store- oder Refactoring-Änderungen ohne Spielregel-, Persistenz-,
+  Simulation- oder gemeinsame Architekturwirkung werden mit fokussiertem Selbstreview
+  und den passenden Checks abgeschlossen. Es wird kein Subagent gestartet.
+- **Standard** gilt für neue oder geänderte Spiellogik. Der Agent liest die
+  relevanten SPEC-Anker, ergänzt deterministische Tests und nutzt genau einen
+  `correctness_reviewer`, sofern der Diff nicht trivial ist.
+- **High-Risk** gilt für Determinismus, Timer, Persistenz, Migrationen, Security oder
+  querschnittliche React-/Zustand-/Playback-Risiken. Zusätzlich zum
+  `correctness_reviewer` wird höchstens ein fachlich passender zweiter Reviewer
+  eingesetzt. Beide Spezialreviews parallel sind nur bei klar unabhängigen,
+  wesentlichen Risiken zulässig.
+- Roadmap- und Task-Status werden nur bei echten Roadmap-Tasks gepflegt. Kleine
+  Ad-hoc-Korrekturen müssen nicht künstlich in `docs/backlog/` abgebildet werden.
 - Vorbestehende staged, unstaged und ungetrackte Änderungen werden nicht überschrieben
   oder ungefragt in den Task aufgenommen.
 - Review-Findings werden vom Main Agent gegen Task, SPEC, Code und Tests verifiziert;
   bestätigte Findings werden vor Abschluss behoben und erneut geprüft.
-- Ohne ausdrücklichen Auftrag wird weder gepusht noch ein Pull Request geöffnet.
+- Ohne ausdrücklichen Auftrag wird weder committet, gepusht noch ein Pull Request
+  geöffnet.
 
 ### Definition of Done
 
@@ -232,8 +250,9 @@ npm-Skripte:
 
 Ein fokussierter Browser-Smoke-Test ist bei sichtbaren UI-Änderungen zusätzlich
 empfohlen. Ein Task gilt erst als abgeschlossen, wenn Akzeptanzkriterien, anwendbare
-Checks und bestätigte Review-Findings erledigt sind. Commits verwenden Conventional
-Commits (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`, …).
+Checks und bestätigte Review-Findings erledigt sind. Wenn ein Commit ausdrücklich
+beauftragt wird, verwendet er Conventional Commits (`feat:`, `fix:`, `refactor:`,
+`test:`, `chore:`, `docs:`, …).
 
 ---
 

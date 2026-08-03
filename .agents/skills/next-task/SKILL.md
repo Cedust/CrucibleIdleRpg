@@ -1,90 +1,103 @@
 ---
 name: next-task
-description: Einen Task aus docs/backlog/ROADMAP.md spezifikationsgeleitet, testgestützt und mit risikobasiertem unabhängigem Review umsetzen. Verwenden, wenn der Benutzer den nächsten Roadmap-Task oder einen bestimmten beziehungsweise bereits laufenden Task starten, fortsetzen oder abschließen möchte.
+description: Einen Task aus docs/backlog/ROADMAP.md token-sparend, spezifikationsgeleitet und testgestützt umsetzen. Verwenden, wenn der Benutzer den nächsten Roadmap-Task oder einen bestimmten beziehungsweise bereits laufenden Task starten, fortsetzen oder abschließen möchte.
 ---
 
-# Roadmap-Task umsetzen
+# Roadmap-Task lean umsetzen
 
-Den angeforderten Task aus `docs/backlog/ROADMAP.md` vollständig bis zu einem geprüften,
-committeten Ergebnis umsetzen. Einen laufenden Task fortsetzen, bevor neue Arbeit begonnen wird.
+Den angeforderten Task aus `docs/backlog/ROADMAP.md` in kleinen, prüfbaren Schnitten umsetzen.
+Der Default ist token-sparend: nur die Quellen, Dateien, Checks und Reviews einbeziehen, die
+für den konkreten Diff und sein Risiko nötig sind. Einen laufenden Task fortsetzen, bevor neue
+Arbeit begonnen wird.
 
-## 1. Auftrag und Quellen klären
+## 1. Auftrag klären
 
-1. `AGENTS.md` und `docs/backlog/README.md` vollständig lesen.
-2. Den Task auswählen: eine genannte Tasknummer verwenden; bei Formulierungen wie „aktueller
+1. Task auswählen: eine genannte Tasknummer verwenden; bei Formulierungen wie „aktueller
    Task“, „fortsetzen“ oder „abschließen“ den passenden `in progress`-Task verwenden. Ohne Nummer
    oder laufenden Task den ersten `ready`-Eintrag des aktiven Milestones wählen. Bei mehreren
    laufenden Tasks nicht raten, sondern eine eindeutige Auswahl anfordern. Alle Abhängigkeiten
    auf `done` prüfen und die zugehörige Datei unter `docs/backlog/tasks/` lesen.
-3. Alle unter `Verbindliche Spec-Anker` verlinkten Abschnitte vor einer Codeänderung lesen. Bei
-   Widersprüchen der SPEC folgen.
-4. Ausgangs-Commit sowie staged, unstaged und ungetrackte Dateien festhalten und als
-   `taskzugehörig` oder `taskfremd` einordnen. Beim Fortsetzen bereits vorhandene taskzugehörige
-   Änderungen in Umsetzung und Review aufnehmen. Taskfremde Änderungen nicht überschreiben und
-   nicht in den Task hineinziehen.
-5. Akzeptanzkriterien in beobachtbare Ergebnisse übersetzen und dem Benutzer kurz Task,
-   Umsetzungsschnitte, Teststrategie und vorgesehene Review-Stufe nennen.
+2. Nur bei echten Roadmap-Tasks `docs/backlog/ROADMAP.md`, die Task-Datei und nötige Ausschnitte
+   aus `docs/backlog/README.md` lesen. Kleine Ad-hoc-Korrekturen nicht künstlich als
+   Roadmap-Arbeit behandeln.
+3. `AGENTS.md` und verlinkte SPEC-Anker nicht routinemäßig vollständig neu lesen. Öffne nur die
+   Abschnitte, die der Task oder der Diff berührt. Bei Widersprüchen der SPEC folgen.
+4. Kurz `git status --short` prüfen. Taskfremde Änderungen nicht überschreiben und nicht in den
+   Task hineinziehen. Eine vollständige Ausgangs-Commit-Klassifikation ist nur nötig, wenn bereits
+   relevante Änderungen vorhanden sind oder ein Subagent-Review vorbereitet wird.
+5. Akzeptanzkriterien in beobachtbare Ergebnisse übersetzen und dem Benutzer knapp Task,
+   Umsetzungsschnitt, Teststrategie und Review-Stufe nennen.
 
-## 2. Teststrategie und Ausgangslage festlegen
+## 2. Review-Stufe festlegen
 
-- Bei einem Bugfix zuerst einen Regressionstest schreiben, der den Fehler reproduziert.
-- Bei neuer oder geänderter Spiellogik zuerst deterministische Verhaltenstests aus SPEC und
-  Akzeptanzkriterien ableiten; keine Implementierungsdetails festschreiben.
-- Bei UI-Verhalten bevorzugt aus Benutzersicht testen. Playwright nur für kritische
-  Ende-zu-Ende-Flows einsetzen.
+- **Lean** ist der Normalfall für kleine Doku-, Content-, Styling-, UI-, Store- oder
+  Refactoring-Änderungen ohne Spielregel-, Persistenz-, Simulation- oder gemeinsame
+  Architekturwirkung. Kein Subagent; fokussierter Selbstreview und passende Checks genügen.
+- **Standard** gilt für neue oder geänderte Spiellogik. Relevante SPEC-Anker lesen,
+  deterministische Tests ergänzen und genau einen `correctness_reviewer` einsetzen, sofern der
+  Diff nicht trivial ist.
+- **High-Risk** gilt für Determinismus, Timer, Persistenz, Migrationen, Security oder
+  querschnittliche React-/Zustand-/Playback-Risiken. Zusätzlich zum `correctness_reviewer`
+  höchstens einen fachlich passenden zweiten Reviewer einsetzen: `test_reviewer` für Regeln,
+  Tests und Zeitverhalten, `ui_reviewer` für React-, Zustand-, Playback- oder
+  Accessibility-Risiken.
+- Reviews immer begründen. Wenn Subagent-Delegation nicht verfügbar ist, dieselben Prüffragen in
+  einem fokussierten Selbstreview beantworten und die Einschränkung melden.
+
+## 3. Teststrategie wählen
+
+- Bei einem Bugfix zuerst einen Regressionstest schreiben, wenn das ohne unverhältnismäßigen
+  Aufwand möglich ist.
+- Bei neuer oder geänderter Spiellogik deterministische Verhaltenstests aus SPEC und
+  Akzeptanzkriterien ableiten. Zufall mit festem Seed oder gestelltem PRNG prüfen.
+- Bei UI-Verhalten aus Benutzersicht testen. Playwright nur für kritische Ende-zu-Ende-Flows oder
+  wenn ein manueller Browser-Smoke-Test nicht reicht.
 - Bei reinen Doku-, Formatierungs-, Styling- oder mechanischen Refactoring-Änderungen kein
   künstliches TDD erzwingen; stattdessen den passenden statischen oder visuellen Nachweis planen.
-- Relevante bestehende Tests vor der Änderung ausführen, wenn das mit vertretbarem Aufwand eine
-  belastbare Baseline liefert. Vorbestehende Fehler ausdrücklich festhalten.
+- Relevante bestehende Tests vor der Änderung nur ausführen, wenn eine Baseline den Task sichtbar
+  entlastet. Vorbestehende Fehler ausdrücklich festhalten.
 
-## 3. Von unten nach oben implementieren
+## 4. Implementieren
 
-1. Den Task auf `in progress` setzen.
+1. Bei echten Roadmap-Tasks den Task auf `in progress` setzen, wenn er nicht bereits läuft. Bei
+   Ad-hoc-Korrekturen oder sehr kleinen Workflow-Änderungen kann die Statuspflege entfallen.
 2. In kleinen, prüfbaren Schnitten arbeiten: reine Logik und Unit-Tests, danach Store und
    Integration, zuletzt UI.
-3. Für testpflichtige Logik den Red-Green-Refactor-Zyklus verwenden und nach jedem Schnitt die
-   engste relevante Suite ausführen.
-4. Jedes Akzeptanzkriterium durch einen Test oder einen anderen nachvollziehbaren Nachweis
-   abdecken.
+3. Für testpflichtige Logik den engsten sinnvollen Red-Green-Refactor-Zyklus verwenden.
+4. Jedes Akzeptanzkriterium durch einen Test, einen statischen Check oder einen nachvollziehbaren
+   manuellen Nachweis abdecken.
 5. Fehlende Regeln nicht erfinden. Stattdessen einen Eintrag in
    `docs/backlog/OPEN_ISSUES.md` anlegen, den Task auf `blocked` setzen und den Blocker melden.
 
-## 4. Selbstvalidierung abschließen
+## 5. Validieren
 
-1. Den vollständigen Diff gegen Task, SPEC, Architekturregeln und unbeabsichtigte Nebenänderungen
-   prüfen.
-2. Die gesamte anwendbare Definition of Done aus `AGENTS.md` Abschnitt 11 ausführen. Einen Task
-   erst reviewen lassen, wenn die Implementierung in einem belastbar prüfbaren Zustand ist.
+1. Den Diff gegen Task, relevante SPEC-Anker, Architekturregeln und unbeabsichtigte
+   Nebenänderungen prüfen.
+2. Die anwendbare Definition of Done aus `AGENTS.md` Abschnitt 11 ausführen. Für kleine Tickets
+   zuerst die engsten passenden Checks laufen lassen; vollständige Suiten nur, wenn sie durch die
+   Änderung, den Task oder ein Review-Finding gerechtfertigt sind.
 3. Fehlgeschlagene Checks beheben oder als nachweislich vorbestehend melden; nicht verschweigen.
 
-## 5. Unabhängiges Review risikobasiert ausführen
+## 6. Review ausführen
 
-Reviewer ausschließlich lesend einsetzen. Ihnen Task, verbindliche SPEC-Anker und den exakten
-Review-Umfang geben: alle als taskzugehörig eingeordneten Änderungen seit dem festgehaltenen
-Ausgangs-Commit einschließlich bereits vorhandener Task-Arbeit, den zugehörigen staged und
-unstaged Diff sowie jede zugehörige ungetrackte Datei. Taskfremde Änderungen ausdrücklich
-ausschließen. Weder erwartete Findings noch eigene Schlussfolgerungen vorwegnehmen. Parallele
-Reviewer müssen voneinander unabhängige Prüffragen erhalten. Alle Ergebnisse abwarten.
+Subagenten ausschließlich lesend einsetzen.
 
-- **Trivial:** Nur bei nachweislich verhaltensneutralen Änderungen wie Formatierung,
-  redaktioneller Doku oder einer mechanischen Umbenennung keinen Subagenten erzwingen; einen
-  fokussierten Selbstreview durchführen. SPEC-, Architektur-, Workflow- und Statusänderungen sind
-  nicht automatisch trivial.
-- **Standard:** Bei einer nicht trivialen Code- oder internen Dokumentationsänderung
-  `correctness_reviewer` einsetzen.
-- **Erhöht:** Bei Spiellogik, Determinismus, Timern, Persistenz, Migrationen, Security oder
-  querschnittlichen Änderungen zusätzlich `test_reviewer` einsetzen.
-- **UI:** Bei relevanten React-, Zustand-, Playback- oder Accessibility-Änderungen zusätzlich
-  `ui_reviewer` einsetzen.
-- Höchstens drei Reviewer parallel starten. Schreibende Subagenten nicht für den Review
-  verwenden. Ist Subagent-Delegation nicht verfügbar, dieselben Prüffragen in getrennten,
-  fokussierten Selbstreviews beantworten und die Einschränkung melden.
+- Reviewer erst nach grünen fokussierten Tests und Selbstreview einsetzen. Der Review-Brief nennt
+  nur betroffene Dateien, Akzeptanzkriterien, relevante SPEC-Anker und den exakten Diff-Umfang.
+  Vollständige Grundlagenlektüre wird nicht erneut verlangt, soweit sie für den Diff nicht
+  erforderlich ist.
+- Schreibende Subagenten nicht für den Review verwenden. Ist Subagent-Delegation nicht verfügbar,
+  dieselben Prüffragen in einem fokussierten Selbstreview beantworten und die Einschränkung
+  melden.
+- Nach kleinen Finding-Fixes genügen Selbstreview und die betroffenen Checks. Einen gezielten
+  zweiten Review nur bei substanziellen Korrekturen an Architektur, Persistenz oder Simulation
+  anfordern.
 
 Von jedem Reviewer nur priorisierte, umsetzbare Findings verlangen: Schweregrad, Datei und Zeile,
 betroffenes Verhalten, konkrete Evidenz oder Reproduktion und gegebenenfalls die fehlende
 Testabdeckung. Stilhinweise ohne Fehlerrisiko verwerfen.
 
-## 6. Findings verifizieren und einarbeiten
+## 7. Findings behandeln
 
 1. Jedes Finding selbst anhand von Code, SPEC und Tests prüfen. Review-Ergebnisse nicht blind
    übernehmen.
@@ -92,19 +105,20 @@ Testabdeckung. Stilhinweise ohne Fehlerrisiko verwerfen.
    begründen und keine sachfremde Scope-Erweiterung vornehmen.
 3. Bestätigte Probleme möglichst zuerst durch Reproduktion oder Test absichern, dann minimal
    beheben.
-4. Nach Korrekturen alle betroffenen Checks und die anwendbare Definition of Done erneut
-   ausführen. Nur bei substanziellen Review-Korrekturen einen gezielten zweiten Review anfordern.
+4. Nach Korrekturen die betroffenen Checks erneut ausführen. Einen weiteren Review nur bei
+   substanziellen Korrekturen an Architektur, Persistenz, Simulation oder deterministischem
+   Verhalten anfordern.
 
-## 7. Task abschließen und übergeben
+## 8. Abschließen
 
-1. Den Task erst für den finalen PR-Diff auf `done` setzen, wenn alle Akzeptanzkriterien erfüllt,
-   alle erforderlichen Checks grün und alle bestätigten Findings bearbeitet sind. Dieser Status
-   wird auf der gemeinsamen Roadmap erst mit dem Merge verbindlich.
-2. Neu entblockte Folgetasks im selben finalen Diff auf `ready` setzen und die Tabelle in
-   `docs/backlog/ROADMAP.md` synchronisieren. Keinen Folgetask vom ungemergten Task-Branch aus
-   beginnen.
-3. Einen Conventional Commit erstellen.
-4. Ohne ausdrückliche Freigabe weder pushen noch einen Pull Request öffnen.
+1. Bei Roadmap-Tasks den Task nur dann für den finalen Diff auf `done` setzen, wenn alle
+   Akzeptanzkriterien erfüllt, alle erforderlichen Checks grün und alle bestätigten Findings
+   bearbeitet sind. Dieser Status wird erst mit dem Merge verbindlich.
+2. Neu entblockte Folgetasks nur bei echten Roadmap-Tasks im selben finalen Diff auf `ready`
+   setzen und `docs/backlog/ROADMAP.md` synchronisieren. Keinen Folgetask vom ungemergten
+   Task-Branch aus beginnen.
+3. Nur auf ausdrücklichen Auftrag einen Conventional Commit erstellen.
+4. Ohne ausdrückliche Freigabe weder committen, pushen noch einen Pull Request öffnen.
 5. Dem Benutzer knapp das Ergebnis, die wesentlichen Änderungen, ausgeführte Checks mit Status,
-   die Behandlung der Review-Findings, den bis zum Merge vorläufigen Roadmap-Status und
+   die Review-Stufe, die Behandlung der Review-Findings, den Roadmap-Status falls relevant und
    verbleibende Risiken nennen.

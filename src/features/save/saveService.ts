@@ -1,5 +1,6 @@
+import { z } from 'zod';
 import type { SavePort } from '@/shared/ports/savePort';
-import { createDefaultSave, currentSaveSchema, type SaveData } from './saveSchema';
+import { currentSaveSchema, saveSchemaV1, type SaveData } from './saveSchema';
 
 /**
  * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md §7).
@@ -8,26 +9,26 @@ import { createDefaultSave, currentSaveSchema, type SaveData } from './saveSchem
  * oder inkompatiblem Save wird kontrolliert auf den Default zurückgesetzt statt
  * mit fehlerhaftem Zustand abzustürzen.
  */
-export function createSaveService(port: SavePort) {
+export function createSaveService(port: SavePort, createFallback: () => SaveData) {
   return {
-    async load(now: number): Promise<SaveData> {
+    async load(): Promise<SaveData> {
       const raw = await port.load();
       if (raw === null) {
-        return createDefaultSave(now);
+        return createFallback();
       }
 
       try {
         const parsed: unknown = JSON.parse(raw);
-        const migrated = migrate(parsed);
-        return currentSaveSchema.parse(migrated);
+        return migrate(parsed);
       } catch (error) {
         console.warn('Speicherstand ungültig — Zurücksetzen auf Default.', error);
-        return createDefaultSave(now);
+        return createFallback();
       }
     },
 
     async save(data: SaveData): Promise<void> {
-      await port.save(JSON.stringify(data));
+      const validated = currentSaveSchema.parse(data);
+      await port.save(JSON.stringify(validated));
     },
 
     async clear(): Promise<void> {
@@ -36,12 +37,18 @@ export function createSaveService(port: SavePort) {
   };
 }
 
-/**
- * Hebt ältere Save-Versionen schrittweise auf das aktuelle Format an.
- * Noch keine Alt-Versionen vorhanden — Gerüst für spätere Migrationen.
- */
-function migrate(data: unknown): unknown {
-  return data;
+const versionSchema = z.object({ version: z.number().int() }).passthrough();
+
+/** Hebt jede bekannte Save-Version explizit auf das aktuelle Format an. */
+function migrate(data: unknown): SaveData {
+  const versioned = versionSchema.parse(data);
+
+  switch (versioned.version) {
+    case 1:
+      return saveSchemaV1.parse(versioned);
+    default:
+      throw new Error(`Unbekannte Save-Version: ${versioned.version}`);
+  }
 }
 
 export type SaveService = ReturnType<typeof createSaveService>;

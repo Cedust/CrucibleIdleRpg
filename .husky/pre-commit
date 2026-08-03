@@ -1,1 +1,6 @@
 npx lint-staged
+
+# Ganzes Repo, nicht nur die gestagten Dateien: Ein Link bricht typischerweise in
+# einer Datei, die man selbst gar nicht angefasst hat (Überschrift umbenannt ->
+# Verweise anderswo tot). Siehe AGENTS.md §2 Tooling.
+npm run docs:links

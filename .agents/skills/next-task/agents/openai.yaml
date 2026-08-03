@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Nächster Task'
+  short_description: 'Roadmap-Task vollständig umsetzen'
+  default_prompt: 'Verwende $next-task, um den nächsten bereiten Roadmap-Task vollständig umzusetzen und zu prüfen.'

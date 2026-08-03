@@ -269,6 +269,25 @@ Verhalten überhaupt erreichbar machen.
 - Fehlt eine Regel, wird sie nicht erfunden: Eintrag in
   [`docs/backlog/OPEN_ISSUES.md`](docs/backlog/OPEN_ISSUES.md), Task auf `blocked`.
 
+### Codequalität
+
+- Bevorzuge die einfachste Lösung, die Task, SPEC und aktuelle Anforderungen vollständig
+  erfüllt. Keine Abstraktionen, Erweiterungspunkte oder Konfigurationen für nur hypothetische
+  Anforderungen einführen.
+- Optimiere für Lesbarkeit: sprechende Namen, geradliniger Kontrollfluss, kleine fachlich
+  zusammenhängende Einheiten und keine unnötige Cleverness.
+- Folge zuerst den bestehenden Projektmustern. Allgemeine Best Practices sind nachgeordnet und
+  rechtfertigen weder zusätzliche Komplexität noch neue Abhängigkeiten.
+- Führe eine Abstraktion nur ein, wenn sie reale Wiederholung entfernt, eine bestehende
+  Architekturgrenze ausdrückt oder für die aktuelle Anforderung notwendig ist.
+- Dokumentiere an kritischen Stellen das **Warum**, Invarianten und nicht offensichtliche
+  Nebenbedingungen — nicht das unmittelbar aus dem Code erkennbare **Was**. Dazu gehören
+  insbesondere Determinismus und Ziehreihenfolge, Zeitakkumulation und Catch-up,
+  Save-Migrationen und Fallbacks, ungewöhnliche Zustandsinvarianten sowie bewusste technische
+  Ausnahmen.
+- Verlinke bei Spielregeln und Architektur-Invarianten auf den maßgeblichen SPEC-Anker, statt die
+  Regel im Kommentar zu duplizieren.
+
 ### Umsetzungs- und Review-Ablauf
 
 - Roadmap-Tasks folgen dem projektlokalen

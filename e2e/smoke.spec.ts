@@ -93,15 +93,11 @@ test('hÃ¤lt die 2Ã—3-Formation auf schmalen Viewports im eigenen Scrollbere
 
   const scroller = page.getByTestId('enemy-formation-scroll');
   const metrics = {
-    clientWidth: await scroller.evaluate<number>((element) =>
-      Number(Reflect.get(element, 'clientWidth')),
-    ),
-    scrollWidth: await scroller.evaluate<number>((element) =>
-      Number(Reflect.get(element, 'scrollWidth')),
-    ),
+    clientWidth: await scroller.evaluate((element) => Number(Reflect.get(element, 'clientWidth'))),
+    scrollWidth: await scroller.evaluate((element) => Number(Reflect.get(element, 'scrollWidth'))),
     pageWidth: await page
       .locator('html')
-      .evaluate<number>((element) => Number(Reflect.get(element, 'scrollWidth'))),
+      .evaluate((element) => Number(Reflect.get(element, 'scrollWidth'))),
   };
 
   expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
@@ -114,7 +110,7 @@ test('hÃ¤lt die 2Ã—3-Formation auf schmalen Viewports im eigenen Scrollbere
   await expect(scrollRight).toBeFocused();
   await page.keyboard.press('Enter');
   await expect
-    .poll(() => scroller.evaluate<number>((element) => Number(Reflect.get(element, 'scrollLeft'))))
+    .poll(() => scroller.evaluate((element) => Number(Reflect.get(element, 'scrollLeft'))))
     .toBeGreaterThan(0);
   await expect(page.getByRole('button', { name: 'Scroll formation left' })).toBeEnabled();
 });

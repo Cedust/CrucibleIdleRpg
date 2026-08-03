@@ -49,7 +49,7 @@ der Kampf endet mit Sieg oder Wipe, und der Ausgang überlebt einen Reload.
 | 4           | [004 — Ausgehender Schaden](tasks/004-ausgehender-schaden.md)                     | done   | 003          |
 | 5           | [005 — Eingehender Schaden](tasks/005-eingehender-schaden.md)                     | done   | 003          |
 | 6           | [006 — Schrittwerk & Kampf-Events](tasks/006-schrittwerk-und-events.md)           | done   | 004, 005     |
-| 7           | [007 — Playback & Combat-Store](tasks/007-playback-und-store.md)                  | ready  | 006          |
+| 7           | [007 — Playback & Combat-Store](tasks/007-playback-und-store.md)                  | done   | 006          |
 | 8           | [008 — Kampfbildschirm](tasks/008-kampfbildschirm.md)                             | ready  | 007          |
 | 9           | [009 — Floor-Abschluss & Save v1](tasks/009-floor-abschluss-und-save.md)          | ready  | 007          |
 

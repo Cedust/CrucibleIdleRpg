@@ -2,6 +2,7 @@ import { Swords, Users, TrendingUp } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
 import { CombatScreen } from '@/features/combat/CombatScreen';
+import { useCombatPlayback } from '@/features/combat/useCombatPlayback';
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
   combat: { label: 'Combat', icon: Swords },
@@ -11,6 +12,9 @@ const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?:
 
 /** App-Shell mit State-basiertem View-Switch (kein Router, siehe AGENTS.md §6). */
 export function AppShell() {
+  // Der Controller lebt oberhalb des View-Switches: Navigation unterbricht den Kampf nicht.
+  useCombatPlayback();
+
   const activeView = useNavigationStore((s) => s.activeView);
   const setActiveView = useNavigationStore((s) => s.setActiveView);
 

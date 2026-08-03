@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#0f172a">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="36" fill="none" stroke="#f59e0b" stroke-width="4"/>
+    <text x="50" y="60" text-anchor="middle" font-family="serif" font-weight="700" font-size="34" fill="#f59e0b">C</text>
+  </svg>
+</template>
+</head>
+<body>
+<x-dc>
+
+<helmet data-dc-atomics>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="./image-slot.js"></script>
+  <style>
+    body{margin:0;background:#0f172a;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:#f59e0b}
+    a:hover{color:#fbbf24}
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+  </style>
+</helmet>
+
+<div style="width:100%;min-height:100vh;background:#0f172a;color:#e2e8f0;display:flex;flex-direction:column">
+
+  <sc-if value="{{ isArena }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;flex:1;min-height:100vh;box-sizing:border-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid #334155;background:rgba(15,23,42,0.95)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border:2px solid #f59e0b;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#f59e0b;font-family:'Cinzel',serif;font-weight:700;font-size:15px">C</div>
+          <div>
+            <div style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;letter-spacing:1px;color:#f1f5f9;line-height:1.1">CRUCIBLE</div>
+            <div style="font-size:9.5px;letter-spacing:2px;color:#94a3b8">IDLE RPG</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px">
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:20px;padding:6px 14px">
+            <span style="color:#f59e0b;font-weight:700">◆</span>
+            <span style="font-weight:600;color:#f1f5f9;font-size:13.5px">{{ goldDisplay }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:20px;padding:6px 14px">
+            <span style="color:#06b6d4;font-weight:700">◆</span>
+            <span style="font-weight:600;color:#f1f5f9;font-size:13.5px">{{ crystalsDisplay }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;flex:1;padding:20px 24px;box-sizing:border-box;gap:16px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between">
+        <div style="display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'Cinzel',serif;font-weight:700;font-size:22px;color:#f1f5f9;letter-spacing:1px">BATTLE ARENA</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:#94a3b8;font-size:13px">
+          <span style="color:#f59e0b;font-family:'Cinzel',serif;letter-spacing:1px">DUNGEON {{ selectedDungeon.id }} - {{ selectedDungeon.nameUpper }}</span>
+          <span>FLOOR {{ arenaFloor }} / {{ arenaFloorMax }}</span>
+        </div>
+        <div style="width:160px"></div>
+      </div>
+
+      <div style="display:flex;gap:16px;flex:1;min-height:0">
+
+        <div style="width:260px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:8px;text-align:center">PARTY</div>
+          <sc-for list="{{ partyArena }}" as="p" hint-placeholder-count="3">
+            <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px">
+              <image-slot id="{{ p.slotId }}" shape="rounded" radius="6" placeholder="{{ p.name }}" style="width:100%;height:150px"></image-slot>
+              <div>
+                <div style="font-weight:600;font-size:13px;color:#f1f5f9">{{ p.name }}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">Lvl {{ p.level }}</div>
+                <div style="width:100%;height:6px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:4px">
+                  <div style="height:100%;background:linear-gradient(90deg,#f59e0b,#fbbf24);width:100%"></div>
+                </div>
+                <div style="font-size:10px;color:#64748b;margin-bottom:6px">{{ p.hpText }}</div>
+                <div style="width:100%;height:6px;background:#334155;border-radius:3px;overflow:hidden">
+                  <div style="height:100%;background:#06b6d4;width:{{ p.xpPct }}%"></div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="flex:1;min-width:220px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:14px;overflow-y:auto;min-height:0">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+            <sc-for list="{{ turnOrder }}" as="t" hint-placeholder-count="7">
+              <span style="width:26px;height:26px;border-radius:6px;background:{{ t.bg }};border:1px solid {{ t.border }};color:{{ t.textColor }};display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:9.5px;font-weight:700">{{ t.mono }}</span>
+              <sc-if value="{{ t.hasSep }}" hint-placeholder-val="{{ true }}"><span style="color:#475569;font-size:11px">–</span></sc-if>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px;color:#f59e0b;font-family:'Cinzel',serif;letter-spacing:2px;font-size:14px;margin-bottom:12px">
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#f59e0b)"></div>
+            <span>ROUND 3</span>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,#f59e0b,transparent)"></div>
+          </div>
+          <sc-for list="{{ combatLog }}" as="entry" hint-placeholder-count="4">
+            <div style="padding:8px 0;border-bottom:1px solid rgba(51,65,85,0.5);font-size:12.5px;line-height:1.5">
+              <span style="color:{{ entry.color }};font-weight:600">{{ entry.actor }}</span>
+              <span style="color:#cbd5e1"> {{ entry.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:12px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:14px">
+          <div style="width:210px">
+            <div style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:8px;text-align:center">FRONTLINE</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ frontline }}" as="e" hint-placeholder-count="3">
+                <sc-if value="{{ e.filled }}" hint-placeholder-val="{{ true }}">
+                  <div style="background:rgba(15,23,42,0.6);border:1px solid #334155;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px">
+                    <image-slot id="{{ e.slotId }}" shape="rounded" radius="6" placeholder="{{ e.name }}" style="width:100%;height:130px"></image-slot>
+                    <div>
+                      <div style="font-weight:600;font-size:12.5px;color:#f1f5f9">{{ e.name }}</div>
+                      <div style="font-size:10.5px;color:#94a3b8;margin-bottom:5px">Lvl {{ e.level }}</div>
+                      <div style="width:100%;height:5px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:3px">
+                        <div style="height:100%;background:#f59e0b;width:{{ e.hpPct }}%"></div>
+                      </div>
+                      <div style="font-size:9.5px;color:#64748b">{{ e.hpText }}</div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:10.5px;border-top:1px solid rgba(51,65,85,0.5);padding-top:6px">
+                      <span style="color:#94a3b8">ATK <span style="color:#e2e8f0;font-weight:600">{{ e.attack }}</span></span>
+                      <span style="color:#94a3b8">DEF <span style="color:#e2e8f0;font-weight:600">{{ e.defense }}</span></span>
+                      <span style="color:#94a3b8">ACU <span style="color:#e2e8f0;font-weight:600">{{ e.acu }}</span></span>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ e.empty }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px dashed #334155;border-radius:8px;height:240px"></div>
+                </sc-if>
+              </sc-for>
+            </div>
+          </div>
+          <div style="width:210px">
+            <div style="font-size:11px;color:#94a3b8;letter-spacing:1px;margin-bottom:8px;text-align:center">BACKLINE</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ backline }}" as="e" hint-placeholder-count="3">
+                <div style="background:rgba(15,23,42,0.6);border:1px solid #334155;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px">
+                  <image-slot id="{{ e.slotId }}" shape="rounded" radius="6" placeholder="{{ e.name }}" style="width:100%;height:130px"></image-slot>
+                  <div>
+                    <div style="font-weight:600;font-size:12.5px;color:#f1f5f9">{{ e.name }}</div>
+                    <div style="font-size:10.5px;color:#94a3b8;margin-bottom:5px">Lvl {{ e.level }}</div>
+                    <div style="width:100%;height:5px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:3px">
+                      <div style="height:100%;background:#06b6d4;width:{{ e.hpPct }}%"></div>
+                    </div>
+                    <div style="font-size:9.5px;color:#64748b">{{ e.hpText }}</div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:10.5px;border-top:1px solid rgba(51,65,85,0.5);padding-top:6px">
+                    <span style="color:#94a3b8">ATK <span style="color:#e2e8f0;font-weight:600">{{ e.attack }}</span></span>
+                    <span style="color:#94a3b8">DEF <span style="color:#e2e8f0;font-weight:600">{{ e.defense }}</span></span>
+                    <span style="color:#94a3b8">ACU <span style="color:#e2e8f0;font-weight:600">{{ e.acu }}</span></span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:12px 18px">
+        <div style="display:flex;align-items:center;gap:8px;color:{{ autoCombatColor }};font-size:13px;font-weight:600">
+          <span style="width:8px;height:8px;border-radius:50%;background:{{ autoCombatColor }};display:inline-block"></span>
+          {{ autoCombatLabel }}
+          <span style="color:#94a3b8;font-weight:400;margin-left:6px">Time Spent: {{ arenaElapsedDisplay }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px">
+          <span style="color:#94a3b8;font-size:11px;letter-spacing:1px">Rewards</span>
+          <div style="display:flex;gap:16px;color:#e2e8f0;font-size:13px;font-weight:600">
+            <span style="color:#f59e0b">◆ 12,350</span>
+            <span style="color:#06b6d4">◆ 240</span>
+            <span>XP 8,450</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ leaveArena }}" style="background:rgba(127,29,29,0.4);border:1px solid #ef4444;color:#fca5a5;padding:10px 18px;border-radius:6px;font-size:12px;letter-spacing:1px;cursor:pointer;font-weight:600">LEAVE BATTLE</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isShell }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid #334155;background:rgba(15,23,42,0.95)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border:2px solid #f59e0b;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#f59e0b;font-family:'Cinzel',serif;font-weight:700;font-size:15px">C</div>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:15px;font-weight:700;letter-spacing:1px;color:#f1f5f9;line-height:1.1">CRUCIBLE</div>
+          <div style="font-size:9.5px;letter-spacing:2px;color:#94a3b8">IDLE RPG</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px">
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:20px;padding:6px 14px">
+          <span style="color:#f59e0b;font-weight:700">◆</span>
+          <span style="font-weight:600;color:#f1f5f9;font-size:13.5px">{{ goldDisplay }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:20px;padding:6px 14px">
+          <span style="color:#06b6d4;font-weight:700">◆</span>
+          <span style="font-weight:600;color:#f1f5f9;font-size:13.5px">{{ crystalsDisplay }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-height:0">
+      <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+      <aside style="width:200px;flex:none;background:rgba(15,23,42,0.6);border-right:1px solid #334155;padding:14px 10px;display:flex;flex-direction:column;gap:3px">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="10">
+          <div onClick="{{ item.onClick }}" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;cursor:pointer;background:{{ item.bg }};border-left:2px solid {{ item.borderColor }}">
+            <span style="width:26px;height:26px;border-radius:6px;background:rgba(51,65,85,0.6);color:{{ item.iconColor }};font-family:'Cinzel',serif;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none">{{ item.mono }}</span>
+            <span style="font-size:12.5px;color:{{ item.textColor }};font-weight:500">{{ item.label }}</span>
+          </div>
+        </sc-for>
+      </aside>
+      </sc-if>
+
+      <div style="flex:1;padding:22px;overflow:auto;min-height:0">
+
+        <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:18px;align-items:stretch;flex-wrap:nowrap;min-height:802px">
+            <div style="width:240px;flex:0 0 240px;display:flex;flex-direction:column;gap:16px">
+              <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:16px;flex:1;display:flex;flex-direction:column">
+                <div style="font-size:11px;letter-spacing:1.5px;color:#f59e0b;font-family:'Cinzel',serif;margin-bottom:10px">CURRENT PROGRESS</div>
+                <div style="font-size:13px;color:#f1f5f9;font-weight:600;margin-bottom:12px">ACT II – FORGOTTEN DEPTHS</div>
+                <div style="display:flex;gap:8px;margin-bottom:14px">
+                  <span style="width:30px;height:30px;border-radius:50%;border:2px solid #f59e0b;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">I</span>
+                  <span style="width:30px;height:30px;border-radius:50%;border:2px solid #f59e0b;background:rgba(245,158,11,0.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">II</span>
+                  <span style="width:30px;height:30px;border-radius:50%;border:2px solid #334155;color:#64748b;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">III</span>
+                </div>
+                <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">DUNGEON 3</div>
+                <div style="font-size:13px;color:#f1f5f9;font-weight:600;margin-bottom:10px">Soul Dungeon</div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px"><span>Progress</span><span>62%</span></div>
+                <div style="width:100%;height:7px;background:#334155;border-radius:4px;overflow:hidden">
+                  <div style="height:100%;width:62%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="flex:1;display:flex;flex-direction:column;gap:14px;min-width:480px">
+              <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid #334155;flex:1">
+                <image-slot id="heroBg" shape="rect" placeholder="Background: Nightly Castle" style="width:100%;height:100%"></image-slot>
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,0.85) 0%,rgba(15,23,42,0.1) 45%,transparent 70%);pointer-events:none"></div>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px;pointer-events:none">
+                  <div style="display:flex;justify-content:center;gap:36px;pointer-events:none">
+                    <sc-for list="{{ partyOverview }}" as="p" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:140px;pointer-events:auto">
+                        <image-slot id="{{ p.slotId }}" shape="rounded" radius="8" placeholder="{{ p.placeholder }}" style="width:140px;height:175px"></image-slot>
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(15,23,42,0.75);border-radius:5px;padding:4px 12px">
+                          <span style="font-size:13px;letter-spacing:1.5px;color:#f1f5f9;font-weight:700">{{ p.name }}</span>
+                          <span style="font-size:11px;color:#cbd5e1">Level {{ p.level }}</span>
+                        </div>
+                        <div style="width:120px;height:6px;background:rgba(51,65,85,0.7);border-radius:3px;overflow:hidden">
+                          <div style="height:100%;background:#06b6d4;width:{{ p.xpPct }}%"></div>
+                        </div>
+                        <div style="display:flex;gap:8px;background:rgba(15,23,42,0.75);border-radius:5px;padding:6px 8px">
+                          <div style="text-align:center">
+                            <div style="font-size:8px;letter-spacing:0.5px;color:#94a3b8">Health</div>
+                            <div style="font-size:10px;color:#e2e8f0;font-weight:700">{{ p.hpDisplay }}</div>
+                          </div>
+                          <div style="text-align:center">
+                            <div style="font-size:8px;letter-spacing:0.5px;color:#94a3b8">Attack</div>
+                            <div style="font-size:10px;color:#f59e0b;font-weight:700">{{ p.atkDisplay }}</div>
+                          </div>
+                          <div style="text-align:center">
+                            <div style="font-size:8px;letter-spacing:0.5px;color:#94a3b8">Defense</div>
+                            <div style="font-size:10px;color:#06b6d4;font-weight:700">{{ p.defDisplay }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <button onClick="{{ goDungeons }}" style="pointer-events:auto;padding:10px 28px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer">DUNGEONS</button>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="width:240px;flex:0 0 240px;display:flex;flex-direction:column;gap:16px">
+              <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:16px;flex:1;display:flex;flex-direction:column">
+                <div style="font-size:11px;letter-spacing:1.5px;color:#f59e0b;font-family:'Cinzel',serif;margin-bottom:12px">◇ STORY</div>
+                <sc-for list="{{ storyList }}" as="b" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(51,65,85,0.5)">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="width:20px;height:20px;border-radius:5px;background:rgba(6,182,212,0.15);color:#06b6d4;display:flex;align-items:center;justify-content:center;font-size:10px">◆</span>
+                      <div>
+                        <div style="font-size:12px;color:#e2e8f0">{{ b.name }}</div>
+                        <div style="font-size:9.5px;color:#64748b">{{ b.time }}</div>
+                      </div>
+                    </div>
+                    <span style="font-size:12px;color:#f59e0b;font-weight:600">{{ b.value }}</span>
+                  </div>
+                </sc-for>
+                <button onClick="{{ goStory }}" style="width:100%;margin-top:auto;padding:9px;border-radius:6px;border:1px solid #06b6d4;background:rgba(6,182,212,0.15);color:#06b6d4;font-size:11.5px;letter-spacing:0.5px;cursor:pointer">VIEW STORY</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isStory }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div onClick="{{ backToOverview }}" style="display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12.5px;cursor:pointer;margin-bottom:14px;width:fit-content">
+              <span style="font-size:15px">←</span><span>Back to Overview</span>
+            </div>
+            <div style="font-size:13px;letter-spacing:2px;color:#f59e0b;font-family:'Cinzel',serif;margin-bottom:18px">STORY</div>
+            <div style="max-width:600px;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:20px">
+              <sc-for list="{{ storyList }}" as="b" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(51,65,85,0.5)">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="width:22px;height:22px;border-radius:5px;background:rgba(6,182,212,0.15);color:#06b6d4;display:flex;align-items:center;justify-content:center;font-size:11px">◆</span>
+                    <div>
+                      <div style="font-size:13px;color:#e2e8f0">{{ b.name }}</div>
+                      <div style="font-size:10.5px;color:#64748b">{{ b.time }}</div>
+                    </div>
+                  </div>
+                  <span style="font-size:13px;color:#f59e0b;font-weight:600">{{ b.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDungeons }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div onClick="{{ backToOverview }}" style="display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12.5px;cursor:pointer;margin-bottom:14px;width:fit-content">
+              <span style="font-size:15px">←</span><span>Back to Overview</span>
+            </div>
+            <div style="font-size:13px;letter-spacing:2px;color:#f59e0b;font-family:'Cinzel',serif;margin-bottom:18px">AKT- AND DUNGEON SELECTION</div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap">
+              <div style="width:280px;flex:0 0 280px;display:flex;flex-direction:column;gap:12px">
+                <sc-for list="{{ acts }}" as="act" hint-placeholder-count="3">
+                  <div onClick="{{ act.onClick }}" style="position:relative;height:150px;border:1px solid {{ act.borderColor }};border-radius:8px;cursor:pointer;opacity:{{ act.opacity }};overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:14px">
+                    <image-slot id="{{ act.bgSlotId }}" shape="rect" placeholder="{{ act.bgPlaceholder }}" style="position:absolute;inset:0;z-index:0"></image-slot>
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,0.9),rgba(15,23,42,0.35));z-index:1"></div>
+                    <div style="position:relative;z-index:2">
+                      <div style="font-family:'Cinzel',serif;font-size:12.5px;color:{{ act.titleColor }};font-weight:700;margin-bottom:4px">{{ act.name }}</div>
+                      <div style="font-size:10px;color:#94a3b8;letter-spacing:0.5px;margin-bottom:8px">{{ act.sub }}</div>
+                      <div style="font-size:11px;color:#cbd5e1">{{ act.progress }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center">
+                <div style="text-align:center;font-family:'Cinzel',serif;font-size:13px;color:#f59e0b;letter-spacing:1px;margin-bottom:16px">{{ currentActLabel }}</div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center">
+                  <sc-for list="{{ dungeons }}" as="d" hint-placeholder-count="5">
+                    <div onClick="{{ d.onClick }}" style="width:170px;height:300px;position:relative;overflow:hidden;border:2px solid {{ d.borderColor }};border-radius:8px;cursor:{{ d.cursor }};display:flex;flex-direction:column;justify-content:space-between;padding:12px">
+                      <image-slot id="{{ d.bgSlotId }}" shape="rect" placeholder="{{ d.bgPlaceholder }}" style="position:absolute;inset:0;z-index:0"></image-slot>
+                      <div style="position:absolute;inset:0;background:{{ d.cardBg }};z-index:1"></div>
+                      <div style="position:relative;z-index:2">
+                        <div style="font-size:10px;color:#94a3b8;margin-bottom:4px">DUNGEON {{ d.id }}</div>
+                        <div style="font-size:12px;color:#f1f5f9;font-weight:600">{{ d.name }}</div>
+                      </div>
+                      <div style="position:relative;z-index:2">
+                        <div style="text-align:center;font-size:11.5px;color:#cbd5e1;margin-bottom:2px">{{ d.progress }}</div>
+                        <div style="width:100%;height:5px;background:#334155;border-radius:3px;overflow:hidden;margin-bottom:6px">
+                          <div style="height:100%;width:{{ d.pctWidth }}%;background:{{ d.progressBarColor }}"></div>
+                        </div>
+                        <div style="text-align:center;font-size:10px;color:{{ d.statusColor }};font-weight:600">{{ d.statusLabel }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;justify-content:center;margin-top:24px">
+                  <button onClick="{{ enterDungeon }}" disabled="{{ selectedDungeon.locked }}" style="padding:14px 40px;border-radius:6px;border:1px solid #f59e0b;background:{{ enterButtonBg }};color:{{ enterButtonColor }};font-weight:700;font-size:12.5px;letter-spacing:1px;cursor:{{ enterButtonCursor }}">ENTER DUNGEON</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isInventar }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;min-height:802px;display:flex;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;overflow:hidden">
+            <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+              <div style="display:flex;gap:6px;padding:12px;border-bottom:1px solid #334155">
+                <sc-for list="{{ inventarCategories }}" as="c" hint-placeholder-count="5">
+                  <div onClick="{{ c.onClick }}" style="width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:{{ c.bg }};border:1px solid {{ c.border }};color:{{ c.color }};font-size:16px">{{ c.icon }}</div>
+                </sc-for>
+              </div>
+              <div style="flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;padding:20px;align-content:start">
+                <sc-for list="{{ inventarItems }}" as="it" hint-placeholder-count="20">
+                  <div onClick="{{ it.onClick }}" style="position:relative;aspect-ratio:1;border-radius:8px;border:2px solid {{ it.ring }};box-shadow:{{ it.glow }};background:rgba(15,23,42,0.7);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer">
+                    {{ it.glyph }}
+                    <sc-if value="{{ it.count }}" hint-placeholder-val="{{ false }}">
+                      <span style="position:absolute;bottom:2px;right:4px;font-size:10px;color:#f1f5f9;font-weight:700;text-shadow:0 1px 2px #000">{{ it.count }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:280px;flex:none;border-left:1px solid #334155;padding:20px;display:flex;flex-direction:column;align-items:center">
+              <div style="width:88px;height:88px;border-radius:10px;border:2px solid {{ selectedInvItem.border }};background:rgba(15,23,42,0.7);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:14px">{{ selectedInvItem.glyph }}</div>
+              <div style="font-size:13.5px;color:#f1f5f9;font-weight:700;text-align:center;margin-bottom:6px">{{ selectedInvItem.name }}</div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:1px;text-align:center;color:{{ selectedInvItem.border }}">{{ selectedInvItem.rarityLabel }}</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isBlacksmith }}" hint-placeholder-val="{{ false }}">
+          <div style="min-width:760px">
+            <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:802px">
+              <div style="display:flex;border-bottom:1px solid #334155">
+                <sc-for list="{{ blacksmithTabs }}" as="t" hint-placeholder-count="3">
+                  <div onClick="{{ t.onClick }}" style="flex:1;text-align:center;padding:13px;cursor:pointer;font-size:11.5px;letter-spacing:1px;font-weight:600;background:{{ t.activeBg }};color:{{ t.activeColor }};border-bottom:2px solid {{ t.activeBorder }}">{{ t.label }}</div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex:1">
+                <sc-if value="{{ isSchmiedeTab }}" hint-placeholder-val="{{ true }}">
+                  <div style="width:200px;flex:none;border-right:1px solid #334155;display:flex;flex-direction:column">
+                    <sc-for list="{{ blacksmithCategories }}" as="c" hint-placeholder-count="5">
+                      <div onClick="{{ c.onClick }}" style="padding:28px 18px;cursor:pointer;font-size:12px;letter-spacing:0.5px;font-weight:600;background:{{ c.bg }};color:{{ c.color }};border-left:3px solid {{ c.borderColor }};border-bottom:1px solid #334155">{{ c.label }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:20px">
+                    <div style="font-size:11px;letter-spacing:1.5px;color:#f59e0b;font-family:'Cinzel',serif">CHOOSE A RECIPE</div>
+                    <select style="width:280px;padding:10px 14px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:12.5px">
+                      <option>All Categories</option>
+                    </select>
+                    <image-slot id="blacksmith-anvil" shape="rounded" radius="10" placeholder="Forge Scene" style="width:280px;height:220px"></image-slot>
+                    <div style="font-size:10.5px;letter-spacing:1px;color:#94a3b8">REQUIRED MATERIALS</div>
+                    <div style="display:flex;gap:10px">
+                      <sc-for list="{{ materialSlots }}" as="m" hint-placeholder-count="4">
+                        <div style="width:56px;height:56px;border-radius:8px;border:1px dashed #334155;background:rgba(15,23,42,0.5)"></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isVerbessernTab }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px">Upgrade – coming soon</div>
+                </sc-if>
+                <sc-if value="{{ isZerlegenTab }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px">Dismantle – coming soon</div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ isSchmiedeTab }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;justify-content:flex-end;padding:16px;border-top:1px solid #334155">
+                  <button style="padding:12px 40px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-weight:700;font-size:12.5px;letter-spacing:1px;cursor:pointer">FORGE</button>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isAlchemist }}" hint-placeholder-val="{{ false }}">
+          <div style="min-width:760px">
+            <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:802px">
+              <div style="display:flex;border-bottom:1px solid #334155">
+                <sc-for list="{{ alchemistTabs }}" as="t" hint-placeholder-count="3">
+                  <div onClick="{{ t.onClick }}" style="flex:1;text-align:center;padding:13px;cursor:pointer;font-size:11.5px;letter-spacing:1px;font-weight:600;background:{{ t.activeBg }};color:{{ t.activeColor }};border-bottom:2px solid {{ t.activeBorder }}">{{ t.label }}</div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex:1">
+                <sc-if value="{{ isVerzaubernTab }}" hint-placeholder-val="{{ true }}">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center">
+                    <div style="position:relative;width:220px;height:220px">
+                      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:8px;border:1px solid #06b6d4;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:18px">◆</div>
+                      <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:8px;border:1px solid #06b6d4;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:18px">◆</div>
+                      <div style="position:absolute;top:50%;left:0;transform:translateY(-50%);width:56px;height:56px;border-radius:8px;border:1px solid #06b6d4;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:18px">◆</div>
+                      <div style="position:absolute;top:50%;right:0;transform:translateY(-50%);width:56px;height:56px;border-radius:8px;border:1px solid #06b6d4;background:rgba(6,182,212,0.1);display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:18px">◆</div>
+                      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:10px;border:2px solid #f59e0b;background:rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:24px">◆</div>
+                    </div>
+                  </div>
+                  <div style="width:280px;flex:none;border-left:1px solid #334155;padding:20px;display:flex;flex-direction:column">
+                    <div style="font-size:12.5px;color:#cbd5e1;margin-bottom:16px">Choose an item to enchant</div>
+                    <div style="font-size:10.5px;letter-spacing:1px;color:#f59e0b;margin-bottom:8px">POSSIBLE BONUSES</div>
+                    <sc-for list="{{ enchantBoni }}" as="b" hint-placeholder-count="3">
+                      <div style="padding:8px 0;border-bottom:1px solid rgba(51,65,85,0.5);font-size:12px;color:#e2e8f0">{{ b }}</div>
+                    </sc-for>
+                    <button style="margin-top:auto;padding:12px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-weight:700;font-size:12.5px;letter-spacing:1px;cursor:pointer">ENCHANT</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ isAufwertenTab }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px">Enhance – coming soon</div>
+                </sc-if>
+                <sc-if value="{{ isExtrahierenTab }}" hint-placeholder-val="{{ false }}">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px">Extract – coming soon</div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isCharSheet }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display:flex;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;overflow:hidden;min-height:802px">
+              <div style="width:220px;flex:none;border-right:1px solid #334155;display:flex;flex-direction:column">
+                <sc-for list="{{ charTabs }}" as="c" hint-placeholder-count="3">
+                  <div onClick="{{ c.onClick }}" style="flex:1;display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer;border-bottom:1px solid #334155;border-left:3px solid {{ c.selectedBorder }};background:{{ c.selectedBg }}">
+                    <image-slot id="{{ c.id }}-thumb" shape="rounded" radius="6" placeholder="{{ c.name }}" style="width:44px;height:44px;flex:none"></image-slot>
+                    <div><div style="font-size:12.5px;font-weight:600;color:{{ c.nameColor }}">{{ c.name }}</div><div style="font-size:10.5px;color:#06b6d4">Level {{ c.level }}</div></div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="flex:1;display:flex;flex-direction:column">
+                <div style="display:flex;border-bottom:1px solid #334155">
+                  <sc-for list="{{ subTabs }}" as="t" hint-placeholder-count="3">
+                    <div onClick="{{ t.onClick }}" style="flex:1;text-align:center;padding:13px;cursor:pointer;font-size:11.5px;letter-spacing:1px;font-weight:600;background:{{ t.activeBg }};color:{{ t.activeColor }};border-bottom:2px solid {{ t.activeBorder }}">{{ t.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="padding:20px;flex:1;min-height:480px;display:flex;flex-direction:column;justify-content:center">
+              <sc-if value="{{ isEquipTab }}" hint-placeholder-val="{{ false }}">
+                <div style="flex:1;display:flex;align-items:stretch;gap:24px;width:100%">
+                  <div style="display:flex;flex-direction:column;justify-content:space-evenly;gap:8px;flex:none">
+                    <sc-for list="{{ equipSlots }}" as="slot" hint-placeholder-count="5">
+                      <div onClick="{{ slot.onClick }}" style="width:64px;height:128px;border-radius:8px;background:{{ slot.selected ? 'rgba(245,158,11,0.12)' : 'rgba(30,41,59,0.8)' }};border:2px solid {{ slot.selected ? '#f59e0b' : (slot.item ? slot.item.border : '#334155') }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer">
+                        <sc-if value="{{ slot.filled }}" hint-placeholder-val="{{ false }}">
+                          <span style="font-size:17px">{{ slot.item.glyph }}</span>
+                        </sc-if>
+                        <span style="font-size:8px;letter-spacing:1px;color:#94a3b8">{{ slot.label }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+                    <sc-if value="{{ previewItem }}" hint-placeholder-val="{{ false }}">
+                      <div style="width:96px;height:96px;border-radius:12px;background:rgba(30,41,59,0.8);border:2px solid {{ previewItem.border }};display:flex;align-items:center;justify-content:center;font-size:38px">{{ previewItem.glyph }}</div>
+                      <div style="text-align:center">
+                        <div style="font-size:15px;color:#f1f5f9;font-weight:700;margin-bottom:3px">{{ previewItem.name }}</div>
+                        <div style="font-size:11.5px;color:{{ previewItem.border }}">{{ previewItem.rarityLabel }}</div>
+                      </div>
+                      <sc-if value="{{ previewIsEquipped }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding:4px 12px;border-radius:5px;background:rgba(6,182,212,0.15);border:1px solid #06b6d4;color:#06b6d4;font-size:10px;letter-spacing:1px;font-weight:600">EQUIPPED</div>
+                      </sc-if>
+                      <div style="width:260px;background:rgba(15,23,42,0.5);border:1px solid #334155;border-radius:8px;padding:14px;box-sizing:border-box">
+                        <div style="font-size:9px;letter-spacing:1px;color:#94a3b8;margin-bottom:8px">{{ statChangesLabel }}</div>
+                        <sc-for list="{{ previewStatChanges }}" as="sc" hint-placeholder-count="3">
+                          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;gap:6px"><span style="color:#94a3b8">{{ sc.label }}</span><span style="color:{{ sc.color }};font-weight:600;white-space:nowrap">{{ sc.display }}</span></div>
+                        </sc-for>
+                      </div>
+                      <sc-if value="{{ canEquipPreview }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ equipPreviewItem }}" style="width:260px;padding:11px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer">EQUIP</button>
+                      </sc-if>
+                    </sc-if>
+                    <sc-if value="{{ hasNoPreviewItem }}" hint-placeholder-val="{{ true }}">
+                      <div style="color:#64748b;font-size:12px;text-align:center">Select a slot or an item from the inventory</div>
+                    </sc-if>
+                  </div>
+                  <div style="width:260px;flex:none;margin-left:auto;border-left:1px solid #334155;padding-left:20px;display:flex;flex-direction:column;gap:10px">
+                    <div style="font-size:10px;letter-spacing:1px;color:#94a3b8">INVENTORY</div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:10px;max-height:100%;overflow:auto">
+                      <sc-for list="{{ charEquipInventory }}" as="it" hint-placeholder-count="12">
+                        <div onClick="{{ it.onClick }}" style="aspect-ratio:1;border-radius:8px;border:2px solid {{ it.selected ? '#f59e0b' : it.border }};background:rgba(15,23,42,0.7);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer">{{ it.glyph }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isStatsTab }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;justify-content:center;width:100%">
+                <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:24px;display:flex;gap:40px">
+                  <div style="width:260px">
+                    <div style="font-size:10px;color:#06b6d4;letter-spacing:1px;margin-bottom:6px">CORE</div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Health</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.core.hp }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Attack</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.core.attack }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:#94a3b8">Defense</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.core.defense }}</span></div>
+                    <div style="font-size:10px;color:#06b6d4;letter-spacing:1px;margin-bottom:6px">ATTRIBUTE</div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Strength</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.attr.str }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Dexterity</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.attr.dex }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Intelligence</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.attr.int }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Vitality</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.attr.vit }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#94a3b8">Endurance</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.attr.end }}</span></div>
+                  </div>
+                  <div style="width:1px;background:#334155"></div>
+                  <div style="width:260px">
+                    <div style="font-size:10px;color:#f59e0b;letter-spacing:1.5px;margin-bottom:10px">COMBAT</div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Crit Chance</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.crit }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Crit Damage</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.critDmg }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Multi Hit Chance</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.multi }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Multi Hit Damage</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.multiDmg }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Attack Speed</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.atkSpeed }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Move Speed</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.combat.moveSpeed }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Physical Damage</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.angriff.phys }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Magic Damage</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.angriff.magic }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Damage Bonus</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.angriff.bonus }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:#94a3b8">Penetration</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.angriff.pen }}</span></div>
+                    <div style="font-size:10px;color:#f59e0b;letter-spacing:1.5px;margin-bottom:10px">UTILITY</div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Armor</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.vert.armor }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Magic Resistance</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.vert.magicRes }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Dodge</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.vert.dodge }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Block Chance</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.vert.block }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Damage Reduction</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.vert.dmgRed }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Health Regen</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.ueberleben.regen }}</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#94a3b8">Life Steal</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.ueberleben.leech }}%</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#94a3b8">Healing Bonus</span><span style="color:#e2e8f0;font-weight:600">{{ selChar.ueberleben.healBonus }}%</span></div>
+                  </div>
+                </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isSkillTabInChar }}" hint-placeholder-val="{{ false }}">
+                <div style="flex:1;display:flex;gap:16px;align-items:center">
+                  <div style="flex:1;position:relative;height:410px;background:rgba(30,41,59,0.5);border:1px solid #334155;border-radius:8px;overflow:hidden">
+                    <svg width="100%" height="400" viewBox="0 0 760 400" preserveAspectRatio="none" style="position:absolute;top:5px;left:0">
+                      <sc-for list="{{ skillLines }}" as="ln" hint-placeholder-count="18">
+                        <line x1="{{ ln.x1 }}" y1="{{ ln.y1 }}" x2="{{ ln.x2 }}" y2="{{ ln.y2 }}" stroke="#334155" stroke-width="2"></line>
+                      </sc-for>
+                    </svg>
+                    <sc-for list="{{ charSkillNodes }}" as="n" hint-placeholder-count="16">
+                      <div onClick="{{ n.onClick }}" style="position:absolute;top:{{ n.y }}px;left:{{ n.xPct }}%;transform:translate(-50%,-50%);width:{{ n.size }}px;height:{{ n.size }}px;border-radius:50%;background:{{ n.fill }};border:2px solid {{ n.ring }};display:flex;align-items:center;justify-content:center;cursor:pointer">
+                        <span style="font-family:'Cinzel',serif;font-size:9px;color:{{ n.textColor }};font-weight:700">◆</span>
+                      </div>
+                    </sc-for>
+                    <sc-for list="{{ charSkillNodes }}" as="n2" hint-placeholder-count="16">
+                      <div style="position:absolute;top:{{ n2.y }}px;left:{{ n2.xPct }}%;transform:translate(-50%,calc(-50% + 26px));font-size:9.5px;color:#94a3b8;white-space:nowrap">{{ n2.rankLabel }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="width:220px;flex:none;display:flex;flex-direction:column;gap:12px">
+                    <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:16px">
+                      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                        <span style="width:32px;height:32px;border-radius:50%;background:rgba(6,182,212,0.15);border:2px solid #06b6d4;display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:12px">◆</span>
+                        <div>
+                          <div style="font-size:12px;color:#f1f5f9;font-weight:700">{{ charNodeSel.name }}</div>
+                          <div style="font-size:10px;color:#94a3b8">Rank {{ charNodeRank }} / {{ charNodeSel.maxRank }}</div>
+                        </div>
+                      </div>
+                      <div style="font-size:11px;color:#cbd5e1;line-height:1.5;margin-bottom:10px">{{ charNodeDescription }}</div>
+                      <div style="font-size:9.5px;color:#06b6d4;letter-spacing:1px;margin-bottom:4px">CURRENT EFFECT</div>
+                      <div style="font-size:11px;color:#e2e8f0;margin-bottom:8px">+{{ charCurPct }}% Effectiveness</div>
+                      <div style="font-size:9.5px;color:#22c55e;letter-spacing:1px;margin-bottom:4px">NEXT RANK</div>
+                      <div style="font-size:11px;color:#e2e8f0">+{{ charNextPct }}% Effectiveness</div>
+                    </div>
+                    <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;padding:16px;text-align:center">
+                      <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">Available Points</div>
+                      <div style="font-size:22px;color:#f59e0b;font-weight:700;font-family:'Cinzel',serif">{{ charAvailablePoints }}</div>
+                    </div>
+                    <button onClick="{{ resetCharTree }}" disabled="{{ !canResetChar }}" style="padding:12px;border-radius:6px;border:1px solid #06b6d4;background:rgba(6,182,212,0.15);color:#06b6d4;font-size:11.5px;letter-spacing:1px;font-weight:600;cursor:pointer">RESET</button>
+                    <button onClick="{{ spendCharPoint }}" disabled="{{ !canSpendChar }}" style="padding:12px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-size:11.5px;letter-spacing:1px;font-weight:700;cursor:pointer">ASSIGN POINTS</button>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+        </sc-if>
+
+        <sc-if value="{{ isCrucible }}" hint-placeholder-val="{{ false }}">
+          <div style="min-width:760px">
+            <div style="background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:802px">
+              <div style="display:flex;border-bottom:1px solid #334155">
+                <sc-for list="{{ skillTiers }}" as="t" hint-placeholder-count="5">
+                  <div onClick="{{ t.onClick }}" style="flex:1;text-align:center;padding:13px;cursor:{{ t.cardCursor }};font-size:11.5px;letter-spacing:1px;font-weight:600;background:{{ t.cardBg }};color:{{ t.labelColor }};border-bottom:2px solid {{ t.cardBorder }};opacity:{{ t.cardOpacity }}">
+                    <div style="font-family:'Cinzel',serif;letter-spacing:1px">{{ t.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:0;flex:1;align-items:center">
+              <div style="flex:1;position:relative;height:410px;overflow:hidden">
+                <svg width="100%" height="400" viewBox="0 0 760 400" preserveAspectRatio="none" style="position:absolute;top:5px;left:0">
+                  <sc-for list="{{ skillLines }}" as="ln" hint-placeholder-count="18">
+                    <line x1="{{ ln.x1 }}" y1="{{ ln.y1 }}" x2="{{ ln.x2 }}" y2="{{ ln.y2 }}" stroke="#334155" stroke-width="2"></line>
+                  </sc-for>
+                </svg>
+                <sc-for list="{{ skillNodes }}" as="n" hint-placeholder-count="16">
+                  <div onClick="{{ n.onClick }}" style="position:absolute;top:{{ n.y }}px;left:{{ n.xPct }}%;transform:translate(-50%,-50%);width:{{ n.size }}px;height:{{ n.size }}px;border-radius:50%;background:{{ n.fill }};border:2px solid {{ n.ring }};display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer">
+                    <span style="font-family:'Cinzel',serif;font-size:9px;color:{{ n.textColor }};font-weight:700">◆</span>
+                    <sc-if value="{{ n.hub }}" hint-placeholder-val="{{ false }}"></sc-if>
+                  </div>
+                </sc-for>
+                <sc-for list="{{ skillNodes }}" as="n2" hint-placeholder-count="16">
+                  <sc-if value="{{ n2.hub }}" hint-placeholder-val="{{ false }}">
+                  </sc-if>
+                  <div style="position:absolute;top:{{ n2.y }}px;left:{{ n2.xPct }}%;transform:translate(-50%,calc(-50% + 26px));font-size:9.5px;color:#94a3b8;white-space:nowrap">{{ n2.rankLabel }}</div>
+                </sc-for>
+              </div>
+
+              <div style="width:250px;flex:none;border-left:1px solid #334155;padding:16px">
+                <div style="background:rgba(15,23,42,0.5);border:1px solid #334155;border-radius:8px;padding:12px;text-align:center;margin-bottom:14px">
+                  <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">Available Points</div>
+                  <div style="font-size:22px;color:#f59e0b;font-weight:700;font-family:'Cinzel',serif">{{ availablePoints }}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                  <span style="width:38px;height:38px;border-radius:50%;background:rgba(6,182,212,0.15);border:2px solid #06b6d4;display:flex;align-items:center;justify-content:center;color:#06b6d4;font-size:14px">◆</span>
+                  <div>
+                    <div style="font-size:12.5px;color:#f1f5f9;font-weight:700">{{ nodeSel.name }}</div>
+                    <div style="font-size:10.5px;color:#94a3b8">Rank {{ nodeRank }} / {{ nodeSel.maxRank }}</div>
+                  </div>
+                </div>
+                <div style="font-size:9.5px;letter-spacing:1px;color:#94a3b8;border:1px solid #334155;display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:12px">PASSIVE</div>
+                <div style="font-size:12px;color:#cbd5e1;line-height:1.5;margin-bottom:12px">{{ nodeDescription }}</div>
+                <div style="font-size:10px;color:#06b6d4;letter-spacing:1px;margin-bottom:6px">CURRENT EFFECT</div>
+                <div style="font-size:11.5px;color:#e2e8f0;margin-bottom:12px">Strength, Dexterity, Intelligence, Vitality and Endurance of all characters: +{{ curPct }}%</div>
+                <div style="font-size:10px;color:#22c55e;letter-spacing:1px;margin-bottom:6px">NEXT RANK</div>
+                <div style="font-size:11.5px;color:#e2e8f0;margin-bottom:12px">Strength, Dexterity, Intelligence, Vitality and Endurance of all characters: +{{ nextPct }}%</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <button onClick="{{ resetNode }}" disabled="{{ !canReset }}" style="padding:12px;border-radius:6px;border:1px solid #06b6d4;background:rgba(6,182,212,0.15);color:{{ canReset ? '#06b6d4' : '#475569' }};font-size:11.5px;letter-spacing:1px;font-weight:600;cursor:{{ canReset ? 'pointer' : 'default' }}">RESET POINT<br><span style="color:#f59e0b">Cost: 25 ◆</span></button>
+                  <button onClick="{{ spendPoint }}" disabled="{{ !canSpend }}" style="padding:12px;border-radius:6px;border:1px solid #f59e0b;background:rgba(245,158,11,0.1);color:#f59e0b;font-size:11.5px;letter-spacing:1px;font-weight:700;cursor:pointer">ASSIGN POINT</button>
+                </div>
+              </div>
+
+            </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPlaceholder }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;justify-content:center;height:400px">
+            <div style="text-align:center;background:rgba(30,41,59,0.8);border:1px solid #334155;border-radius:10px;padding:40px 60px">
+              <div style="font-family:'Cinzel',serif;font-size:16px;color:#f59e0b;letter-spacing:1px;margin-bottom:8px">{{ activeNavLabel }}</div>
+              <div style="font-size:13px;color:#94a3b8">Coming soon</div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoCombatEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Arena&quot;},&quot;act3Unlocked&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Dungeons&quot;},&quot;enemyDifficulty&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Normal&quot;,&quot;options&quot;:[&quot;Normal&quot;,&quot;Elite&quot;,&quot;Boss&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Arena&quot;}}">
+
+class Component extends DCLogic {
+  state = {
+    screen: 'overview',
+    activeNav: 'overview',
+    act: 2,
+    dungeonId: 3,
+    gold: 12450987,
+    crystals: 2850,
+    collecting: false,
+    timeLeft: 6 * 3600 + 45 * 60 + 22,
+    showBuffs: false,
+    selectedChar: 'melee',
+    charTab: 'stats',
+    skillTier: 1,
+    selectedSkillNode: 'epischer-wille',
+    skillRanks: {},
+    availablePoints: 1,
+    charSkillRanks: {},
+    charPoints: { tank: 2, melee: 2, ranged: 2 },
+    selectedCharNode: 'n3',
+    arenaElapsed: 0,
+    blacksmithTab: 'schmiede',
+    blacksmithCategory: 'WEAPON',
+    alchemistTab: 'verzaubern',
+    inventarCategory: 'all',
+    selectedInventoryItem: 0,
+    equipment: {
+      tank: { he: 5, sc: 6, br: 7, ha: 2, wa: 0, ri: 8, gu: 12, st: 16 },
+      melee: { he: 1, sc: 3, br: 4, ha: 9, wa: 15, ri: 13, gu: 19, st: 11 },
+      ranged: { he: 10, sc: 14, br: 17, ha: 18, wa: 0, ri: 8, gu: 12, st: 16 },
+    },
+  };
+
+  componentDidMount() {
+    this._timer = setInterval(() => {
+      this.setState(s => ({
+        timeLeft: Math.max(0, s.timeLeft - 1),
+        arenaElapsed: s.screen === 'arena' ? s.arenaElapsed + 1 : s.arenaElapsed,
+      }));
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this._timer);
+  }
+
+  fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+  fmtTime(sec) {
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    const p = v => String(v).padStart(2, '0');
+    return `${p(h)}:${p(m)}:${p(s)}`;
+  }
+
+  inventoryItems() {
+    const rarities = [
+      { color: '#f59e0b', label: 'Legendary' }, { color: '#8b5cf6', label: 'Epic' },
+      { color: '#06b6d4', label: 'Rare' }, { color: '#64748b', label: 'Common' },
+      { color: '#22c55e', label: 'Magic' },
+    ];
+    const glyphs = ['⚔', '⚔', '⛨', '✦', '◆', '⛨', '⛨', '⛨', '◈', '◆', '◆', '◈', '●', '◆', '✦', '◈', '●', '◆', '✦', '◈'];
+    const names = [
+      'Titan\'s Blade Fist', 'Ancient Shortsword', 'Shield of the Forgotten', 'Scroll of Wisdom',
+      'Staff of the Elements', 'Armor of the Guardian', 'Dragon Scale Breastplate', 'Hardened Shield',
+      'Mana Crystal', 'Potion of Healing', 'Potion of Strength', 'Shard of Eternity',
+      'Bag of Gold', 'Elixir of Clarity', 'Map of Lost Paths', 'Faceted Ruby',
+      'Small Gold Pouch', 'Potion of Rage', 'Enchanted Scroll', 'Sapphire of the Deep',
+    ];
+    const catByGlyph = { '⚔': 'weapons', '⛨': 'armor', '◆': 'gems', '◈': 'gems', '●': 'potions', '✦': 'scrolls' };
+    const equipSlotsByGlyph = ['head', 'chest', 'legs', 'feet'];
+    let armorIdx = 0;
+    return glyphs.map((g, i) => {
+      const rarity = rarities[i % rarities.length];
+      const rarityMult = (rarities.length - rarities.indexOf(rarity)) * 0.8 + 0.6;
+      let slot = null;
+      if (g === '⚔') slot = 'weapon';
+      else if (g === '⛨') { slot = equipSlotsByGlyph[armorIdx % 4]; armorIdx++; }
+      const stats = slot === 'weapon'
+        ? { attack: Math.round((80 + i * 12) * rarityMult), defense: 0, hp: 0 }
+        : slot ? { attack: 0, defense: Math.round((40 + i * 6) * rarityMult), hp: Math.round((150 + i * 20) * rarityMult) }
+        : { attack: 0, defense: 0, hp: 0 };
+      return {
+        id: i, glyph: g, border: rarity.color, rarityLabel: rarity.label,
+        name: names[i], count: [12, 17, 18].includes(i) ? [3, 1, 2][[12, 17, 18].indexOf(i)] : null,
+        category: catByGlyph[g] || 'all', slot, stats,
+      };
+    });
+  }
+
+  actsData() {
+    return [
+      { id: 1, name: 'ACT I', sub: 'THE WASTELANDS', progress: '5/5', locked: false, bgSlotId: 'act1Bg', bgPlaceholder: 'Akt I Background' },
+      { id: 2, name: 'ACT II', sub: 'FORGOTTEN DEPTHS', progress: '3/5', locked: false, bgSlotId: 'act2Bg', bgPlaceholder: 'Akt II Background' },
+      { id: 3, name: 'ACT III', sub: 'SHADOW REALM', progress: '0/5', locked: !this.props.act3Unlocked, bgSlotId: 'act3Bg', bgPlaceholder: 'Akt III Background' },
+    ];
+  }
+
+  dungeonsForAct(actId) {
+    const sets = {
+      1: [
+        ['Ruin Pass', 'done'], ['Wolf\'s Den', 'done'], ['Old Crypt', 'done'],
+        ['Poisoned Swamp', 'done'], ['Dragonfang Pass', 'done'],
+      ],
+      2: [
+        ['Decaying Halls', 'done'], ['Crystal Cavern', 'done'], ['Soul Dungeon', 'active'],
+        ['Deepvein Hollow', 'locked'], ['Demon Hoard', 'locked'],
+      ],
+      3: [
+        ['Shadow Pass', 'locked'], ['Voidgrave', 'locked'], ['Bladewood', 'locked'],
+        ['Soulforge', 'locked'], ['Demon Throne', 'locked'],
+      ],
+    };
+    const icons = ['⛨', '◆', '◈', '⚔', '☠'];
+    return sets[actId].map((entry, i) => {
+      const [name, status] = entry;
+      const done = status === 'done';
+      const pct = done ? 20 : status === 'active' ? 18 : 0;
+      return { id: i + 1, name, status, progress: `${pct}/20`, icon: icons[i], pctNum: pct, pctWidth: (pct / 20) * 100 };
+    });
+  }
+
+  characterList() {
+    return [
+      { id: 'tank', name: 'TANK', level: 58, mono: 'T', border: '#334155',
+        core: { attack: 1850, defense: 3210, hp: 24500 }, attr: { str: 410, dex: 120, int: 60, vit: 340, end: 280 },
+        combat: { crit: 8.5, critDmg: 150, multi: 5.0, multiDmg: 110, atkSpeed: 1.05, moveSpeed: 380 },
+        angriff: { phys: 1420, magic: 210, bonus: 22, pen: 150 }, vert: { armor: 3450, magicRes: 2100, dodge: 8.0, block: 32.5, dmgRed: 38.5 },
+        ueberleben: { regen: 520, leech: 4.0, healBonus: 18.0 } },
+      { id: 'melee', name: 'MELEE', level: 57, mono: 'M', border: '#f59e0b',
+        core: { attack: 3245, defense: 2150, hp: 18750 }, attr: { str: 312, dex: 178, int: 95, vit: 256, end: 210 },
+        combat: { crit: 24.5, critDmg: 185, multi: 18.7, multiDmg: 125, atkSpeed: 1.45, moveSpeed: 410 },
+        angriff: { phys: 2125, magic: 990, bonus: 45.0, pen: 320 }, vert: { armor: 1850, magicRes: 1230, dodge: 12.5, block: 15.0, dmgRed: 28.5 },
+        ueberleben: { regen: 283, leech: 6.5, healBonus: 12.0 }, equipValue: 48320 },
+      { id: 'ranged', name: 'RANGED', level: 56, mono: 'R', border: '#334155',
+        core: { attack: 2890, defense: 1420, hp: 13240 }, attr: { str: 150, dex: 380, int: 140, vit: 175, end: 160 },
+        combat: { crit: 32.0, critDmg: 210, multi: 22.0, multiDmg: 135, atkSpeed: 1.65, moveSpeed: 440 },
+        angriff: { phys: 1980, magic: 520, bonus: 38.0, pen: 410 }, vert: { armor: 1120, magicRes: 760, dodge: 18.0, block: 5.0, dmgRed: 19.0 },
+        ueberleben: { regen: 190, leech: 3.0, healBonus: 8.0 }, equipValue: 41200 },
+    ];
+  }
+
+  skillNodeDefs() {
+    return [
+      { id: 'ka', x: 40, y: 80, maxRank: 1, name: 'GUARDIAN INSTINCT', keystone: true, defRank: 1 },
+      { id: 'kb', x: 40, y: 360, maxRank: 1, name: 'VANGUARD', keystone: true, defRank: 1 },
+      { id: 'kc', x: 720, y: 360, maxRank: 1, name: 'BLADE DANCE', keystone: true, defRank: 0 },
+      { id: 'hub', x: 380, y: 220, maxRank: 1, name: 'CRUCIBLE CORE', hub: true, defRank: 1 },
+      { id: 'n1', x: 110, y: 220, maxRank: 5, name: 'ARMOR MASTERY', defRank: 0 },
+      { id: 'n2', x: 150, y: 120, maxRank: 5, name: 'IRON SKIN', defRank: 0 },
+      { id: 'n3', x: 230, y: 170, maxRank: 3, name: 'QUICK STEP', defRank: 3 },
+      { id: 'n4', x: 290, y: 280, maxRank: 5, name: 'COMBAT FOCUS', defRank: 3 },
+      { id: 'n5', x: 180, y: 320, maxRank: 3, name: 'TENACITY', defRank: 3 },
+      { id: 'n6', x: 270, y: 80, maxRank: 3, name: 'FERVOR', defRank: 0 },
+      { id: 'epischer-wille', x: 470, y: 120, maxRank: 3, name: 'EPIC WILL', special: true, defRank: 2 },
+      { id: 'n8', x: 530, y: 70, maxRank: 5, name: 'OVERPOWER', defRank: 5 },
+      { id: 'n9', x: 600, y: 150, maxRank: 3, name: 'BULWARK', defRank: 0 },
+      { id: 'n10', x: 470, y: 290, maxRank: 3, name: 'TEMPO', defRank: 0 },
+      { id: 'n11', x: 600, y: 290, maxRank: 3, name: 'VITALITY', defRank: 0 },
+      { id: 'n12', x: 650, y: 220, maxRank: 3, name: 'UNYIELDING', defRank: 3 },
+    ];
+  }
+
+  skillLines() {
+    const pairs = [
+      [40,80,150,120],[150,120,230,170],[230,170,380,220],[110,220,230,170],[110,220,180,320],
+      [180,320,40,360],[230,170,270,80],[270,80,470,120],[470,120,380,220],[470,120,530,70],
+      [530,70,600,150],[600,150,380,220],[380,220,290,280],[290,280,180,320],[380,220,470,290],
+      [470,290,600,290],[600,290,650,220],[650,220,720,360],[650,220,380,220],
+    ];
+    return pairs.map(p => ({ x1: p[0], y1: p[1], x2: p[2], y2: p[3] }));
+  }
+
+  navList() {
+    return [
+      { id: 'overview', label: 'OVERVIEW', mono: 'OV' },
+      { id: 'charaktere', label: 'CHARACTERS', mono: 'CH' },
+      { id: 'crucible', label: 'CRUCIBLE', mono: 'CR' },
+      { id: 'inventar', label: 'INVENTORY', mono: 'IN' },
+      { id: 'blacksmith', label: 'BLACKSMITH', mono: 'BL' },
+      { id: 'alchemist', label: 'ALCHEMIST', mono: 'AL' },
+    ];
+  }
+
+  renderVals() {
+    const s = this.state;
+    const stop = e => e && e.stopPropagation && e.stopPropagation();
+    const knownScreens = ['dungeons', 'overview', 'charaktere', 'crucible', 'blacksmith', 'alchemist', 'story', 'inventar'];
+    const goScreen = id => this.setState({ screen: knownScreens.includes(id) ? id : 'placeholder', activeNav: id });
+
+    const acts = this.actsData().map(a => {
+      const isSel = a.id === s.act;
+      return {
+        ...a,
+        onClick: a.locked ? stop : () => this.setState({ act: a.id, dungeonId: this.dungeonsForAct(a.id).find(d => d.status !== 'locked')?.id || 1 }),
+        borderColor: isSel ? '#f59e0b' : '#334155',
+        titleColor: isSel ? '#f59e0b' : '#e2e8f0',
+        opacity: a.locked ? 0.5 : 1,
+      };
+    });
+
+    const rawDungeons = this.dungeonsForAct(s.act);
+    const difficulty = this.props.enemyDifficulty || 'Normal';
+    const dungeons = rawDungeons.map(d => {
+      const locked = d.status === 'locked';
+      const active = d.id === s.dungeonId;
+      return {
+        ...d,
+        onClick: locked ? stop : () => this.setState({ dungeonId: d.id }),
+        cursor: locked ? 'default' : 'pointer',
+        cardBg: active ? 'linear-gradient(to top,rgba(15,23,42,0.9),rgba(120,72,8,0.25))' : 'linear-gradient(to top,rgba(15,23,42,0.92),rgba(15,23,42,0.45))',
+        borderColor: active ? '#f59e0b' : '#334155',
+        bgSlotId: `dungeon-${s.act}-${d.id}`, bgPlaceholder: `${d.name} Background`,
+        progressBarColor: d.status === 'done' ? 'linear-gradient(90deg,#06b6d4,#22d3ee)' : 'linear-gradient(90deg,#f59e0b,#fbbf24)',
+        iconColor: locked ? '#475569' : d.status === 'done' ? '#06b6d4' : '#f59e0b',
+        statusColor: d.status === 'done' ? '#06b6d4' : d.status === 'active' ? '#f59e0b' : '#64748b',
+        statusLabel: d.status === 'done' ? 'Completed' : d.status === 'active' ? 'In Progress' : 'Locked',
+      };
+    });
+
+    const selRaw = rawDungeons.find(d => d.id === s.dungeonId) || rawDungeons[0];
+    const selectedDungeon = {
+      id: selRaw.id, nameUpper: selRaw.name.toUpperCase(), progress: selRaw.progress,
+      pct: selRaw.pctNum, floor: selRaw.pctNum, locked: selRaw.status === 'locked',
+    };
+
+    const navItems = this.navList().map(n => {
+      const active = n.id === s.activeNav;
+      return {
+        ...n,
+        onClick: () => goScreen(n.id),
+        bg: active ? 'rgba(245,158,11,0.12)' : 'transparent',
+        borderColor: active ? '#f59e0b' : 'transparent',
+        iconColor: active ? '#f59e0b' : '#94a3b8',
+        textColor: active ? '#f1f5f9' : '#cbd5e1',
+      };
+    });
+
+    const activeNavLabel = this.navList().find(n => n.id === s.activeNav)?.label || '';
+    const goDungeons = () => this.setState({ screen: 'dungeons', activeNav: 'dungeons' });
+
+    const partyOverview = [
+      { name: 'TANK', level: 58, xpPct: 82, slotId: 'tankArt', placeholder: 'Tank Artwork', hpDisplay: '24.5K', atkDisplay: '1,850', defDisplay: '3,210' },
+      { name: 'MELEE', level: 57, xpPct: 90, slotId: 'meleeArt', placeholder: 'Melee Artwork', hpDisplay: '18.8K', atkDisplay: '3,245', defDisplay: '2,150' },
+      { name: 'RANGED', level: 56, xpPct: 75, slotId: 'rangedArt', placeholder: 'Ranged Artwork', hpDisplay: '13.2K', atkDisplay: '2,890', defDisplay: '1,420' },
+    ];
+
+    const partyArena = [
+      { name: 'TANK', level: 58, mono: 'T', avatarBg: '#334155', hpText: '18,750 / 18,750', xpPct: 82, slotId: 'arena-tank' },
+      { name: 'MELEE', level: 57, mono: 'M', avatarBg: '#334155', hpText: '16,820 / 16,820', xpPct: 90, slotId: 'arena-melee' },
+      { name: 'RANGED', level: 56, mono: 'R', avatarBg: '#334155', hpText: '13,240 / 13,240', xpPct: 75, slotId: 'arena-ranged' },
+    ];
+
+    const frontline = [
+      { filled: true, empty: false, name: 'Shadow Warrior', level: 54, mono: 'SK', hpPct: 100, hpText: '12,450 / 12,450', attack: 1240, defense: 980, acu: 82, slotId: 'enemy-sk-1' },
+      { filled: true, empty: false, name: 'Shadow Warrior', level: 54, mono: 'SK', hpPct: 100, hpText: '12,450 / 12,450', attack: 1240, defense: 980, acu: 82, slotId: 'enemy-sk-2' },
+      { filled: false, empty: true },
+    ];
+    const backline = [
+      { mono: 'SA', name: 'Shadow Caller A', level: 54, hpPct: 100, hpText: '9,860 / 9,860', attack: 1560, defense: 620, acu: 90, slotId: 'enemy-sa' },
+      { mono: 'SB', name: 'Shadow Caller B', level: 54, hpPct: 100, hpText: '9,860 / 9,860', attack: 1560, defense: 620, acu: 90, slotId: 'enemy-sb' },
+      { mono: 'SX', name: 'Shadow Assassin', level: 54, hpPct: 100, hpText: '9,860 / 9,860', attack: 1890, defense: 540, acu: 105, slotId: 'enemy-sx' },
+    ];
+
+    const combatLog = [
+      { actor: 'TANK', color: '#f59e0b', text: 'uses Shield Bash on Shadow Caller A, dealing 2,340 damage.' },
+      { actor: 'Shadow Warrior', color: '#f87171', text: 'hits TANK, dealing 1,125 damage.' },
+      { actor: 'MELEE', color: '#f59e0b', text: 'uses Whirlwind Strike on Shadow Warrior, dealing 3,980 damage.' },
+      { actor: 'Shadow Caller B', color: '#a78bfa', text: 'casts Dark Arrow on RANGED, dealing 1,876 damage.' },
+      { actor: 'RANGED', color: '#f59e0b', text: 'uses Precision Shot on Shadow Caller B, dealing 2,915 damage.' },
+    ];
+
+    const storyList = [
+      { name: 'Current Chapter', time: 'Act II', value: 'The Soulsmith' },
+      { name: 'Next Chapter', time: 'in 3 dungeons', value: 'Locked' },
+      { name: 'Story Progress', time: 'Act I–III', value: '38%' },
+    ];
+
+    const autoCombatEnabled = this.props.autoCombatEnabled !== false;
+
+    const turnActors = [
+      ...partyArena.map(p => ({ mono: p.mono, bg: 'rgba(245,158,11,0.15)', border: '#f59e0b', textColor: '#f59e0b' })),
+      ...frontline.filter(e => e.filled).map(e => ({ mono: e.mono, bg: 'rgba(71,85,105,0.4)', border: '#64748b', textColor: '#e2e8f0' })),
+      ...backline.map(e => ({ mono: e.mono, bg: 'rgba(6,182,212,0.12)', border: '#06b6d4', textColor: '#06b6d4' })),
+    ];
+    const turnOrder = turnActors.map((t, i) => ({ ...t, hasSep: i < turnActors.length - 1 }));
+
+    const chars = this.characterList();
+    const selChar = chars.find(c => c.id === s.selectedChar) || chars[1];
+    const equipSlotDefs = [
+      { key: 'head', label: 'HEAD' }, { key: 'chest', label: 'CHEST' }, { key: 'legs', label: 'LEGS' },
+      { key: 'feet', label: 'FEET' }, { key: 'weapon', label: 'WEAPON' },
+    ];
+    const allItems = this.inventoryItems();
+    const charEquip = s.equipment[selChar.id] || {};
+    const selSlotKey = s.charSelectedSlot || null;
+    const selInvItemId = s.charSelectedInvItem != null ? s.charSelectedInvItem : null;
+    const equipSlots = equipSlotDefs.map(def => {
+      const item = allItems.find(it => it.id === charEquip[def.key]);
+      return {
+        key: def.key, label: def.label, item, filled: !!item, selected: selSlotKey === def.key && selInvItemId == null,
+        onClick: () => this.setState({ charSelectedSlot: def.key, charSelectedInvItem: null }),
+      };
+    });
+    const equippedIds = new Set(Object.values(charEquip));
+    const charEquipInventory = allItems.filter(it => it.slot && !equippedIds.has(it.id)).map(it => ({
+      ...it, selected: selInvItemId === it.id,
+      onClick: () => this.setState({ charSelectedInvItem: it.id, charSelectedSlot: null }),
+    }));
+    let previewItem = null;
+    let previewSlotKey = null;
+    if (selInvItemId != null) {
+      previewItem = allItems.find(it => it.id === selInvItemId);
+      previewSlotKey = previewItem ? previewItem.slot : null;
+    } else if (selSlotKey) {
+      previewSlotKey = selSlotKey;
+      previewItem = allItems.find(it => it.id === charEquip[selSlotKey]) || null;
+    }
+    const equippedAtPreviewSlot = previewSlotKey ? allItems.find(it => it.id === charEquip[previewSlotKey]) : null;
+    const previewIsEquipped = !!(previewItem && equippedAtPreviewSlot && previewItem.id === equippedAtPreviewSlot.id);
+    const statChangesLabel = previewIsEquipped ? 'AKTUELLE STATS' : 'STAT CHANGES';
+    const statLabels = { attack: 'Attack', defense: 'Defense', hp: 'HP' };
+    const previewStatChanges = previewItem ? Object.keys(statLabels).filter(k => previewItem.stats[k] || (equippedAtPreviewSlot && equippedAtPreviewSlot.stats[k])).map(k => {
+      const base = equippedAtPreviewSlot ? equippedAtPreviewSlot.stats[k] : 0;
+      const val = previewItem.stats[k];
+      if (previewIsEquipped) return { label: statLabels[k], display: `+${val}`, color: '#e2e8f0' };
+      const diff = val - base;
+      const display = diff === 0 ? `${val}` : `${val} (${diff > 0 ? '+' : ''}${diff})`;
+      return { label: statLabels[k], display, color: diff > 0 ? '#22c55e' : diff < 0 ? '#ef4444' : '#e2e8f0' };
+    }) : [];
+    const canEquipPreview = !!(previewItem && previewSlotKey && !previewIsEquipped);
+    const equipPreviewItem = () => {
+      if (!previewItem || !previewSlotKey) return;
+      this.setState(st => ({
+        equipment: { ...st.equipment, [selChar.id]: { ...(st.equipment[selChar.id] || {}), [previewSlotKey]: previewItem.id } },
+        charSelectedInvItem: null, charSelectedSlot: previewSlotKey,
+      }));
+    };
+    const charTabs = chars.map(c => {
+      const selected = c.id === s.selectedChar;
+      return {
+        ...c,
+        onClick: () => this.setState({ selectedChar: c.id, charTab: 'stats' }),
+        selected,
+        selectedBorder: selected ? '#f59e0b' : 'transparent',
+        selectedBg: selected ? 'rgba(245,158,11,0.12)' : 'transparent',
+        nameColor: selected ? '#f59e0b' : '#f1f5f9',
+      };
+    });
+    const subTabLabels = { ausruestung: 'LOADOUT', stats: 'STATS', skilltree: 'SKILLS' };
+    const subTabs = ['stats', 'ausruestung', 'skilltree'].map(t => {
+      const active = s.charTab === t;
+      return {
+        id: t, label: subTabLabels[t], onClick: () => this.setState({ charTab: t }), active,
+        activeBg: active ? 'rgba(245,158,11,0.1)' : 'transparent', activeColor: active ? '#f59e0b' : '#94a3b8',
+        activeBorder: active ? '#f59e0b' : 'transparent',
+      };
+    });
+
+    const skillDefs = this.skillNodeDefs();
+    const ranks = s.skillRanks;
+    const nodeSel = skillDefs.find(n => n.id === s.selectedSkillNode) || skillDefs[0];
+    const nodeRank = ranks[nodeSel.id] !== undefined ? ranks[nodeSel.id] : nodeSel.defRank;
+    const skillNodes = skillDefs.map(n => {
+      const rank = ranks[n.id] !== undefined ? ranks[n.id] : n.defRank;
+      const maxed = rank >= n.maxRank;
+      const started = rank > 0;
+      const selected = n.id === s.selectedSkillNode;
+      let ring = '#334155', fill = 'rgba(51,65,85,0.4)', textColor = '#64748b';
+      if (n.hub) { ring = '#f59e0b'; fill = 'rgba(245,158,11,0.15)'; textColor = '#f59e0b'; }
+      else if (maxed) { ring = '#f59e0b'; fill = 'rgba(245,158,11,0.18)'; textColor = '#f59e0b'; }
+      else if (started) { ring = '#06b6d4'; fill = 'rgba(6,182,212,0.12)'; textColor = '#06b6d4'; }
+      if (selected) ring = '#fbbf24';
+      return {
+        ...n, rank, maxed, size: n.hub ? 56 : n.keystone ? 40 : 34, xPct: (n.x / 760) * 100,
+        ring, fill, textColor, rankLabel: `${rank}/${n.maxRank}`,
+        onClick: () => this.setState({ selectedSkillNode: n.id }),
+      };
+    });
+    const nodeDescription = nodeSel.id === 'epischer-wille'
+      ? 'Permanently increases all characters\' total attributes.'
+      : nodeSel.hub ? 'Central power of the Crucible – unlocks surrounding nodes.'
+      : nodeSel.keystone ? 'Powerful passive bonus effect once unlocked.'
+      : "Permanently increases this skill's effectiveness.";
+    const curPct = 3 + nodeRank * 3;
+    const nextPct = curPct + 3;
+    const canSpend = !nodeSel.hub && nodeRank < nodeSel.maxRank && s.availablePoints > 0;
+    const canReset = !nodeSel.hub && nodeRank > 0;
+    const resetColor = canReset ? '#cbd5e1' : '#475569';
+    const resetCursor = canReset ? 'pointer' : 'default';
+    const spendBg = canSpend ? 'linear-gradient(180deg,#f59e0b,#d97706)' : 'transparent';
+    const spendColor = canSpend ? '#1c1305' : '#475569';
+    const spendCursor = canSpend ? 'pointer' : 'default';
+
+    const charNodeDefs = this.skillNodeDefs();
+    const charAvailablePoints = s.charPoints[selChar.id] !== undefined ? s.charPoints[selChar.id] : 2;
+    const charNodeSel = charNodeDefs.find(n => n.id === s.selectedCharNode) || charNodeDefs[0];
+    const charKey = charNodeSel.id + ':' + selChar.id;
+    const charNodeRank = s.charSkillRanks[charKey] !== undefined ? s.charSkillRanks[charKey] : 0;
+    const charSkillNodes = charNodeDefs.map(n => {
+      const key = n.id + ':' + selChar.id;
+      const rank = s.charSkillRanks[key] !== undefined ? s.charSkillRanks[key] : 0;
+      const maxed = rank >= n.maxRank;
+      const started = rank > 0;
+      const selected = n.id === s.selectedCharNode;
+      let ring = '#334155', fill = 'rgba(51,65,85,0.4)', textColor = '#64748b';
+      if (n.hub) { ring = '#f59e0b'; fill = 'rgba(245,158,11,0.15)'; textColor = '#f59e0b'; }
+      else if (maxed) { ring = '#f59e0b'; fill = 'rgba(245,158,11,0.18)'; textColor = '#f59e0b'; }
+      else if (started) { ring = '#06b6d4'; fill = 'rgba(6,182,212,0.12)'; textColor = '#06b6d4'; }
+      if (selected) ring = '#fbbf24';
+      return {
+        ...n, rank, maxed, size: n.hub ? 56 : n.keystone ? 40 : 34, xPct: (n.x / 760) * 100,
+        ring, fill, textColor, rankLabel: `${rank}/${n.maxRank}`,
+        onClick: () => this.setState({ selectedCharNode: n.id }),
+      };
+    });
+    const canSpendChar = !charNodeSel.hub && charNodeRank < charNodeSel.maxRank && charAvailablePoints > 0;
+    const canResetChar = Object.keys(s.charSkillRanks).some(k => k.endsWith(':' + selChar.id) && s.charSkillRanks[k] > 0);
+    const charNodeDescription = charNodeSel.hub ? 'Central node of this character.'
+      : charNodeSel.keystone ? 'Powerful passive bonus effect once unlocked.'
+      : "Permanently increases this character's combat effectiveness.";
+    const charCurPct = 2 + charNodeRank * 2;
+    const charNextPct = charCurPct + 2;
+
+    return {
+      isArena: s.screen === 'arena',
+      isCharSheet: s.screen === 'charaktere',
+      charSkillNodes, skillLines: this.skillLines(), charAvailablePoints, canSpendChar, canResetChar,
+      charNodeSel, charNodeRank, charNodeDescription, charCurPct, charNextPct,
+      spendCharPoint: () => canSpendChar && this.setState(p => ({ charSkillRanks: { ...p.charSkillRanks, [charKey]: charNodeRank + 1 }, charPoints: { ...p.charPoints, [selChar.id]: charAvailablePoints - 1 } })),
+      resetCharTree: () => canResetChar && this.setState(p => {
+        const ranks = { ...p.charSkillRanks };
+        Object.keys(ranks).forEach(k => { if (k.endsWith(':' + selChar.id)) delete ranks[k]; });
+        return { charSkillRanks: ranks, charPoints: { ...p.charPoints, [selChar.id]: 2 } };
+      }),
+      isShell: s.screen !== 'arena',
+      chars, selChar, charTabs, subTabs, equipSlots, charEquipInventory, previewItem, previewIsEquipped, statChangesLabel, previewStatChanges, canEquipPreview, equipPreviewItem, hasNoPreviewItem: !previewItem,
+      isStatsTab: s.charTab === 'stats', isEquipTab: s.charTab === 'ausruestung', isSkillTabInChar: s.charTab === 'skilltree',
+      closeCharSheet: () => goScreen('overview'),
+      skillNodes, skillLines: this.skillLines(), nodeSel, nodeRank, nodeDescription, curPct, nextPct,
+      canSpend, canReset, availablePoints: s.availablePoints,
+      spendPoint: () => canSpend && this.setState(p => ({ skillRanks: { ...p.skillRanks, [nodeSel.id]: nodeRank + 1 }, availablePoints: p.availablePoints - 1 })),
+      resetNode: () => canReset && s.gold >= 25 && this.setState(p => ({ skillRanks: { ...p.skillRanks, [nodeSel.id]: nodeSel.defRank > 0 ? 0 : 0 }, availablePoints: p.availablePoints + nodeRank, gold: p.gold - 25 })),
+      skillTiers: [1,2,3,4].map(t => {
+        const locked = t > 1, active = s.skillTier === t;
+        return {
+          id: t, label: ['ANVIL SPARKS','TEMPERING','REFINING','MASTERWORK'][t-1], locked, active,
+          sub: t === 1 ? 'Unlocked' : `Reach Act ${['II','III','IV'][t-2]}`,
+          onClick: locked ? stop : () => this.setState({ skillTier: t }),
+          cardCursor: locked ? 'default' : 'pointer',
+          cardBg: active ? 'rgba(245,158,11,0.15)' : 'rgba(30,41,59,0.8)',
+          cardBorder: active ? '#f59e0b' : '#334155',
+          cardOpacity: locked ? 0.55 : 1,
+          labelColor: active ? '#f59e0b' : '#e2e8f0',
+        };
+      }),
+      isOverview: s.screen === 'overview',
+      isDungeons: s.screen === 'dungeons',
+      showSidebar: s.screen !== 'dungeons' && s.screen !== 'story',
+      backToOverview: () => this.setState({ screen: 'overview', activeNav: 'overview' }),
+      isStory: s.screen === 'story',
+      goStory: () => this.setState({ screen: 'story' }),
+      isCrucible: s.screen === 'crucible',
+      isBlacksmith: s.screen === 'blacksmith',
+      isAlchemist: s.screen === 'alchemist',
+      isPlaceholder: s.screen === 'placeholder',
+      isInventar: s.screen === 'inventar',
+      inventarCategories: [
+        { id: 'all', icon: '★' }, { id: 'weapons', icon: '⚔' }, { id: 'armor', icon: '⛨' },
+        { id: 'gems', icon: '◆' }, { id: 'potions', icon: '●' }, { id: 'scrolls', icon: '✦' },
+      ].map(c => {
+        const active = s.inventarCategory === c.id;
+        return { ...c, onClick: () => this.setState({ inventarCategory: c.id }), active,
+          bg: active ? 'rgba(245,158,11,0.12)' : 'transparent', border: active ? '#f59e0b' : '#334155',
+          color: active ? '#f59e0b' : '#94a3b8' };
+      }),
+      inventarItems: this.inventoryItems().filter(it => s.inventarCategory === 'all' || it.category === s.inventarCategory).map(it => {
+        const active = s.selectedInventoryItem === it.id;
+        return { ...it, onClick: () => this.setState({ selectedInventoryItem: it.id }),
+          ring: active ? '#f59e0b' : it.border, glow: active ? '0 0 0 2px rgba(245,158,11,0.35)' : 'none' };
+      }),
+      selectedInvItem: this.inventoryItems()[s.selectedInventoryItem],
+      blacksmithTabs: ['schmiede', 'verbessern', 'zerlegen'].map(t => {
+        const active = s.blacksmithTab === t;
+        const labelMap = { schmiede: 'FORGE', verbessern: 'UPGRADE', zerlegen: 'DISMANTLE' };
+        return {
+          id: t, label: labelMap[t], onClick: () => this.setState({ blacksmithTab: t }), active,
+          activeBg: active ? 'rgba(245,158,11,0.1)' : 'transparent', activeColor: active ? '#f59e0b' : '#94a3b8',
+          activeBorder: active ? '#f59e0b' : 'transparent',
+        };
+      }),
+      isSchmiedeTab: s.blacksmithTab === 'schmiede',
+      isVerbessernTab: s.blacksmithTab === 'verbessern',
+      isZerlegenTab: s.blacksmithTab === 'zerlegen',
+      blacksmithCategories: ['WEAPON', 'HEAD', 'CHEST', 'LEGS', 'FEET'].map(c => {
+        const active = s.blacksmithCategory === c;
+        return {
+          label: c, onClick: () => this.setState({ blacksmithCategory: c }), active,
+          bg: active ? 'rgba(245,158,11,0.12)' : 'transparent', color: active ? '#f59e0b' : '#cbd5e1',
+          borderColor: active ? '#f59e0b' : 'transparent',
+        };
+      }),
+      materialSlots: [1, 2, 3, 4],
+      alchemistTabs: ['verzaubern', 'aufwerten', 'extrahieren'].map(t => {
+        const active = s.alchemistTab === t;
+        const labelMap = { verzaubern: 'ENCHANT', aufwerten: 'ENHANCE', extrahieren: 'EXTRACT' };
+        return {
+          id: t, label: labelMap[t], onClick: () => this.setState({ alchemistTab: t }), active,
+          activeBg: active ? 'rgba(245,158,11,0.1)' : 'transparent', activeColor: active ? '#f59e0b' : '#94a3b8',
+          activeBorder: active ? '#f59e0b' : 'transparent',
+        };
+      }),
+      isVerzaubernTab: s.alchemistTab === 'verzaubern',
+      isAufwertenTab: s.alchemistTab === 'aufwerten',
+      isExtrahierenTab: s.alchemistTab === 'extrahieren',
+      enchantBoni: ['+7% Angriff', '+7% Verteidigung', '+7% Krit.-Chance'],
+      goldDisplay: this.fmt(s.gold),
+      crystalsDisplay: this.fmt(s.crystals),
+      idleTimerDisplay: this.fmtTime(s.timeLeft),
+      collectLabel: s.collecting ? 'COLLECTED!' : 'COLLECT LOOT',
+      collectDisabled: s.collecting,
+      collectLoot: () => {
+        this.setState(prev => ({ gold: prev.gold + 152430, crystals: prev.crystals + 1320, collecting: true, timeLeft: 6 * 3600 + 45 * 60 + 22 }));
+        setTimeout(() => this.setState({ collecting: false }), 1200);
+      },
+      navItems, goDungeons, partyOverview, partyArena, frontline, backline, combatLog, turnOrder,
+      storyList, acts, dungeons, selectedDungeon,
+      currentActLabel: `ACT ${s.act === 1 ? 'I' : s.act === 2 ? 'II' : 'III'} – ${this.actsData().find(a => a.id === s.act)?.sub || ''}`,
+      abilitySlots: [1, 2, 3, 4],
+      activeNavLabel,
+      showBuffs: s.showBuffs,
+      toggleBuffs: () => this.setState(p => ({ showBuffs: !p.showBuffs })),
+      stopClick: stop,
+      enterDungeon: selectedDungeon.locked ? stop : () => this.setState({ screen: 'arena', arenaElapsed: 0 }),
+      arenaElapsedDisplay: this.fmtTime(s.arenaElapsed),
+      enterButtonBg: selectedDungeon.locked ? 'transparent' : 'rgba(245,158,11,0.1)',
+      enterButtonColor: selectedDungeon.locked ? '#64748b' : '#f59e0b',
+      enterButtonCursor: selectedDungeon.locked ? 'default' : 'pointer',
+      leaveArena: () => this.setState({ screen: 'dungeons', activeNav: 'dungeons' }),
+      arenaFloor: selectedDungeon.floor, arenaFloorMax: 20,
+      difficultyLabelUpper: difficulty.toUpperCase(),
+      difficultyColor: difficulty === 'Boss' ? '#ef4444' : difficulty === 'Elite' ? '#a78bfa' : '#94a3b8',
+      autoCombatColor: autoCombatEnabled ? '#06b6d4' : '#64748b',
+      autoCombatLabel: autoCombatEnabled ? 'AUTO-BATTLE ACTIVE' : 'AUTO-BATTLE PAUSED',
+    };
+  }
+}
+
+</script>
+</body>
+</html>

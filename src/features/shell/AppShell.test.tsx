@@ -18,6 +18,8 @@ describe('AppShell', () => {
     expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
     expect(screen.getByLabelText('Gold amount')).toHaveTextContent('0');
     expect(screen.getByLabelText('Crystals amount')).toHaveTextContent('0');
+    expect(screen.getByLabelText('Cinder amount')).toHaveTextContent('—');
+    expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
   });
 

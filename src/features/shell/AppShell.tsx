@@ -16,6 +16,14 @@ const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?:
   runes: { label: 'RUNES', icon: ScrollText },
 };
 
+const RESOURCE_TONE_CLASS = {
+  accent: 'text-accent',
+  info: 'text-info',
+  muted: 'text-text-muted',
+} as const;
+
+type ResourceTone = keyof typeof RESOURCE_TONE_CLASS;
+
 /** App-Shell mit State-basiertem View-Switch (kein Router, siehe AGENTS.md §6). */
 export function AppShell() {
   // Der Controller lebt oberhalb des View-Switches: Navigation unterbricht den Kampf nicht.
@@ -38,7 +46,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-text">
-      <header className="flex items-center justify-between gap-4 border-b border-border bg-background px-4 py-3 sm:px-7">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border bg-background px-4 py-3 sm:px-7">
         <div className="flex items-center gap-3">
           <div
             aria-hidden="true"
@@ -62,9 +70,14 @@ export function AppShell() {
           </div>
         </div>
 
-        <dl aria-label="Resources" className="flex items-center gap-2 sm:gap-4">
+        <dl
+          aria-label="Resources"
+          className="flex flex-wrap items-center justify-end gap-2 sm:gap-4"
+        >
           <ResourceChip icon={Coins} label="Gold" value={currencies?.gold} />
           <ResourceChip icon={Gem} label="Crystals" value={currencies?.crystals} tone="info" />
+          <ResourceChip icon={Flame} label="Cinder" value={undefined} />
+          <ResourceChip icon={ScrollText} label="Runedust" value={undefined} tone="muted" />
         </dl>
       </header>
 
@@ -123,17 +136,14 @@ function ResourceChip({
   icon: ComponentType<{ className?: string }>;
   label: string;
   value: number | undefined;
-  tone?: 'accent' | 'info';
+  tone?: ResourceTone;
 }) {
   const displayValue = value === undefined ? '—' : formatNumber(value);
 
   return (
     <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
       <dt className="sr-only">{label}</dt>
-      <Icon
-        aria-hidden="true"
-        className={`size-4 ${tone === 'accent' ? 'text-accent' : 'text-info'}`}
-      />
+      <Icon aria-hidden="true" className={`size-4 ${RESOURCE_TONE_CLASS[tone]}`} />
       <dd aria-label={`${label} amount`} className="font-semibold text-text">
         {displayValue}
       </dd>

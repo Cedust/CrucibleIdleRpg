@@ -1,4 +1,4 @@
 interface:
-  display_name: Next Task
-  short_description: Implement the next ready roadmap task
-  default_prompt: Use $next-task to implement the next ready roadmap task. Optionally specify a task number.
+  display_name: 'Nächster Task'
+  short_description: 'Roadmap-Task vollständig umsetzen'
+  default_prompt: 'Verwende $next-task, um den nächsten bereiten Roadmap-Task vollständig umzusetzen und zu prüfen.'

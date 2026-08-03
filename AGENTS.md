@@ -269,6 +269,20 @@ Verhalten überhaupt erreichbar machen.
 - Fehlt eine Regel, wird sie nicht erfunden: Eintrag in
   [`docs/backlog/OPEN_ISSUES.md`](docs/backlog/OPEN_ISSUES.md), Task auf `blocked`.
 
+### Umsetzungs- und Review-Ablauf
+
+- Roadmap-Tasks folgen dem projektlokalen
+  [`next-task`-Workflow](.agents/skills/next-task/SKILL.md): Auftrag und Quellen klären,
+  passende Teststrategie festlegen, von unten nach oben implementieren, selbst validieren,
+  unabhängig reviewen und erst danach abschließen.
+- Der Review wird risikobasiert skaliert: triviale verhaltensneutrale Änderungen erhalten einen
+  fokussierten Selbstreview, nicht triviale Codeänderungen mindestens einen unabhängigen
+  read-only Review und risikoreiche oder querschnittliche Änderungen mehrere spezialisierte
+  read-only Reviews.
+- Der Main Agent prüft jedes Finding selbst gegen Task, SPEC, Code und Tests. Bestätigte Findings
+  werden vor Abschluss bearbeitet und die betroffenen Checks danach erneut ausgeführt; Findings
+  werden nie ungeprüft übernommen.
+
 ### Definition of Done
 
 Bevor eine Aufgabe als **erledigt** gilt, müssen lokal **grün** sein:

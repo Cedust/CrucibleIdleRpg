@@ -57,6 +57,10 @@ ihn.
 | `done`        | gemerged, Definition of Done erfüllt                   |
 | `blocked`     | wartet — die blockierende Frage steht mit Link im Task |
 
+Auf dem Task-Branch stehen `done` und dadurch neu entblockte `ready`-Folgetasks als vorgeschlagener
+Zielzustand im finalen PR-Diff. Für die gemeinsame Roadmap werden diese Status erst mit dem Merge
+verbindlich; ein Folgetask beginnt daher nicht vom ungemergten Task-Branch aus.
+
 ---
 
 ## 3. Arbeitsweise für Agenten
@@ -70,7 +74,8 @@ ihn.
    [§10](../../AGENTS.md#10-tests)).
 4. **Definition of Done** abarbeiten
    ([AGENTS.md §11](../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich)).
-5. **Status pflegen:** Task auf `done`, Folge-Tasks auf `ready`, offen Gebliebenes nach
+5. **Status pflegen:** Im finalen PR-Diff den Task auf `done` und Folge-Tasks auf `ready` setzen;
+   verbindlich werden die Status mit dem Merge. Offen Gebliebenes nach
    [OPEN_ISSUES.md](OPEN_ISSUES.md).
 
 ---

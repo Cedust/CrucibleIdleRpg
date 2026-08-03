@@ -213,13 +213,18 @@ Wann gespeichert wird und was im Save liegt, regelt
   schlanker Default mit risikobasierter Eskalation auszulegen: Nur die für den
   konkreten Diff relevanten Quellen, SPEC-Anker, Checks und Reviews werden
   herangezogen.
-- **Lean** ist der Normalfall für kleine Tickets: klar abgegrenzte Doku-, Content-,
-  Styling-, UI-, Store- oder Refactoring-Änderungen ohne Spielregel-, Persistenz-,
-  Simulation- oder gemeinsame Architekturwirkung werden mit fokussiertem Selbstreview
-  und den passenden Checks abgeschlossen. Es wird kein Subagent gestartet.
+- **Micro** ist der token-sparende Default für sehr kleine, lokal begrenzte Tickets:
+  nur die konkrete Anforderung, betroffene Dateien und unmittelbar relevante Regeln
+  lesen; mit Selbstreview und den engsten passenden Checks abschließen. Keine
+  Subagenten, keine vollständige Repo-Neuorientierung, keine vollständige SPEC-Lektüre.
+- **Lean** gilt für klar abgegrenzte Doku-, Content-, Styling-, UI-, Store- oder
+  Refactoring-Änderungen ohne Spielregel-, Persistenz-, Simulation- oder gemeinsame
+  Architekturwirkung. Fokussierter Selbstreview und passende Checks genügen. Es wird
+  kein Subagent gestartet.
 - **Standard** gilt für neue oder geänderte Spiellogik. Der Agent liest die
-  relevanten SPEC-Anker, ergänzt deterministische Tests und nutzt genau einen
-  `correctness_reviewer`, sofern der Diff nicht trivial ist.
+  relevanten SPEC-Anker und ergänzt deterministische Tests. Ein `correctness_reviewer`
+  wird nur eingesetzt, wenn der Diff nicht trivial ist und mehrere Module,
+  schwer sichtbare Randfälle oder regressionsanfällige Spielregeln berührt.
 - **High-Risk** gilt für Determinismus, Timer, Persistenz, Migrationen, Security oder
   querschnittliche React-/Zustand-/Playback-Risiken. Zusätzlich zum
   `correctness_reviewer` wird höchstens ein fachlich passender zweiter Reviewer

@@ -7,8 +7,9 @@ description: Einen Task aus docs/backlog/ROADMAP.md token-sparend, spezifikation
 
 Den angeforderten Task aus `docs/backlog/ROADMAP.md` in kleinen, prüfbaren Schnitten umsetzen.
 Der Default ist token-sparend: nur die Quellen, Dateien, Checks und Reviews einbeziehen, die
-für den konkreten Diff und sein Risiko nötig sind. Einen laufenden Task fortsetzen, bevor neue
-Arbeit begonnen wird.
+für den konkreten Diff und sein Risiko nötig sind. Keine vollständige Repo-Neuorientierung,
+keine vollständige SPEC-Lektüre und keine Subagenten, solange Task, Diff und Risiko das nicht
+rechtfertigen. Einen laufenden Task fortsetzen, bevor neue Arbeit begonnen wird.
 
 ## 1. Auftrag klären
 
@@ -30,19 +31,23 @@ Arbeit begonnen wird.
 
 ## 2. Review-Stufe festlegen
 
-- **Lean** ist der Normalfall für kleine Doku-, Content-, Styling-, UI-, Store- oder
-  Refactoring-Änderungen ohne Spielregel-, Persistenz-, Simulation- oder gemeinsame
-  Architekturwirkung. Kein Subagent; fokussierter Selbstreview und passende Checks genügen.
-- **Standard** gilt für neue oder geänderte Spiellogik. Relevante SPEC-Anker lesen,
-  deterministische Tests ergänzen und genau einen `correctness_reviewer` einsetzen, sofern der
-  Diff nicht trivial ist.
+- **Micro** ist der Normalfall für sehr kleine, lokal begrenzte Tickets. Nur die konkrete
+  Anforderung, betroffene Dateien und unmittelbar relevante Regeln lesen. Kein Subagent;
+  fokussierter Selbstreview und die engsten passenden Checks genügen.
+- **Lean** gilt für kleine Doku-, Content-, Styling-, UI-, Store- oder Refactoring-Änderungen
+  ohne Spielregel-, Persistenz-, Simulation- oder gemeinsame Architekturwirkung. Kein Subagent;
+  fokussierter Selbstreview und passende Checks genügen.
+- **Standard** gilt für neue oder geänderte Spiellogik. Relevante SPEC-Anker lesen und
+  deterministische Tests ergänzen. Einen `correctness_reviewer` nur einsetzen, wenn der Diff
+  nicht trivial ist und mehrere Module, schwer sichtbare Randfälle oder regressionsanfällige
+  Spielregeln berührt.
 - **High-Risk** gilt für Determinismus, Timer, Persistenz, Migrationen, Security oder
   querschnittliche React-/Zustand-/Playback-Risiken. Zusätzlich zum `correctness_reviewer`
   höchstens einen fachlich passenden zweiten Reviewer einsetzen: `test_reviewer` für Regeln,
   Tests und Zeitverhalten, `ui_reviewer` für React-, Zustand-, Playback- oder
   Accessibility-Risiken.
-- Reviews immer begründen. Wenn Subagent-Delegation nicht verfügbar ist, dieselben Prüffragen in
-  einem fokussierten Selbstreview beantworten und die Einschränkung melden.
+- Reviews immer als Eskalation begründen. Wenn Subagent-Delegation nicht verfügbar ist, dieselben
+  Prüffragen in einem fokussierten Selbstreview beantworten und die Einschränkung melden.
 
 ## 3. Teststrategie wählen
 
@@ -73,14 +78,15 @@ Arbeit begonnen wird.
 
 1. Den Diff gegen Task, relevante SPEC-Anker, Architekturregeln und unbeabsichtigte
    Nebenänderungen prüfen.
-2. Die anwendbare Definition of Done aus `AGENTS.md` Abschnitt 11 ausführen. Für kleine Tickets
-   zuerst die engsten passenden Checks laufen lassen; vollständige Suiten nur, wenn sie durch die
-   Änderung, den Task oder ein Review-Finding gerechtfertigt sind.
+2. Die anwendbare Definition of Done aus `AGENTS.md` Abschnitt 11 ausführen. Für Micro- und
+   Lean-Tickets zuerst die engsten passenden Checks laufen lassen; vollständige Suiten nur, wenn
+   sie durch die Änderung, den Task oder ein Review-Finding gerechtfertigt sind.
 3. Fehlgeschlagene Checks beheben oder als nachweislich vorbestehend melden; nicht verschweigen.
 
 ## 6. Review ausführen
 
-Subagenten ausschließlich lesend einsetzen.
+Subagenten sind kein Standardabschluss für kleine Tickets. Sie werden nur eingesetzt, wenn die
+gewählte Review-Stufe das Risiko begründet. Subagenten ausschließlich lesend einsetzen.
 
 - Reviewer erst nach grünen fokussierten Tests und Selbstreview einsetzen. Der Review-Brief nennt
   nur betroffene Dateien, Akzeptanzkriterien, relevante SPEC-Anker und den exakten Diff-Umfang.

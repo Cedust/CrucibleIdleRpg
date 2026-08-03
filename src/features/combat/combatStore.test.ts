@@ -23,7 +23,7 @@ describe('useCombatStore', () => {
   beforeEach(() => {
     useCombatStore.getState().clearCombat();
     useCombatStore.getState().setPlaybackSpeed(1);
-    useNavigationStore.setState({ activeView: 'combat' });
+    useNavigationStore.setState({ activeView: 'dungeons' });
   });
 
   it('hält einen neu gestarteten Kampf zunächst pausiert', () => {

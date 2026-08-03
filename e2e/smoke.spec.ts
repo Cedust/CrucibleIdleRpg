@@ -1,8 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-test('lädt und zeigt den Kampf-View', async ({ page }) => {
+test('lÃ¤dt den Dungeons-View mit dem Kampfbildschirm', async ({ page }) => {
   await page.goto('/');
+
   await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'DUNGEONS', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   await expect(page.getByRole('heading', { name: 'Combat', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Scroll formation left' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Scroll formation right' })).toBeDisabled();
@@ -10,11 +15,20 @@ test('lädt und zeigt den Kampf-View', async ({ page }) => {
 
 test('navigiert zwischen den Views', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Upgrades' }).click();
-  await expect(page.getByRole('heading', { name: 'Upgrades' })).toBeVisible();
+  await page.getByRole('button', { name: 'RUNES' }).click();
+
+  await expect(page.getByRole('heading', { name: 'RUNES' })).toBeVisible();
 });
 
-test('committet einen Sieg und behält die Belohnung nach Reload', async ({ page }) => {
+test('zeigt alle vorgesehenen Bereiche in der PrimÃ¤rnavigation', async ({ page }) => {
+  await page.goto('/');
+
+  for (const label of ['DUNGEONS', 'TEAM', 'CRUCIBLE', 'BLACKSMITH', 'JEWELER', 'RUNES']) {
+    await expect(page.getByRole('button', { name: label, exact: true })).toBeVisible();
+  }
+});
+
+test('committet einen Sieg und behÃ¤lt die Belohnung nach Reload', async ({ page }) => {
   test.setTimeout(75_000);
   await page.addInitScript(() => {
     const key = 'crucible-idle-rpg:save';
@@ -70,7 +84,9 @@ test('committet einen Sieg und behält die Belohnung nach Reload', async ({ page
   await expect(page.getByLabel('Gold balance')).toContainText('10');
 });
 
-test('hält die 2×3-Formation auf schmalen Viewports im eigenen Scrollbereich', async ({ page }) => {
+test('hÃ¤lt die 2Ã—3-Formation auf schmalen Viewports im eigenen Scrollbereich', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 375, height: 720 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start Combat' }).click();

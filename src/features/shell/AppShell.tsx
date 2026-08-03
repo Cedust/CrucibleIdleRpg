@@ -1,4 +1,4 @@
-import { Coins, Gem, Swords, TrendingUp, Users } from 'lucide-react';
+import { Coins, Flame, Gem, Hammer, Map, ScrollText, Users } from 'lucide-react';
 import { useEffect, type ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
 import { CombatScreen } from '@/features/combat/CombatScreen';
@@ -8,9 +8,12 @@ import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
-  combat: { label: 'Combat', icon: Swords },
-  team: { label: 'Team', icon: Users },
-  upgrades: { label: 'Upgrades', icon: TrendingUp },
+  dungeons: { label: 'DUNGEONS', icon: Map },
+  team: { label: 'TEAM', icon: Users },
+  crucible: { label: 'CRUCIBLE', icon: Flame },
+  blacksmith: { label: 'BLACKSMITH', icon: Hammer },
+  jeweler: { label: 'JEWELER', icon: Gem },
+  runes: { label: 'RUNES', icon: ScrollText },
 };
 
 /** App-Shell mit State-basiertem View-Switch (kein Router, siehe AGENTS.md §6). */
@@ -100,9 +103,11 @@ export function AppShell() {
         </nav>
 
         <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
-          {activeView === 'combat' && <CombatScreen />}
-          {activeView === 'team' && <PlaceholderView label="Team" />}
-          {activeView === 'upgrades' && <PlaceholderView label="Upgrades" />}
+          {activeView === 'dungeons' ? (
+            <CombatScreen />
+          ) : (
+            <PlaceholderView label={VIEW_META[activeView].label} />
+          )}
         </main>
       </div>
     </div>

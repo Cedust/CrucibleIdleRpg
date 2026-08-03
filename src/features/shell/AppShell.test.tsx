@@ -8,7 +8,7 @@ import { useNavigationStore } from './navigationStore';
 
 describe('AppShell', () => {
   beforeEach(() => {
-    useNavigationStore.setState({ activeView: 'combat' });
+    useNavigationStore.setState({ activeView: 'dungeons' });
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
@@ -21,8 +21,12 @@ describe('AppShell', () => {
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
   });
 
-  it('zeigt standardmäßig den Kampf-View', () => {
+  it('zeigt standardmäßig den Dungeons-View mit dem Kampfbildschirm', () => {
     render(<AppShell />);
+    expect(screen.getByRole('button', { name: 'DUNGEONS' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     expect(screen.getByRole('heading', { name: 'Combat' })).toBeInTheDocument();
   });
 
@@ -30,9 +34,9 @@ describe('AppShell', () => {
     const user = userEvent.setup();
     render(<AppShell />);
 
-    await user.click(screen.getByRole('button', { name: 'Team' }));
+    await user.click(screen.getByRole('button', { name: 'RUNES' }));
 
-    expect(screen.getByRole('heading', { name: 'Team' })).toBeInTheDocument();
-    expect(useNavigationStore.getState().activeView).toBe('team');
+    expect(screen.getByRole('heading', { name: 'RUNES' })).toBeInTheDocument();
+    expect(useNavigationStore.getState().activeView).toBe('runes');
   });
 });

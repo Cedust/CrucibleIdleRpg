@@ -18,8 +18,8 @@
   --color-text-muted: oklch(0.72 0.02 265);
 
   /* Akzent (Fantasy-Glut/Crucible-Thema) */
-  --color-accent: oklch(0.72 0.17 45);
-  --color-accent-strong: oklch(0.65 0.2 40);
+  --color-accent: #f59e0b;
+  --color-accent-strong: #fbbf24;
 
   /* Statusfarben (Kampf) */
   --color-danger: oklch(0.63 0.22 25);

@@ -6,7 +6,8 @@ import { useNavigationStore } from '@/features/shell/navigationStore';
 import { neutralProgression } from './characterStats';
 import { M1_COMBAT_CONTEXT, nextTick } from './combatEngine';
 import { buildCombatState, deriveFloorSeed, deriveRunSeed, type CombatState } from './combatState';
-import { useCombatStore } from './combatStore';
+import { COMBAT_LOG_LIMIT, useCombatStore } from './combatStore';
+import { buildPendingQueue } from './turnOrder';
 
 function combat(): CombatState {
   return buildCombatState({
@@ -36,6 +37,7 @@ describe('useCombatStore', () => {
     expect(state.isPaused).toBe(true);
     expect(state.playbackSpeed).toBe(1);
     expect(state.lastTick).toBeNull();
+    expect(state.turnOrder).toEqual(buildPendingQueue(start));
   });
 
   it('rechnet über die Store-Aktion exakt denselben nächsten Takt wie die reine Engine', () => {
@@ -65,5 +67,30 @@ describe('useCombatStore', () => {
     expect(afterNavigation.lastTick).toBe(beforeNavigation.lastTick);
     expect(afterNavigation.isPaused).toBe(false);
     expect(afterNavigation.playbackSpeed).toBe(2);
+  });
+
+  it('hält genau einen gedeckelten Log-Eintrag je Takt', () => {
+    const start = combat();
+    const longCombat: CombatState = {
+      ...start,
+      enemies: start.enemies.map((enemy) => ({
+        ...enemy,
+        attack: 0,
+        health: 1_000_000_000_000,
+        maxHealth: 1_000_000_000_000,
+      })),
+    };
+    useCombatStore.getState().startCombat(longCombat);
+
+    for (let index = 0; index < COMBAT_LOG_LIMIT + 5; index += 1) {
+      useCombatStore.getState().advanceTick();
+    }
+
+    const state = useCombatStore.getState();
+    expect(state.tickLog).toHaveLength(COMBAT_LOG_LIMIT);
+    expect(state.tickLog.at(-1)).toBe(state.lastTick);
+    expect(
+      state.tickLog.every((tick) => tick.events.some((event) => event.type === 'turnStart')),
+    ).toBe(true);
   });
 });

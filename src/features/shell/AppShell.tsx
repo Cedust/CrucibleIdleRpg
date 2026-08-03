@@ -48,7 +48,7 @@ export function AppShell() {
           })}
         </nav>
 
-        <main className="flex-1 p-6">
+        <main className="min-w-0 flex-1 p-6">
           {activeView === 'combat' && <CombatScreen />}
           {activeView === 'team' && <PlaceholderView label="Team" />}
           {activeView === 'upgrades' && <PlaceholderView label="Upgrades" />}

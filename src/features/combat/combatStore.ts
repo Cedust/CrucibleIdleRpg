@@ -7,7 +7,8 @@ import {
   type CombatOutcome,
   type TickResult,
 } from './combatEngine';
-import type { CombatState } from './combatState';
+import type { ActorRef, CombatState } from './combatState';
+import { buildPendingQueue } from './turnOrder';
 
 /** Verfügbare Anzeige-Geschwindigkeiten; 2× wird erst in M2 freigeschaltet. */
 export type PlaybackSpeed = 1 | 2;
@@ -19,6 +20,10 @@ export interface CombatStoreState {
   outcome: CombatOutcome | null;
   /** Vollständiger Zug-Block des zuletzt gerechneten Takts für Anzeige und Kampf-Log. */
   lastTick: TickResult | null;
+  /** Gedeckelte Zug-Blöcke für die Anzeige; genau ein Eintrag je gerechneten Takt. */
+  tickLog: readonly TickResult[];
+  /** Stabile Anzeige-Reihenfolge aller Akteure des Kampfes. */
+  turnOrder: readonly ActorRef[];
   isPaused: boolean;
   playbackSpeed: PlaybackSpeed;
   startCombat: (combat: CombatState, context?: CombatContext) => void;
@@ -28,11 +33,16 @@ export interface CombatStoreState {
   setPlaybackSpeed: (speed: PlaybackSpeed) => void;
 }
 
+/** Das Kampf-Log hält nur die jüngsten Zug-Blöcke und wächst damit nicht unbegrenzt. */
+export const COMBAT_LOG_LIMIT = 100;
+
 const INITIAL_PLAYBACK_STATE = {
   combat: null,
   context: M1_COMBAT_CONTEXT,
   outcome: null,
   lastTick: null,
+  tickLog: [] as readonly TickResult[],
+  turnOrder: [] as readonly ActorRef[],
   isPaused: true,
   playbackSpeed: 1,
 } as const;
@@ -50,6 +60,8 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       context,
       outcome: combatOutcome(combat),
       lastTick: null,
+      tickLog: [],
+      turnOrder: buildPendingQueue(combat),
       // Playback startet verbindlich pausiert (SIMULATION §2).
       isPaused: true,
     }),
@@ -74,6 +86,7 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       combat: tick.state,
       outcome: tick.outcome,
       lastTick: tick,
+      tickLog: [...current.tickLog, tick].slice(-COMBAT_LOG_LIMIT),
       // Ein entschiedener Kampf erzeugt keine weiteren Playback-Frames.
       isPaused: tick.outcome === 'ongoing' ? current.isPaused : true,
     });

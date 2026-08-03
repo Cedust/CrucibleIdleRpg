@@ -1,10 +1,10 @@
 # 008 — Kampfbildschirm
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 007     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 007    |
 
 ## Ziel
 
@@ -22,22 +22,22 @@ laufenden Kampf.
   die Markierung einen Eintrag weiter und im Log erscheint **ein** Eintrag: der vollständige
   Zug als Block, nicht als Einzelzeilen
 - [Gegnerformation](../../spec/COMBAT.md#13-gegnerformation) — 2×3-Darstellung mit Lanes
-- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — die Pending-Queue ist der Inhalt der
-  Reihenfolge-Anzeige
+- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — die Anzeige hält die vollständige
+  Zugreihenfolge stabil; pro Takt wandert nur die aktive Markierung
 - [AGENTS.md §8](../../../AGENTS.md#8-ui-styling--accessibility) — Dark Mode, eigene
   UI-Primitives, Tailwind, Accessibility-Basisanspruch
 
 ## Akzeptanzkriterien
 
-- [ ] Health-Bars nutzen die Inline-Style-Ausnahme ausschließlich für die berechnete Breite
+- [x] Health-Bars nutzen die Inline-Style-Ausnahme ausschließlich für die berechnete Breite
       ([AGENTS.md §14](../../../AGENTS.md#14-do-not)); alles andere sind Tailwind-Klassen
-- [ ] Die Barrier ist als eigener Anteil erkennbar, nicht in die Health gerechnet
-- [ ] Der Log zeigt Crit, Multi Hit, Splash, Block, Evade und Counter unterscheidbar an
-- [ ] Der Log ist gedeckelt und wächst nicht unbegrenzt
-- [ ] Selektive Subscriptions: ein Takt rendert nicht die ganze Ansicht neu
-- [ ] Component-Tests mit React Testing Library; Playwright-Smoke-Test „Kampf starten →
+- [x] Die Barrier ist als eigener Anteil erkennbar, nicht in die Health gerechnet
+- [x] Der Log zeigt Crit, Multi Hit, Splash, Block, Evade und Counter unterscheidbar an
+- [x] Der Log ist gedeckelt und wächst nicht unbegrenzt
+- [x] Selektive Subscriptions: ein Takt rendert nicht die ganze Ansicht neu
+- [x] Component-Tests mit React Testing Library; Playwright-Smoke-Test „Kampf starten →
       Takte laufen ab → Kampf endet"
-- [ ] Alle Spieltexte sind Englisch
+- [x] Alle Spieltexte sind Englisch
       ([AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich))
 
 ## Betroffene Dateien

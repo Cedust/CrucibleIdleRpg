@@ -164,6 +164,3 @@ Hier fehlt **Struktur**, nicht nur ein Wert — diese Punkte gehören nach Klär
       ihn **nicht** countern — dieselbe Linie, nach der ein sterbender Akteur aus der
       Pending-Queue fällt und nur lebende Akteure handeln; als Regel ist sie aber nicht
       festgeschrieben.
-- [ ] **Save-Feldstruktur je Version**
-      ([Persistenz](../spec/PERSISTENCE.md)): konkrete Zod-Schema-Form
-      samt Migrationspfad.

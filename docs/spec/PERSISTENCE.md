@@ -36,5 +36,25 @@
   erreichter Floor, **Erstsieg-Flags** je Floor (Crystals,
   [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)).
 
-<!-- TODO (Spec): konkrete Feldstruktur je Save-Version (Zod-Schema-Form) samt Migrationspfad —
-     siehe docs/backlog/OPEN_ISSUES.md, Abschnitt „Offene Spec-Punkte". -->
+### 2.1 Save v1 (M1)
+
+Save v1 enthält den in M1 verfügbaren Teil des Speicherstands in dieser Struktur:
+
+```text
+version: 1
+saveSeed: uint32
+runCounter: nichtnegative Ganzzahl
+playbackSpeed: 1 | 2
+characters:
+  korvin | rhaya | quinn:
+    level: Ganzzahl 1–100
+    xp: nichtnegative Ganzzahl
+currencies:
+  gold: nichtnegative Ganzzahl
+  crystals: nichtnegative Ganzzahl
+firstVictories: FloorId[]
+```
+
+v1 ist das erste Save-Format und hat keinen Vorgänger. Spätere persistierte Systeme aus
+[Save-Inhalt](#2-save-inhalt) erweitern den Speicherstand über eine neue Version mit expliziter
+Migration von v1.

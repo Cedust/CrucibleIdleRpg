@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
@@ -92,5 +92,49 @@ describe('useCombatStore', () => {
     expect(
       state.tickLog.every((tick) => tick.events.some((event) => event.type === 'turnStart')),
     ).toBe(true);
+  });
+
+  it('committet einen Sieg genau einmal und meldet die gespeicherte Belohnung', async () => {
+    const start = combat();
+    const winning: CombatState = {
+      ...start,
+      enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
+    };
+    const commitVictory = vi
+      .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
+      .mockResolvedValue({ gold: 10, xp: 15, crystals: 1 });
+
+    useCombatStore.getState().startCombat(winning, M1_COMBAT_CONTEXT, commitVictory);
+    useCombatStore.setState({ outcome: 'ongoing' });
+    useCombatStore.getState().advanceTick();
+    await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
+
+    expect(commitVictory).toHaveBeenCalledOnce();
+    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, crystals: 1 });
+    expect(useCombatStore.getState().advanceTick()).toBeUndefined();
+    expect(commitVictory).toHaveBeenCalledOnce();
+  });
+
+  it('lässt einen fehlgeschlagenen Reward-Commit gezielt erneut versuchen', async () => {
+    const start = combat();
+    const winning: CombatState = {
+      ...start,
+      enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
+    };
+    const commitVictory = vi
+      .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
+      .mockRejectedValueOnce(new Error('Speichern fehlgeschlagen'))
+      .mockResolvedValueOnce({ gold: 10, xp: 15, crystals: 1 });
+
+    useCombatStore.getState().startCombat(winning, M1_COMBAT_CONTEXT, commitVictory);
+    useCombatStore.setState({ outcome: 'ongoing' });
+    useCombatStore.getState().advanceTick();
+    await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('failed'));
+
+    useCombatStore.getState().retryVictoryCommit();
+    await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
+
+    expect(commitVictory).toHaveBeenCalledTimes(2);
+    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, crystals: 1 });
   });
 });

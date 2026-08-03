@@ -1,10 +1,12 @@
 import { Profiler } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
+import { createDefaultSave } from '@/features/save/saveSchema';
+import { saveStore } from '@/features/save/saveStore';
 import { neutralProgression } from './characterStats';
 import { CombatLog } from './CombatLog';
 import { CombatControls, CombatScreen } from './CombatScreen';
@@ -70,6 +72,8 @@ function positionNextActorWithVisibleChange(side: 'character' | 'enemy'): void {
 
 describe('CombatScreen', () => {
   beforeEach(() => {
+    localStorage.clear();
+    saveStore.setState({ data: createDefaultSave(4242), status: 'ready' });
     useCombatStore.getState().clearCombat();
     useCombatStore.getState().setPlaybackSpeed(1);
   });
@@ -90,6 +94,18 @@ describe('CombatScreen', () => {
     expect(useCombatStore.getState().isPaused).toBe(false);
   });
 
+  it('startet keinen Kampf, wenn der runCounter nicht persistiert werden kann', async () => {
+    const user = userEvent.setup();
+    const beginRun = saveStore.getState().beginRun;
+    saveStore.setState({ beginRun: () => Promise.reject(new Error('Speichern fehlgeschlagen')) });
+    render(<CombatScreen />);
+
+    await user.click(screen.getByRole('button', { name: 'Start Combat' }));
+
+    expect(useCombatStore.getState().combat).toBeNull();
+    saveStore.setState({ beginRun });
+  });
+
   it('rendert Steuerung nicht erneut, wenn nur ein offener Takt fortschreitet', () => {
     useCombatStore.getState().startCombat(combat());
     let commits = 0;
@@ -106,6 +122,65 @@ describe('CombatScreen', () => {
 
     expect(useCombatStore.getState().outcome).toBe('ongoing');
     expect(commits).toBe(1);
+  });
+
+  it('zeigt eine erst nach dem Persistieren committete Siegesbelohnung', async () => {
+    const user = userEvent.setup();
+    render(<CombatScreen />);
+    await user.click(screen.getByRole('button', { name: 'Start Combat' }));
+
+    const running = useCombatStore.getState().combat;
+    if (running === null) {
+      throw new Error('Testkampf fehlt');
+    }
+
+    act(() => {
+      useCombatStore.setState({
+        combat: {
+          ...running,
+          enemies: running.enemies.map((enemy) => ({ ...enemy, health: 0 })),
+        },
+        outcome: 'ongoing',
+      });
+      useCombatStore.getState().advanceTick();
+    });
+
+    expect(await screen.findByText(/Reward saved: \+10 Gold/)).toHaveTextContent('+1 Crystal');
+    expect(screen.getByLabelText('Gold balance')).toHaveTextContent('10');
+    expect(screen.getByLabelText('Crystal balance')).toHaveTextContent('1');
+  });
+
+  it('zeigt beim fehlgeschlagenen Reward-Save einen bedienbaren Retry statt Erfolg', async () => {
+    const user = userEvent.setup();
+    const state = combat();
+    const commitVictory = vi
+      .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
+      .mockRejectedValueOnce(new Error('Speichern fehlgeschlagen'))
+      .mockResolvedValueOnce({ gold: 10, xp: 15, crystals: 1 });
+    useCombatStore.getState().startCombat(state, undefined, commitVictory);
+    useCombatStore.setState({ outcome: 'victory', completionStatus: 'failed' });
+    render(<CombatScreen />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Reward save failed.');
+    expect(screen.queryByText(/Reward saved:/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Gold balance')).toHaveTextContent('0');
+    const retry = screen.getByRole('button', { name: 'Retry Save' });
+    await user.click(retry);
+    await vi.waitFor(() => expect(commitVictory).toHaveBeenCalledOnce());
+    await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('failed'));
+    await user.click(screen.getByRole('button', { name: 'Retry Save' }));
+    await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
+
+    expect(commitVictory).toHaveBeenCalledTimes(2);
+  });
+
+  it('zeigt während der Hydration keine erfundenen Nullsalden', () => {
+    saveStore.setState({ data: null, status: 'loading' });
+
+    render(<CombatScreen />);
+
+    expect(screen.getByLabelText('Saved progress')).toHaveTextContent('Loading saved progress…');
+    expect(screen.queryByLabelText('Gold balance')).not.toBeInTheDocument();
   });
 
   it('aktualisiert nur das Panel der fachlich veränderten Kampfseite', () => {

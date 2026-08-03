@@ -1,8 +1,10 @@
 import { Swords, Users, TrendingUp } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { useEffect, type ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
 import { CombatScreen } from '@/features/combat/CombatScreen';
+import { useCombatStore } from '@/features/combat/combatStore';
 import { useCombatPlayback } from '@/features/combat/useCombatPlayback';
+import { useSaveStore } from '@/features/save/saveStore';
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
   combat: { label: 'Combat', icon: Swords },
@@ -14,6 +16,17 @@ const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?:
 export function AppShell() {
   // Der Controller lebt oberhalb des View-Switches: Navigation unterbricht den Kampf nicht.
   useCombatPlayback();
+  const hydrateSave = useSaveStore((state) => state.hydrate);
+
+  useEffect(() => {
+    // Top-Level-Mount entspricht einem Reload: Laufzeitkampf verwerfen, Save neu laden.
+    useCombatStore.getState().clearCombat();
+    void hydrateSave()
+      .then((save) => {
+        useCombatStore.getState().setPlaybackSpeed(save.playbackSpeed);
+      })
+      .catch(() => undefined);
+  }, [hydrateSave]);
 
   const activeView = useNavigationStore((s) => s.activeView);
   const setActiveView = useNavigationStore((s) => s.setActiveView);

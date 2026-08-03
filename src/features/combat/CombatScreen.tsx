@@ -1,48 +1,49 @@
-import { TEAM_ORDER } from '@/game/characters/characters';
-import { FLOOR_FORMATIONS, FORMATIONS } from '@/game/encounters/formations';
+import { M1_FLOOR_REWARD } from '@/game/rewards/floorRewards';
+import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
-import { neutralProgression } from './characterStats';
 import { CombatLog } from './CombatLog';
-import { buildCombatState, deriveFloorSeed, deriveRunSeed, type CombatState } from './combatState';
 import { useCombatStore } from './combatStore';
 import { EnemyFormation } from './EnemyFormation';
+import { createM1Combat } from './m1Combat';
 import { TeamPanel } from './TeamPanel';
 import { TurnOrderBar } from './TurnOrderBar';
-
-const M1_FLOOR_ID = 'A1-D1-01';
-const M1_DUNGEON_ID = 'A1-D1';
-const M1_DEMO_SAVE_SEED = 0x43525543;
-
-/** Temporärer M1-Einstieg; Save-Seed und Run-Counter werden in Task 009 angebunden. */
-function createM1Combat(): CombatState {
-  const formationId = FLOOR_FORMATIONS[M1_FLOOR_ID];
-  const formation = formationId === undefined ? undefined : FORMATIONS[formationId];
-
-  if (formation === undefined) {
-    throw new Error(`Keine Formation für ${M1_FLOOR_ID} definiert`);
-  }
-
-  return buildCombatState({
-    floorId: M1_FLOOR_ID,
-    floorIndex: 0,
-    floorSeed: deriveFloorSeed(deriveRunSeed(M1_DEMO_SAVE_SEED, M1_DUNGEON_ID, 1), 0),
-    formation,
-    team: TEAM_ORDER.map((id) => ({ id, progression: neutralProgression(1) })),
-  });
-}
 
 /** Steuerung mit selektiven Subscriptions; unveränderte Takte rendern sie nicht neu. */
 export function CombatControls() {
   const floorId = useCombatStore((state) => state.combat?.floorId ?? null);
   const outcome = useCombatStore((state) => state.outcome);
   const isPaused = useCombatStore((state) => state.isPaused);
+  const completionStatus = useCombatStore((state) => state.completionStatus);
+  const lastReward = useCombatStore((state) => state.lastReward);
   const startCombat = useCombatStore((state) => state.startCombat);
   const setPaused = useCombatStore((state) => state.setPaused);
+  const retryVictoryCommit = useCombatStore((state) => state.retryVictoryCommit);
+  const saveStatus = useSaveStore((state) => state.status);
+  const beginRun = useSaveStore((state) => state.beginRun);
+  const commitVictory = useSaveStore((state) => state.commitVictory);
 
-  const start = () => startCombat(createM1Combat());
+  const start = async () => {
+    try {
+      const runSave = await beginRun();
+      startCombat(createM1Combat(runSave), undefined, async () => {
+        const commit = await commitVictory(M1_FLOOR_REWARD);
+        return commit.reward;
+      });
+    } catch {
+      // Der Save-Store stellt den Fehlerzustand dar; ohne persistierten Counter startet kein Run.
+    }
+  };
 
   if (floorId === null) {
-    return <Button onClick={start}>Start Combat</Button>;
+    return (
+      <Button disabled={saveStatus !== 'ready'} onClick={() => void start()}>
+        {saveStatus === 'loading' || saveStatus === 'idle'
+          ? 'Loading Save…'
+          : saveStatus === 'error'
+            ? 'Save Unavailable'
+            : 'Start Combat'}
+      </Button>
+    );
   }
 
   if (outcome !== 'ongoing') {
@@ -56,7 +57,35 @@ export function CombatControls() {
         >
           {outcome === 'victory' ? 'Victory' : 'Defeat'}
         </p>
-        <Button onClick={start}>Start Again</Button>
+        {outcome === 'victory' && completionStatus === 'saving' && (
+          <p aria-live="polite" className="text-sm text-text-muted">
+            Saving reward…
+          </p>
+        )}
+        {outcome === 'victory' && completionStatus === 'saved' && lastReward !== null && (
+          <p aria-live="polite" className="text-sm text-text-muted">
+            Reward saved: +{lastReward.gold} Gold · +{lastReward.xp} XP · +{lastReward.crystals}{' '}
+            {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
+          </p>
+        )}
+        {outcome === 'victory' && completionStatus === 'failed' && (
+          <>
+            <p role="alert" className="text-sm text-danger">
+              Reward save failed.
+            </p>
+            <Button variant="ghost" onClick={retryVictoryCommit}>
+              Retry Save
+            </Button>
+          </>
+        )}
+        <Button
+          disabled={
+            saveStatus !== 'ready' || completionStatus === 'saving' || completionStatus === 'failed'
+          }
+          onClick={() => void start()}
+        >
+          Start Again
+        </Button>
       </div>
     );
   }
@@ -85,6 +114,8 @@ export function CombatScreen() {
         <CombatControls />
       </header>
 
+      <ProgressSummary />
+
       <TurnOrderBar />
 
       <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(16rem,0.8fr)_minmax(32rem,1.6fr)]">
@@ -93,6 +124,44 @@ export function CombatScreen() {
       </div>
 
       <CombatLog />
+    </section>
+  );
+}
+
+function ProgressSummary() {
+  const data = useSaveStore((state) => state.data);
+  const status = useSaveStore((state) => state.status);
+
+  if (data === null) {
+    return (
+      <section
+        aria-label="Saved progress"
+        aria-busy={status !== 'error'}
+        aria-live="polite"
+        className="text-sm text-text-muted"
+      >
+        {status === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress…'}
+      </section>
+    );
+  }
+
+  const totalXp = data.characters.korvin.xp + data.characters.rhaya.xp + data.characters.quinn.xp;
+
+  return (
+    <section
+      aria-label="Saved progress"
+      aria-live="polite"
+      className="flex flex-wrap gap-4 text-sm text-text-muted"
+    >
+      <p aria-label="Gold balance">
+        Gold <strong className="text-text">{data?.currencies.gold ?? 0}</strong>
+      </p>
+      <p aria-label="Crystal balance">
+        Crystals <strong className="text-text">{data?.currencies.crystals ?? 0}</strong>
+      </p>
+      <p aria-label="Team XP balance">
+        Team XP <strong className="text-text">{totalXp}</strong>
+      </p>
     </section>
   );
 }

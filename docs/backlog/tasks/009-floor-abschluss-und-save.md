@@ -1,10 +1,10 @@
 # 009 — Floor-Abschluss & Save v1
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M1      |
-| **Hängt ab von** | 007     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M1     |
+| **Hängt ab von** | 007    |
 
 ## Ziel
 
@@ -44,17 +44,17 @@ sie strukturell ist — der Eintrag in OPEN_ISSUES wird entsprechend gekürzt
 
 ## Akzeptanzkriterien
 
-- [ ] Der Zod-Schema-Platzhalter in `src/features/save/saveSchema.ts` ist durch die echten
+- [x] Der Zod-Schema-Platzhalter in `src/features/save/saveSchema.ts` ist durch die echten
       Felder ersetzt; Zugriff läuft ausschließlich über den `SavePort`
-- [ ] Ein manipuliertes oder korruptes Save führt zu einem kontrollierten Fallback, nicht zu
+- [x] Ein manipuliertes oder korruptes Save führt zu einem kontrollierten Fallback, nicht zu
       einem Absturz — Test mit ungültigem JSON und mit schema-verletzendem JSON
-- [ ] Kein Feld des laufenden Kampfes (Health, Pending-Queue, PRNG-Zustand, Floor-Index)
+- [x] Kein Feld des laufenden Kampfes (Health, Pending-Queue, PRNG-Zustand, Floor-Index)
       erscheint im Save — Test gegen das Schema
-- [ ] Ein Reload während eines laufenden Kampfes verliert den Kampf und behält die zuvor
+- [x] Ein Reload während eines laufenden Kampfes verliert den Kampf und behält die zuvor
       committete Belohnung
-- [ ] Zwei Runs desselben Floors nacheinander laufen unterschiedlich (`runCounter` steigt);
+- [x] Zwei Runs desselben Floors nacheinander laufen unterschiedlich (`runCounter` steigt);
       ein Reload vor demselben Kampf liefert exakt denselben Verlauf
-- [ ] Playwright-E2E: „Kampf starten → Sieg → Reward → Reload → Reward ist noch da"
+- [x] Playwright-E2E: „Kampf starten → Sieg → Reward → Reload → Reward ist noch da"
 
 ## Betroffene Dateien
 

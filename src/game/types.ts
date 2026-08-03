@@ -13,6 +13,13 @@ export type FormationId = string;
 /** Floor-Kennung in der Notation `A<Akt>-D<Dungeon>-<Floor>`, Floor zweistellig (SPEC §4.1). */
 export type FloorId = string;
 
+/** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */
+export interface FloorRewardDefinition {
+  floorId: FloorId;
+  gold: number;
+  characterXp: Readonly<Record<CharacterId, number>>;
+}
+
 /** Rolle bestimmt Zielregeln und Formationsplatz (SPEC §1.2/§1.3). */
 export type Role = 'tank' | 'melee' | 'ranged';
 

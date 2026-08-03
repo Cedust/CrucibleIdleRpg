@@ -51,7 +51,7 @@ der Kampf endet mit Sieg oder Wipe, und der Ausgang überlebt einen Reload.
 | 6           | [006 — Schrittwerk & Kampf-Events](tasks/006-schrittwerk-und-events.md)           | done   | 004, 005     |
 | 7           | [007 — Playback & Combat-Store](tasks/007-playback-und-store.md)                  | done   | 006          |
 | 8           | [008 — Kampfbildschirm](tasks/008-kampfbildschirm.md)                             | done   | 007          |
-| 9           | [009 — Floor-Abschluss & Save v1](tasks/009-floor-abschluss-und-save.md)          | ready  | 007          |
+| 9           | [009 — Floor-Abschluss & Save v1](tasks/009-floor-abschluss-und-save.md)          | done   | 007          |
 
 **004 und 005** hängen beide nur an 003 und berühren getrennte Dateien — sie sind parallel
 bearbeitbar. Alles andere ist eine Kette.

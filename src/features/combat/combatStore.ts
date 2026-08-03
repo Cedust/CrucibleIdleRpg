@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { RewardSummary } from '@/features/progression/rewards';
 import {
   combatOutcome,
   M1_COMBAT_CONTEXT,
@@ -26,9 +27,17 @@ export interface CombatStoreState {
   turnOrder: readonly ActorRef[];
   isPaused: boolean;
   playbackSpeed: PlaybackSpeed;
-  startCombat: (combat: CombatState, context?: CombatContext) => void;
+  completionStatus: 'idle' | 'saving' | 'saved' | 'failed';
+  lastReward: RewardSummary | null;
+  victoryCommit: (() => Promise<RewardSummary>) | null;
+  startCombat: (
+    combat: CombatState,
+    context?: CombatContext,
+    victoryCommit?: () => Promise<RewardSummary>,
+  ) => void;
   clearCombat: () => void;
   advanceTick: () => TickResult | undefined;
+  retryVictoryCommit: () => void;
   setPaused: (isPaused: boolean) => void;
   setPlaybackSpeed: (speed: PlaybackSpeed) => void;
 }
@@ -45,6 +54,9 @@ const INITIAL_PLAYBACK_STATE = {
   turnOrder: [] as readonly ActorRef[],
   isPaused: true,
   playbackSpeed: 1,
+  completionStatus: 'idle' as const,
+  lastReward: null,
+  victoryCommit: null,
 } as const;
 
 /**
@@ -54,7 +66,7 @@ const INITIAL_PLAYBACK_STATE = {
 export const useCombatStore = create<CombatStoreState>((set, get) => ({
   ...INITIAL_PLAYBACK_STATE,
 
-  startCombat: (combat, context = M1_COMBAT_CONTEXT) =>
+  startCombat: (combat, context = M1_COMBAT_CONTEXT, victoryCommit) =>
     set({
       combat,
       context,
@@ -64,6 +76,9 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       turnOrder: buildPendingQueue(combat),
       // Playback startet verbindlich pausiert (SIMULATION §2).
       isPaused: true,
+      completionStatus: 'idle',
+      lastReward: null,
+      victoryCommit: victoryCommit ?? null,
     }),
 
   clearCombat: () =>
@@ -82,6 +97,8 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
 
     const tick = nextTick(current.combat, current.context);
 
+    const shouldCommitVictory = tick.outcome === 'victory' && current.victoryCommit !== null;
+
     set({
       combat: tick.state,
       outcome: tick.outcome,
@@ -89,9 +106,47 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       tickLog: [...current.tickLog, tick].slice(-COMBAT_LOG_LIMIT),
       // Ein entschiedener Kampf erzeugt keine weiteren Playback-Frames.
       isPaused: tick.outcome === 'ongoing' ? current.isPaused : true,
+      completionStatus: 'idle',
     });
 
+    if (shouldCommitVictory) {
+      get().retryVictoryCommit();
+    }
+
     return tick;
+  },
+
+  retryVictoryCommit: () => {
+    const current = get();
+    if (
+      current.combat === null ||
+      current.outcome !== 'victory' ||
+      current.victoryCommit === null ||
+      current.completionStatus === 'saving'
+    ) {
+      return;
+    }
+
+    const combat = current.combat;
+    const commit = current.victoryCommit;
+    set({ completionStatus: 'saving' });
+
+    void Promise.resolve()
+      .then(commit)
+      .then(
+        (reward) => {
+          const latest = get();
+          if (latest.combat === combat && latest.outcome === 'victory') {
+            set({ completionStatus: 'saved', lastReward: reward, victoryCommit: null });
+          }
+        },
+        () => {
+          const latest = get();
+          if (latest.combat === combat && latest.outcome === 'victory') {
+            set({ completionStatus: 'failed' });
+          }
+        },
+      );
   },
 
   setPaused: (isPaused) => set({ isPaused }),

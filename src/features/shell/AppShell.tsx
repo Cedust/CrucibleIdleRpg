@@ -1,9 +1,11 @@
 import { Coins, Flame, Gem, Hammer, Map, ScrollText, Users } from 'lucide-react';
 import { useEffect, type ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
-import { CombatScreen } from '@/features/combat/CombatScreen';
+import { DungeonRunScreen } from '@/features/combat/DungeonRunScreen';
 import { useCombatStore } from '@/features/combat/combatStore';
 import { useCombatPlayback } from '@/features/combat/useCombatPlayback';
+import { DungeonSelectionScreen } from '@/features/progression/DungeonSelectionScreen';
+import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
 
@@ -33,6 +35,7 @@ export function AppShell() {
   useEffect(() => {
     // Top-Level-Mount entspricht einem Reload: Laufzeitkampf verwerfen, Save neu laden.
     useCombatStore.getState().clearCombat();
+    useDungeonRunStore.getState().resetForReload();
     void hydrateSave()
       .then((save) => {
         useCombatStore.getState().setPlaybackSpeed(save.playbackSpeed);
@@ -43,6 +46,7 @@ export function AppShell() {
   const activeView = useNavigationStore((s) => s.activeView);
   const setActiveView = useNavigationStore((s) => s.setActiveView);
   const currencies = useSaveStore((state) => state.data?.currencies ?? null);
+  const runMode = useDungeonRunStore((state) => state.mode);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-text">
@@ -81,48 +85,52 @@ export function AppShell() {
         </dl>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <nav
-          aria-label="Primary navigation"
-          className="flex w-52 shrink-0 flex-col gap-1 border-r border-border bg-background/60 px-2 py-3"
-        >
-          {VIEWS.map((view) => {
-            const { label, icon: Icon } = VIEW_META[view];
-            const isActive = view === activeView;
-            return (
-              <button
-                key={view}
-                type="button"
-                onClick={() => setActiveView(view)}
-                aria-current={isActive ? 'page' : undefined}
-                className={`flex items-center gap-3 rounded-r-md border-l-2 px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                  isActive
-                    ? 'border-accent bg-accent/10 text-text'
-                    : 'border-transparent text-text-muted hover:bg-surface hover:text-text'
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`flex size-7 shrink-0 items-center justify-center rounded-md bg-surface-raised ${
-                    isActive ? 'text-accent' : 'text-text-muted'
+      {runMode === 'run' ? (
+        <DungeonRunScreen />
+      ) : (
+        <div className="flex min-h-0 flex-1">
+          <nav
+            aria-label="Primary navigation"
+            className="flex w-52 shrink-0 flex-col gap-1 border-r border-border bg-background/60 px-2 py-3"
+          >
+            {VIEWS.map((view) => {
+              const { label, icon: Icon } = VIEW_META[view];
+              const isActive = view === activeView;
+              return (
+                <button
+                  key={view}
+                  type="button"
+                  onClick={() => setActiveView(view)}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex items-center gap-3 rounded-r-md border-l-2 px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                    isActive
+                      ? 'border-accent bg-accent/10 text-text'
+                      : 'border-transparent text-text-muted hover:bg-surface hover:text-text'
                   }`}
                 >
-                  <Icon className="size-4" />
-                </span>
-                {label}
-              </button>
-            );
-          })}
-        </nav>
+                  <span
+                    aria-hidden="true"
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-md bg-surface-raised ${
+                      isActive ? 'text-accent' : 'text-text-muted'
+                    }`}
+                  >
+                    <Icon className="size-4" />
+                  </span>
+                  {label}
+                </button>
+              );
+            })}
+          </nav>
 
-        <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
-          {activeView === 'dungeons' ? (
-            <CombatScreen />
-          ) : (
-            <PlaceholderView label={VIEW_META[activeView].label} />
-          )}
-        </main>
-      </div>
+          <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
+            {activeView === 'dungeons' ? (
+              <DungeonSelectionScreen />
+            ) : (
+              <PlaceholderView label={VIEW_META[activeView].label} />
+            )}
+          </main>
+        </div>
+      )}
     </div>
   );
 }

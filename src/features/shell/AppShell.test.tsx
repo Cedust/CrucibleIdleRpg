@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
 import { AppShell } from './AppShell';
@@ -8,11 +9,13 @@ import { useNavigationStore } from './navigationStore';
 
 describe('AppShell', () => {
   beforeEach(() => {
+    localStorage.clear();
     useNavigationStore.setState({ activeView: 'dungeons' });
+    useDungeonRunStore.setState({ mode: 'selection', activeDungeonId: null, startError: null });
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
-  it('zeigt Markenbereich, Ressourcen und die zugÃ¤ngliche PrimÃ¤rnavigation', () => {
+  it('shows branding, resources, and accessible primary navigation outside a run', () => {
     render(<AppShell />);
 
     expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
@@ -23,16 +26,18 @@ describe('AppShell', () => {
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
   });
 
-  it('zeigt standardmäßig den Dungeons-View mit dem Kampfbildschirm', () => {
+  it('shows the dungeon selection in the default view', () => {
     render(<AppShell />);
+
     expect(screen.getByRole('button', { name: 'DUNGEONS' })).toHaveAttribute(
       'aria-current',
       'page',
     );
-    expect(screen.getByRole('heading', { name: 'Combat' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Enter Dungeon' })).toBeEnabled();
   });
 
-  it('wechselt den View per Navigationsklick', async () => {
+  it('switches views through primary navigation', async () => {
     const user = userEvent.setup();
     render(<AppShell />);
 
@@ -40,5 +45,30 @@ describe('AppShell', () => {
 
     expect(screen.getByRole('heading', { name: 'RUNES' })).toBeInTheDocument();
     expect(useNavigationStore.getState().activeView).toBe('runes');
+  });
+
+  it('isolates a run from navigation and only exits after confirmed leave', async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.click(screen.getByRole('button', { name: 'Enter Dungeon' }));
+
+    expect(await screen.findByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('navigation', { name: 'Primary navigation' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'CRUCIBLE' })).not.toBeInTheDocument();
+
+    act(() => useNavigationStore.getState().setActiveView('crucible'));
+    expect(screen.getByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'CRUCIBLE' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Leave Dungeon' }));
+    expect(screen.getByRole('button', { name: 'Confirm Leave Dungeon' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Confirm Leave Dungeon' }));
+
+    expect(await screen.findByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
   });
 });

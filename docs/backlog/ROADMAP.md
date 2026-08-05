@@ -68,16 +68,17 @@ konstant `0` ([Mitigation](../spec/SIGNATURES.md#11-mitigation-korvin-tank)).
 **Fertig, wenn:** Akt 1 ist als Dungeon-Kette spielbar; der Spieler gewinnt XP und Punkte,
 entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons automatisiert farmen.
 
-| Reihenfolge | Task                                                                                    | Status  | Hängt ab von |
-| ----------- | --------------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [010 — Akt-1-Content & Dungeon-Auswahl](tasks/010-akt-1-content-und-dungeon-auswahl.md) | done    | 009          |
-| 2           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                 | blocked | 010          |
-| 3           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)     | blocked | 011          |
-| 4           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)            | blocked | 011          |
-| 5           | [014 — Charakter-Skilltree](tasks/014-charakter-skilltree.md)                           | blocked | 013          |
-| 6           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)           | blocked | 012, 014     |
+| Reihenfolge | Task                                                                                      | Status  | Hängt ab von |
+| ----------- | ----------------------------------------------------------------------------------------- | ------- | ------------ |
+| 1           | [010 — Akt-1-Content & Dungeon-Auswahl](tasks/010-akt-1-content-und-dungeon-auswahl.md)   | done    | 009          |
+| 2           | [011a — Dungeon-Auswahl & Run-Isolation](tasks/011a-dungeon-auswahl-und-run-isolation.md) | done    | 010          |
+| 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | ready   | 010, 011a    |
+| 4           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)       | blocked | 011          |
+| 5           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)              | blocked | 011          |
+| 6           | [014 — Charakter-Skilltree](tasks/014-charakter-skilltree.md)                             | blocked | 013          |
+| 7           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | blocked | 012, 014     |
 
-**011–015** haben noch Spec- bzw. Tuning-Blocker, die jeweils im Task verlinkt sind. Sie werden
+**012–015** haben noch Spec- bzw. Tuning-Blocker, die jeweils im Task verlinkt sind. Sie werden
 erst `ready`, wenn die fehlende Entscheidung an ihrem verbindlichen Wohnort getroffen wurde.
 
 ## M3 — Ausrüstung

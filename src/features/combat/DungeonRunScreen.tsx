@@ -1,0 +1,98 @@
+import { useEffect, useState } from 'react';
+import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { Button } from '@/shared/ui/Button';
+import { CombatLog } from './CombatLog';
+import { useCombatStore } from './combatStore';
+import { EnemyFormation } from './EnemyFormation';
+import { TeamPanel } from './TeamPanel';
+import { TurnOrderBar } from './TurnOrderBar';
+
+/** Fullscreen arena with lifecycle actions only; it intentionally has no app navigation. */
+export function DungeonRunScreen() {
+  const combat = useCombatStore((state) => state.combat);
+  const floorId = combat?.floorId ?? null;
+  const outcome = useCombatStore((state) => state.outcome);
+  const isPaused = useCombatStore((state) => state.isPaused);
+  const completionStatus = useCombatStore((state) => state.completionStatus);
+  const lastReward = useCombatStore((state) => state.lastReward);
+  const setPaused = useCombatStore((state) => state.setPaused);
+  const retryVictoryCommit = useCombatStore((state) => state.retryVictoryCommit);
+  const leaveRun = useDungeonRunStore((state) => state.leaveRun);
+  const [confirmingLeave, setConfirmingLeave] = useState(false);
+
+  useEffect(() => {
+    if (outcome === 'wipe') {
+      leaveRun();
+    }
+  }, [leaveRun, outcome]);
+
+  if (floorId === null) {
+    return (
+      <main className="min-h-0 flex-1 bg-background p-6 text-text">Preparing dungeon run...</main>
+    );
+  }
+
+  return (
+    <main className="min-h-0 flex-1 overflow-auto bg-background p-4 text-text sm:p-6">
+      <section className="mx-auto max-w-7xl space-y-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+          <div>
+            <p className="text-sm text-text-muted">Dungeon run</p>
+            <h1 className="text-2xl font-bold">{floorId}</h1>
+          </div>
+          {outcome === 'ongoing' && (
+            <div className="flex flex-wrap items-center gap-3">
+              <Button variant={isPaused ? 'primary' : 'ghost'} onClick={() => setPaused(!isPaused)}>
+                {isPaused ? 'Resume Combat' : 'Pause Combat'}
+              </Button>
+              {confirmingLeave ? (
+                <>
+                  <Button variant="ghost" onClick={() => setConfirmingLeave(false)}>
+                    Keep Fighting
+                  </Button>
+                  <Button onClick={leaveRun}>Confirm Leave Dungeon</Button>
+                </>
+              ) : (
+                <Button variant="ghost" onClick={() => setConfirmingLeave(true)}>
+                  Leave Dungeon
+                </Button>
+              )}
+            </div>
+          )}
+        </header>
+
+        {outcome === 'victory' && (
+          <section aria-live="polite" className="rounded-md border border-border bg-surface p-4">
+            <h2 className="font-semibold text-success">Floor complete</h2>
+            {completionStatus === 'saving' && (
+              <p className="text-sm text-text-muted">Saving reward...</p>
+            )}
+            {completionStatus === 'saved' && lastReward !== null && (
+              <p className="text-sm text-text-muted">
+                Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +{lastReward.crystals}{' '}
+                {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
+              </p>
+            )}
+            {completionStatus === 'failed' && (
+              <>
+                <p role="alert" className="text-sm text-danger">
+                  Reward save failed.
+                </p>
+                <Button variant="ghost" onClick={retryVictoryCommit}>
+                  Retry Save
+                </Button>
+              </>
+            )}
+          </section>
+        )}
+
+        <TurnOrderBar />
+        <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(16rem,0.8fr)_minmax(32rem,1.6fr)]">
+          <TeamPanel />
+          <EnemyFormation />
+        </div>
+        <CombatLog />
+      </section>
+    </main>
+  );
+}

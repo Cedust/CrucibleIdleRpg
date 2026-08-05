@@ -2,9 +2,9 @@
 
 | Feld             | Wert      |
 | ---------------- | --------- |
-| **Status**       | `blocked` |
+| **Status**       | `ready`   |
 | **Meilenstein**  | M2        |
-| **Hängt ab von** | 010       |
+| **Hängt ab von** | 010, 011a |
 
 ## Ziel
 
@@ -21,9 +21,11 @@ Auto-Progression und die Optimierungs-Sperre folgen in [012](012-auto-progressio
 - [Kampfzustand und Reload](../../spec/SIMULATION.md#5-kampfzustand-und-reload) — Reload beendet den Run ohne Verlust committeter Rewards
 - [Seeds und Zufalls-Ströme](../../spec/SIMULATION.md#4-seeds-und-zufalls-ströme) — persistierter Run-Counter und abgeleitete Floor-Seeds
 
-## Blockiert durch
+## Entblockt durch
 
-Die Spec legt nicht fest, wie bereits committete XP, Gold und Crystals bis zum Run-Ende als **nicht ausgebbar** modelliert werden. Die Entscheidung muss zuerst in [PROGRESSION](../../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch) und [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) stehen.
+[011a](011a-dungeon-auswahl-und-run-isolation.md) definiert und implementiert die isolierte
+Run-Ansicht: Der Run nutzt den Dungeon-View-Bereich ohne Navigation oder Ausgabefunktionen, während
+die Kopfzeile Ressourcen nur lesend zeigt. 011 baut darauf den fachlichen Run-Lifecycle.
 
 ## Akzeptanzkriterien
 

@@ -35,6 +35,9 @@
   [Checkpoints, Wipe & Abbruch](PROGRESSION.md#4-checkpoints-wipe--abbruch)), höchster
   erreichter Floor, **Erstsieg-Flags** je Floor (Crystals,
   [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)).
+- Kein Feld für einen aktiven Run oder Pending-Currency: Der laufende Run ist ausschließlich
+  Laufzeit-Zustand. Ein Reload verwirft ihn, lädt die normale Auswahl und erhält alle davor
+  committeten Belohnungen.
 
 ### 2.1 Save v1 (M1)
 

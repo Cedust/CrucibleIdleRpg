@@ -2,7 +2,7 @@
 
 | Feld             | Wert      |
 | ---------------- | --------- |
-| **Status**       | `ready`   |
+| **Status**       | `done`    |
 | **Meilenstein**  | M2        |
 | **Hängt ab von** | 010, 011a |
 

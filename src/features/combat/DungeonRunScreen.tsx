@@ -18,6 +18,9 @@ export function DungeonRunScreen() {
   const setPaused = useCombatStore((state) => state.setPaused);
   const retryVictoryCommit = useCombatStore((state) => state.retryVictoryCommit);
   const leaveRun = useDungeonRunStore((state) => state.leaveRun);
+  const startNextFloor = useDungeonRunStore((state) => state.startNextFloor);
+  const completeRun = useDungeonRunStore((state) => state.completeRun);
+  const completionError = useDungeonRunStore((state) => state.completionError);
   const [confirmingLeave, setConfirmingLeave] = useState(false);
 
   useEffect(() => {
@@ -68,10 +71,20 @@ export function DungeonRunScreen() {
               <p className="text-sm text-text-muted">Saving reward...</p>
             )}
             {completionStatus === 'saved' && lastReward !== null && (
-              <p className="text-sm text-text-muted">
-                Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +{lastReward.crystals}{' '}
-                {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
-              </p>
+              <div className="space-y-3">
+                <p className="text-sm text-text-muted">
+                  Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +
+                  {lastReward.crystals} {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
+                </p>
+                {floorId.endsWith('-20') ? (
+                  <>
+                    {completionError !== null && <p role="alert">{completionError}</p>}
+                    <Button onClick={() => void completeRun()}>Complete Dungeon</Button>
+                  </>
+                ) : (
+                  <Button onClick={startNextFloor}>Start Next Floor</Button>
+                )}
+              </div>
             )}
             {completionStatus === 'failed' && (
               <>

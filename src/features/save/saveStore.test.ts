@@ -71,6 +71,25 @@ describe('createSaveStore', () => {
     expect(reloaded.getState().data).not.toHaveProperty('combat');
   });
 
+  it('marks only the completed dungeon and unlocks its next checkpoint', async () => {
+    const port = memoryPort();
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    await store.getState().completeDungeon('A1-D1');
+    const reloaded = createSaveStore(createSaveService(port, () => createDefaultSave(99)));
+    await reloaded.getState().hydrate();
+
+    expect(reloaded.getState().data?.completedDungeons).toEqual({
+      'A1-D1': true,
+      'A1-D2': false,
+      'A1-D3': false,
+      'A1-D4': false,
+      'A1-D5': false,
+    });
+    expect(reloaded.getState().data?.unlockedDungeonIds).toEqual(['A1-D1', 'A1-D2']);
+  });
+
   it('startet keinen Run, wenn der erhöhte runCounter nicht gespeichert werden kann', async () => {
     const port: SavePort = {
       load: () => Promise.resolve(null),

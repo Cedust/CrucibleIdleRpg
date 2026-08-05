@@ -2,6 +2,7 @@ import { createStore, useStore } from 'zustand';
 import type { RewardCommit } from '@/features/progression/rewards';
 import { commitFloorVictory } from '@/features/progression/rewards';
 import type { FloorRewardDefinition } from '@/game/types';
+import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
 import { createSaveService, type SaveService } from './saveService';
@@ -14,6 +15,7 @@ export interface SaveStoreState {
   hydrate: () => Promise<SaveData>;
   beginRun: () => Promise<SaveData>;
   commitVictory: (reward: FloorRewardDefinition) => Promise<RewardCommit>;
+  completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
 
@@ -82,6 +84,30 @@ export function createSaveStore(service: SaveService) {
       }
     },
 
+    completeDungeon: async (dungeonId) => {
+      const current = requiredSave(get().data);
+      const nextDungeonId = nextDungeonIdAfter(dungeonId);
+      const unlockedDungeonIds =
+        nextDungeonId !== null && !current.unlockedDungeonIds.includes(nextDungeonId)
+          ? [...current.unlockedDungeonIds, nextDungeonId]
+          : current.unlockedDungeonIds;
+      const next: SaveData = {
+        ...current,
+        unlockedDungeonIds,
+        completedDungeons: { ...current.completedDungeons, [dungeonId]: true },
+      };
+      set({ status: 'saving' });
+
+      try {
+        await service.save(next);
+        set({ data: next, status: 'ready' });
+        return next;
+      } catch (error) {
+        set({ status: 'error' });
+        throw error;
+      }
+    },
+
     setPlaybackSpeed: async (playbackSpeed) => {
       const current = requiredSave(get().data);
       const next: SaveData = { ...current, playbackSpeed };
@@ -104,6 +130,11 @@ function requiredSave(data: SaveData | null): SaveData {
   }
 
   return data;
+}
+
+function nextDungeonIdAfter(dungeonId: Act1DungeonId): Act1DungeonId | null {
+  const index = ACT_1_DUNGEON_IDS.indexOf(dungeonId);
+  return ACT_1_DUNGEON_IDS[index + 1] ?? null;
 }
 
 const browserSaveService = createSaveService(createLocalStorageSavePort(), () =>

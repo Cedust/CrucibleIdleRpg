@@ -72,7 +72,7 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 | ----------- | ----------------------------------------------------------------------------------------- | ------- | ------------ |
 | 1           | [010 — Akt-1-Content & Dungeon-Auswahl](tasks/010-akt-1-content-und-dungeon-auswahl.md)   | done    | 009          |
 | 2           | [011a — Dungeon-Auswahl & Run-Isolation](tasks/011a-dungeon-auswahl-und-run-isolation.md) | done    | 010          |
-| 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | ready   | 010, 011a    |
+| 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | done    | 010, 011a    |
 | 4           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)       | blocked | 011          |
 | 5           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)              | blocked | 011          |
 | 6           | [014 — Charakter-Skilltree](tasks/014-charakter-skilltree.md)                             | blocked | 013          |

@@ -73,6 +73,17 @@ export function resolveAct1Encounter(floorId: FloorId): Act1EncounterDefinition 
   return encounter;
 }
 
+/** Liefert den Folgekampf desselben Dungeons oder `null` nach dessen letzten Floor. */
+export function getNextAct1DungeonEncounter(
+  encounter: Act1EncounterDefinition,
+): Act1EncounterDefinition | null {
+  if (encounter.floorNumber === FLOORS_PER_DUNGEON) {
+    return null;
+  }
+
+  return resolveAct1Encounter(floorId(encounter.dungeonId, encounter.floorNumber + 1));
+}
+
 /** Prüft Vollständigkeit, IDs, Klassifikation und referenzierte Formationen des Contents. */
 export function validateAct1Encounters(
   encounters: readonly Act1EncounterDefinition[],

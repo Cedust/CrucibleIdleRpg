@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useCombatStore } from '@/features/combat/combatStore';
+import { createNextDungeonCombat } from '@/features/combat/dungeonCombat';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
 import { useDungeonRunStore } from './dungeonRunStore';
@@ -9,7 +10,12 @@ describe('useDungeonRunStore', () => {
     localStorage.clear();
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
     useCombatStore.getState().clearCombat();
-    useDungeonRunStore.setState({ mode: 'selection', activeDungeonId: null, startError: null });
+    useDungeonRunStore.setState({
+      mode: 'selection',
+      activeDungeonId: null,
+      startError: null,
+      completionError: null,
+    });
   });
 
   it('persists one run start before entering the isolated run mode', async () => {
@@ -43,16 +49,60 @@ describe('useDungeonRunStore', () => {
     expect(useDungeonRunStore.getState().startError).toBe('This dungeon is not available.');
   });
 
-  it('leaves and completes a run only through terminal lifecycle actions', async () => {
+  it('leaves a run only through its terminal lifecycle action', async () => {
     await useDungeonRunStore.getState().startRun('A1-D1');
     useDungeonRunStore.getState().leaveRun();
 
     expect(useDungeonRunStore.getState().mode).toBe('selection');
     expect(useCombatStore.getState().combat).toBeNull();
+  });
 
+  it('starts the next floor only after its reward is saved and keeps carried health', async () => {
     await useDungeonRunStore.getState().startRun('A1-D1');
-    useDungeonRunStore.getState().completeRun();
+    const first = useCombatStore.getState().combat;
+    if (first === null) throw new Error('expected first dungeon floor');
+    const victorious = {
+      ...first,
+      characters: first.characters.map((character, index) => ({
+        ...character,
+        health: index === 2 ? 0 : character.health - 10,
+      })),
+    };
+    useCombatStore.setState({
+      combat: victorious,
+      outcome: 'victory',
+      completionStatus: 'saved',
+    });
+
+    expect(useDungeonRunStore.getState().startNextFloor()).toBe(true);
+    expect(useCombatStore.getState().combat?.floorId).toBe('A1-D1-02');
+    expect(
+      useCombatStore.getState().combat?.characters.map((character) => character.health),
+    ).toEqual(victorious.characters.map((character) => character.health));
+    expect(useDungeonRunStore.getState().startNextFloor()).toBe(false);
+  });
+
+  it('completes only a saved final floor and persists the dungeon checkpoint', async () => {
+    await useDungeonRunStore.getState().startRun('A1-D1');
+    const initial = useCombatStore.getState().combat;
+    if (initial === null) throw new Error('expected first dungeon floor');
+    let finalFloor = initial;
+    for (let index = 0; index < 19; index += 1) {
+      finalFloor = createNextDungeonCombat(
+        saveStore.getState().data ?? createDefaultSave(42),
+        finalFloor,
+      );
+    }
+    useCombatStore.setState({
+      combat: finalFloor,
+      outcome: 'victory',
+      completionStatus: 'saved',
+    });
+
+    await expect(useDungeonRunStore.getState().completeRun()).resolves.toBe(true);
+
+    expect(saveStore.getState().data?.completedDungeons['A1-D1']).toBe(true);
+    expect(saveStore.getState().data?.unlockedDungeonIds).toEqual(['A1-D1', 'A1-D2']);
     expect(useDungeonRunStore.getState().mode).toBe('selection');
-    expect(useCombatStore.getState().combat).toBeNull();
   });
 });

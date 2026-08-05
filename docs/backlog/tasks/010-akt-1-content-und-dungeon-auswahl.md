@@ -1,10 +1,10 @@
 # 010 — Akt-1-Content & Dungeon-Auswahl
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M2      |
-| **Hängt ab von** | 009     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 009    |
 
 ## Ziel
 

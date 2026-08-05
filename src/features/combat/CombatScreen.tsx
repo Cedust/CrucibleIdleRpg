@@ -1,15 +1,19 @@
-import { M1_FLOOR_REWARD } from '@/game/rewards/floorRewards';
+import { useState } from 'react';
+import { type Act1DungeonId } from '@/game/encounters/act1';
+import { createPlaceholderFloorReward } from '@/game/rewards/floorRewards';
+import { DungeonSelector } from '@/features/progression/DungeonSelector';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { CombatLog } from './CombatLog';
 import { useCombatStore } from './combatStore';
 import { EnemyFormation } from './EnemyFormation';
-import { createM1Combat } from './m1Combat';
+import { createDungeonEntryCombat } from './dungeonCombat';
 import { TeamPanel } from './TeamPanel';
 import { TurnOrderBar } from './TurnOrderBar';
 
 /** Steuerung mit selektiven Subscriptions; unveränderte Takte rendern sie nicht neu. */
 export function CombatControls() {
+  const [requestedDungeonId, setRequestedDungeonId] = useState<Act1DungeonId>('A1-D1');
   const floorId = useCombatStore((state) => state.combat?.floorId ?? null);
   const outcome = useCombatStore((state) => state.outcome);
   const isPaused = useCombatStore((state) => state.isPaused);
@@ -21,12 +25,18 @@ export function CombatControls() {
   const saveStatus = useSaveStore((state) => state.status);
   const beginRun = useSaveStore((state) => state.beginRun);
   const commitVictory = useSaveStore((state) => state.commitVictory);
+  const save = useSaveStore((state) => state.data);
+  const selectedDungeonId =
+    save !== null && save.unlockedDungeonIds.includes(requestedDungeonId)
+      ? requestedDungeonId
+      : (save?.unlockedDungeonIds[0] ?? 'A1-D1');
 
   const start = async () => {
     try {
       const runSave = await beginRun();
-      startCombat(createM1Combat(runSave), undefined, async () => {
-        const commit = await commitVictory(M1_FLOOR_REWARD);
+      const combat = createDungeonEntryCombat(runSave, selectedDungeonId);
+      startCombat(combat, undefined, async () => {
+        const commit = await commitVictory(createPlaceholderFloorReward(combat.floorId));
         return commit.reward;
       });
     } catch {
@@ -36,13 +46,22 @@ export function CombatControls() {
 
   if (floorId === null) {
     return (
-      <Button disabled={saveStatus !== 'ready'} onClick={() => void start()}>
-        {saveStatus === 'loading' || saveStatus === 'idle'
-          ? 'Loading Save…'
-          : saveStatus === 'error'
-            ? 'Save Unavailable'
-            : 'Start Combat'}
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        {save !== null && (
+          <DungeonSelector
+            save={save}
+            selectedDungeonId={selectedDungeonId}
+            onSelect={setRequestedDungeonId}
+          />
+        )}
+        <Button disabled={saveStatus !== 'ready'} onClick={() => void start()}>
+          {saveStatus === 'loading' || saveStatus === 'idle'
+            ? 'Loading Save…'
+            : saveStatus === 'error'
+              ? 'Save Unavailable'
+              : 'Start Combat'}
+        </Button>
+      </div>
     );
   }
 

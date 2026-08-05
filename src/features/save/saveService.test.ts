@@ -42,7 +42,20 @@ describe('createSaveService', () => {
 
     await service.save(save);
 
-    expect(port.raw()).toBe(JSON.stringify(save));
+    expect(JSON.parse(port.raw() ?? 'null')).toEqual(save);
     await expect(service.load()).resolves.toEqual(save);
+  });
+
+  it('migrates a v1 save with the first dungeon checkpoint to v2', async () => {
+    const saveV1 = Object.fromEntries(
+      Object.entries(createDefaultSave(42)).filter(
+        ([key]) => key !== 'unlockedDungeonIds' && key !== 'completedDungeons',
+      ),
+    );
+    const service = createSaveService(memoryPort(JSON.stringify({ ...saveV1, version: 1 })), () =>
+      createDefaultSave(1),
+    );
+
+    await expect(service.load()).resolves.toEqual(createDefaultSave(42));
   });
 });

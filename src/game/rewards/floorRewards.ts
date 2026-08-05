@@ -10,3 +10,10 @@ export const M1_FLOOR_REWARD: FloorRewardDefinition = {
   gold: 10,
   characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
 };
+
+/** Verwendet bis zum Economy-Pass dieselben markierten Platzhalter-Werte je Akt-1-Floor. */
+export function createPlaceholderFloorReward(
+  floorId: FloorRewardDefinition['floorId'],
+): FloorRewardDefinition {
+  return { ...M1_FLOOR_REWARD, floorId };
+}

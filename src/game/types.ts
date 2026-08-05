@@ -9,9 +9,23 @@
 export type CharacterId = 'korvin' | 'rhaya' | 'quinn';
 export type EnemyId = string;
 export type FormationId = string;
+export type DungeonId = `A${number}-D${number}`;
 
 /** Floor-Kennung in der Notation `A<Akt>-D<Dungeon>-<Floor>`, Floor zweistellig (SPEC §4.1). */
-export type FloorId = string;
+export type FloorId = `${DungeonId}-${string}`;
+
+/** Klassifikation eines Floors für Elite-/Boss-Multiplikatoren (SPEC §1 Struktur). */
+export type EncounterClass = 'normal' | 'elite' | 'boss';
+
+/** Deklarative Zuordnung eines Floors zu einer Formation und seiner Progressionsposition. */
+export interface FloorEncounterDefinition {
+  id: FloorId;
+  dungeonId: DungeonId;
+  floorNumber: number;
+  floorIndex: number;
+  classification: EncounterClass;
+  formationId: FormationId;
+}
 
 /** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */
 export interface FloorRewardDefinition {

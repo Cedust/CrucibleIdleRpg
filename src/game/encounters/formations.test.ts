@@ -4,7 +4,7 @@ import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combat
 import { ENEMY_ATTACK_MULTIPLIER, ENEMY_HEALTH_MULTIPLIER } from '@/game/curves/enemyCurves';
 import { MAIN_HAND_DAMAGE_RANGE } from '@/game/curves/weaponCurves';
 import { ENEMIES } from '@/game/enemies/enemies';
-import type { EnemyDefinition, FormationDefinition } from '@/game/types';
+import type { EnemyDefinition, FloorId, FormationDefinition } from '@/game/types';
 import { FLOOR_FORMATIONS, FORMATIONS } from './formations';
 
 /** Alle besetzten Slots einer Vorlage als Gegner-Definitionen, in Formations-Index-Reihenfolge. */
@@ -72,7 +72,7 @@ describe('FLOOR_FORMATIONS', () => {
     const floors = Object.keys(FLOOR_FORMATIONS);
     expect(floors).toHaveLength(20);
     for (let i = 1; i <= 20; i++) {
-      const floorId = `A1-D1-${String(i).padStart(2, '0')}`;
+      const floorId = `A1-D1-${String(i).padStart(2, '0')}` as FloorId;
       const formationId = FLOOR_FORMATIONS[floorId];
       expect(formationId, floorId).toBeDefined();
       expect(FORMATIONS[formationId as string]).toBeDefined();

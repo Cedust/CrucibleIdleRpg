@@ -48,6 +48,30 @@ export const FORMATIONS: Record<FormationId, FormationDefinition> = {
       backline: ['cinderWretch', 'cinderWretch', null],
     },
   },
+  /** Platzhalter für Dungeon 2: kompakte Formation mit einem Backline-Ziel. */
+  dungeonSkirmish: {
+    id: 'dungeonSkirmish',
+    slots: {
+      frontline: ['ashenGhoul', 'emberHound', null],
+      backline: ['cinderWretch', null, null],
+    },
+  },
+  /** Platzhalter für Dungeon 3: dichte Formation ohne Tank. */
+  dungeonPursuit: {
+    id: 'dungeonPursuit',
+    slots: {
+      frontline: ['ashenGhoul', 'emberHound', 'ashenGhoul'],
+      backline: ['cinderWretch', 'cinderWretch', null],
+    },
+  },
+  /** Platzhalter für Dungeon 5: volle Formation mit einem Tank. */
+  dungeonStronghold: {
+    id: 'dungeonStronghold',
+    slots: {
+      frontline: ['slagBulwark', 'ashenGhoul', 'emberHound'],
+      backline: ['cinderWretch', 'cinderWretch', 'cinderWretch'],
+    },
+  },
 };
 
 /**

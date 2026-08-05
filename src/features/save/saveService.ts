@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import type { SavePort } from '@/shared/ports/savePort';
-import { currentSaveSchema, saveSchemaV1, type SaveData } from './saveSchema';
+import {
+  createDefaultCompletedDungeons,
+  currentSaveSchema,
+  saveSchemaV1,
+  type SaveData,
+} from './saveSchema';
 
 /**
  * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md).
@@ -45,7 +50,14 @@ function migrate(data: unknown): SaveData {
 
   switch (versioned.version) {
     case 1:
-      return saveSchemaV1.parse(versioned);
+      return {
+        ...saveSchemaV1.parse(versioned),
+        version: 2,
+        unlockedDungeonIds: ['A1-D1'],
+        completedDungeons: createDefaultCompletedDungeons(),
+      };
+    case 2:
+      return currentSaveSchema.parse(versioned);
     default:
       throw new Error(`Unbekannte Save-Version: ${versioned.version}`);
   }

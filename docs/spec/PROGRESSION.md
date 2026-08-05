@@ -1,6 +1,6 @@
 # SPEC — Fortschritt & Belohnungen
 
-> Teil der [SPEC](../SPEC.md): Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige.
+> Teil der [Regelübersicht](README.md): Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige.
 > Verwandt: [Items, Loot & Handwerk](ITEMS.md) · [Runen](RUNES.md) ·
 > [Persistenz](PERSISTENCE.md)
 
@@ -11,7 +11,7 @@
 - **3 Akte × 5 Dungeons × 20 Floors = 300 Floors**.
 - Notation: `A<Akt>-D<Dungeon>-<Floor>` (Floor zweistellig), z. B. `A1-D4-20`.
 - Ein **Floor** ist ein Kampf gegen eine Gegnerformation (2–6 Gegner,
-  [Gegnerformation](COMBAT.md#13-gegnerformation)).
+  [Gegnerformation](COMBAT-RUN.md#13-gegnerformation)).
 - **Elite-Floor:** Floor 20 der Dungeons 1–4 eines Akts. **Boss-Floor:** Floor 20 des
   **letzten** Dungeons eines Akts.
   - Akt-Bosse: _The Ashen Warden_ (A1), _The Emberbound Sovereign_ (A2), _The Gilded Empress_ (A3).
@@ -74,10 +74,10 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
   mitgeschleppt (Attrition) — Defensiv-Stats und Regeneration werden dadurch relevant.
   <!-- Bewusste Entscheidung; nach Playtesting revidierbar. -->
 - **Tod gilt für den restlichen Run.** Ein besiegter Charakter bleibt besiegt und ist nicht
-  heilbar ([Heilung](COMBAT.md#26-heilung--grenzen-und-auslösung)).
+  heilbar ([Heilung](DAMAGE-SYSTEM.md#16-heilung--grenzen-und-auslösung)).
   - **Rally** (Crucible-Node, Level 1–5) ist die einzige Ausnahme: Ein gefallener Charakter steht
     beim **Betreten des nächsten Floors** mit einem Anteil seiner Max-Health wieder auf (Wert =
-    Balancing, noch offen: [OPEN_ISSUES](../backlog/OPEN_ISSUES.md#kampf-stellgrößen)). Vor der Freischaltung existiert der
+    Balancing, noch offen: [OPEN_ISSUES](../backlog/OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)). Vor der Freischaltung existiert der
     Effekt nicht.
 - **Health- und Tod-Zustand gelten nur innerhalb einer Run-Kette.** Ein Dungeon-Neustart beginnt
   mit **vollem Team und voller Health**.

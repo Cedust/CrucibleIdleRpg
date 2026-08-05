@@ -5,8 +5,8 @@ import type { DerivedStats } from '@/game/types';
  *
  * Multiplikator auf die Level-1-Startwerte (characters.ts): Index 0 = Level 1 = ×1.
  * Attack liegt auf der steilen Offense-Achse, Defense/Health auf der flachen Defense-Achse
- * (docs/BALANCING.md#2-kern-wachstumsachsen). Vorberechnete Tabellen statt Math.pow zur
- * Laufzeit (AGENTS.md §4).
+ * (docs/spec/BALANCE.md#1-wachstum-und-zahlenraum). Vorberechnete Tabellen statt Math.pow zur
+ * Laufzeit (AGENTS.md).
  *
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Derived-Stat-Kurven je Quelle). Hier gewählt: geometrisch auf ×8 (Attack) bzw. ×5
@@ -61,7 +61,7 @@ export const ATTRIBUTE_BONUS_PER_POINT = 0.01;
 /**
  * Umrechnung eines Core-Stat-Punkts in den Basis-Pool seines Derived Stats
  * (1 Might → +1 Attack-Basis usw.); das Wachstum liegt in den Quell-Tabellen (Item-Innate,
- * Emerald-Gems), docs/BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen.
+ * Emerald-Gems), docs/spec/BALANCE.md#1-wachstum-und-zahlenraum.
  *
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Derived-Stat-Kurven je Quelle, „Core-Stat-Kurven"). Hier gewählt: 1:1.

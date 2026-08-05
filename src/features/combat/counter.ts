@@ -12,7 +12,7 @@ import type { AttackContext, Hit } from './outgoingDamage';
 
 /**
  * Counter — der reaktive Gegenangriff eines getroffenen Charakters
- * (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden, Abschnitt „Counter im Detail").
+ * (docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden, Abschnitt „Counter im Detail").
  *
  * Der Counter ist **kein Teil des eigenen Zuges**, sondern hängt am Gegner-Zug: Er löst
  * gesammelt **nach** Abschluss der Team-Pipeline aus (COMBAT §1.1), in **Slot-Reihenfolge**
@@ -39,7 +39,7 @@ import type { AttackContext, Hit } from './outgoingDamage';
  * einen weiteren Counter zu erzeugen — es ruft sich nicht selbst und erzeugt keinen
  * eingehenden Schaden.
  *
- * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md §5). Der Kampfzustand wird **gelesen**,
+ * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md). Der Kampfzustand wird **gelesen**,
  * nicht verändert — das Anwenden der Treffer liegt im Schrittwerk (Task 006).
  */
 

@@ -1,6 +1,6 @@
 # CRUCIBLE IDLE RPG
 
-An idle-incremental browser game with round-based auto-battle combat.
+A dungeon auto-battle game with RPG elements, where the player can manage a party of three heroes, upgrade their equipment and skills, and explore dungeons.
 
 ## Gameplay
 
@@ -12,14 +12,15 @@ _Coming soon!_
 
 For conventions and architecture, see [AGENTS.md](AGENTS.md).
 
-```
-docs/         # Documentation, ADRs
+```text
+docs/         # Documentation, ADRs, backlog, and design notes
+e2e/          # Playwright tests
+scripts/      # Build and dev scripts
 src/
   features/   # Domain features (components, hooks, stores, tests)
   game/       # Declarative, typed balancing content
-  shared/     # UI primitives, utils, ports (SavePort)
+  shared/     # UI primitives, utils, ports
   test/       # Test setup
-e2e/          # Playwright tests
 ```
 
 ---
@@ -37,6 +38,8 @@ e2e/          # Playwright tests
 | `npm test`           | Unit/component tests (Vitest) |
 | `npm run test:watch` | Vitest in watch mode          |
 | `npm run test:e2e`   | End-to-end tests (Playwright) |
+
+---
 
 ## Remarks
 

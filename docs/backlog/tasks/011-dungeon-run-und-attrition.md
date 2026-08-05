@@ -39,4 +39,4 @@ Die Spec legt nicht fest, wie bereits committete XP, Gold und Crystals bis zum R
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

@@ -22,7 +22,7 @@ import { NO_CRIT_NODES, type AttackContext, type CritNodes } from './outgoingDam
 /**
  * Ein gestellter PRNG: liefert die Werte in der übergebenen Reihenfolge und **protokolliert
  * jeden Zug**. Das Protokoll ist die Absicherung der verbindlichen Zugreihenfolge — ein
- * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/COMBAT.md#25-feststehende-regeln).
+ * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
  */
 interface ScriptedPrng extends Prng {
   readonly draws: readonly string[];

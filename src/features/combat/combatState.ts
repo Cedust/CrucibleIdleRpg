@@ -28,10 +28,10 @@ import { buildPendingQueue } from './turnOrder';
 
 /**
  * Kampfzustand — Typen und deterministischer Aufbau aus Floor-Seed und Formation
- * (docs/spec/COMBAT.md#11-rundenablauf, docs/spec/COMBAT.md#13-gegnerformation).
+ * (docs/spec/COMBAT-RUN.md#11-rundenablauf, docs/spec/COMBAT-RUN.md#13-gegnerformation).
  *
  * Reine Daten und reine Funktionen: kein Timer, kein DOM, kein Store, kein `Date.now()`
- * (AGENTS.md §5). Der Zustand ist damit als Ganzes serialisierbar und vergleichbar — das
+ * (AGENTS.md). Der Zustand ist damit als Ganzes serialisierbar und vergleichbar — das
  * Speichern ist trotzdem verboten (docs/spec/SIMULATION.md#5-kampfzustand-und-reload), der
  * Zustand lebt nur zur Laufzeit.
  *
@@ -150,7 +150,7 @@ export function deriveFloorSeed(runSeed: number, floorIndex: number): number {
 
 /**
  * PRNG eines benannten Stroms unterhalb des Floor-Seeds. Das Label kommt ausschließlich aus
- * `PRNG_STREAM` — ein Tippfehler wäre ein stiller Verhaltensbruch (AGENTS.md §5).
+ * `PRNG_STREAM` — ein Tippfehler wäre ein stiller Verhaltensbruch (AGENTS.md).
  */
 export function deriveStreamPrng(floorSeed: number, stream: PrngStream): ResumablePrng {
   return derivePrng(floorSeed, stream);
@@ -200,7 +200,7 @@ export function occupiedSlots(formation: FormationDefinition): FormationSlot[] {
 
 /**
  * Wert einer Floor-Kurve. Die Tabellen decken die Floor-Indizes 0–299 ab; Indizes außerhalb
- * werden auf die Tabellengrenzen geklemmt, damit der Zugriff typsicher greift (AGENTS.md §9).
+ * werden auf die Tabellengrenzen geklemmt, damit der Zugriff typsicher greift (AGENTS.md).
  */
 function floorCurve(table: readonly number[], floorIndex: number): number {
   const index = Math.min(Math.max(Math.trunc(floorIndex), 0), table.length - 1);
@@ -317,7 +317,7 @@ export function isAlive(actor: { health: number }): boolean {
   return actor.health > 0;
 }
 
-/** Löst einen Akteur-Verweis auf; `undefined`, wenn der Index ins Leere zeigt (AGENTS.md §9). */
+/** Löst einen Akteur-Verweis auf; `undefined`, wenn der Index ins Leere zeigt (AGENTS.md). */
 export function actorAt(
   state: CombatState,
   ref: ActorRef,

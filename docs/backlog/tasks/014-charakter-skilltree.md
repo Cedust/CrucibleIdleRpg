@@ -17,7 +17,7 @@ Die globalen Crucible-Nodes und Signatur-Skills liegen in [015](015-crucible-und
 ## Verbindliche Spec-Anker
 
 - [Charakter-Skilltree](../../spec/CHARACTERS.md#4-charakter-skilltree) — Zweige, gekoppelte Stats, Knotenarten, Multiplikation, Caps und Gold-Respec
-- [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden) — Freischaltungen erweitern exakt diese Kampfpfade
+- [Charakter-Zug](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden) — Freischaltungen erweitern exakt diese Kampfpfade
 - [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) — Skillpunkt-Verteilung ist persistent
 
 ## Blockiert durch
@@ -38,4 +38,4 @@ Die Spec definiert keine Knotenliste, Kosten, Voraussetzungen oder Werte der Sta
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

@@ -5,8 +5,8 @@
  * Akt-Reset; Multiplikator auf die Basiswerte aus enemies.ts (= Floor-1-Anker).
  *
  * Health folgt der steilen Offense-Achse, Attack der flachen Defense-Achse
- * (docs/BALANCING.md#2-kern-wachstumsachsen). Vorberechnete Tabellen statt Math.pow zur
- * Laufzeit (AGENTS.md §4).
+ * (docs/spec/BALANCE.md#1-wachstum-und-zahlenraum). Vorberechnete Tabellen statt Math.pow zur
+ * Laufzeit (AGENTS.md).
  *
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Gegner-Kurven pro Akt/Dungeon/Floor). Hier gewählt: Health ×1.029/Floor (×~5.160 gesamt),
@@ -117,7 +117,7 @@ export const ENEMY_ATTACK_MULTIPLIER: readonly number[] = [
 /**
  * Accuracy-Rampe: additiver Bonus auf die Basis-Accuracy des Gegners; Obergrenze nach der
  * Addition ist ACCURACY_CAP (combatConstants.ts).
- * Trefferchance: docs/spec/COMBAT.md#22-treffermodell.
+ * Trefferchance: docs/spec/DAMAGE-SYSTEM.md#12-treffermodell.
  *
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Gegner-Kurven, „Accuracy als gedeckelte Rampe"). Hier gewählt: linear 0 → +0.25 über die
@@ -178,7 +178,7 @@ export const ENEMY_ACCURACY_BONUS: readonly number[] = [
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Gegner-Kurven, „Elite-/Boss-eHP über die TTK-Ziel-Korridore"). Hier grob aus den
  * Korridoren gegriffen (normal 4–6 Runden ⇒ Elite ×2 ≈ 8–12, Boss ×4 ≈ 15–25;
- * docs/BALANCING.md#2-kern-wachstumsachsen).
+ * docs/spec/BALANCE.md#1-wachstum-und-zahlenraum).
  */
 export const ELITE_MULTIPLIER = { health: 2.0, attack: 1.2 } as const;
 export const BOSS_MULTIPLIER = { health: 4.0, attack: 1.3 } as const;

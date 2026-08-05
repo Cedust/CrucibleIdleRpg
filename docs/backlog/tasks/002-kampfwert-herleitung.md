@@ -23,7 +23,7 @@ folgt in M2/M3.
   `(Baseline + Core-Stat) × (1 + Attribut) × (1 + Crucible)`; die fünf Stat-Kategorien
 - [Charakterlevel](../../spec/CHARACTERS.md#5-charakterlevel) — Baseline wächst je Level
 - [Team](../../spec/CHARACTERS.md#1-team) — keine charakterexklusiven Stats
-- [Feststehende Regeln](../../spec/COMBAT.md#25-feststehende-regeln) — Achsen-Trennung: kein
+- [Feststehende Regeln](../../spec/DAMAGE-SYSTEM.md#15-feststehende-regeln) — Achsen-Trennung: kein
   Effekt konvertiert zwischen Offense und Defense
 
 ## Akzeptanzkriterien

@@ -38,4 +38,4 @@ Welche Anvil-Sparks-Nodes Auto-Progression und welche Checkpoints freischalten, 
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

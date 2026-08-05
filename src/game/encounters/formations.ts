@@ -1,7 +1,7 @@
 import type { FloorId, FormationDefinition, FormationId } from '@/game/types';
 
 /**
- * Formations-Vorlagen der 2×3-Aufstellung (docs/spec/COMBAT.md#13-gegnerformation). Ein Floor
+ * Formations-Vorlagen der 2×3-Aufstellung (docs/spec/COMBAT-RUN.md#13-gegnerformation). Ein Floor
  * verweist auf eine Vorlage, die Floor-Kurve (curves/enemyCurves.ts) skaliert die Gegner-Stats —
  * 300 Floors ohne 300 Einzeleinträge.
  *
@@ -13,7 +13,7 @@ import type { FloorId, FormationDefinition, FormationId } from '@/game/types';
  * PLATZHALTER — Besetzung und Phasenzuschnitt offen:
  * docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven (Formations-Besetzung je Floor).
  * Ab Phase 2 trägt jede Vorlage mindestens zwei Gegner-Aktionen pro Runde
- * (docs/BALANCING.md#2-kern-wachstumsachsen).
+ * (docs/spec/BALANCE.md#1-wachstum-und-zahlenraum).
  */
 export const FORMATIONS: Record<FormationId, FormationDefinition> = {
   /** Phase 1 — eine Lane, zwei Melee. Kein Backline-Ziel, Bulwark bleibt wirkungslos. */

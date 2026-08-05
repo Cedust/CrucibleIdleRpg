@@ -21,7 +21,7 @@ import {
 /**
  * Ein gestellter PRNG: liefert die Werte in der übergebenen Reihenfolge und **protokolliert
  * jeden Zug**. Das Protokoll ist die Absicherung der verbindlichen Zugreihenfolge — ein
- * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/COMBAT.md#25-feststehende-regeln).
+ * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
  */
 interface ScriptedPrng extends Prng {
   readonly draws: readonly string[];
@@ -118,7 +118,7 @@ describe('Schadenspipeline — Test-Vektor aus COMBAT §2.3', () => {
   it('nennt die Eingangswerte des Vektors als aktuelle Konstanten', () => {
     // Der Vektor gilt für genau diese beiden globalen Werte. Ändert das Balancing sie, bricht
     // dieser Test sichtbar, statt die Erwartungswerte unten still falsch werden zu lassen
-    // (docs/backlog/OPEN_ISSUES.md#kampf-stellgrößen).
+    // (docs/backlog/OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen).
     expect(DEFENSE_CONSTANT_K).toBe(100);
     expect(BLOCK_DAMAGE_REDUCTION).toBe(0.4);
   });

@@ -2,7 +2,7 @@ import type { ActorRef } from './combatState';
 import type { HitKind } from './outgoingDamage';
 
 /**
- * Kampf-Events — was ein Takt berichtet (docs/spec/COMBAT.md#25-feststehende-regeln).
+ * Kampf-Events — was ein Takt berichtet (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
  *
  * Die Engine emittiert sie in **deterministisch fester Reihenfolge**: Sie sind die Grundlage des
  * Playbacks (docs/spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit) und später die

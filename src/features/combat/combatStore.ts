@@ -60,7 +60,7 @@ const INITIAL_PLAYBACK_STATE = {
 } as const;
 
 /**
- * Laufzeit-Store des Combat-Features (AGENTS.md §6). Er lebt außerhalb der View-Komponenten,
+ * Laufzeit-Store des Combat-Features (AGENTS.md). Er lebt außerhalb der View-Komponenten,
  * sodass ein Ansichtswechsel weder Kampf noch Pause oder Anzeige-Geschwindigkeit zurücksetzt.
  */
 export const useCombatStore = create<CombatStoreState>((set, get) => ({

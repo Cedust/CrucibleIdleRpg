@@ -1,7 +1,7 @@
 import { isAlive, type CombatEnemy } from './combatState';
 
 /**
- * Bulwark — Deckung der Backline (docs/spec/COMBAT.md#24-bulwark-deckung-der-backline).
+ * Bulwark — Deckung der Backline (docs/spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline).
  *
  * Solange Frontline-Gegner leben, erleiden Backline-Gegner reduzierten Schaden. Jeder lebende
  * Frontline-Gegner trägt sein eigenes `bᵢ` bei, die Beiträge stapeln **multiplikativ**:
@@ -16,12 +16,12 @@ import { isAlive, type CombatEnemy } from './combatState';
  * Der Malus greift **pro Treffer und Ziel** (COMBAT §2.1) — jeder Grund-, Multi-, Splash- und
  * Counter-Treffer bekommt den Faktor des Gegners, den er trifft.
  *
- * **Sunder** (docs/spec/COMBAT.md#32-sunder-rhaya-melee) senkt das `bᵢ` einzelner
+ * **Sunder** (docs/spec/SIGNATURES.md#12-sunder-rhaya-melee) senkt das `bᵢ` einzelner
  * Frontline-Gegner während des Kampfes. Er ist Crucible-gebunden und in M1 nicht umgesetzt;
  * er braucht hier keine eigene Bahn, weil `bulwarkContribution` im Kampfzustand liegt und
  * dieselbe Formel bedient.
  *
- * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md §5); kein PRNG-Zug.
+ * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md); kein PRNG-Zug.
  */
 
 /**

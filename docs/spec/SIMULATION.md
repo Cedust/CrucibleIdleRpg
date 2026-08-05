@@ -1,8 +1,8 @@
 # SPEC — Simulation & Zeitverhalten
 
-> Teil der [SPEC](../SPEC.md): Playback, Catch-up, Seeds und der Umgang mit dem laufenden
+> Teil der [SPEC](../spec/README.md): Playback, Catch-up, Seeds und der Umgang mit dem laufenden
 > Kampfzustand.
-> Verwandt: [Kampf](COMBAT.md) · [Persistenz](PERSISTENCE.md)
+> Verwandt: [Kampf](COMBAT-RUN.md) · [Persistenz](PERSISTENCE.md)
 
 ---
 

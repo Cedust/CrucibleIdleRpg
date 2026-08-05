@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Zod-Schema des Speicherstands (siehe AGENTS.md §7).
+ * Zod-Schema des Speicherstands (siehe AGENTS.md).
  * Pro Save-Version ein Schema; die Versionsnummer steuert die Migration.
  * Beim Laden wird gegen dieses Schema validiert, bevor Daten in den Store gelangen.
  */

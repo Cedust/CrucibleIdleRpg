@@ -33,7 +33,7 @@ const SAVE_SEED = 4242;
 
 /**
  * Lückenhafte Testformation: Frontline-Slots 0 und 2, Backline-Slots 3 und 5. Die Lücken machen
- * sichtbar, dass der Formations-Index leere Slots mitzählt (docs/spec/COMBAT.md#13-gegnerformation).
+ * sichtbar, dass der Formations-Index leere Slots mitzählt (docs/spec/COMBAT-RUN.md#13-gegnerformation).
  */
 const FORMATION: FormationDefinition = {
   id: 'test-lueckenhaft',

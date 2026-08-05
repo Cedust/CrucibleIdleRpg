@@ -7,13 +7,13 @@ import {
 } from './combatState';
 
 /**
- * Zielauswahl eines Charakter-Zuges (docs/spec/COMBAT.md#12-zielauswahl).
+ * Zielauswahl eines Charakter-Zuges (docs/spec/COMBAT-RUN.md#12-zielauswahl).
  *
  * Gegner wählen **kein** Einzelziel — ihr Angriff trifft das ganze Team über die
  * Schadenspipeline (COMBAT §2.3, Task 005). Dieses Modul beschreibt deshalb ausschließlich die
  * Richtung Charakter → Gegner.
  *
- * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md §5); keine Funktion hier nimmt einen
+ * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md); keine Funktion hier nimmt einen
  * PRNG entgegen — die Zielauswahl verbraucht **keinen** Zufall.
  */
 
@@ -55,7 +55,7 @@ export function comparePriority(a: EnemyTarget, b: EnemyTarget): number {
  * - **Tank & Melee:** nur die Frontline, solange dort ein Gegner lebt. Fällt sie vollständig,
  *   ist die Backline wählbar.
  * - **Ranged:** die Backline von Beginn an, dafür der laufende Bulwark-Malus
- *   (docs/spec/COMBAT.md#24-bulwark-deckung-der-backline).
+ *   (docs/spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline).
  */
 export function attackableEnemies(state: CombatState, attacker: CombatCharacter): EnemyTarget[] {
   const living = livingEnemies(state);

@@ -7,7 +7,7 @@ import { selectPrimaryTarget, selectSplashTargets, type EnemyTarget } from './ta
 
 /**
  * Ausgehender Schaden eines Charakter-Zuges
- * (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden).
+ * (docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden).
  *
  * Ein Zug erzeugt eine **Trefferliste**: Grundtreffer, Multi-Hit-Kette, Splash. Charakter →
  * Gegner trifft immer und voll (COMBAT §2.2), die Liste ist damit vollständig und braucht keine
@@ -25,7 +25,7 @@ import { selectPrimaryTarget, selectSplashTargets, type EnemyTarget } from './ta
  * Der **Counter** ist rein reaktiv und kein Teil des eigenen Zuges — er hängt am Gegner-Zug
  * (COMBAT §2.1, docs/backlog/tasks/005-eingehender-schaden.md).
  *
- * Reine Funktion: kein Timer, kein DOM, kein Store, kein `Date.now()` (AGENTS.md §5). Der
+ * Reine Funktion: kein Timer, kein DOM, kein Store, kein `Date.now()` (AGENTS.md). Der
  * Kampfzustand wird **gelesen**, nicht verändert — das Anwenden der Trefferliste liegt im
  * Schrittwerk (Task 006).
  */
@@ -183,7 +183,7 @@ export function resolveCharacterAttack(
 
   // `chainFactor^(k−1)` als fortlaufendes Produkt statt als Potenz: `Math.pow` ist zwischen
   // JS-Engines nicht bit-identisch garantiert und würde den Determinismus aufweichen
-  // (AGENTS.md §4).
+  // (AGENTS.md).
   let decay = 1;
 
   for (let k = 1; k <= chainLength; k += 1) {

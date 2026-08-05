@@ -15,22 +15,22 @@ Alle Zahlen, die die Kampf-Engine zum Laufen braucht, liegen als typisierter Con
 ## Nicht-Ziel
 
 **Balancing.** Kein Wert aus diesem Task ist eine Festlegung, und keiner wandert nach
-[BALANCING.md](../../BALANCING.md) oder in die [SPEC](../../SPEC.md). Die zugehörigen
+[BALANCING.md](../../BALANCING.md) oder in die [SPEC](../../spec/README.md). Die zugehörigen
 Entscheidungen bleiben offen in
 [OPEN_ISSUES §1](../OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen).
 
 ## Verbindliche Spec-Anker
 
-- [SPEC § Welche Zahlen in der Spec stehen](../../SPEC.md#welche-zahlen-in-der-spec-stehen) —
+- [SPEC § Welche Zahlen in der Spec stehen](../../spec/README.md#werte-und-regeln) —
   Tuning-Werte gehören nach `src/game/`, nicht in die Spec
-- [AGENTS.md §4](../../../AGENTS.md#4-content--balancing) — deklarative, typisierte TS-Module;
+- [AGENTS.md](../../../AGENTS.md) — deklarative, typisierte TS-Module;
   Wachstumskurven als vorberechnete Werte je Stufe, kein `Math.pow` zur Laufzeit
-- [Bulwark](../../spec/COMBAT.md#24-bulwark-deckung-der-backline) — `bᵢ` je Frontline-Rolle
-- [Schadenspipeline](../../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline) —
+- [Bulwark](../../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline) — `bᵢ` je Frontline-Rolle
+- [Schadenspipeline](../../spec/DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline) —
   Defense-Konstante `K`
-- [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden) — Damage-Range,
+- [Charakter-Zug](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden) — Damage-Range,
   Multi-Hit-Werte
-- [Gegnerformation](../../spec/COMBAT.md#13-gegnerformation) — Gegner haben genau vier Stats
+- [Gegnerformation](../../spec/COMBAT-RUN.md#13-gegnerformation) — Gegner haben genau vier Stats
 
 ## Umfang
 

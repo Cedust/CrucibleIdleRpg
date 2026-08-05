@@ -122,7 +122,7 @@ function enemy(setup: EnemySetup): CombatEnemy {
     accuracy: 1,
     initiative: setup.initiative ?? 5,
     // Ohne Deckung bleibt der Endschaden gleich dem rohen Treffer — der Test misst den Block,
-    // nicht den Bulwark-Malus (docs/spec/COMBAT.md#24-bulwark-deckung-der-backline).
+    // nicht den Bulwark-Malus (docs/spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline).
     bulwarkContribution: 0,
   };
 }
@@ -167,7 +167,7 @@ const totalEnemyHealth = (state: CombatState): number =>
 
 /* ------------------------------------------------------------------ Tests */
 
-describe('nextTick — Reinheit (AGENTS.md §5)', () => {
+describe('nextTick — Reinheit (AGENTS.md)', () => {
   const state = buildCombatState(floorSetup());
 
   it('lässt den Eingangszustand unangetastet', () => {
@@ -542,7 +542,7 @@ describe('runCombat — dieselbe Bahn wie das Playback', () => {
 
   it('bricht mit einem Fehler ab, statt bei verletzter Endlichkeit endlos zu laufen', () => {
     // Angriffskraft 0: Die Gegner-Health sinkt nicht mehr — genau der Fall, den die Invariante
-    // ausschließt (docs/SPEC.md#invarianten, Punkt 7).
+    // ausschließt (docs/spec/COMBAT-RUN.md#11-rundenablauf, Punkt 7).
     const state = gestellt(
       [character({ id: 'rhaya', role: 'melee', slotIndex: 1, attack: 0 })],
       [enemy({ formationIndex: 0, attack: 0 })],

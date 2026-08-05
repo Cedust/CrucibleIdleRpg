@@ -2,7 +2,7 @@ import { isAlive, type CombatCharacter } from './combatState';
 
 /**
  * Regeneration — die einzige Heilquelle vor dem Endgame
- * (docs/spec/COMBAT.md#26-heilung--grenzen-und-auslösung).
+ * (docs/spec/DAMAGE-SYSTEM.md#16-heilung--grenzen-und-auslösung).
  *
  * - **Flacher Wert**, kein Anteil der Max-Health.
  * - Triggert **einmal je eigener Handlung** (COMBAT §1.1), unabhängig von der Trefferzahl des
@@ -11,7 +11,7 @@ import { isAlive, type CombatCharacter } from './combatState';
  * - **Besiegte Charaktere sind nicht heilbar** — Aufstehen geht ausschließlich per Rally an der
  *   Floor-Grenze (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch).
  *
- * Reine Funktion ohne Timer, DOM oder Store (AGENTS.md §5) und **ohne PRNG-Zug**: Die Heilung
+ * Reine Funktion ohne Timer, DOM oder Store (AGENTS.md) und **ohne PRNG-Zug**: Die Heilung
  * ist deterministisch und darf die Kampf-Sequenz nicht verschieben (COMBAT §2.5). Der
  * Kampfzustand wird gelesen, nicht verändert — das Anwenden liegt im Schrittwerk (Task 006).
  */

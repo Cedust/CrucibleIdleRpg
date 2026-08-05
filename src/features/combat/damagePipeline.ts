@@ -4,7 +4,7 @@ import { isAlive, type ActorRef, type CombatCharacter, type CombatEnemy } from '
 
 /**
  * Eingehender Schaden — die Schadenspipeline eines Gegner-Zuges
- * (docs/spec/COMBAT.md#23-eingehender-schaden-schadenspipeline).
+ * (docs/spec/DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline).
  *
  * Ein Gegner wählt **kein** Einzelziel (COMBAT §1.2): Seine Attack `S` ist ein **team-weiter,
  * flacher** Schwung, der auf die **lebenden** Charaktere verteilt wird und je Charakter die
@@ -20,7 +20,7 @@ import { isAlive, type ActorRef, type CombatCharacter, type CombatEnemy } from '
  * Der Zufall der eingehenden Seite liegt ausschließlich bei **Evasion** (Schritt 2) und
  * **Block** (Schritt 3); Gegner haben keine Damage-Range.
  *
- * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md §5). Der Kampfzustand wird **gelesen**,
+ * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md). Der Kampfzustand wird **gelesen**,
  * nicht verändert — das Anwenden der Ergebnisse liegt im Schrittwerk (Task 006). Die Counter
  * lösen **nach** Abschluss der Team-Pipeline aus (COMBAT §1.1) und liegen in `counter.ts`.
  */
@@ -36,7 +36,7 @@ export interface DamageShare {
 }
 
 /**
- * **Mitigation** (docs/spec/COMBAT.md#31-mitigation-korvin-tank) leitet einen Anteil `m` des
+ * **Mitigation** (docs/spec/SIGNATURES.md#11-mitigation-korvin-tank) leitet einen Anteil `m` des
  * DD-Ticks auf den Tank um. Der Skill ist Crucible-gebunden und in M1 nicht freigeschaltet —
  * `m` ist trotzdem **Parameter** der Verteilung und dort konstant `0`
  * (docs/backlog/ROADMAP.md, M1), damit die Summen-Erhaltung von Anfang an testbar ist.

@@ -19,22 +19,22 @@ Teil von M1 ([Signatur-Skills](../../spec/CHARACTERS.md#7-signatur-skills)).
 
 ## Verbindliche Spec-Anker
 
-- [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden) — Modifikator vs.
+- [Charakter-Zug](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden) — Modifikator vs.
   Generator, Bezug **jedes** Treffers auf den rohen Grundschaden, Crit-Wurf pro Treffer, die
   verbindliche PRNG-Zugreihenfolge und der **Test-Vektor** im Abschnitt
-- [Zielauswahl](../../spec/COMBAT.md#12-zielauswahl) — Frontline-Lock für Tank/Melee, Taunt,
+- [Zielauswahl](../../spec/COMBAT-RUN.md#12-zielauswahl) — Frontline-Lock für Tank/Melee, Taunt,
   Ranged auf die Backline, Priorisierung nach höchster Initiative
-- [Bulwark](../../spec/COMBAT.md#24-bulwark-deckung-der-backline) — multiplikative Stapelung,
+- [Bulwark](../../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline) — multiplikative Stapelung,
   Anwendung **pro Treffer und Ziel**, plus **Test-Vektor**
-- [Treffermodell](../../spec/COMBAT.md#22-treffermodell) — Charakter → Gegner trifft immer voll
+- [Treffermodell](../../spec/DAMAGE-SYSTEM.md#12-treffermodell) — Charakter → Gegner trifft immer voll
 - [Skilltree](../../spec/CHARACTERS.md#4-charakter-skilltree) — die Crit-Erweiterungen je
   Trefferklasse hängen an Knoten; ohne Knoten crittet nur der Grundtreffer
 
 ## Akzeptanzkriterien
 
-- [x] Der Test-Vektor aus [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden)
+- [x] Der Test-Vektor aus [Charakter-Zug](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)
       läuft als Unit-Test mit gestelltem PRNG durch und trifft `210 / 52.5 / 63` sowie `84`
-- [x] Der Test-Vektor aus [Bulwark](../../spec/COMBAT.md#24-bulwark-deckung-der-backline)
+- [x] Der Test-Vektor aus [Bulwark](../../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)
       läuft als Unit-Test durch, inklusive der Variante mit gefallenem Frontline-Gegner
 - [x] Ein Test zählt die **Zahl und Reihenfolge** der PRNG-Züge — ein zusätzlicher oder
       entfallener Wurf schlägt fehl

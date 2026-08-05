@@ -18,7 +18,7 @@ Nodes für Handwerk, Ausrüstung und Runen dürfen nur als noch gesperrte, klar 
 
 - [Crucible](../../spec/PROGRESSION.md#3-crucible-globaler-skilltree) — vier Trees, stufbare Nodes, lineare Crystal-Kosten und Gold-Respec
 - [Signatur-Skills](../../spec/CHARACTERS.md#7-signatur-skills) — drei charaktergebundene Nodes mit Level 1–5
-- [Signatur-Skills (Kampfwirkung)](../../spec/COMBAT.md#3-signatur-skills-kampfwirkung) — Mitigation, Sunder und Suppression
+- [Signatur-Skills (Kampfwirkung)](../../spec/SIGNATURES.md#1-signatur-skills-kampfwirkung) — Mitigation, Sunder und Suppression
 - [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) — Crucible-Node-Stände und Währungen sind persistent
 
 ## Blockiert durch
@@ -39,4 +39,4 @@ Die Node-Kataloge, Voraussetzungen und Werte der vier Crucible-Trees fehlen. Zus
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

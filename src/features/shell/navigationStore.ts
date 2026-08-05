@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 /**
- * State-basierter View-Switch statt Router (siehe AGENTS.md §6).
+ * State-basierter View-Switch statt Router (siehe AGENTS.md).
  * Kein URL-Sync; Feature-States bleiben beim Wechseln erhalten.
  */
 export const VIEWS = ['dungeons', 'team', 'crucible', 'blacksmith', 'jeweler', 'runes'] as const;

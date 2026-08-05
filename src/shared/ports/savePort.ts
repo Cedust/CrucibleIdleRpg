@@ -1,5 +1,5 @@
 /**
- * Austauschbare Persistenz-Schnittstelle (siehe AGENTS.md §7).
+ * Austauschbare Persistenz-Schnittstelle (siehe AGENTS.md).
  *
  * Die Spiellogik greift ausschließlich über diese Schnittstelle auf gespeicherte
  * Rohdaten zu. Aktuell via localStorage implementiert; später ohne Änderung der

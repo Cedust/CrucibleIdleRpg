@@ -1,13 +1,13 @@
 import type { ActorRef, CombatState } from './combatState';
 
 /**
- * Zugordnung und Pending-Queue einer Runde (docs/spec/COMBAT.md#11-rundenablauf).
+ * Zugordnung und Pending-Queue einer Runde (docs/spec/COMBAT-RUN.md#11-rundenablauf).
  *
  * Die Ordnung ist eine **totale Ordnung in drei Stufen** und verbraucht **keinen** PRNG-Zug:
  * Keine Funktion dieses Moduls nimmt einen PRNG entgegen, die Reihenfolge ist damit für jeden
  * Zustand eindeutig bestimmt.
  *
- * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md §5); jede Queue-Operation liefert ein
+ * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md); jede Queue-Operation liefert ein
  * neues Array.
  */
 
@@ -106,7 +106,7 @@ export function removeFromQueue(queue: readonly ActorRef[], ref: ActorRef): Acto
 
 /**
  * Entfernt alle inzwischen besiegten Akteure aus der offenen Queue. Ein Verweis, der ins Leere
- * zeigt, fällt ebenfalls heraus (AGENTS.md §9).
+ * zeigt, fällt ebenfalls heraus (AGENTS.md).
  */
 export function pruneDefeated(state: CombatState, queue: readonly ActorRef[]): ActorRef[] {
   return queue.filter((ref) => {

@@ -14,7 +14,7 @@ import type {
 
 /**
  * Herleitung der effektiven Kampfwerte eines Charakters — reine Funktion ohne Store, Timer
- * oder DOM (AGENTS.md §5). Sämtliche Zahlen stammen aus dem Balancing-Content unter
+ * oder DOM (AGENTS.md). Sämtliche Zahlen stammen aus dem Balancing-Content unter
  * `src/game/`; hier steht ausschließlich die Struktur der Zusammensetzung.
  *
  * Die drei Derived Stats entstehen multiplikativ geschichtet
@@ -30,7 +30,7 @@ import type {
  * Offensive, Defensive und Utility Stats haben keine solche Schichtung — sie kommen direkt
  * aus der Charakter-Definition. Die Achsen-Trennung bleibt dabei gewahrt: keine Quelle
  * dieser Herleitung überträgt zwischen Offense und Defense
- * (docs/spec/COMBAT.md#25-feststehende-regeln).
+ * (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
  */
 
 /**
@@ -74,7 +74,7 @@ export function neutralProgression(level: number): CharacterProgression {
 /**
  * Baseline-Multiplikator für ein Level. Die Tabelle deckt Level 1–100 ab; Level außerhalb
  * werden auf die Tabellengrenzen geklemmt, damit der Index typsicher greift
- * (AGENTS.md §9).
+ * (AGENTS.md).
  */
 function baselineGrowth(stat: keyof DerivedStats, level: number): number {
   const table = BASELINE_GROWTH[stat];

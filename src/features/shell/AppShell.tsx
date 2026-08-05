@@ -24,7 +24,7 @@ const RESOURCE_TONE_CLASS = {
 
 type ResourceTone = keyof typeof RESOURCE_TONE_CLASS;
 
-/** App-Shell mit State-basiertem View-Switch (kein Router, siehe AGENTS.md §6). */
+/** App-Shell mit State-basiertem View-Switch (kein Router, siehe AGENTS.md). */
 export function AppShell() {
   // Der Controller lebt oberhalb des View-Switches: Navigation unterbricht den Kampf nicht.
   useCombatPlayback();

@@ -1,8 +1,8 @@
 /**
- * Gemeinsame Interfaces für den deklarativen Balancing-Content (siehe AGENTS.md §4).
+ * Gemeinsame Interfaces für den deklarativen Balancing-Content (siehe AGENTS.md).
  * Content liegt getrennt von der Spiellogik unter src/game/. Alle Spieltexte Englisch.
  *
- * Die Regeln aus SPEC.md §1–§3 sind festgelegt, die Zahlen noch offen (BALANCING.md §5).
+ * Die Regeln aus docs/spec/README.md sind festgelegt, die Zahlen noch offen (docs/backlog/OPEN_ISSUES.md).
  * Diese Datei beschreibt die Form, die der Content annimmt.
  */
 
@@ -40,7 +40,7 @@ export interface Range {
 
 /**
  * Damage-Range einer Waffe: Faktor auf den Grundschaden, **einmal pro Angriff** per PRNG
- * innerhalb dieser Grenzen gewürfelt (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden).
+ * innerhalb dieser Grenzen gewürfelt (docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden).
  * `1` ist der neutrale Wert — `{ min: 0.9, max: 1.1 }` entspricht 90 %–110 %.
  */
 export type DamageRange = Range;
@@ -110,7 +110,7 @@ export interface UtilityStats {
   /**
    * Abklingfaktor der Multi-Hit-Kette, echt kleiner als 1 — Kettentreffer k verursacht
    * multiHitDamage * multiHitChainFactor^(k-1) des rohen Grundschadens.
-   * Siehe docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden (Schritt 3) und
+   * Siehe docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden (Schritt 3) und
    * docs/adr/0006-multi-hit-kette-garantierte-laenge.md.
    */
   multiHitChainFactor: number;

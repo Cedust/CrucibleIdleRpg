@@ -1,8 +1,8 @@
 # SPEC — Runen (Endgame / Masterwork)
 
-> Teil der [SPEC](../SPEC.md): Rune Grimoire, Talisman, Rite, Auslösung, Rune-Level und die
+> Teil der [SPEC](../spec/README.md): Rune Grimoire, Talisman, Rite, Auslösung, Rune-Level und die
 > Masterwork-Nodes.
-> Verwandt: [Kampf](COMBAT.md) · [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)
+> Verwandt: [Kampf](COMBAT-RUN.md) · [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)
 
 ---
 
@@ -14,8 +14,8 @@ Sigils, Skilltree, Attribute) sind **permanente Werte**.
 
 - **Verbindliche Abgrenzung:** Eine Rune trägt **nie** „+X Stat". Was eine Rune tut, muss etwas
   sein, das kein Stat ausdrücken kann — z. B. Barrier **mitten in** der Runde (die sonst nur zu
-  Rundenbeginn gesetzt wird, [Rundenablauf](COMBAT.md#11-rundenablauf)), Schaden, der **Bulwark ignoriert**
-  ([Bulwark](COMBAT.md#24-bulwark-deckung-der-backline)), ein **temporärer**
+  Rundenbeginn gesetzt wird, [Rundenablauf](COMBAT-RUN.md#11-rundenablauf)), Schaden, der **Bulwark ignoriert**
+  ([Bulwark](DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)), ein **temporärer**
   Buff oder eine Extra-Aktion.
 - Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet
   ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree));
@@ -58,19 +58,19 @@ Bei drei Charakteren mit je einem Rite sind **9 von 17** Runen gleichzeitig akti
 ([Charakter-Skilltree](CHARACTERS.md#4-charakter-skilltree)), der Rite liest damit den gebauten Build:
 
 `OnCrit` · `OnMultiHit` · `OnSplash` · `OnCounter` ·
-`OnBlock` ([Schadenspipeline](COMBAT.md#23-eingehender-schaden-schadenspipeline), Schritt 3) ·
+`OnBlock` ([Schadenspipeline](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline), Schritt 3) ·
 `OnEvade`
 
 **Effect** — jeder Eintrag ist ein Effekt, den kein Stat leistet:
 
-| Effect       | Wirkung                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| **Heal**     | heilt Health                                                                                                        |
-| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert ([Rundenablauf](COMBAT.md#11-rundenablauf)) |
-| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** ([Bulwark](COMBAT.md#24-bulwark-deckung-der-backline))  |
-| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel                                |
-| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                                                              |
-| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, [Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden))    |
+| Effect       | Wirkung                                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Heal**     | heilt Health                                                                                                              |
+| **Barrier**  | setzt Barrier **innerhalb** der Runde, zusätzlich zum Rundenbeginn-Wert ([Rundenablauf](COMBAT-RUN.md#11-rundenablauf))   |
+| **Bolt**     | Zusatzschaden auf ein Ziel, **ignoriert den Bulwark-Malus** ([Bulwark](DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)) |
+| **Empower**  | temporärer Stat-Buff für X Runden — die **einzige** Quelle temporärer Buffs im Spiel                                      |
+| **Mark**     | markiertes Ziel erleidet für X Runden **+Y % Schaden**                                                                    |
+| **Reprisal** | der Charakter handelt **erneut** (Basisangriff, [Charakter-Zug](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden))   |
 
 **Modifier** — jeder Modifier manipuliert **genau eine** von vier Facetten eines Effects. Dadurch
 ist **jede** Trigger/Effect/Modifier-Kombination automatisch definiert und braucht keine
@@ -95,9 +95,9 @@ Kompatibilitätsmatrix:
 - **Rune-erzeugte Effekte emittieren keine Trigger-Events.** Es gibt keine Rune-Ketten und keine
   Selbst-Retriggerung.
 - **Keine Rune heilt oder belebt Gegner.** Der Endlichkeits-Beweis jedes Kampfes
-  ([Rundenablauf](COMBAT.md#11-rundenablauf)) beruht
+  ([Rundenablauf](COMBAT-RUN.md#11-rundenablauf)) beruht
   auf **monoton sinkender** Gegner-Gesamt-Health.
-- Aller Zufall bleibt beim seedbaren PRNG ([Feststehende Regeln](COMBAT.md#25-feststehende-regeln)).
+- Aller Zufall bleibt beim seedbaren PRNG ([Feststehende Regeln](DAMAGE-SYSTEM.md#15-feststehende-regeln)).
 
 ## 5. Rune-Level
 
@@ -149,7 +149,7 @@ Verbindlicher Wohnort der Runedust-Drop-Regeln.
 |                   |       |                                                                                   | **23**   |
 
 `Talisman` und `Runic Focus` sind **charakterweise** gestaffelt — Stufe `n` schaltet den Slot für
-Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md#32-build-entscheidungen-die-sich-unterscheiden-sollen)).
+Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md#3-player-experience--der-kern-loop)).
 
 <!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
      Level-Skalierung je Stufe), Runedust-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für

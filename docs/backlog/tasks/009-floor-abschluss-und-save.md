@@ -31,7 +31,7 @@ des Erstsiegs.
   bleiben
 - [Seeds und Zufalls-Ströme](../../spec/SIMULATION.md#4-seeds-und-zufalls-ströme) —
   `runCounter` ist monoton und beim Run-Start persistiert; Save-Scumming ist damit unmöglich
-- [AGENTS.md §7](../../../AGENTS.md#7-persistenz--robustheit) — `SavePort`, Versionsfeld,
+- [AGENTS.md](../../../AGENTS.md) — `SavePort`, Versionsfeld,
   Migration, Zod-Validierung beim Laden mit kontrolliertem Fallback
 
 ## Offener Punkt
@@ -40,7 +40,7 @@ Die konkrete Feldstruktur je Save-Version ist als Spec-Punkt offen
 ([OPEN_ISSUES §2](../OPEN_ISSUES.md#2-offene-spec-punkte)). Dieser Task legt sie **für Save
 v1** fest und trägt sie in [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) nach, soweit
 sie strukturell ist — der Eintrag in OPEN_ISSUES wird entsprechend gekürzt
-([README.md §5](../../README.md#5-pflichten-bei-doku-änderungen)).
+([README.md §5](../../README.md#2-regeln-für-änderungen)).
 
 ## Akzeptanzkriterien
 

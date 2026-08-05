@@ -3,7 +3,7 @@ import type { SavePort } from '@/shared/ports/savePort';
 import { currentSaveSchema, saveSchemaV1, type SaveData } from './saveSchema';
 
 /**
- * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md §7).
+ * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md).
  *
  * Zuständig für JSON, Versionierung/Migration und Zod-Validierung. Bei korruptem
  * oder inkompatiblem Save wird kontrolliert auf den Default zurückgesetzt statt

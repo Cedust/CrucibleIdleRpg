@@ -29,14 +29,14 @@ import { pruneDefeated, takeNextActor } from './turnOrder';
  * hört auf. Playback und Catch-up rufen **dieselbe** Funktion — `runCombat` ist nichts als eine
  * Schleife darüber, keine zweite Code-Bahn.
  *
- * **Reinheit** (AGENTS.md §5): kein Timer, kein DOM, kein Store, kein `Date.now()`. Auch der
+ * **Reinheit** (AGENTS.md): kein Timer, kein DOM, kein Store, kein `Date.now()`. Auch der
  * Zufall ist Teil des Eingangszustands — `CombatState.combatPrngState` trägt die Position im
  * `combat`-Strom, jeder Takt nimmt sie auf und schreibt sie zurück. Derselbe Zustand liefert
  * damit zweimal denselben Takt; der Eingangszustand wird nie verändert.
  *
  * **Endlichkeit:** Gegner werden nicht geheilt und Charakterangriffe verursachen stets vollen,
  * positiven Schaden (COMBAT §2.2) — die Gegner-Gesamt-Health sinkt monoton, jeder Kampf ist in
- * endlicher Rundenzahl entschieden (docs/SPEC.md#invarianten, Punkt 7). Ein Rundenlimit gibt es
+ * endlicher Rundenzahl entschieden (docs/spec/COMBAT-RUN.md#11-rundenablauf, Punkt 7). Ein Rundenlimit gibt es
  * deshalb nicht (COMBAT §1.1).
  *
  * **Nicht hier:** Takt-Länge, Pause und Catch-up — diese Datei kennt keine Zeit
@@ -55,7 +55,7 @@ export interface CombatContext {
   contextFor: (character: CombatCharacter) => AttackContext;
   /**
    * Der auf den Tank umgeleitete Anteil `m` des DD-Ticks
-   * (docs/spec/COMBAT.md#31-mitigation-korvin-tank). In M1 konstant `0`
+   * (docs/spec/SIGNATURES.md#11-mitigation-korvin-tank). In M1 konstant `0`
    * (docs/backlog/ROADMAP.md).
    */
   mitigation: number;
@@ -124,7 +124,7 @@ function draftOf(state: CombatState): TurnDraft {
 /**
  * Zieht einem Gegner den Endschaden eines Treffers ab und meldet ihn, gefolgt vom `defeat`,
  * falls er daran fällt. Health wird bei `0` gedeckelt: Sie sinkt monoton und wird nie negativ
- * (docs/SPEC.md#invarianten, Punkt 7).
+ * (docs/spec/COMBAT-RUN.md#11-rundenablauf, Punkt 7).
  *
  * Ein Treffer auf einen bereits gefallenen Gegner ändert nichts und meldet nichts — der Fall
  * entsteht, wenn ein früherer Treffer desselben Zuges das Ziel schon gefällt hat.
@@ -226,7 +226,7 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
 /**
  * Notbremse gegen einen Implementierungsfehler, **kein** Rundenlimit (COMBAT §1.1): Jeder Kampf
  * ist durch die monoton sinkende Gegner-Health in endlicher Rundenzahl entschieden
- * (docs/SPEC.md#invarianten, Punkt 7). Bleibt `runCombat` trotzdem hängen, ist die Invariante
+ * (docs/spec/COMBAT-RUN.md#11-rundenablauf, Punkt 7). Bleibt `runCombat` trotzdem hängen, ist die Invariante
  * verletzt — dann ist ein Fehler besser als eine Endlosschleife.
  */
 export const TICK_LIMIT = 100_000;

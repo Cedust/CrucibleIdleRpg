@@ -1,9 +1,9 @@
 # SPEC — Persistenz (Save-Verhalten)
 
-> Teil der [SPEC](../SPEC.md): wann gespeichert wird und was im Save liegt.
+> Teil der [SPEC](../spec/README.md): wann gespeichert wird und was im Save liegt.
 > Der technische Aufbau — `localStorage`, `SavePort`-Adapter, Versionsfeld,
 > Migrations-Mechanismus und Zod-Validierung beim Laden — steht in
-> [AGENTS.md §7](../../AGENTS.md).
+> [AGENTS.md](../../AGENTS.md).
 > Verwandt: [Simulation & Zeitverhalten](SIMULATION.md) · [Fortschritt & Belohnungen](PROGRESSION.md)
 
 ---

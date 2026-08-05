@@ -1,7 +1,7 @@
 # ROADMAP.md — Reihenfolge der Umsetzung
 
 > **Zweck:** Diese Datei legt fest, **in welcher Reihenfolge** gebaut wird. Sie enthält keine
-> Spielregeln — die stehen in der [SPEC](../SPEC.md) — und keine Aufgabenbeschreibungen, die
+> Spielregeln — die stehen in der [SPEC](../spec/README.md) — und keine Aufgabenbeschreibungen, die
 > stehen in [tasks/](tasks/). Format und Status-Vokabular: [README.md](README.md).
 
 ---
@@ -11,7 +11,7 @@
 Jeder Meilenstein ist ein **vertikaler Slice** — er endet mit etwas Spielbarem, nicht mit
 einer fertigen Schicht. **Innerhalb** eines Tasks wird von unten nach oben gebaut: reine,
 seedbare Logik mit Unit-Tests, dann Store, dann UI
-([AGENTS.md §5](../../AGENTS.md#5-architektur-des-game-loops)).
+([AGENTS.md](../../AGENTS.md)).
 
 Der Grund für den vertikalen Schnitt liegt im Spiel selbst: Der Kern ist ein Kampf, den der
 Spieler **Runde für Runde mitverfolgt** ([Playback](../spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit)).
@@ -59,7 +59,7 @@ bearbeitbar. Alles andere ist eine Kette.
 **Nicht in M1:** Signatur-Skills (Crucible-gebunden,
 [Signatur-Skills](../spec/CHARACTERS.md#7-signatur-skills)), Auto-Progression, 2×-Geschwindigkeit,
 Loot, Rally. Die Pipeline nimmt den Mitigation-Anteil `m` als Parameter entgegen, in M1
-konstant `0` ([Mitigation](../spec/COMBAT.md#31-mitigation-korvin-tank)).
+konstant `0` ([Mitigation](../spec/SIGNATURES.md#11-mitigation-korvin-tank)).
 
 ---
 
@@ -98,5 +98,5 @@ Sigil Codex ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 ## M6 — Endgame & Politur
 
 Akt 2 und 3, Akt-Bosse, vollständiger Balancing-Pass gegen
-[BALANCING](../BALANCING.md#1-balancing-philosophie), GitHub-Pages-Deploy
-([AGENTS.md §12](../../AGENTS.md#12-cicd)).
+[BALANCING](../BALANCING.md#1-zielbild), GitHub-Pages-Deploy
+([AGENTS.md](../../AGENTS.md)).

@@ -40,4 +40,4 @@ Die XP-Kurve, der Verteilungsschlüssel des individuellen XP-Rests und die Attri
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

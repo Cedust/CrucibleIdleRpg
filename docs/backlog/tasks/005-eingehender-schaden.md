@@ -13,30 +13,30 @@ aus und löst anschließend die Counter aus.
 
 ## Nicht-Ziel
 
-**Mitigation** als Signatur-Skill ([Mitigation](../../spec/COMBAT.md#31-mitigation-korvin-tank))
+**Mitigation** als Signatur-Skill ([Mitigation](../../spec/SIGNATURES.md#11-mitigation-korvin-tank))
 wird in M1 nicht freigeschaltet. Der Umleitungsanteil `m` ist trotzdem **Parameter** der
 Verteilung — in M1 konstant `0`, damit die Summen-Erhaltung von Anfang an testbar ist.
 
 ## Verbindliche Spec-Anker
 
-- [Schadenspipeline](../../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline) —
+- [Schadenspipeline](../../spec/DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline) —
   `S` ist team-weit und flat, Verteilung auf **lebende** Charaktere, verbindliche Reihenfolge
   Evasion → Block → Defense → Barrier → Health, plus **Test-Vektor**
-- [Treffermodell](../../spec/COMBAT.md#22-treffermodell) —
+- [Treffermodell](../../spec/DAMAGE-SYSTEM.md#12-treffermodell) —
   `Trefferchance = Accuracy × (1 − Evasion)`
-- [Charakter-Zug](../../spec/COMBAT.md#21-charakter-zug-ausgehender-schaden), Abschnitt
+- [Charakter-Zug](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden), Abschnitt
   „Counter im Detail" — eigener Grundschaden-Wurf, kein Multi Hit, kein Splash, Ziel ist der
   auslösende Gegner unabhängig vom Frontline-Lock, verbindliche PRNG-Sequenz je Charakter in
   Slot-Reihenfolge
-- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — Counter **nach** Abschluss der
+- [Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — Counter **nach** Abschluss der
   Team-Pipeline, in Slot-Reihenfolge, nicht verschachtelt
-- [Heilung](../../spec/COMBAT.md#26-heilung--grenzen-und-auslösung) — Regeneration ist flach,
+- [Heilung](../../spec/DAMAGE-SYSTEM.md#16-heilung--grenzen-und-auslösung) — Regeneration ist flach,
   triggert einmal je eigener Handlung, keine Überheilung, besiegte Charaktere sind nicht heilbar
 
 ## Akzeptanzkriterien
 
 - [x] Der Test-Vektor aus
-      [Schadenspipeline](../../spec/COMBAT.md#23-eingehender-schaden-schadenspipeline) läuft als
+      [Schadenspipeline](../../spec/DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline) läuft als
       Unit-Test durch (Korvin `−10`, Rhaya `0`, Quinn `−56`)
 - [x] Summen-Erhaltung: die verteilten Ticks ergeben exakt `S`, auch bei `m > 0`
 - [x] Ein sterbender Charakter erhöht den Tick der Überlebenden — Test mit zwei Toten

@@ -1,5 +1,5 @@
 /**
- * Zahlformatierung für die UI (siehe AGENTS.md §5).
+ * Zahlformatierung für die UI (siehe AGENTS.md).
  *
  * Alle Spielwerte laufen über native `number` — die Progressions-Achsen sind gedeckelt und
  * die Spitzenwerte bleiben weit unter Number.MAX_SAFE_INTEGER (ADR-0004).

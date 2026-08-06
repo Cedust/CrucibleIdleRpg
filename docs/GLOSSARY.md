@@ -42,34 +42,35 @@
 
 ## Team & Charakter
 
-| Begriff              | EN / Code             | Abgrenzung                                                                                                                |
-| -------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Team**             | —                     | Die vom Spieler kontrollierte Gruppe. Feature: `src/features/team/`                                                       |
-| **Charakter**        | `CharacterDefinition` | Ein Mitglied des Teams. Content unter `src/game/characters/`                                                              |
-| **Gegner**           | `EnemyDefinition`     | Gegnerische Einheit. Content unter `src/game/enemies/`                                                                    |
-| **Archetyp / Rolle** | _Role_                | **Tank**, **Melee** oder **Ranged**; gilt für Charaktere **und** Gegner                                                   |
-| **DD**               | _Damage Dealer_       | Charakter mit Schadensfokus (Melee & Ranged). Abzugrenzen vom **Tank**                                                    |
-| **Signatur-Skill**   | _Signature Skill_     | Charaktergebundener Crucible-Unlock — die Kapselungsform für Archetyp-Spezifisches. Abzugrenzen vom **Skill** (Skilltree) |
-| **Mitigation**       | _Mitigation_          | Korvins Signatur-Skill (Schadensverteilung)                                                                               |
-| **Sunder**           | _Sunder_              | Rhayas Signatur-Skill (**Bulwark**-Abbau)                                                                                 |
-| **Suppression**      | _Suppression_         | Quinns Signatur-Skill (Verschiebung in der **Pending-Queue**)                                                             |
+| Begriff              | EN / Code             | Abgrenzung                                                                                                                  |
+| -------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Team**             | —                     | Die vom Spieler kontrollierte Gruppe. Feature: `src/features/team/`                                                         |
+| **Charakter**        | `CharacterDefinition` | Ein Mitglied des Teams. Content unter `src/game/characters/`                                                                |
+| **Gegner**           | `EnemyDefinition`     | Gegnerische Einheit. Content unter `src/game/enemies/`                                                                      |
+| **Archetyp / Rolle** | _Role_                | **Tank**, **Melee** oder **Ranged**; gilt für Charaktere **und** Gegner                                                     |
+| **DD**               | _Damage Dealer_       | Charakter mit Schadensfokus (Melee & Ranged). Abzugrenzen vom **Tank**                                                      |
+| **Signatur-Skill**   | _Signature Skill_     | Charaktergebundener Crucible-Unlock — die Kapselungsform für globale Archetyp-Hebel. Abzugrenzen von einer **Mastery-Node** |
+| **Mitigation**       | _Mitigation_          | Korvins Signatur-Skill (Schadensverteilung)                                                                                 |
+| **Sunder**           | _Sunder_              | Rhayas Signatur-Skill (**Bulwark**-Abbau)                                                                                   |
+| **Suppression**      | _Suppression_         | Quinns Signatur-Skill (Verschiebung in der **Pending-Queue**)                                                               |
 
 ---
 
 ## Stats & Progression
 
-| Begriff                        | EN / Code                         | Abgrenzung                                                                                                                      |
-| ------------------------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Stat**                       | _Stat_                            | Granularer Kampfwert; Kategorien Core, Derived, Offensive, Defensive, Utility. **Nicht** synonym zu **Attribut**                |
-| **Wachstumsachse**             | —                                 | Eine der zwei geometrischen Kurvenfamilien (**Offense-** / **Defense-Rennen**), von denen alle Zahlenkurven ihre Steigung erben |
-| **Core-Stat**                  | _Core Stat_                       | **Might**, **Toughness**, **Vitality**. Abzugrenzen von **Attribut** und **Derived Stat**                                       |
-| **Derived Stat**               | _Derived Stat_                    | **Attack**, **Defense**, **Health** — nicht direkt vergeben, sondern zusammengesetzt                                            |
-| **Attribut**                   | _Attribute_                       | Die Level-Up-Achsen **Ferocity**, **Resilience**, **Vigor**. **Nicht** **Stat**, **nicht** **Core-Stat**, **nicht** **Zweig**   |
-| **Charakterlevel**             | _Level_                           | Fortschrittsstufe eines Charakters, steigt durch **XP**                                                                         |
-| **Attributpunkt / Skillpunkt** | _Attribute Point_ / _Skill Point_ | Die beiden pro Level-Up vergebenen Punkte — einer ins **Attribut**, einer in den **Skilltree**                                  |
-| **Skilltree (Charakter)**      | _Skill Tree_                      | Charaktereigener Baum aus vier **Zweigen**. Abzugrenzen vom **Crucible** (global)                                               |
-| **Zweig**                      | _Branch_                          | **Finesse**, **Tempest**, **Dominance**, **Valor**. **Nicht** „Attribute"                                                       |
-| **Skill**                      | _Skill_                           | Ein per Skilltree freigeschalteter Effekt. Abzugrenzen vom **Signatur-Skill**                                                   |
+| Begriff                           | EN / Code                           | Abgrenzung                                                                                                                      |
+| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Stat**                          | _Stat_                              | Granularer Kampfwert; Kategorien Core, Derived, Offensive, Defensive, Utility. **Nicht** synonym zu **Attribut**                |
+| **Wachstumsachse**                | —                                   | Eine der zwei geometrischen Kurvenfamilien (**Offense-** / **Defense-Rennen**), von denen alle Zahlenkurven ihre Steigung erben |
+| **Core-Stat**                     | _Core Stat_                         | **Might**, **Toughness**, **Vitality**. Abzugrenzen von **Attribut** und **Derived Stat**                                       |
+| **Derived Stat**                  | _Derived Stat_                      | **Attack**, **Defense**, **Health** — nicht direkt vergeben, sondern zusammengesetzt                                            |
+| **Attribut**                      | _Attribute_                         | Die Level-Up-Achsen **Ferocity**, **Resilience**, **Vigor**. **Nicht** **Stat**, **nicht** **Core-Stat**, **nicht** **Zweig**   |
+| **Charakterlevel**                | _Level_                             | Fortschrittsstufe eines Charakters, steigt durch **XP**                                                                         |
+| **Attributpunkt / Mastery Point** | _Attribute Point_ / _Mastery Point_ | Die beiden pro Level vergebenen Punkte — einer ins Attribut, einer in **Weapon Mastery**                                        |
+| **Weapon Mastery**                | _Weapon Mastery_                    | Charaktereigene Waffenprogression aus fünf **Disciplines**. Abzugrenzen vom globalen **Crucible**                               |
+| **Discipline**                    | _Discipline_                        | **Finesse**, **Tempest**, **Dominance**, **Valor** oder die charakterindividuelle Weapon-Discipline                             |
+| **Mastery Rank**                  | _Mastery Rank_                      | Levelgebundene Spalte: Initiate, Adept, Expert, Master, Grandmaster. Keine Item-**Seltenheit**                                  |
+| **Mastery-Node**                  | _Mastery Node_                      | Stat- oder Verhaltens-Node einer Discipline. Abzugrenzen vom Crucible-**Signatur-Skill**                                        |
 
 ---
 
@@ -87,6 +88,10 @@
 | **Counter**                          | _Counterattack_   | **Reaktiver** Gegenangriff. Abzugrenzen von den Zug-eigenen Procs                                                             |
 | **Schadenspipeline**                 | _damage pipeline_ | Verbindliche Reihenfolge für **eingehenden** Schaden pro Charakter                                                            |
 | **Accuracy**                         | _Accuracy_        | Gegner-Trefferwert gegen Charakter-**Evasion**                                                                                |
+| **Precision**                        | _Precision_       | Charakter-Waffenwert für **Clean Hit** gegen **Glancing Blow**. Abzugrenzen von Gegner-**Accuracy**                           |
+| **Clean Hit**                        | _Clean Hit_       | Erfolgreicher Precision-Wurf: normale Weapon Range und Crit-Berechtigung                                                      |
+| **Glancing Blow**                    | _Glancing Blow_   | Fehlgeschlagener Precision-Wurf: MIN RNG und keine Crit-Berechtigung; kein vollständiger Miss                                 |
+| **Weapon Range**                     | _Weapon Range_    | Intervall aus MIN RNG und MAX RNG, das den Rohschaden eines Clean Angriffs moduliert                                          |
 | **Evasion**                          | _Evasion_         | Charakter-Ausweichwert gegen **Accuracy**                                                                                     |
 | **Block / Block Chance**             | —                 | **Partielle** Reduktion, nicht all-or-nothing. Abzugrenzen von **Evasion** und **Defense**                                    |
 | **Defense / Toughness**              | —                 | _Defense_ = der **Derived Stat**; _Toughness_ = der **Core-Stat**, der ihn speist                                             |
@@ -102,22 +107,22 @@
 
 ## Welt & Fortschritt
 
-| Begriff                      | EN / Code    | Abgrenzung                                                                                                                         |
-| ---------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Akt / Dungeon / Floor**    | —            | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                                      |
-| **Elite-Floor / Boss-Floor** | —            | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                                  |
-| **Ramp-Up**                  | —            | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                             |
-| **Run**                      | —            | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                                 |
-| **Wipe**                     | —            | Alle Charaktere besiegt                                                                                                            |
-| **Attrition**                | —            | Der über einen **Run** mitgeschleppte Health-Verlust                                                                               |
-| **Rally**                    | _Rally_      | Crucible-Node, der einen gefallenen Charakter aufstehen lässt                                                                      |
-| **Checkpoint**               | —            | Menge freigeschalteter **Dungeon-Einstiege**                                                                                       |
-| **Belohnung**                | _Reward_     | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                                     |
-| **XP**                       | _Experience_ | Belohnung → **Charakterlevel**                                                                                                     |
-| **Gold**                     | _Gold_       | Laufende globale Währung. Abzugrenzen von **Crystal**, **Cinder**, **Runedust**                                                    |
-| **Crystal**                  | _Crystal_    | Währung für den **Crucible**. Abzugrenzen von **Cinder** und **Runedust**                                                          |
-| **Crucible**                 | _Crucible_   | Der **globale** Skilltree (Anvil Sparks, Smelting Flames, Molten Cast, Masterwork). Abzugrenzen vom **Skilltree** (charaktereigen) |
-| **Prestige**                 | —            | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                                 |
+| Begriff                      | EN / Code    | Abgrenzung                                                                                                             |
+| ---------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **Akt / Dungeon / Floor**    | —            | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                          |
+| **Elite-Floor / Boss-Floor** | —            | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                      |
+| **Ramp-Up**                  | —            | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                 |
+| **Run**                      | —            | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                     |
+| **Wipe**                     | —            | Alle Charaktere besiegt                                                                                                |
+| **Attrition**                | —            | Der über einen **Run** mitgeschleppte Health-Verlust                                                                   |
+| **Rally**                    | _Rally_      | Crucible-Node, der einen gefallenen Charakter aufstehen lässt                                                          |
+| **Checkpoint**               | —            | Menge freigeschalteter **Dungeon-Einstiege**                                                                           |
+| **Belohnung**                | _Reward_     | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                         |
+| **XP**                       | _Experience_ | Belohnung → **Charakterlevel**                                                                                         |
+| **Gold**                     | _Gold_       | Laufende globale Währung. Abzugrenzen von **Crystal**, **Cinder**, **Runedust**                                        |
+| **Crystal**                  | _Crystal_    | Währung für den **Crucible**. Abzugrenzen von **Cinder** und **Runedust**                                              |
+| **Crucible**                 | _Crucible_   | Der **globale** Skilltree (Anvil Sparks, Smelting Flames, Molten Cast, Masterwork). Abzugrenzen von **Weapon Mastery** |
+| **Prestige**                 | —            | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                     |
 
 ---
 
@@ -125,11 +130,11 @@
 
 | Begriff                                         | EN / Code           | Abgrenzung                                                                                                     |
 | ----------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Ausrüstung**                                  | _Equipment_         | Items in **sechs Slots**. **Das Item ist der Slot** — kein Inventar, kein Tausch                               |
+| **Ausrüstung / Armor**                          | _Equipment / Armor_ | Items in **vier Slots**: Head, Chest, Legs, Feet. **Das Item ist der Slot** — kein Inventar, kein Tausch       |
 | **Item-Basis**                                  | _Base_              | Item-Typ + Slot; legt den **Innate**-Affix fest. **Item-Basen droppen nicht**                                  |
 | **Innate**                                      | _Innate_            | Der feste Basis-Stat eines Slots. Abzugrenzen vom **Gem**-Affix und vom **Implicit**                           |
 | **Item-Level**                                  | _Item Level_ (`+n`) | **Stamm** des Ausbaus, gehoben per **Temper**. Abzugrenzen von der **Seltenheit**                              |
-| **Seltenheit**                                  | _Rarity_            | **Master-Regler** eines Items (Kapazität), gehoben per **Refine**. Abzugrenzen vom **Item-Level**              |
+| **Seltenheit**                                  | _Rarity_            | **Master-Regler** eines Armor-Items, gehoben per **Refine**. Abzugrenzen von **Mastery Rank** und Item-Level   |
 | **Sockel**                                      | _Socket_            | Steckplatz für einen **Gem**                                                                                   |
 | **Prismatic-Sockel**                            | _Prismatic Socket_  | Sonder-Sockel nur für **Diamond**-Gems                                                                         |
 | **Gem**                                         | _Gem_               | Affix-Träger. Un-gesockelt eine **Ressource** (Bestands-Zähler), gesockelt **am Item gebunden**                |

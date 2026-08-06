@@ -34,7 +34,7 @@ Entscheidungen bleiben offen in
 
 ## Umfang
 
-Benötigt werden mindestens: Defense-Konstante `K`, Waffen-Damage-Range der Main Hand,
+Benötigt werden mindestens: Defense-Konstante `K`, Weapon-Range-Testwerte,
 Bulwark-Beitrag `bᵢ` je Frontline-Rolle, Gegner-Stats für die Floors des ersten Dungeons
 (Health, Attack, Accuracy, Initiative-Range) und die Formations-Vorlagen des Ramp-Ups
 ([Struktur](../../spec/PROGRESSION.md#1-struktur-akte-dungeons-floors)).

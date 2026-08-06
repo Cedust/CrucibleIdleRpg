@@ -1,7 +1,8 @@
 # SPEC — Schadenssystem
 
 > Verbindlich: ausgehender und eingehender Schaden, Procs, Bulwark und Heilung.
-> Verwandt: [Kampfablauf](COMBAT-RUN.md) · [Signatur-Skills](SIGNATURES.md) · [Balance](BALANCE.md)
+> Verwandt: [Kampfablauf](COMBAT-RUN.md) · [Weapon Mastery](WEAPON-MASTERY.md) ·
+> [Signatur-Skills](SIGNATURES.md) · [Balance](BALANCE.md)
 
 ---
 
@@ -30,18 +31,21 @@ Daraus folgen zwei verbindliche Regeln:
   Splash-Treffer kettet nicht, ein Counter tut keins von beidem. Die Treffererzeugung ist damit
   ein Baum **fester Tiefe**.
 - **Jeder erzeugte Treffer bemisst sich am rohen Grundschaden (vor Crit)** und würfelt
-  **seinen eigenen** Crit-Wurf, sofern der zugehörige Skilltree-Knoten freigeschaltet ist
-  ([Charakter-Skilltree](CHARACTERS.md#4-charakter-skilltree)). Crit wird dadurch pro Treffer
+  **seinen eigenen** Crit-Wurf, sofern die zugehörige Mastery-Node freigeschaltet ist
+  ([Weapon Mastery](WEAPON-MASTERY.md#4-gemeinsame-disciplines)). Crit wird dadurch pro Treffer
   **genau einmal** gezählt; es gibt keine Vererbung von Multiplikatoren zwischen Treffern.
   Multi Hit und Splash beziehen sich auf den Grundschaden **des Zuges**; der reaktive Counter
   würfelt seinen eigenen (unten).
 
 **Ablauf eines Zuges:**
 
-1. **Roher Grundschaden**
-   `Grundschaden = Attack × Waffen-Damage-Range` — die Damage-Range ist ein **einmal pro
-   Angriff** per PRNG gewürfelter Faktor im Waffenintervall (z. B. 90 %–110 %). Alle **in diesem
-   Zug** erzeugten Treffer bemessen sich an diesem einen Wert.
+1. **Precision und roher Grundschaden.** Zuerst wird einmal gegen die Weapon Precision
+   gewürfelt ([Clean/Glancing](WEAPON-MASTERY.md#21-precision-clean-hit-und-glancing-blow)).
+   Danach wird Range immer gezogen.
+   - Clean Hit: `Grundschaden = Attack × gewürfelte Weapon Range`.
+   - Glancing Blow: `Grundschaden = Attack × MIN RNG`; der Range-Wurf wird ignoriert und kein
+     Treffer dieses Angriffs darf critten.
+     Alle in diesem Zug erzeugten Treffer bemessen sich an diesem einen Rohschaden.
 2. **Crit (Grundtreffer)** — mit _Crit Chance_ wird geprüft; bei Erfolg `× Crit Damage`.
    _Crit Damage_ ist ein **Gesamt-Multiplikator**, kein Aufschlag: `200 %` bedeutet `× 2,0`,
    der neutrale Wert ist `100 %`.
@@ -58,8 +62,15 @@ Daraus folgen zwei verbindliche Regeln:
      Schaden = roher Grundschaden × Multi Hit Damage × Multi Hit Chain Factor^(k−1)
    ```
 
-   Der _Multi Hit Chain Factor_ ist **echt kleiner als 100 %** (Wert = Balancing); der Wert wird
-   auf diese Obergrenze geklemmt. Jeder Kettentreffer würfelt seinen eigenen Crit.
+   Der _Multi Hit Chain Factor_ ist **echt kleiner als 100 %** und wird bei 90 % geklemmt. Der
+   erste Treffer verwendet wegen `Factor^(1−1)` immer 100 %. Jeder Clean-Kettentreffer würfelt
+   bei freigeschaltetem Converging Strikes seinen eigenen Crit.
+
+   Chain Hits werden nacheinander erzeugt und angewandt, nicht als unveränderliche Trefferliste
+   vorab gebaut. Dadurch kann Relentless Pursuit nach dem Tod des aktuellen Ziels für jeden noch
+   ausstehenden Original- oder Storm-Surge-Hit das nächste legale Ziel bestimmen. Storm Surge
+   darf höchstens zwei Hits anhängen; Bonus-Hits erzeugen keine weiteren Bonus-Hits. Die
+   Treffererzeugung bleibt damit endlich.
 
 4. **Splash** — mit _Splash Chance_ trifft der Angriff zusätzlich bis zu _Splash Radius_
    **Nebenziele**. _Splash Damage_ ist ein Anteil des **rohen Grundschadens**; jeder
@@ -72,58 +83,66 @@ Daraus folgen zwei verbindliche Regeln:
 Auf **jeden** so erzeugten Treffer wird anschließend der **Bulwark-Malus seines eigenen Ziels**
 angewandt ([§1.4](#14-bulwark-deckung-der-backline)).
 
-**PRNG-Zugreihenfolge (verbindlich, [§1.5](#15-feststehende-regeln)):** `Damage-Range` →
-`Crit (Grundtreffer)` → `Multi Hit Chance` → je Kettentreffer `Crit (Multi Hit)` →
-`Splash Chance` → je Nebenziel `Crit (Splash)`. Die Kettenlänge steht mit dem einen
-`Multi Hit Chance`-Wurf fest; die Zahl der folgenden `Crit (Multi Hit)`-Würfe ist damit
-_Multi Hit Chain_ oder `0`. Der Counter hat eine eigene Sequenz (unten).
+**PRNG-Zugreihenfolge (verbindlich, [§1.5](#15-feststehende-regeln)):** `Precision` →
+`Damage-Range` → bei Clean `Crit (Grundtreffer)` → `Multi Hit Chance` → bei Clean und
+freigeschaltetem Converging Strikes je Kettentreffer `Crit (Multi Hit)` → `Splash Chance` →
+bei Clean und freigeschalteter Critical Mass je Nebenziel `Crit (Splash)`. Bei Glancing
+entfallen alle Crit-Würfe, nicht aber Generator-Chance-Würfe. Die Kettenlänge steht mit dem
+einen Multi-Hit-Chance-Wurf fest. Mastery-Verhalten darf zusätzliche, endlich begrenzte Treffer
+und die dafür ausdrücklich definierten Crit-Würfe anhängen
+([Node-Katalog](WEAPON-MASTERY.md#4-gemeinsame-disciplines)).
 
 **Rechenbeispiel (Test-Vektor).** Die Eingangswerte sind frei gewählt, nicht Balancing —
 verbindlich ist die **Struktur**: Zugreihenfolge, Bezug auf den rohen Grundschaden und der
 Crit-Wurf pro Treffer.
 
 ```
-Gegeben: Attack 100, Damage-Range 90–110 %, Crit Chance 25 %, Crit Damage 200 %,
+Gegeben: Attack 100, Precision 75 %, Damage-Range 90–110 %,
+         Crit Chance 25 %, Crit Damage 200 %,
          Multi Hit Chance 40 %, Multi Hit Damage 50 %, Multi Hit Chain 2,
          Multi Hit Chain Factor 60 %,
          Splash Chance 30 %, Splash Damage 40 %, Splash Radius 1,
          Multi-Hit- und Splash-Crit-Knoten freigeschaltet, Bulwark-Malus 0 %
 
 PRNG-Züge (combat-Strom) in dieser Reihenfolge:
-  1. Damage-Range      → 1.05    ⇒ roher Grundschaden = 100 × 1.05 = 105
-  2. Crit Grundtreffer → 0.10 < 0.25  ⇒ Treffer A = 105 × 2.0 = 210
-  3. Multi Hit Chance  → 0.22 < 0.40  ⇒ Kette in voller Länge: 2 Kettentreffer
-  4. Crit Kette 1      → 0.80 ≥ 0.25  ⇒ Treffer B = 105 × 0.5 = 52.5
-  5. Crit Kette 2      → 0.15 < 0.25  ⇒ Treffer C = 105 × 0.5 × 0.6 × 2.0 = 63
-  6. Splash Chance     → 0.11 < 0.30  ⇒ 1 Nebenziel
-  7. Crit Splash       → 0.05 < 0.25  ⇒ Treffer D = 105 × 0.4 × 2.0 = 84
+  1. Precision         → 0.50 < 0.75  ⇒ Clean Hit
+  2. Damage-Range      → 1.05         ⇒ roher Grundschaden = 100 × 1.05 = 105
+  3. Crit Grundtreffer → 0.10 < 0.25  ⇒ Treffer A = 105 × 2.0 = 210
+  4. Multi Hit Chance  → 0.22 < 0.40  ⇒ Kette in voller Länge: 2 Kettentreffer
+  5. Crit Kette 1      → 0.80 ≥ 0.25  ⇒ Treffer B = 105 × 0.5 = 52.5
+  6. Crit Kette 2      → 0.15 < 0.25  ⇒ Treffer C = 105 × 0.5 × 0.6 × 2.0 = 63
+  7. Splash Chance     → 0.11 < 0.30  ⇒ 1 Nebenziel
+  8. Crit Splash       → 0.05 < 0.25  ⇒ Treffer D = 105 × 0.4 × 2.0 = 84
 
 Ergebnis: Primärziel 210 + 52.5 + 63 = 325.5   Nebenziel 84
 ```
 
-Was der Vektor absichert: Treffer B und C bemessen sich an `105`, **nicht** an den gecritteten
-`210` (kein vererbter Multiplikator); die Kettenlänge steht nach dem einen Wurf in Zug 3 fest,
+Was der Vektor absichert: Precision wird vor Range gezogen; Treffer B und C bemessen sich an
+`105`, **nicht** an den gecritteten `210` (kein vererbter Multiplikator); die Kettenlänge steht
+nach dem einen Multi-Hit-Wurf fest,
 weitere `Multi Hit Chance`-Würfe gibt es nicht; Treffer C trägt den Chain Factor **einmal**
-(`0.6^1`), während Treffer B ihn nicht trägt (`0.6^0`); Zug 7 findet statt, obwohl Zug 2 bereits
-gecrittet hat (eigener Wurf pro Treffer).
+(`0.6^1`), während Treffer B ihn nicht trägt (`0.6^0`); der Splash-Crit findet statt, obwohl der
+Grundtreffer bereits gecrittet hat.
 
 **Counter im Detail:**
 
 - **Ziel:** der **auslösende Gegner** — unabhängig von Frontline-Lock und Taunt
   ([Zielauswahl](COMBAT-RUN.md#12-zielauswahl)). Der Counter ist damit der einzige Weg für Tank und Melee, die
   Backline zu erreichen.
-- **Schaden:** Der Counter würfelt seinen **eigenen** Grundschaden — `Attack × Waffen-Damage-Range`,
-  neu gezogen wie bei einem regulären Angriff (Schritt 1 oben). Daraus ein Flat-Hit
+- **Schaden:** Der Counter würfelt eigene Precision und Range wie ein regulärer Angriff. Daraus
+  entsteht ein Flat-Hit
   (`Grundschaden × Counter Damage`) — **kein** Multi Hit, **kein** Splash, da Generatoren einander
-  nicht auslösen. Crit ist per Valor-Knoten möglich.
+  nicht auslösen. Glancing verwendet MIN RNG und darf nicht critten; Clean Counter dürfen mit
+  Vengeful Edge critten.
 - **PRNG-Zugreihenfolge (verbindlich, [§1.5](#15-feststehende-regeln)):** je Charakter, der von
   diesem Gegner-Angriff getroffen wurde, in **Slot-Reihenfolge**:
-  `Counter Chance` → bei Erfolg `Damage-Range` → bei freigeschaltetem Valor-Knoten `Counter Crit`.
-  Ein Charakter countert pro Gegner-Angriff höchstens einmal, die Sequenz enthält je Charakter
-  also höchstens diese drei Züge.
+  `Counter Chance` → bei Erfolg `Precision` → `Damage-Range` → bei Clean und freigeschaltetem
+  Vengeful Edge `Counter Crit`. Guarded Reprisal darf den Chance-Wurf ausdrücklich überspringen;
+  Perfect Riposte darf ihn nach Evasion ergänzen. Ein Charakter countert pro Gegner-Angriff
+  höchstens einmal.
 - **Bulwark gilt** — der Counter ignoriert die Deckung nicht.
-- **Auslösung:** Ein geblockter Treffer ist ein Treffer → löst Counter aus; ein
-  ausgewichener (Evasion) Treffer nicht.
+- **Auslösung:** Ein geblockter Treffer ist ein Treffer → normaler Counter-Wurf; ein
+  ausgewichener Treffer löst nur mit Perfect Riposte einen Counter-Wurf aus.
 - **Zeitpunkt:** gesammelt **nach** Abschluss der Team-Pipeline in **Slot-Reihenfolge**
   ([Rundenablauf](COMBAT-RUN.md#11-rundenablauf)), damit ein Counter die noch laufende Schadensverteilung nicht
   beeinflusst.

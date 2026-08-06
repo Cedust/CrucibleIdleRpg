@@ -27,13 +27,15 @@ zwischen Runs verbessern und tiefere Floors angehen. Der interessante Teil ist n
 Klick, sondern die Frage, wie weit ein vorbereiteter Build trägt.
 
 Attrition macht einen Dungeon zum Überlebens-Run: Verluste bleiben spürbar, und ein Wipe lädt zum
-Nachbessern ein statt zum endlosen Wiederholen. Power-Spikes — neue Knoten, Refine-Stufen,
-Signatur-Skills und Runen — sollen deutlich erkennbar sein, ohne die Kampfzahlen unlesbar zu
-machen.
+Nachbessern ein statt zum endlosen Wiederholen. Power-Spikes — neue Weapon-Mastery-Verhalten,
+Refine-Stufen, Signatur-Skills und Runen — sollen deutlich erkennbar sein, ohne die Kampfzahlen
+unlesbar zu machen.
 
 Die drei Rollen sollen sich ergänzen: Der Tank hält das Team, Melee bricht gegnerische Deckung auf,
-Ranged verwertet offene Gelegenheiten. Ihre Mechanik steht in
-[SIGNATURES.md](spec/SIGNATURES.md); hier ist nur die Designabsicht verbindlich.
+Ranged verwertet offene Gelegenheiten. Signaturwaffen und ihre individuellen Disciplines stärken
+diese Identitäten, ohne die vier gemeinsamen Kampfstile vorzuschreiben. Die Mechanik steht in
+[WEAPON-MASTERY.md](spec/WEAPON-MASTERY.md) und [SIGNATURES.md](spec/SIGNATURES.md); hier ist nur
+die Designabsicht verbindlich.
 
 ## 4. Zielgefühl und Tonalität
 

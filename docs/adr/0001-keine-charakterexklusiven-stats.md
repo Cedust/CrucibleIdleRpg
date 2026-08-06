@@ -4,6 +4,11 @@
 - **Datum:** 2026-07-25
 - **Betrifft:** SPEC.md §3 (Team, Stats, Skilltree), GLOSSARY.md (Stat, Skill, Mitigation, Block), Feature-Ordner `src/features/team/`, `src/features/combat/`, Content unter `src/game/`
 
+> **Spätere Präzisierung:** Das Prinzip universeller Stats bleibt gültig. Die konkrete
+> Hand-Slot-Folge für Korvins Schild wurde durch
+> [ADR-0009](0009-charaktergebundene-waffen-und-weapon-mastery.md) abgelöst; das Schild gehört
+> jetzt zur permanenten Signaturwaffe und Weapon Mastery.
+
 ---
 
 ## Kontext

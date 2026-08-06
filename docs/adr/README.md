@@ -69,3 +69,4 @@ AGENTS.md. ADRs sind für die **Zukunft**, nicht zum rückwirkenden Dokumentiere
 | 0006 | [Multi-Hit-Kette — garantierte Länge](0006-multi-hit-kette-garantierte-laenge.md)                          | Akzeptiert              |
 | 0007 | [Zwei geometrische Wachstumsachsen im komprimierten Zahlenraum](0007-zwei-geometrische-wachstumsachsen.md) | Akzeptiert              |
 | 0008 | [Defense als Ratio-Mitigation mit globaler Konstante](0008-defense-ratio-mitigation.md)                    | Akzeptiert              |
+| 0009 | [Charaktergebundene Waffen und Weapon Mastery](0009-charaktergebundene-waffen-und-weapon-mastery.md)       | Akzeptiert              |

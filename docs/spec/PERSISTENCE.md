@@ -22,10 +22,13 @@
 
 - Global: Save-Version, `saveSeed`, `runCounter`, Playback-Geschwindigkeit
   ([Playback](SIMULATION.md#2-playback--takt-und-geschwindigkeit)).
-- Pro Charakter: Level, Rest-XP, freie und verteilte Attribut- sowie Skillpunkte.
+- Pro Charakter: Level, Rest-XP, freie und verteilte Attributpunkte sowie freie Mastery Points
+  und Node-Ränge jeder Weapon-Mastery-Discipline
+  ([Weapon Mastery](WEAPON-MASTERY.md#8-persistenz-und-laufzeitzustand)).
 - Pro freigeschaltetem **Slot** das Item — die fünf Schichten aus
   [Item-Anatomie](ITEMS.md#2-item-anatomie-fünf-schichten) (Basis + Item-Level + Seltenheit +
-  gesockelte Gems inkl. Level/Value + gebrandetes Sigil). Die **Main Hand** ist ab Start belegt
+  gesockelte Gems inkl. Level/Value + gebrandetes Sigil). Es existieren ausschließlich die vier
+  Armor-Slots Head, Chest, Legs und Feet
   ([Slots, Basen & Innate-Affixe](ITEMS.md#1-slots-basen--innate-affixe)).
 - Crucible-Node-Stände; Gold, Cinder, Gem-Bestände (Amber/Ruby/Sapphire/Emerald/Diamond).
 - **Sigil Codex** (bekannte Sigils mit Level).
@@ -62,8 +65,9 @@ v1 ist das erste Save-Format und hat keinen Vorgänger. Spätere persistierte Sy
 [Save-Inhalt](#2-save-inhalt) erweitern den Speicherstand über eine neue Version mit expliziter
 Migration von v1.
 
-### 2.2 Save v3 (Task 013)
+### 2.2 Aktuelles Pre-Release-Schema
 
-Save v3 ergänzt jeden Charakter um freie Punkte und die drei verteilten Attribute. Bestehende
-v1-/v2-Saves migrieren dafür auf den vollständigen Level-1-Startzustand: 0 XP, je 1 freier
-Attribut- und Skillpunkt, keine verteilten Punkte.
+Das aktuelle Pre-Release-Schema enthält freie Punkte und die drei verteilten Attribute. Mit
+Weapon Mastery werden die bisherigen Skillpunkt-Summen direkt durch `freeMasteryPoints` und
+Node-Ränge ersetzt. Für diese Änderung wird keine Migration geschrieben: Vor Release bestehen
+keine zu erhaltenden Spielstände; Basissave, Schema und Tests wechseln atomar auf das neue Modell.

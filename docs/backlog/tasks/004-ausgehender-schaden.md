@@ -27,8 +27,8 @@ Teil von M1 ([Signatur-Skills](../../spec/CHARACTERS.md#7-signatur-skills)).
 - [Bulwark](../../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline) — multiplikative Stapelung,
   Anwendung **pro Treffer und Ziel**, plus **Test-Vektor**
 - [Treffermodell](../../spec/DAMAGE-SYSTEM.md#12-treffermodell) — Charakter → Gegner trifft immer voll
-- [Skilltree](../../spec/CHARACTERS.md#4-charakter-skilltree) — die Crit-Erweiterungen je
-  Trefferklasse hängen an Knoten; ohne Knoten crittet nur der Grundtreffer
+- [Weapon Mastery](../../spec/WEAPON-MASTERY.md#4-gemeinsame-disciplines) — die
+  Crit-Erweiterungen je Trefferklasse hängen an Verhaltens-Nodes
 
 ## Akzeptanzkriterien
 

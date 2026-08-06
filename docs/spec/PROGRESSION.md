@@ -37,7 +37,8 @@ Verfügbar zum **Ausgeben** werden sie erst nach dem Run
    entfernte gegnerische Health nach Mitigation; Overkill zählt nicht und der Beitrag eines
    später besiegten Charakters bleibt erhalten. Ganzzahlige Reste werden per größtem Rest
    vergeben; Gleichstände rotieren anhand des globalen Floor-Index deterministisch.
-2. **Gold** — globale Währung (Respecs, Blacksmith/Jeweler, Node-Respec).
+2. **Gold** — globale Währung (Attribut-, Weapon-Mastery- und Crucible-Respecs,
+   Blacksmith/Jeweler).
 3. **Crystals** — globale Währung für den Crucible ([§3](#3-crucible-globaler-skilltree)).
    **Nur beim allerersten Sieg** eines Floors:
    - Normal = 1, Elite = 3, Boss = 10.
@@ -94,7 +95,7 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
   - **2×** wird **pro Dungeon** freigeschaltet, sobald dieser Dungeon einmal vollendet wurde.
   - Kein Zurückspulen.
 - **Optimierung ist während eines Runs gesperrt.** Solange der Spieler in einem Dungeon ist,
-  lassen sich keine Attribut- oder Skillpunkte setzen, kein Blacksmith, Jeweler oder Crucible
+  lassen sich keine Attribut- oder Mastery Points setzen, kein Blacksmith, Jeweler oder Crucible
   benutzen und keine Respecs durchführen. Punkte und Ressourcen laufen sichtbar auf und werden
   mit dem Ende des Runs verfügbar. Die Sperre schließt insbesondere aus, dass ein Level-Up mitten
   im Dungeon die Attrition über einen Vigor-Zuwachs aushebelt (Design-Absicht:

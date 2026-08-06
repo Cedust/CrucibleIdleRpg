@@ -10,7 +10,7 @@
 
 Runen sind die einzige **qualitative** Fortschritts-Achse: Sie fügen dem Kampf **konditionale
 Ereignisse und temporäre Effekte** hinzu. Alle anderen Achsen (Item-Level, Seltenheit, Gems,
-Sigils, Skilltree, Attribute) sind **permanente Werte**.
+Sigils, Weapon Mastery, Attribute) sind **permanente Werte**.
 
 - **Verbindliche Abgrenzung:** Eine Rune trägt **nie** „+X Stat". Was eine Rune tut, muss etwas
   sein, das kein Stat ausdrücken kann — z. B. Barrier **mitten in** der Runde (die sonst nur zu
@@ -29,7 +29,7 @@ Sigils, Skilltree, Attribute) sind **permanente Werte**.
 | **Talisman**      | Das eingravierte Schmuckstück, **eines pro Charakter**. Trägt genau **einen Rite**.                         |
 | **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                |
 
-- Der **Talisman ist kein siebter Ausrüstungs-Slot**: er trägt **keine** der vier Item-Schichten
+- Der **Talisman ist kein fünfter Armor-Slot**: er trägt **keine** der fünf Item-Schichten
   ([Ausrüstung](CHARACTERS.md#6-ausrüstung)) — kein Innate, kein Item-Level, keine Seltenheit, keine
   Gems — und erscheint **nicht** in der Ausrüstungs-Ansicht, sondern ausschließlich in der
   Runen-Ansicht.
@@ -54,8 +54,9 @@ Ein Rite besteht aus drei Runen-Kategorien:
 
 Bei drei Charakteren mit je einem Rite sind **9 von 17** Runen gleichzeitig aktiv.
 
-**Trigger** — je einer pro Muster; die ersten vier sind an die vier Skilltree-Zweige gekoppelt
-([Charakter-Skilltree](CHARACTERS.md#4-charakter-skilltree)), der Rite liest damit den gebauten Build:
+**Trigger** — je einer pro Muster; die ersten vier sind an die vier gemeinsamen
+[Weapon-Mastery-Disciplines](WEAPON-MASTERY.md#4-gemeinsame-disciplines) gekoppelt. Der Rite
+liest damit den gebauten Build:
 
 `OnCrit` · `OnMultiHit` · `OnSplash` · `OnCounter` ·
 `OnBlock` ([Schadenspipeline](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline), Schritt 3) ·

@@ -10,8 +10,8 @@ ein mehrtägiger Grind-Wall nicht. Ein Durchlauf ohne Build-Entscheidungen soll 
 funktionieren wie ein einzelner dominanter Ausbaupfad.
 
 Der Zahlenraum bleibt lesbar. Fortschritt fühlt sich vor allem über diskrete Power-Spikes an:
-Refine-Stufen, Verhaltens-Knoten, Signatur-Skills und Runen. Flache Werte wie Barrier und
-Regeneration bleiben dadurch über mehrere Akte autorierbar und die Attrition relevant.
+Refine-Stufen, Mastery Ranks und Verhaltens-Nodes, Signatur-Skills und Runen. Flache Werte wie
+Barrier und Regeneration bleiben dadurch über mehrere Akte autorierbar und die Attrition relevant.
 
 ## 2. Warum zwei Wachstumsachsen
 
@@ -26,10 +26,11 @@ Gegneraktionen geben Counter- und Mehrziel-Builds eine echte Rolle.
 
 ## 3. Ökonomische Absicht
 
-Ausrüstung ist der Hauptmotor; Level und Crucible liefern ein garantiertes Grundgerüst.
-Respecs sollen Experimentieren ermöglichen, ohne Entscheidungen wertlos zu machen. Cinder setzt
-den Rhythmus der Aufwertung, Gems tragen die Loot-Jagd, und Runedust erweitert im Endgame
-Möglichkeiten statt bloß Zahlen.
+Armor-Ausbau und Weapon Mastery tragen gemeinsam die permanente Charakterprogression. Level
+liefert dafür Attribute und Mastery Points statt automatischer Stat-Zuwächse; Crucible ergänzt
+das globale Grundgerüst. Respecs sollen Experimentieren ermöglichen, ohne Entscheidungen wertlos
+zu machen. Cinder setzt den Rhythmus der Armor-Aufwertung, Gems tragen die Loot-Jagd, und
+Runedust erweitert im Endgame Möglichkeiten statt bloß Zahlen.
 
 Konkrete Pools, Kosten, Drop-Raten und Wertkurven sind Content oder offene Fragen — nie eine
 zweite Tabelle in dieser Datei.

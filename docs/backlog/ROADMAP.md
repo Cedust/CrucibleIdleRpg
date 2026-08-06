@@ -24,8 +24,8 @@ Ob dieser Kern trägt, zeigt sich am Bildschirm, nicht in der Testsuite.
 | #      | Meilenstein                                                      | Ergebnis                                                                      |
 | ------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | **M1** | [Ein Floor, sichtbar gekämpft](#m1--ein-floor-sichtbar-gekämpft) | Ein Kampf läuft live ab, endet mit Sieg oder Wipe, das Ergebnis liegt im Save |
-| **M2** | [Fortschritt](#m2--fortschritt)                                  | Dungeon-Kette, XP, Level, Attribute, Skilltree, Crucible                      |
-| **M3** | [Ausrüstung](#m3--ausrüstung)                                    | Slots, Innate, Item-Drops, Equip-Ansicht                                      |
+| **M2** | [Fortschritt](#m2--fortschritt)                                  | Dungeon-Kette, XP, Level, Attribute, Weapon Mastery, Crucible                 |
+| **M3** | [Ausrüstung](#m3--ausrüstung)                                    | Armor-Slots, Innate, Item-Drops, Equip-Ansicht                                |
 | **M4** | [Handwerk](#m4--handwerk)                                        | Blacksmith, Jeweler, Gems, Cinder                                             |
 | **M5** | [Runen & Sigils](#m5--runen--sigils)                             | Talisman, Rite, Grimoire, Sigil Codex                                         |
 | **M6** | [Endgame & Politur](#m6--endgame--politur)                       | Akt 2/3, Bosse, Balancing-Pass, Deploy                                        |
@@ -75,15 +75,17 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 | 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | done    | 010, 011a    |
 | 4           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)       | done    | 011          |
 | 5           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)              | done    | 011          |
-| 6           | [014 — Charakter-Skilltree](tasks/014-charakter-skilltree.md)                             | blocked | 013          |
-| 7           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | blocked | 012, 014     |
+| 6           | [014a — Weapon Foundation](tasks/014a-weapon-foundation.md)                               | ready   | 013          |
+| 7           | [014b — Weapon Mastery](tasks/014b-weapon-mastery.md)                                     | blocked | 014a         |
+| 8           | [014c — Mastery Combat Arts](tasks/014c-mastery-combat-arts.md)                           | blocked | 014b         |
+| 9           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | blocked | 012, 014c    |
 
-**014–015** haben noch Spec- bzw. Tuning-Blocker, die jeweils im Task verlinkt sind. Sie werden
-erst `ready`, wenn die fehlende Entscheidung an ihrem verbindlichen Wohnort getroffen wurde.
+**014b–015** warten auf ihre Vorgänger; 014b zusätzlich auf die beiden Respec-Kostenwerte, die im
+Task verlinkt sind. Sie werden erst `ready`, wenn Abhängigkeiten und offene Werte erfüllt sind.
 
 ## M3 — Ausrüstung
 
-Sechs Slots, Innate-Affixe, Item-Level, Seltenheit, Item-Drops, Equip-Ansicht
+Vier Armor-Slots, Innate-Affixe, Item-Level, Seltenheit, Item-Drops, Equip-Ansicht
 ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
 ## M4 — Handwerk

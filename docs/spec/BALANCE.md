@@ -10,6 +10,9 @@
   Regeneration. Zielwerte sind ungefähr `+3 %` beziehungsweise `+1,8 %` pro Floor.
 - Charakterwerte skalieren nur aus ihren eigenen Quellen; Gegner ausschließlich aus
   Akt, Dungeon und Floor. Es gibt kein Gegnerlevel.
+- Charakterlevel erhöhen Attack, Defense und Health nicht automatisch. Level vergibt Attribute
+  und Mastery Points; feste Waffen-/Startwerte, Core-Stats, Mastery und Crucible tragen die
+  Charakterkurven ([Weapon Mastery](WEAPON-MASTERY.md#2-waffenprofile-und-derived-stats)).
 - Offensive Magnituden skalieren nur aus Attack, defensive nur aus defensiven Quellen.
   Kein Effekt konvertiert zwischen den Achsen, insbesondere kein Lifesteal oder Reflekt.
 - Kurven liegen als vorberechnete Tabellen im Content, nicht als Laufzeit-`Math.pow`.
@@ -28,7 +31,7 @@
 
 - Chance-Stats sind über endliche Budgets begrenzt; Damage-Stats nicht. Der endliche
   Content-Vorrat begrenzt ihre Gesamtskalierung.
-- Item-Level und Gegner-Health verwenden Tabellen. Die Spitzenwerte bleiben im nativen
+- Item-Level, XP und Gegnerwerte verwenden Tabellen. Die Spitzenwerte bleiben im nativen
   `number`-Zahlenraum und deutlich unter `Number.MAX_SAFE_INTEGER`.
 - Offene Werte und Kurven stehen ausschließlich in
   [OPEN_ISSUES.md](../backlog/OPEN_ISSUES.md); Tests prüfen Struktur statt Platzhalterwerte.

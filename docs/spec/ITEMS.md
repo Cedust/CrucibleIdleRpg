@@ -4,39 +4,35 @@
 > Handwerks-Stationen. **Wohnort aller item-bezogenen Regeln.**
 > Verwandt: [Team & Charaktere](CHARACTERS.md) · [Fortschritt & Belohnungen](PROGRESSION.md)
 
-Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts
-([BALANCING §3](../spec/BALANCE.md#1-wachstum-und-zahlenraum)).
+Der Ausbau der Armor ist eine dauerhafte Progressionsachse neben Attributen, Weapon Mastery und
+Crucible ([BALANCING §3](../spec/BALANCE.md#1-wachstum-und-zahlenraum)).
 
 ---
 
 ## 1. Slots, Basen & Innate-Affixe
 
-- Jeder Charakter trägt Ausrüstung in **sechs Slots** ([Ausrüstung](CHARACTERS.md#6-ausrüstung)).
+- Jeder Charakter trägt Armor in **vier Slots** ([Ausrüstung](CHARACTERS.md#6-ausrüstung)).
   Ein Slot wird über den Crucible (Anvil Sparks,
   [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)) gegen Crystals freigeschaltet;
   dabei entsteht die rollenspezifische **Basis** als `Common +1` und bleibt dem Slot für das
   ganze Spiel erhalten. **Item-Basen droppen nicht.**
-- **Ausnahme — die Main Hand ist bei allen drei Charakteren ab Spielstart freigeschaltet**
-  (ebenfalls als `Common +1`). Ohne Waffe gäbe es keine Damage-Range und damit keinen
-  definierten Grundschaden ([Charakter-Zug](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)); ein
-  Sonderfall für unbewaffnete Charaktere entfällt so.
-  Die übrigen fünf Slots sowie Blacksmith und Jeweler sind Anvil-Sparks-Unlocks.
+- Main Hand und Off Hand existieren nicht. Die permanenten Signaturwaffen sind keine Items und
+  besitzen weder die fünf Item-Schichten noch Handwerks-Interaktionen
+  ([Weapon Mastery](WEAPON-MASTERY.md#1-grundmodell-und-abgrenzung)).
+- Alle vier Armor-Slots sowie Blacksmith und Jeweler sind Anvil-Sparks-Unlocks.
 - Jeder Slot hat einen **Innate-Affix** — einen festen Basis-Stat, der mit dem **Item-Level**
   skaliert ([§2](#2-item-anatomie-fünf-schichten)):
 
-  | Slot          | Item-Typ (rollenspezifisch)                                           | Innate-Affix                          |
-  | ------------- | --------------------------------------------------------------------- | ------------------------------------- |
-  | **Main Hand** | Waffe (alle Charaktere) — trägt **Damage-Range**                      | **Might**                             |
-  | **Off Hand**  | Rhaya/Quinn: Dolch/Köcher → **Might**; Korvin: Schild → **Toughness** | **Might** (DD) / **Toughness** (Tank) |
-  | **Head**      | Helm                                                                  | **Vitality**                          |
-  | **Chest**     | Rüstung                                                               | **Toughness**                         |
-  | **Legs**      | Beinschutz                                                            | **Toughness**                         |
-  | **Feet**      | Schuhe                                                                | **Initiative**                        |
+  | Slot      | Item-Typ   | Innate-Affix   |
+  | --------- | ---------- | -------------- |
+  | **Head**  | Helm       | **Vitality**   |
+  | **Chest** | Rüstung    | **Toughness**  |
+  | **Legs**  | Beinschutz | **Toughness**  |
+  | **Feet**  | Schuhe     | **Initiative** |
 
-- Item-Typen sind **rollenspezifisch** (Schild nur Korvin usw.); die getragenen **Stats bleiben
-  universell** (kein charakterexklusiver Stat, [Team](CHARACTERS.md#1-team)).
-- Waffen haben zusätzlich eine prozentuale **Damage-Range**, die den Grundschaden moduliert
-  ([Charakter-Zug](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)).
+- Die getragenen Stats bleiben universell (kein charakterexklusiver Stat,
+  [Team](CHARACTERS.md#1-team)). Might besitzt keinen festen Armor-Innate und stammt aus
+  Emerald-Gems.
 
 ## 2. Item-Anatomie (fünf Schichten)
 
@@ -63,8 +59,10 @@ die drei übrigen Handwerks-Schichten hängen.
 
 ## 3. Seltenheit, Sockel & Level-Cap
 
-Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Items und bestimmt drei Dinge:
+Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Armor-Items und bestimmt drei Dinge:
 **Sockelzahl**, **Gem-Level-Cap** (siehe Jeweler) und **Item-Level-Cap**.
+
+Weapon Mastery Ranks sind keine Seltenheit; Waffen verwenden diese Tabelle nicht.
 
 | Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für den Refine **auf** diese Stufe |
 | ------------- | -------------- | -------------- | ----------------------------------------- |
@@ -102,7 +100,8 @@ Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Items und best
 - Das **Implicit** kommt per Brand (siehe Blacksmith) auf ein **Legendary**-Item; seine Stärke
   skaliert mit dem Sigil-Level.
 - Jedes Sigil ist **teamweit genau einmal aktiv** und nur auf seinem gebundenen Slot(-Typ)
-  einsetzbar. Die **Pool-Größe liegt unter 18** (Zahl der Slots) → es tragen nie alle Slots ein Sigil.
+  einsetzbar. Die **Pool-Größe liegt unter 12** (Zahl der Armor-Slots) → es tragen nie alle Slots
+  ein Sigil.
 
 ## 6. Drops: Gems, Cinder & Sigils
 
@@ -177,8 +176,10 @@ im Handwerk**.
 - **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
   seltene Elite/Boss-Chase (Drop-Bedingungen: [§6](#6-drops-gems-cinder--sigils)).
 - **Ohne Gem-Quelle:** die **Derived Stats** (Attack/Defense/Health — sie ergeben sich aus
-  Core/Attribut/Baseline, [Stats](CHARACTERS.md#2-stats)), **Multi Hit Chain**, **Multi Hit Chain
-  Factor** und **Splash Radius** (Skilltree) sowie **Initiative** (Innate Feet + Crucible).
+  Weapon-/Startwerten, Core, Attributen und Crucible, [Stats](CHARACTERS.md#2-stats)),
+  **Multi Hit Chain**, **Multi Hit Chain Factor**, **Splash Radius** und **Precision**
+  ([Weapon Mastery](WEAPON-MASTERY.md)) sowie **Initiative** (Innate Feet + Crucible +
+  charakterindividuelle Weapon-Node).
 - Konkrete Pool-Gewichte, Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing
   (`src/game/`, [BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 

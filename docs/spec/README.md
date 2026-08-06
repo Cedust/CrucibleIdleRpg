@@ -14,17 +14,18 @@ Persistenz. Für eine Implementierung wird die direkt betroffene Datei gelesen, 
 
 ## Regeldateien
 
-| Datei                                | Inhalt                                                        |
-| ------------------------------------ | ------------------------------------------------------------- |
-| [COMBAT-RUN.md](COMBAT-RUN.md)       | Kampfablauf, Initiative, Zielauswahl und Formation            |
-| [DAMAGE-SYSTEM.md](DAMAGE-SYSTEM.md) | Angriffe, Procs, Schadenspipeline, Bulwark und Heilung        |
-| [SIGNATURES.md](SIGNATURES.md)       | Mitigation, Sunder und Suppression                            |
-| [CHARACTERS.md](CHARACTERS.md)       | Team, Stats, Attribute, Skilltree und Ausrüstung              |
-| [PROGRESSION.md](PROGRESSION.md)     | Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige |
-| [ITEMS.md](ITEMS.md)                 | Items, Loot und Handwerk                                      |
-| [RUNES.md](RUNES.md)                 | Rune Grimoire, Talismane, Rites und Masterwork                |
-| [SIMULATION.md](SIMULATION.md)       | Simulation, Playback, Catch-up, Seeds und Reload              |
-| [PERSISTENCE.md](PERSISTENCE.md)     | Speicherzeitpunkte und Save-Inhalt                            |
+| Datei                                  | Inhalt                                                        |
+| -------------------------------------- | ------------------------------------------------------------- |
+| [COMBAT-RUN.md](COMBAT-RUN.md)         | Kampfablauf, Initiative, Zielauswahl und Formation            |
+| [DAMAGE-SYSTEM.md](DAMAGE-SYSTEM.md)   | Angriffe, Procs, Schadenspipeline, Bulwark und Heilung        |
+| [WEAPON-MASTERY.md](WEAPON-MASTERY.md) | Waffen, Mastery Points, Disciplines, Nodes und Bedienung      |
+| [SIGNATURES.md](SIGNATURES.md)         | Mitigation, Sunder und Suppression                            |
+| [CHARACTERS.md](CHARACTERS.md)         | Team, Stats, Attribute, Level und Armor                       |
+| [PROGRESSION.md](PROGRESSION.md)       | Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige |
+| [ITEMS.md](ITEMS.md)                   | Items, Loot und Handwerk                                      |
+| [RUNES.md](RUNES.md)                   | Rune Grimoire, Talismane, Rites und Masterwork                |
+| [SIMULATION.md](SIMULATION.md)         | Simulation, Playback, Catch-up, Seeds und Reload              |
+| [PERSISTENCE.md](PERSISTENCE.md)       | Speicherzeitpunkte und Save-Inhalt                            |
 
 Dateiübergreifende Regeln werden an ihrem fachlichen Wohnort formuliert und von dort verlinkt.
 Ein Invarianten-Index ist bewusst nicht vorhanden: Er wäre eine zweite, pflegeintensive

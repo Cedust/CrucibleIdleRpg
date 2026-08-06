@@ -56,6 +56,18 @@ describe('deriveCharacterStats — Level-1-Fall', () => {
   });
 });
 
+describe('deriveCharacterStats — Attributsatz', () => {
+  it('verwendet exakt +1,25 % je Punkt und damit +125 % bei 100 Punkten', () => {
+    expect(ATTRIBUTE_BONUS_PER_POINT).toBe(0.0125);
+    expect(
+      deriveCharacterStats(
+        PROBAND,
+        progression({ attributePoints: { ferocity: 100, resilience: 0, vigor: 0 } }),
+      ).derived.attack,
+    ).toBeCloseTo(225, 8);
+  });
+});
+
 describe('deriveCharacterStats — Core-Kategorie', () => {
   it('summiert Definition und Zusatzquellen (Item-Innate, Gems)', () => {
     const stats = deriveCharacterStats(

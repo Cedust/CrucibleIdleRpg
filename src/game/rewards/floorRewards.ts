@@ -1,19 +1,19 @@
-import type { FloorRewardDefinition } from '@/game/types';
+import type { CharacterId, FloorRewardDefinition } from '@/game/types';
+import { distributeFloorXp } from './xpRewards';
 
 /**
- * PLATZHALTER — XP-Verteilung und Gold-Kurve sind noch offen:
- * docs/backlog/OPEN_ISSUES.md#ökonomie. Der individuelle Rest ist für den M1-Floor null;
- * alle drei Charaktere erhalten denselben Basisanteil.
+ * Die Gold-Kurve bleibt bis zum Economy-Pass bewusst konstant. XP stammen aus dem deklarativen
+ * Progression-Content und dem Ergebnis des gerade gewonnenen Kampfs.
  */
-export const M1_FLOOR_REWARD: FloorRewardDefinition = {
-  floorId: 'A1-D1-01',
-  gold: 10,
-  characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
-};
-
-/** Verwendet bis zum Economy-Pass dieselben markierten Platzhalter-Werte je Akt-1-Floor. */
-export function createPlaceholderFloorReward(
+export function createFloorReward(
   floorId: FloorRewardDefinition['floorId'],
+  floorIndex: number,
+  enemyCount: number,
+  effectiveDamage: Readonly<Record<CharacterId, number>>,
 ): FloorRewardDefinition {
-  return { ...M1_FLOOR_REWARD, floorId };
+  return {
+    floorId,
+    gold: 10,
+    characterXp: distributeFloorXp({ floorIndex, enemyCount, effectiveDamage }),
+  };
 }

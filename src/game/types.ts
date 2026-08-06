@@ -93,6 +93,18 @@ export interface AttributePoints {
   vigor: number;
 }
 
+/** Persistierter Fortschritt eines Charakters außerhalb des laufenden Kampfes. */
+export interface CharacterProgressionState {
+  level: number;
+  /** Noch nicht für das nächste Level verbrauchte XP. */
+  xp: number;
+  freeAttributePoints: number;
+  attributePoints: AttributePoints;
+  freeSkillPoints: number;
+  /** Bis Task 014 liegt nur die Summe der bereits investierten Skillpunkte vor. */
+  spentSkillPoints: number;
+}
+
 /**
  * Offensive Stats — paarweise Chance + Damage je Muster (SPEC §3.0).
  * Chancen als Anteil 0..1; Damage-Werte als Anteil des rohen Grundschadens (SPEC §2.1).

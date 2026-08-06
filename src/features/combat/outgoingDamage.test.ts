@@ -135,6 +135,7 @@ function state(enemies: CombatEnemy[]): CombatState {
     floorSeed: 1,
     combatPrngState: 1,
     characters: [],
+    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
     enemies,
     round: 1,
     pending: [],

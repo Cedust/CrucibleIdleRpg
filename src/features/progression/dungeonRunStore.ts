@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { useCombatStore, type PlaybackSpeed } from '@/features/combat/combatStore';
 import { createDungeonEntryCombat, createNextDungeonCombat } from '@/features/combat/dungeonCombat';
-import { createPlaceholderFloorReward } from '@/game/rewards/floorRewards';
+import { createFloorReward } from '@/game/rewards/floorRewards';
 import { resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
 import { saveStore } from '@/features/save/saveStore';
 import { useNavigationStore } from '@/features/shell/navigationStore';
@@ -46,10 +46,17 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
       useCombatStore
         .getState()
         .setPlaybackSpeed(save.completedDungeons[dungeonId] ? save.playbackSpeed : 1);
-      useCombatStore.getState().startCombat(combat, undefined, async () => {
+      useCombatStore.getState().startCombat(combat, undefined, async (result) => {
         const commit = await saveStore
           .getState()
-          .commitVictory(createPlaceholderFloorReward(combat.floorId));
+          .commitVictory(
+            createFloorReward(
+              result.floorId,
+              result.floorIndex,
+              result.enemies.length,
+              result.effectiveDamage,
+            ),
+          );
         return commit.reward;
       });
       set({ mode: 'run', activeDungeonId: dungeonId, completionError: null });
@@ -81,10 +88,17 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     }
 
     const nextCombat = createNextDungeonCombat(save, combat.combat);
-    useCombatStore.getState().startCombat(nextCombat, undefined, async () => {
+    useCombatStore.getState().startCombat(nextCombat, undefined, async (result) => {
       const commit = await saveStore
         .getState()
-        .commitVictory(createPlaceholderFloorReward(nextCombat.floorId));
+        .commitVictory(
+          createFloorReward(
+            result.floorId,
+            result.floorIndex,
+            result.enemies.length,
+            result.effectiveDamage,
+          ),
+        );
       return commit.reward;
     });
     return true;

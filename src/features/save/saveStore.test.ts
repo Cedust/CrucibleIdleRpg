@@ -71,6 +71,29 @@ describe('createSaveStore', () => {
     expect(reloaded.getState().data).not.toHaveProperty('combat');
   });
 
+  it('persistiert freie Attributverteilung und Gold-Respec über einen Reload', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+    await store.getState().commitVictory({
+      floorId: 'A1-D1-01',
+      gold: 10,
+      characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
+    });
+
+    await expect(store.getState().spendAttributePoint('korvin', 'ferocity')).resolves.toBe(true);
+    await expect(store.getState().respecAttributes('korvin', 10)).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.characters.korvin).toMatchObject({
+      freeAttributePoints: 1,
+      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+    });
+    expect(reloaded.getState().data?.currencies.gold).toBe(0);
+  });
+
   it('marks only the completed dungeon and unlocks its next checkpoint', async () => {
     const port = memoryPort();
     const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));

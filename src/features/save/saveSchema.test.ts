@@ -1,17 +1,38 @@
 import { describe, expect, it } from 'vitest';
-import { createDefaultSave, saveSchemaV1, saveSchemaV2 } from './saveSchema';
+import { createDefaultSave, saveSchemaV1, saveSchemaV3 } from './saveSchema';
 
-describe('saveSchemaV2', () => {
+describe('saveSchemaV3', () => {
   it('creates a complete save with dungeon checkpoints and no runtime combat state', () => {
     expect(createDefaultSave(0x12345678)).toEqual({
-      version: 2,
+      version: 3,
       saveSeed: 0x12345678,
       runCounter: 0,
       playbackSpeed: 1,
       characters: {
-        korvin: { level: 1, xp: 0 },
-        rhaya: { level: 1, xp: 0 },
-        quinn: { level: 1, xp: 0 },
+        korvin: {
+          level: 1,
+          xp: 0,
+          freeAttributePoints: 1,
+          attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+          freeSkillPoints: 1,
+          spentSkillPoints: 0,
+        },
+        rhaya: {
+          level: 1,
+          xp: 0,
+          freeAttributePoints: 1,
+          attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+          freeSkillPoints: 1,
+          spentSkillPoints: 0,
+        },
+        quinn: {
+          level: 1,
+          xp: 0,
+          freeAttributePoints: 1,
+          attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+          freeSkillPoints: 1,
+          spentSkillPoints: 0,
+        },
       },
       currencies: { gold: 0, crystals: 0 },
       firstVictories: [],
@@ -35,17 +56,26 @@ describe('saveSchemaV2', () => {
       { combatPrngState: 42 },
       { floorIndex: 0 },
     ]) {
-      expect(saveSchemaV2.safeParse({ ...save, ...forbidden }).success).toBe(false);
+      expect(saveSchemaV3.safeParse({ ...save, ...forbidden }).success).toBe(false);
     }
   });
 
   it('keeps v1 valid for explicit migration without dungeon fields', () => {
-    const saveV1 = Object.fromEntries(
-      Object.entries(createDefaultSave(123)).filter(
-        ([key]) => key !== 'unlockedDungeonIds' && key !== 'completedDungeons',
-      ),
-    );
+    const current = createDefaultSave(123);
+    const saveV1 = {
+      version: 1,
+      saveSeed: current.saveSeed,
+      runCounter: current.runCounter,
+      playbackSpeed: current.playbackSpeed,
+      characters: {
+        korvin: { level: 1, xp: 0 },
+        rhaya: { level: 1, xp: 0 },
+        quinn: { level: 1, xp: 0 },
+      },
+      currencies: current.currencies,
+      firstVictories: current.firstVictories,
+    };
 
-    expect(saveSchemaV1.safeParse({ ...saveV1, version: 1 }).success).toBe(true);
+    expect(saveSchemaV1.safeParse(saveV1).success).toBe(true);
   });
 });

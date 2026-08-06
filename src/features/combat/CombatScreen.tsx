@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { type Act1DungeonId } from '@/game/encounters/act1';
-import { createPlaceholderFloorReward } from '@/game/rewards/floorRewards';
+import { createFloorReward } from '@/game/rewards/floorRewards';
 import { DungeonSelector } from '@/features/progression/DungeonSelector';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
@@ -35,8 +35,15 @@ export function CombatControls() {
     try {
       const runSave = await beginRun();
       const combat = createDungeonEntryCombat(runSave, selectedDungeonId);
-      startCombat(combat, undefined, async () => {
-        const commit = await commitVictory(createPlaceholderFloorReward(combat.floorId));
+      startCombat(combat, undefined, async (result) => {
+        const commit = await commitVictory(
+          createFloorReward(
+            result.floorId,
+            result.floorIndex,
+            result.enemies.length,
+            result.effectiveDamage,
+          ),
+        );
         return commit.reward;
       });
     } catch {

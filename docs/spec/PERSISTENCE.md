@@ -22,7 +22,7 @@
 
 - Global: Save-Version, `saveSeed`, `runCounter`, Playback-Geschwindigkeit
   ([Playback](SIMULATION.md#2-playback--takt-und-geschwindigkeit)).
-- Pro Charakter: Level, XP, Attribut- und Skillpunkte-Verteilung.
+- Pro Charakter: Level, Rest-XP, freie und verteilte Attribut- sowie Skillpunkte.
 - Pro freigeschaltetem **Slot** das Item — die fünf Schichten aus
   [Item-Anatomie](ITEMS.md#2-item-anatomie-fünf-schichten) (Basis + Item-Level + Seltenheit +
   gesockelte Gems inkl. Level/Value + gebrandetes Sigil). Die **Main Hand** ist ab Start belegt
@@ -61,3 +61,9 @@ firstVictories: FloorId[]
 v1 ist das erste Save-Format und hat keinen Vorgänger. Spätere persistierte Systeme aus
 [Save-Inhalt](#2-save-inhalt) erweitern den Speicherstand über eine neue Version mit expliziter
 Migration von v1.
+
+### 2.2 Save v3 (Task 013)
+
+Save v3 ergänzt jeden Charakter um freie Punkte und die drei verteilten Attribute. Bestehende
+v1-/v2-Saves migrieren dafür auf den vollständigen Level-1-Startzustand: 0 XP, je 1 freier
+Attribut- und Skillpunkt, keine verteilten Punkte.

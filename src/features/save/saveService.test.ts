@@ -46,13 +46,40 @@ describe('createSaveService', () => {
     await expect(service.load()).resolves.toEqual(save);
   });
 
-  it('migrates a v1 save with the first dungeon checkpoint to v2', async () => {
-    const saveV1 = Object.fromEntries(
-      Object.entries(createDefaultSave(42)).filter(
-        ([key]) => key !== 'unlockedDungeonIds' && key !== 'completedDungeons',
-      ),
+  it('migrates a v1 save with the level-one point state', async () => {
+    const current = createDefaultSave(42);
+    const saveV1 = {
+      version: 1,
+      saveSeed: current.saveSeed,
+      runCounter: current.runCounter,
+      playbackSpeed: current.playbackSpeed,
+      characters: {
+        korvin: { level: 1, xp: 0 },
+        rhaya: { level: 1, xp: 0 },
+        quinn: { level: 1, xp: 0 },
+      },
+      currencies: current.currencies,
+      firstVictories: current.firstVictories,
+    };
+    const service = createSaveService(memoryPort(JSON.stringify(saveV1)), () =>
+      createDefaultSave(1),
     );
-    const service = createSaveService(memoryPort(JSON.stringify({ ...saveV1, version: 1 })), () =>
+
+    await expect(service.load()).resolves.toEqual(createDefaultSave(42));
+  });
+
+  it('resets legacy v2 character progression to the level-one start state', async () => {
+    const current = createDefaultSave(42);
+    const legacy = {
+      ...current,
+      version: 2,
+      characters: {
+        korvin: { level: 7, xp: 99 },
+        rhaya: { level: 12, xp: 42 },
+        quinn: { level: 1, xp: 0 },
+      },
+    };
+    const service = createSaveService(memoryPort(JSON.stringify(legacy)), () =>
       createDefaultSave(1),
     );
 

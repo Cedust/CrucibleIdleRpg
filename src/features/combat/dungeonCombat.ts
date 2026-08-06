@@ -58,7 +58,10 @@ function createDungeonCombat(
     formation,
     team: TEAM_ORDER.map((id) => ({
       id,
-      progression: neutralProgression(save.characters[id].level),
+      progression: {
+        ...neutralProgression(save.characters[id].level),
+        attributePoints: save.characters[id].attributePoints,
+      },
       carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
     })),
   });

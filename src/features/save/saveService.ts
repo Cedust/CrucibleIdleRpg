@@ -2,8 +2,10 @@ import { z } from 'zod';
 import type { SavePort } from '@/shared/ports/savePort';
 import {
   createDefaultCompletedDungeons,
+  createLevelOneProgression,
   currentSaveSchema,
   saveSchemaV1,
+  saveSchemaV2,
   type SaveData,
 } from './saveSchema';
 
@@ -50,13 +52,23 @@ function migrate(data: unknown): SaveData {
 
   switch (versioned.version) {
     case 1:
-      return {
+      return migrate({
         ...saveSchemaV1.parse(versioned),
         version: 2,
         unlockedDungeonIds: ['A1-D1'],
         completedDungeons: createDefaultCompletedDungeons(),
-      };
+      });
     case 2:
+      return migrate({
+        ...saveSchemaV2.parse(versioned),
+        version: 3,
+        characters: {
+          korvin: createLevelOneProgression(),
+          rhaya: createLevelOneProgression(),
+          quinn: createLevelOneProgression(),
+        },
+      });
+    case 3:
       return currentSaveSchema.parse(versioned);
     default:
       throw new Error(`Unbekannte Save-Version: ${versioned.version}`);

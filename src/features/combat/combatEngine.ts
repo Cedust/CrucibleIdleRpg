@@ -110,6 +110,7 @@ export function combatOutcome(state: CombatState): CombatOutcome {
 interface TurnDraft {
   characters: CombatCharacter[];
   enemies: CombatEnemy[];
+  effectiveDamage: Record<CombatCharacter['id'], number>;
   events: CombatEvent[];
 }
 
@@ -117,6 +118,7 @@ function draftOf(state: CombatState): TurnDraft {
   return {
     characters: state.characters.map((character) => ({ ...character })),
     enemies: state.enemies.map((enemy) => ({ ...enemy })),
+    effectiveDamage: { ...state.effectiveDamage },
     events: [],
   };
 }
@@ -136,7 +138,15 @@ function damageEnemy(draft: TurnDraft, source: ActorRef, hit: Hit): void {
     return;
   }
 
-  enemy.health = Math.max(enemy.health - hit.damage, 0);
+  const removedHealth = Math.min(hit.damage, enemy.health);
+  enemy.health -= removedHealth;
+
+  if (source.side === 'character') {
+    const character = draft.characters[source.index];
+    if (character !== undefined) {
+      draft.effectiveDamage[character.id] += removedHealth;
+    }
+  }
 
   draft.events.push({
     type: 'hit',
@@ -204,6 +214,7 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
     ...current,
     combatPrngState: prng.state(),
     characters: draft.characters,
+    effectiveDamage: draft.effectiveDamage,
     enemies: draft.enemies,
     pending: remaining,
   };

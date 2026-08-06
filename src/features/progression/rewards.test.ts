@@ -16,10 +16,11 @@ describe('commitFloorVictory', () => {
 
     expect(result.reward).toEqual({ gold: 10, xp: 15, crystals: 1 });
     expect(result.save.currencies).toEqual({ gold: 10, crystals: 1 });
-    expect(result.save.characters).toEqual({
-      korvin: { level: 1, xp: 5 },
-      rhaya: { level: 1, xp: 5 },
-      quinn: { level: 1, xp: 5 },
+    expect(result.save.characters.korvin).toMatchObject({
+      level: 1,
+      xp: 5,
+      freeAttributePoints: 1,
+      freeSkillPoints: 1,
     });
     expect(result.save.firstVictories).toEqual(['A1-D1-01']);
     expect(before).toEqual(createDefaultSave(1));

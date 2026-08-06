@@ -53,10 +53,9 @@ export const BASELINE_GROWTH: Record<keyof DerivedStats, readonly number[]> = {
  * der Ebene — Derived = Basis × (1 + ATTRIBUTE_BONUS_PER_POINT × Punkte)
  * (docs/spec/CHARACTERS.md#3-attribute-level-up-progression).
  *
- * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
- * (Derived-Stat-Kurven je Quelle, „Attribut-Prozentsatz je Punkt"). Hier gewählt: +1 %.
+ * Jeder Punkt gibt exakt +1,25 % auf seinen gekoppelten Derived Stat.
  */
-export const ATTRIBUTE_BONUS_PER_POINT = 0.01;
+export const ATTRIBUTE_BONUS_PER_POINT = 0.0125;
 
 /**
  * Umrechnung eines Core-Stat-Punkts in den Basis-Pool seines Derived Stats

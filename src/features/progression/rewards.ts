@@ -1,4 +1,5 @@
 import type { SaveData } from '@/features/save/saveSchema';
+import { gainExperience } from '@/game/rewards/xpRewards';
 import type { FloorId, FloorRewardDefinition } from '@/game/types';
 
 export interface RewardSummary {
@@ -29,7 +30,7 @@ export function crystalRewardForFirstVictory(floorId: FloorId): number {
   return dungeon === '5' ? 10 : 3;
 }
 
-/** Committet die Belohnung eines Floor-Siegs unveränderlich in Save v1. */
+/** Committet die Belohnung eines Floor-Siegs einschließlich aller daraus folgenden Level-Ups. */
 export function commitFloorVictory(save: SaveData, input: FloorRewardDefinition): RewardCommit {
   const isFirstVictory = !save.firstVictories.includes(input.floorId);
   const crystals = isFirstVictory ? crystalRewardForFirstVictory(input.floorId) : 0;
@@ -41,16 +42,13 @@ export function commitFloorVictory(save: SaveData, input: FloorRewardDefinition)
       ...save,
       characters: {
         korvin: {
-          ...save.characters.korvin,
-          xp: save.characters.korvin.xp + input.characterXp.korvin,
+          ...gainExperience(save.characters.korvin, input.characterXp.korvin),
         },
         rhaya: {
-          ...save.characters.rhaya,
-          xp: save.characters.rhaya.xp + input.characterXp.rhaya,
+          ...gainExperience(save.characters.rhaya, input.characterXp.rhaya),
         },
         quinn: {
-          ...save.characters.quinn,
-          xp: save.characters.quinn.xp + input.characterXp.quinn,
+          ...gainExperience(save.characters.quinn, input.characterXp.quinn),
         },
       },
       currencies: {

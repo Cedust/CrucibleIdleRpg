@@ -1,7 +1,8 @@
 import { createStore, useStore } from 'zustand';
 import type { RewardCommit } from '@/features/progression/rewards';
 import { commitFloorVictory } from '@/features/progression/rewards';
-import type { FloorRewardDefinition } from '@/game/types';
+import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
+import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
@@ -15,6 +16,11 @@ export interface SaveStoreState {
   hydrate: () => Promise<SaveData>;
   beginRun: () => Promise<SaveData>;
   commitVictory: (reward: FloorRewardDefinition) => Promise<RewardCommit>;
+  spendAttributePoint: (
+    characterId: CharacterId,
+    attribute: keyof AttributePoints,
+  ) => Promise<boolean>;
+  respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
@@ -78,6 +84,55 @@ export function createSaveStore(service: SaveService) {
         await service.save(commit.save);
         set({ data: commit.save, status: 'ready' });
         return commit;
+      } catch (error) {
+        set({ status: 'error' });
+        throw error;
+      }
+    },
+
+    spendAttributePoint: async (characterId, attribute) => {
+      const current = requiredSave(get().data);
+      const progression = spendAttributePoint(current.characters[characterId], attribute);
+      if (progression === null) {
+        return false;
+      }
+      const next: SaveData = {
+        ...current,
+        characters: { ...current.characters, [characterId]: progression },
+      };
+      set({ status: 'saving' });
+
+      try {
+        await service.save(next);
+        set({ data: next, status: 'ready' });
+        return true;
+      } catch (error) {
+        set({ status: 'error' });
+        throw error;
+      }
+    },
+
+    respecAttributes: async (characterId, goldCost) => {
+      const current = requiredSave(get().data);
+      const respec = respecAttributes(
+        current.characters[characterId],
+        current.currencies.gold,
+        goldCost,
+      );
+      if (respec === null) {
+        return false;
+      }
+      const next: SaveData = {
+        ...current,
+        characters: { ...current.characters, [characterId]: respec.progression },
+        currencies: { ...current.currencies, gold: respec.gold },
+      };
+      set({ status: 'saving' });
+
+      try {
+        await service.save(next);
+        set({ data: next, status: 'ready' });
+        return true;
       } catch (error) {
         set({ status: 'error' });
         throw error;

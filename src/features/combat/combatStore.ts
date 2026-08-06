@@ -29,11 +29,11 @@ export interface CombatStoreState {
   playbackSpeed: PlaybackSpeed;
   completionStatus: 'idle' | 'saving' | 'saved' | 'failed';
   lastReward: RewardSummary | null;
-  victoryCommit: (() => Promise<RewardSummary>) | null;
+  victoryCommit: ((combat: CombatState) => Promise<RewardSummary>) | null;
   startCombat: (
     combat: CombatState,
     context?: CombatContext,
-    victoryCommit?: () => Promise<RewardSummary>,
+    victoryCommit?: (combat: CombatState) => Promise<RewardSummary>,
   ) => void;
   clearCombat: () => void;
   advanceTick: () => TickResult | undefined;
@@ -132,7 +132,7 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
     set({ completionStatus: 'saving' });
 
     void Promise.resolve()
-      .then(commit)
+      .then(() => commit(combat))
       .then(
         (reward) => {
           const latest = get();

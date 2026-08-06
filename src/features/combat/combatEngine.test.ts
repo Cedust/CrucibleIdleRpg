@@ -136,6 +136,7 @@ function gestellt(characters: CombatCharacter[], enemies: CombatEnemy[]): Combat
     floorSeed,
     combatPrngState: combatStreamPrng(floorSeed).state(),
     characters,
+    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
     enemies,
     round: 0,
     pending: [],
@@ -463,6 +464,8 @@ describe('Sieg und Wipe (COMBAT §1.1)', () => {
       'defeat',
       'combatEnd',
     ]);
+    // Der Rohschaden ist größer als die gegnerische Rest-Health; XP zählt nur 10.
+    expect(tick.state.effectiveDamage).toEqual({ korvin: 0, rhaya: 10, quinn: 0 });
 
     // Ein weiterer Aufruf steht still, statt ins Leere zu rechnen.
     const danach = nextTick(tick.state, contextWith());
@@ -526,6 +529,37 @@ describe('Sieg und Wipe (COMBAT §1.1)', () => {
     const zweiter = nextTick(erster.state, contextWith());
 
     expect(zweiter.actor).toEqual({ side: 'character', index: 0 });
+  });
+
+  it('behält den effektiven Schaden eines später besiegten Charakters bis zum Floor-Ergebnis', () => {
+    const result = runCombat(
+      gestellt(
+        [
+          character({
+            id: 'korvin',
+            role: 'tank',
+            slotIndex: 0,
+            attack: 10_000,
+            maxHealth: 100_000,
+            utility: { initiative: 8 },
+          }),
+          character({
+            id: 'rhaya',
+            role: 'melee',
+            slotIndex: 1,
+            attack: 100,
+            maxHealth: 10,
+            utility: { initiative: 10 },
+          }),
+        ],
+        [enemy({ formationIndex: 0, health: 1_000, attack: 10_000, initiative: 9 })],
+      ),
+      contextWith(),
+    );
+
+    expect(result.outcome).toBe('victory');
+    expect(result.state.characters[1]?.health).toBe(0);
+    expect(result.state.effectiveDamage.rhaya).toBeGreaterThan(0);
   });
 });
 

@@ -7,7 +7,7 @@
 
 ### Charaktere und Gegner
 
-- [ ] Derived-Stat-Kurven für Baseline, Attribute und Core-Stats. → [Stats](../spec/CHARACTERS.md#2-stats)
+- [ ] Derived-Stat-Kurven für Baseline und Core-Stats. → [Stats](../spec/CHARACTERS.md#2-stats)
 - [ ] Gegnerkurven für Health, Attack und Accuracy je Akt/Dungeon/Floor. → [BALANCE](../spec/BALANCE.md#1-wachstum-und-zahlenraum)
 - [ ] Gegner-Basiswerte und Initiative-Ranges je Typ. → [Formation](../spec/COMBAT-RUN.md#13-gegnerformation)
 - [ ] Formationsbesetzung je Floor und Ramp-up je Akt; jeder Pflicht-Encounter hat mindestens **zwei** Gegneraktionen pro Runde. → [BALANCE](../spec/BALANCE.md#2-spielbare-korridore)
@@ -24,7 +24,7 @@
 
 ### Ökonomie und Endgame
 
-- [ ] XP-Verteilung, Gold-Drops und Respec-Kosten. → [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg)
+- [ ] Gold-Drops und Respec-Kosten. → [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg)
 - [ ] Item-Level-Kurve, Seltenheits-Caps und Sockel-Meilensteine. → [Items](../spec/ITEMS.md#3-seltenheit-sockel--level-cap)
 - [ ] Cinder-, Blacksmith- und Jeweler-Kosten. → [Handwerk](../spec/ITEMS.md#7-blacksmith--temper-refine--brand)
 - [ ] Gem-Werte, Targeting, Drops und Aufleveln-Kosten. → [Jeweler](../spec/ITEMS.md#8-jeweler--inlay-attune--recut)

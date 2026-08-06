@@ -94,9 +94,9 @@ Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived
 
 **Mechanik**
 
-- 1 Punkt hebt den gekoppelten Derived Stat um einen **festen Prozentsatz** — die %-Ebene der
-  Zusammensetzung ([§2](#2-stats)); konkreter Satz = Balancing, `src/game/`. Der relative
-  Zuwachs pro Punkt ist damit auf jeder Ausbaustufe gleich viel wert.
+- 1 Punkt hebt den gekoppelten Derived Stat um **exakt 1,25 %** — die %-Ebene der
+  Zusammensetzung ([§2](#2-stats)). 100 Punkte ergeben damit +125 %; der relative Zuwachs pro
+  Punkt ist auf jeder Ausbaustufe gleich viel wert.
 - Die %-Ebene multipliziert auf Baseline **und** Core-Stat — die Baseline sichert einen
   spielbaren Sockel, die Attribute setzen die Gewichtung.
 
@@ -155,6 +155,9 @@ Jeder Charakter hat drei Attribute. Sie sind **eine der drei Quellen der Derived
 
 - Jeder Charakter hat ein **Level**; Maximallevel **100** (Erhöhung durch XP,
   [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)).
+- Level 1 → 2 benötigt 75 XP; jede weitere Anforderung wächst um 9 %. Die 99 gerundeten Werte
+  bis Level 100 liegen als vorberechnete Tabelle im Game-Content, ohne Laufzeitpotenzierung.
+- Bei Level 100 werden weitere XP verworfen; der Rest-XP-Zähler steht dort immer auf 0.
 - **Ein Level-Up bewirkt dreierlei:**
   1. **Automatisches Baseline-Wachstum der Derived Stats** (Attack/Defense/Health nach fester
      Kurve, BALANCING) — der spielbare Sockel, auf den Attribute und Core-Stats aufsetzen

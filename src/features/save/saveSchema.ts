@@ -1,12 +1,13 @@
 import { z } from 'zod';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
+import type { CharacterProgressionState } from '@/game/types';
 
 /**
  * Zod-Schema des Speicherstands (siehe AGENTS.md).
  * Pro Save-Version ein Schema; die Versionsnummer steuert die Migration.
  * Beim Laden wird gegen dieses Schema validiert, bevor Daten in den Store gelangen.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 const uint32Schema = z.number().int().min(0).max(0xffffffff);
 const progressionSchema = z
@@ -15,6 +16,35 @@ const progressionSchema = z
     xp: z.number().int().nonnegative(),
   })
   .strict();
+
+const attributePointsSchema = z
+  .object({
+    ferocity: z.number().int().nonnegative(),
+    resilience: z.number().int().nonnegative(),
+    vigor: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const characterProgressionSchema = progressionSchema
+  .extend({
+    freeAttributePoints: z.number().int().nonnegative(),
+    attributePoints: attributePointsSchema,
+    freeSkillPoints: z.number().int().nonnegative(),
+    spentSkillPoints: z.number().int().nonnegative(),
+  })
+  .strict()
+  .superRefine((character, context) => {
+    const spentAttributes = Object.values(character.attributePoints).reduce(
+      (total, points) => total + points,
+      0,
+    );
+    if (character.freeAttributePoints + spentAttributes !== character.level) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Attributpunkte.' });
+    }
+    if (character.freeSkillPoints + character.spentSkillPoints !== character.level) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Skillpunkte.' });
+    }
+  });
 
 export const saveSchemaV1 = z
   .object({
@@ -67,9 +97,28 @@ export const saveSchemaV2 = saveSchemaV1
 
 export type SaveDataV2 = z.infer<typeof saveSchemaV2>;
 
+/** Save v3 ergänzt den Charakterfortschritt um freie und verteilte Punkte aus Task 013. */
+export const saveSchemaV3 = saveSchemaV2
+  .omit({ version: true, characters: true })
+  .extend({
+    version: z.literal(3),
+    characters: z
+      .object({
+        korvin: characterProgressionSchema,
+        rhaya: characterProgressionSchema,
+        quinn: characterProgressionSchema,
+      })
+      .strict(),
+  })
+  .strict();
+
+export type SaveDataV3 = Omit<z.infer<typeof saveSchemaV3>, 'characters'> & {
+  characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
+};
+
 /** Aktuelles Save-Format (Alias auf die neueste Version). */
-export type SaveData = SaveDataV2;
-export const currentSaveSchema = saveSchemaV2;
+export type SaveData = SaveDataV3;
+export const currentSaveSchema = saveSchemaV3;
 
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {
@@ -88,14 +137,25 @@ export function createDefaultSave(saveSeed: number): SaveData {
     runCounter: 0,
     playbackSpeed: 1,
     characters: {
-      korvin: { level: 1, xp: 0 },
-      rhaya: { level: 1, xp: 0 },
-      quinn: { level: 1, xp: 0 },
+      korvin: createLevelOneProgression(),
+      rhaya: createLevelOneProgression(),
+      quinn: createLevelOneProgression(),
     },
     currencies: { gold: 0, crystals: 0 },
     firstVictories: [],
     unlockedDungeonIds: ['A1-D1'],
     completedDungeons: createDefaultCompletedDungeons(),
+  };
+}
+
+export function createLevelOneProgression(): CharacterProgressionState {
+  return {
+    level: 1,
+    xp: 0,
+    freeAttributePoints: 1,
+    attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+    freeSkillPoints: 1,
+    spentSkillPoints: 0,
   };
 }
 

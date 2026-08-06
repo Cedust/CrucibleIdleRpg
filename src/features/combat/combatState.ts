@@ -104,6 +104,11 @@ export interface CombatState {
   combatPrngState: number;
   /** Genau drei Charaktere in Slot-Reihenfolge. */
   characters: readonly CombatCharacter[];
+  /**
+   * Tatsächlich entfernte Gegner-Health je Charakter. Der Wert bleibt auch nach dessen Tod
+   * bis zum Floor-Ergebnis erhalten und zählt keinen Overkill (PROGRESSION §2).
+   */
+  effectiveDamage: Readonly<Record<CharacterId, number>>;
   /** Nur besetzte Formations-Slots, aufsteigend nach `formationIndex`. */
   enemies: readonly CombatEnemy[];
   /** `0` vor der ersten Runde; `beginRound` zählt hoch. */
@@ -304,6 +309,7 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     // Der Strom steht am Anfang; jeder Takt schreibt seine Position zurück (combatEngine.ts).
     combatPrngState: combatStreamPrng(setup.floorSeed).state(),
     characters,
+    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
     enemies,
     round: 0,
     pending: [],

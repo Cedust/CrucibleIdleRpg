@@ -29,10 +29,14 @@ Run-Ende. Ein Absturz oder Reload kostet damit den laufenden Run
 Verfügbar zum **Ausgeben** werden sie erst nach dem Run
 ([§4](#4-checkpoints-wipe--abbruch)).
 
-1. **XP** → Charakterlevel ([Charakterlevel](CHARACTERS.md#5-charakterlevel)). Pro Floor entsteht ein
-   **XP-Pool** (abhängig von Floor & Gegnerzahl), der auf die drei Charaktere verteilt wird: ein
-   **Basisanteil** je Charakter, der Rest **individuell**.
-   <!-- TODO: Verteilungsschlüssel des Rests (Kandidat: nach verursachtem Schaden). -->
+1. **XP** → Charakterlevel ([Charakterlevel](CHARACTERS.md#5-charakterlevel)). Pro Gegner entsteht
+   auf globalem Floor `f` ein XP-Wert von `12 × 1,03^(f − 1)`, auf ganze Vielfache von 4
+   gerundet; die 300 Werte liegen als Tabelle im Game-Content vor. Der Floor-Pool ist dieser
+   Wert mal Gegnerzahl. 75 % des Pools werden gleich verteilt (je Charakter garantiert 25 %),
+   die übrigen 25 % proportional zum **effektiven Schaden**. Effektiver Schaden ist tatsächlich
+   entfernte gegnerische Health nach Mitigation; Overkill zählt nicht und der Beitrag eines
+   später besiegten Charakters bleibt erhalten. Ganzzahlige Reste werden per größtem Rest
+   vergeben; Gleichstände rotieren anhand des globalen Floor-Index deterministisch.
 2. **Gold** — globale Währung (Respecs, Blacksmith/Jeweler, Node-Respec).
 3. **Crystals** — globale Währung für den Crucible ([§3](#3-crucible-globaler-skilltree)).
    **Nur beim allerersten Sieg** eines Floors:

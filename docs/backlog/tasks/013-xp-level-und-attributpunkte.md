@@ -1,10 +1,10 @@
 # 013 — XP, Level & Attributpunkte
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M2        |
-| **Hängt ab von** | 011       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 011    |
 
 ## Ziel
 
@@ -22,16 +22,12 @@ Skillpunkte und der Skilltree folgen in [014](014-charakter-skilltree.md); globa
 - [Stats](../../spec/CHARACTERS.md#2-stats) — Attribute sind die Prozent-Ebene der Derived Stats
 - [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) — Level, XP und Attributpunkt-Verteilung sind persistent
 
-## Blockiert durch
-
-Die XP-Kurve, der Verteilungsschlüssel des individuellen XP-Rests und die Attribut-Kurven sind offen ([OPEN_ISSUES](../OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)). Sie müssen als Balancing-Content entschieden sein.
-
 ## Akzeptanzkriterien
 
-- [ ] Ein Floor-Reward verteilt einen XP-Pool regelkonform; mehrere Level-Ups und der Cap 100 verhalten sich deterministisch
-- [ ] Jeder Level-Up vergibt genau einen Attribut- und einen Skillpunkt
-- [ ] Attributpunkte beeinflussen Attack, Defense bzw. Health über die festgelegte multiplikative Schicht und überleben einen Reload
-- [ ] Unit-Tests decken XP-Verteilung, Cap, Level-Up-Folgen, Respec und Save-Migration ab
+- [x] Ein Floor-Reward verteilt einen XP-Pool regelkonform; mehrere Level-Ups und der Cap 100 verhalten sich deterministisch
+- [x] Jeder Level-Up vergibt genau einen Attribut- und einen Skillpunkt
+- [x] Attributpunkte beeinflussen Attack, Defense bzw. Health über die festgelegte multiplikative Schicht und überleben einen Reload
+- [x] Unit-Tests decken XP-Verteilung, Cap, Level-Up-Folgen, Respec und Save-Migration ab
 
 ## Betroffene Dateien
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { CombatLog } from './CombatLog';
 import { useCombatStore } from './combatStore';
@@ -15,19 +16,31 @@ export function DungeonRunScreen() {
   const isPaused = useCombatStore((state) => state.isPaused);
   const completionStatus = useCombatStore((state) => state.completionStatus);
   const lastReward = useCombatStore((state) => state.lastReward);
+  const playbackSpeed = useCombatStore((state) => state.playbackSpeed);
   const setPaused = useCombatStore((state) => state.setPaused);
   const retryVictoryCommit = useCombatStore((state) => state.retryVictoryCommit);
   const leaveRun = useDungeonRunStore((state) => state.leaveRun);
   const startNextFloor = useDungeonRunStore((state) => state.startNextFloor);
+  const setRunPlaybackSpeed = useDungeonRunStore((state) => state.setRunPlaybackSpeed);
   const completeRun = useDungeonRunStore((state) => state.completeRun);
   const completionError = useDungeonRunStore((state) => state.completionError);
+  const activeDungeonId = useDungeonRunStore((state) => state.activeDungeonId);
+  const completedDungeons = useSaveStore((state) => state.data?.completedDungeons ?? null);
   const [confirmingLeave, setConfirmingLeave] = useState(false);
+  const doubleSpeedUnlocked =
+    activeDungeonId !== null && completedDungeons?.[activeDungeonId] === true;
 
   useEffect(() => {
     if (outcome === 'wipe') {
       leaveRun();
     }
   }, [leaveRun, outcome]);
+
+  useEffect(() => {
+    if (outcome === 'victory' && completionStatus === 'saved' && !floorId?.endsWith('-20')) {
+      startNextFloor();
+    }
+  }, [completionStatus, floorId, outcome, startNextFloor]);
 
   if (floorId === null) {
     return (
@@ -48,6 +61,28 @@ export function DungeonRunScreen() {
               <Button variant={isPaused ? 'primary' : 'ghost'} onClick={() => setPaused(!isPaused)}>
                 {isPaused ? 'Resume Combat' : 'Pause Combat'}
               </Button>
+              <div className="flex items-center gap-1" aria-label="Playback speed">
+                <Button
+                  aria-pressed={playbackSpeed === 1}
+                  variant={playbackSpeed === 1 ? 'primary' : 'ghost'}
+                  onClick={() => void setRunPlaybackSpeed(1)}
+                >
+                  1× Playback
+                </Button>
+                <Button
+                  aria-pressed={playbackSpeed === 2}
+                  disabled={!doubleSpeedUnlocked}
+                  variant={playbackSpeed === 2 ? 'primary' : 'ghost'}
+                  onClick={() => void setRunPlaybackSpeed(2)}
+                >
+                  2× Playback
+                </Button>
+              </div>
+              {!doubleSpeedUnlocked && (
+                <p className="basis-full text-sm text-text-muted">
+                  Complete this dungeon once to unlock 2× playback.
+                </p>
+              )}
               {confirmingLeave ? (
                 <>
                   <Button variant="ghost" onClick={() => setConfirmingLeave(false)}>
@@ -81,9 +116,7 @@ export function DungeonRunScreen() {
                     {completionError !== null && <p role="alert">{completionError}</p>}
                     <Button onClick={() => void completeRun()}>Complete Dungeon</Button>
                   </>
-                ) : (
-                  <Button onClick={startNextFloor}>Start Next Floor</Button>
-                )}
+                ) : null}
               </div>
             )}
             {completionStatus === 'failed' && (

@@ -82,6 +82,30 @@ describe('useDungeonRunStore', () => {
     expect(useDungeonRunStore.getState().startNextFloor()).toBe(false);
   });
 
+  it('allows 2× playback only after the active dungeon has been completed', async () => {
+    await useDungeonRunStore.getState().startRun('A1-D1');
+
+    await expect(useDungeonRunStore.getState().setRunPlaybackSpeed(2)).resolves.toBe(false);
+    expect(useCombatStore.getState().playbackSpeed).toBe(1);
+
+    useDungeonRunStore.getState().leaveRun();
+    await saveStore.getState().completeDungeon('A1-D1');
+    await useDungeonRunStore.getState().startRun('A1-D1');
+
+    await expect(useDungeonRunStore.getState().setRunPlaybackSpeed(2)).resolves.toBe(true);
+    expect(useCombatStore.getState().playbackSpeed).toBe(2);
+    expect(saveStore.getState().data?.playbackSpeed).toBe(2);
+  });
+
+  it('starts an incomplete dungeon at 1× even when 2× is saved for a completed dungeon', async () => {
+    await saveStore.getState().completeDungeon('A1-D1');
+    await saveStore.getState().setPlaybackSpeed(2);
+
+    await useDungeonRunStore.getState().startRun('A1-D2');
+
+    expect(useCombatStore.getState().playbackSpeed).toBe(1);
+  });
+
   it('completes only a saved final floor and persists the dungeon checkpoint', async () => {
     await useDungeonRunStore.getState().startRun('A1-D1');
     const initial = useCombatStore.getState().combat;

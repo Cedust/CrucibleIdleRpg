@@ -81,9 +81,9 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
     Effekt nicht.
 - **Health- und Tod-Zustand gelten nur innerhalb einer Run-Kette.** Ein Dungeon-Neustart beginnt
   mit **vollem Team und voller Health**.
-- **Auto-Progression:** Der Spieler startet Kämpfe zunächst **einzeln**; ein Anvil-Sparks-Node
-  schaltet das **automatische Starten** des nächsten Floors frei. Am **Dungeon-Ende** ist ein
-  manueller Neustart nötig (keine automatische Dungeon-Kette).
+- **Auto-Progression:** Innerhalb eines aktiven Dungeon-Runs startet nach einem gespeicherten
+  Floor-Sieg automatisch der nächste Floor desselben Dungeons. Am **Dungeon-Ende** ist ein
+  manueller Abschluss nötig (keine automatische Dungeon-Kette).
 - **Geschwindigkeit des Playbacks** (Anzeige, ohne Einfluss auf den Kampfausgang,
   [Simulation & Zeitverhalten](SIMULATION.md#1-grundmodell-verbindlich)):
   - **Pause** ist ab Spielstart verfügbar.

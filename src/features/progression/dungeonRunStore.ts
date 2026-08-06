@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useCombatStore } from '@/features/combat/combatStore';
+import { useCombatStore, type PlaybackSpeed } from '@/features/combat/combatStore';
 import { createDungeonEntryCombat, createNextDungeonCombat } from '@/features/combat/dungeonCombat';
 import { createPlaceholderFloorReward } from '@/game/rewards/floorRewards';
 import { resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
@@ -15,6 +15,7 @@ interface DungeonRunState {
   completionError: string | null;
   startRun: (dungeonId: Act1DungeonId) => Promise<boolean>;
   startNextFloor: () => boolean;
+  setRunPlaybackSpeed: (speed: PlaybackSpeed) => Promise<boolean>;
   leaveRun: () => void;
   completeRun: () => Promise<boolean>;
   resetForReload: () => void;
@@ -42,6 +43,9 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     try {
       const save = await saveStore.getState().beginRun();
       const combat = createDungeonEntryCombat(save, dungeonId);
+      useCombatStore
+        .getState()
+        .setPlaybackSpeed(save.completedDungeons[dungeonId] ? save.playbackSpeed : 1);
       useCombatStore.getState().startCombat(combat, undefined, async () => {
         const commit = await saveStore
           .getState()
@@ -84,6 +88,27 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
       return commit.reward;
     });
     return true;
+  },
+
+  setRunPlaybackSpeed: async (speed) => {
+    const run = get();
+    const save = saveStore.getState().data;
+    if (
+      run.mode !== 'run' ||
+      run.activeDungeonId === null ||
+      save === null ||
+      (speed === 2 && !save.completedDungeons[run.activeDungeonId])
+    ) {
+      return false;
+    }
+
+    try {
+      await saveStore.getState().setPlaybackSpeed(speed);
+      useCombatStore.getState().setPlaybackSpeed(speed);
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   leaveRun: () => {

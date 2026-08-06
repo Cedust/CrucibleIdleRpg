@@ -44,4 +44,55 @@ describe('DungeonRunScreen', () => {
     expect(screen.getByRole('button', { name: 'Retry Save' })).toBeInTheDocument();
     expect(useDungeonRunStore.getState().mode).toBe('run');
   });
+
+  it('explains the locked 2× playback control and enables it for a completed dungeon', async () => {
+    const user = userEvent.setup();
+    render(<DungeonRunScreen />);
+
+    expect(screen.getByRole('button', { name: '2× Playback' })).toBeDisabled();
+    expect(
+      screen.getByText('Complete this dungeon once to unlock 2× playback.'),
+    ).toBeInTheDocument();
+
+    const save = saveStore.getState().data;
+    if (save === null) throw new Error('expected save data');
+    act(() =>
+      saveStore.setState({
+        data: { ...save, completedDungeons: { ...save.completedDungeons, 'A1-D1': true } },
+      }),
+    );
+
+    await user.click(screen.getByRole('button', { name: '2× Playback' }));
+
+    await waitFor(() => expect(useCombatStore.getState().playbackSpeed).toBe(2));
+  });
+
+  it('automatically starts the next floor after its reward is saved', async () => {
+    const combat = useCombatStore.getState().combat;
+    if (combat === null) throw new Error('expected dungeon combat');
+    useCombatStore.setState({ combat, outcome: 'victory', completionStatus: 'saved' });
+
+    render(<DungeonRunScreen />);
+
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'A1-D1-02' })).toBeInTheDocument(),
+    );
+    expect(screen.queryByRole('button', { name: 'Start Next Floor' })).not.toBeInTheDocument();
+  });
+
+  it('keeps a saved floor 20 open for manual dungeon completion', () => {
+    const combat = useCombatStore.getState().combat;
+    if (combat === null) throw new Error('expected dungeon combat');
+    useCombatStore.setState({
+      combat: { ...combat, floorId: 'A1-D1-20' },
+      outcome: 'victory',
+      completionStatus: 'saved',
+      lastReward: { gold: 10, xp: 15, crystals: 1 },
+    });
+
+    render(<DungeonRunScreen />);
+
+    expect(screen.getByRole('button', { name: 'Complete Dungeon' })).toBeInTheDocument();
+    expect(useDungeonRunStore.getState().mode).toBe('run');
+  });
 });

@@ -22,7 +22,7 @@ alle Quality-Gates waren zum Review-Zeitpunkt grün (Lint, Typecheck, 274 Unit-T
 | 9           | [009 — Typ- & Schema-Härtung](009-typ-und-schema-haertung.md)                                  | mittel  | `done`  | —            |
 | 10          | [010 — Testqualität: Invarianten statt Zahlen-Pins](010-testqualitaet-invarianten.md)          | mittel  | `done`  | —            |
 | 11          | [011 — Engine-Aufräumarbeiten](011-engine-aufraeumarbeiten.md)                                 | niedrig | `done`  | —            |
-| 12          | [012 — Content-Aufräumarbeiten](012-content-aufraeumarbeiten.md)                               | niedrig | `ready` | —            |
+| 12          | [012 — Content-Aufräumarbeiten](012-content-aufraeumarbeiten.md)                               | niedrig | `done`  | —            |
 | 13          | [013 — Tooling-Feinschliff](013-tooling-feinschliff.md)                                        | niedrig | `ready` | —            |
 
 **001–004 hängen fachlich zusammen** (Mastery-Effekte deklarativ und testbar): 001 sichert die

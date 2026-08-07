@@ -2,7 +2,7 @@
 
 | Feld             | Wert    |
 | ---------------- | ------- |
-| **Status**       | `ready` |
+| **Status**       | `done`  |
 | **Schwere**      | niedrig |
 | **Hängt ab von** | —       |
 
@@ -46,12 +46,14 @@ Balancing-Änderungen; alle Werte bleiben identisch.
 
 ## Akzeptanzkriterien
 
-- [ ] Floor→Formation hat eine Quelle; Tabelle oder Formel ist entfernt bzw. abgeleitet.
-- [ ] `bulwarkContribution` ist entfernt; Consumer schlagen über die Rolle nach.
-- [ ] Der Docblock in `characterCurves.ts` gehört zu einem Export oder ist entfernt.
-- [ ] Der Gold-Platzhalter ist ein benannter Export; `createFloorReward` hat einen Test.
-- [ ] `maximumInvestableCapacity` ist entfernt oder korrekt aus den Node-Daten hergeleitet.
-- [ ] Die Content-Validierung läuft im Test bzw. Boot-Check statt zur Import-Zeit.
+- [x] Floor→Formation hat eine Quelle; die ungenutzte `FLOOR_FORMATIONS`-Tabelle ist entfernt,
+      die Tests laufen gegen `ACT_1_ENCOUNTERS`.
+- [x] `bulwarkContribution` ist entfernt; Consumer schlagen über die Rolle nach.
+- [x] Der Docblock in `characterCurves.ts` gehört zu einem Export
+      (`CORE_POINT_TO_DERIVED_BASE`).
+- [x] Der Gold-Platzhalter ist ein benannter Export; `createFloorReward` hat einen Test.
+- [x] `maximumInvestableCapacity` ist entfernt.
+- [x] Die Content-Validierung läuft im Test statt zur Import-Zeit.
 
 ## Betroffene Dateien
 

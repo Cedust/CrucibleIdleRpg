@@ -3,8 +3,9 @@ import { CHARACTERS } from '@/game/characters/characters';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
 import { ENEMY_ATTACK_MULTIPLIER, ENEMY_HEALTH_MULTIPLIER } from '@/game/curves/enemyCurves';
 import { ENEMIES } from '@/game/enemies/enemies';
-import type { EnemyDefinition, EnemyId, FloorId, FormationDefinition } from '@/game/types';
-import { FLOOR_FORMATIONS, FORMATIONS } from './formations';
+import type { EnemyDefinition, EnemyId, FormationDefinition } from '@/game/types';
+import { ACT_1_ENCOUNTERS, resolveAct1Encounter } from './act1';
+import { FORMATIONS } from './formations';
 
 /** Alle besetzten Slots einer Vorlage als Gegner-Definitionen, in Formations-Index-Reihenfolge. */
 function besetzung(formation: FormationDefinition): EnemyDefinition[] {
@@ -62,21 +63,18 @@ describe('FORMATIONS', () => {
   });
 });
 
-describe('FLOOR_FORMATIONS', () => {
+describe('Floor→Formation für A1-D1 (eine Quelle: act1.ts)', () => {
+  const dungeonFloors = ACT_1_ENCOUNTERS.filter((encounter) => encounter.dungeonId === 'A1-D1');
+
   it('deckt die 20 Floors von A1-D1 mit bekannten Vorlagen ab', () => {
-    const floors = Object.keys(FLOOR_FORMATIONS);
-    expect(floors).toHaveLength(20);
-    for (let i = 1; i <= 20; i++) {
-      const floorId = `A1-D1-${String(i).padStart(2, '0')}` as FloorId;
-      const formationId = FLOOR_FORMATIONS[floorId];
-      if (formationId === undefined) throw new Error(`Formation fehlt für ${floorId}`);
-      expect(FORMATIONS[formationId]).toBeDefined();
+    expect(dungeonFloors).toHaveLength(20);
+    for (const encounter of dungeonFloors) {
+      expect(FORMATIONS[encounter.formationId], encounter.id).toBeDefined();
     }
   });
 
   it('führt die vier Ramp-Up-Phasen der Reihe nach ein', () => {
-    const reihenfolge = Object.values(FLOOR_FORMATIONS);
-    const ersteVorkommen = [...new Set(reihenfolge)];
+    const ersteVorkommen = [...new Set(dungeonFloors.map((encounter) => encounter.formationId))];
     expect(ersteVorkommen).toEqual([
       'rampSingleLanePair',
       'rampBothLanes',
@@ -95,9 +93,7 @@ describe('FLOOR_FORMATIONS', () => {
  */
 describe('Plausibilität A1-D1-01', () => {
   const FLOOR_INDEX = 0;
-  const startFormationId = FLOOR_FORMATIONS['A1-D1-01'];
-  if (startFormationId === undefined) throw new Error('Formation fehlt für A1-D1-01');
-  const formation = FORMATIONS[startFormationId];
+  const formation = FORMATIONS[resolveAct1Encounter('A1-D1-01').formationId];
   const gegner = besetzung(formation);
   const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX];
   const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX];

@@ -1,4 +1,7 @@
-import { ATTRIBUTE_BONUS_PER_POINT } from '@/game/curves/characterCurves';
+import {
+  ATTRIBUTE_BONUS_PER_POINT,
+  CORE_POINT_TO_DERIVED_BASE,
+} from '@/game/curves/characterCurves';
 import {
   MASTERY_BALANCE,
   MASTERY_IDS,
@@ -89,7 +92,7 @@ export function deriveCharacterStats(
   const deriveStat = (stat: keyof DerivedStats): number => {
     const source = DERIVED_SOURCES[stat];
     const base = stat === 'attack' ? definition.weapon.baseDamage : definition.baseDerived[stat];
-    const coreContribution = core[source.core];
+    const coreContribution = core[source.core] * CORE_POINT_TO_DERIVED_BASE;
     const attributeBonus =
       progression.attributePoints[source.attribute] * ATTRIBUTE_BONUS_PER_POINT;
 

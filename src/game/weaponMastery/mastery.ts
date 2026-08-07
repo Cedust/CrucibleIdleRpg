@@ -634,11 +634,6 @@ export function investedPoints(
   );
 }
 
-/** Maximum legal spend: each mutually exclusive Master pair contributes one rank. */
-export function maximumInvestableCapacity(characterId: CharacterId): number {
-  return nodesFor(characterId).reduce((total, node) => total + node.maxRank, 0) - 5;
-}
-
 export function purchaseFailure(
   characterId: CharacterId,
   level: number,

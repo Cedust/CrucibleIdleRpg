@@ -4,7 +4,6 @@ import {
   investedPoints,
   MASTERY_BALANCE,
   MASTERY_IDS,
-  maximumInvestableCapacity,
   nodeById,
   nodesFor,
   purchaseFailure,
@@ -225,17 +224,12 @@ describe('purchaseMasteryNode & respecMasteryDiscipline', () => {
 });
 
 describe('weapon mastery rules', () => {
-  it('contains all five disciplines and derives capacity from the exclusive master pairs', () => {
+  it('contains all five disciplines with exclusive master pairs', () => {
     const nodes = nodesFor('korvin');
     expect(new Set(nodes.map((node) => node.discipline))).toEqual(
       new Set(['finesse', 'tempest', 'dominance', 'valor', 'weapon']),
     );
-
-    // Regel-Invariante statt Zahlen-Pin: Jedes exklusive Master-Paar trägt genau einen Rang.
-    const totalRanks = nodes.reduce((total, node) => total + node.maxRank, 0);
-    const exclusivePairs = nodes.filter((node) => node.exclusiveWith !== undefined).length / 2;
-    expect(exclusivePairs).toBeGreaterThan(0);
-    expect(maximumInvestableCapacity('korvin')).toBe(totalRanks - exclusivePairs);
+    expect(nodes.filter((node) => node.exclusiveWith !== undefined).length).toBeGreaterThan(0);
   });
 
   it('enforces rank gates, prerequisites, master choices, caps, and the shared capstone lock', () => {

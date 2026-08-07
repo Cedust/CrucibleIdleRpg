@@ -1,4 +1,4 @@
-import type { FloorId, FormationDefinition, FormationId } from '@/game/types';
+import type { FormationDefinition, FormationId } from '@/game/types';
 
 /**
  * Formations-Vorlagen der 2×3-Aufstellung (docs/spec/COMBAT-RUN.md#13-gegnerformation). Ein Floor
@@ -72,35 +72,4 @@ export const FORMATIONS: Record<FormationId, FormationDefinition> = {
       backline: ['cinderWretch', 'cinderWretch', 'cinderWretch'],
     },
   },
-};
-
-/**
- * Zuordnung Floor → Formations-Vorlage für Akt 1, Dungeon 1: die 20 Floors zu je fünf auf die
- * vier Ramp-Up-Phasen. Floor 20 ist ein Elite-Floor — dieselbe Vorlage, der
- * Elite-Multiplikator liegt in curves/enemyCurves.ts.
- *
- * PLATZHALTER — Aufteilung offen, gleicher Eintrag wie oben. Die übrigen 280 Floors kommen mit
- * ihrem Content-Task dazu.
- */
-export const FLOOR_FORMATIONS: Record<FloorId, FormationId> = {
-  'A1-D1-01': 'rampSingleLanePair',
-  'A1-D1-02': 'rampSingleLanePair',
-  'A1-D1-03': 'rampSingleLanePair',
-  'A1-D1-04': 'rampSingleLanePair',
-  'A1-D1-05': 'rampSingleLanePair',
-  'A1-D1-06': 'rampBothLanes',
-  'A1-D1-07': 'rampBothLanes',
-  'A1-D1-08': 'rampBothLanes',
-  'A1-D1-09': 'rampBothLanes',
-  'A1-D1-10': 'rampBothLanes',
-  'A1-D1-11': 'rampBothLanesCrowded',
-  'A1-D1-12': 'rampBothLanesCrowded',
-  'A1-D1-13': 'rampBothLanesCrowded',
-  'A1-D1-14': 'rampBothLanesCrowded',
-  'A1-D1-15': 'rampBothLanesCrowded',
-  'A1-D1-16': 'rampWithTank',
-  'A1-D1-17': 'rampWithTank',
-  'A1-D1-18': 'rampWithTank',
-  'A1-D1-19': 'rampWithTank',
-  'A1-D1-20': 'rampWithTank',
 };

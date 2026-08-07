@@ -1,5 +1,5 @@
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
-import { ACCURACY_CAP } from '@/game/curves/combatConstants';
+import { ACCURACY_CAP, BULWARK_CONTRIBUTION_BY_ROLE } from '@/game/curves/combatConstants';
 import {
   ENEMY_ACCURACY_BONUS,
   ENEMY_ATTACK_MULTIPLIER,
@@ -250,7 +250,8 @@ function buildEnemy(
       ACCURACY_CAP,
     ),
     initiative,
-    bulwarkContribution: definition.bulwarkContribution,
+    // Der Beitrag folgt der Rolle; im Kampfzustand liegt er je Gegner, damit Sunder ihn senken kann.
+    bulwarkContribution: BULWARK_CONTRIBUTION_BY_ROLE[definition.role],
   };
 }
 

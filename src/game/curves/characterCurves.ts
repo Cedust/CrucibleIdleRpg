@@ -15,3 +15,4 @@ export const ATTRIBUTE_BONUS_PER_POINT = 0.0125;
  * PLATZHALTER — offen: docs/backlog/OPEN_ISSUES.md#charakter--und-gegner-kurven
  * (Derived-Stat-Kurven je Quelle, „Core-Stat-Kurven"). Hier gewählt: 1:1.
  */
+export const CORE_POINT_TO_DERIVED_BASE = 1;

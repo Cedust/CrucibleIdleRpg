@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
-import { ACCURACY_CAP } from '@/game/curves/combatConstants';
+import { ACCURACY_CAP, BULWARK_CONTRIBUTION_BY_ROLE } from '@/game/curves/combatConstants';
 import {
   ENEMY_ACCURACY_BONUS,
   ENEMY_ATTACK_MULTIPLIER,
@@ -187,7 +187,7 @@ describe('buildCombatState — Gegner', () => {
       'backline',
     ]);
     expect(state.enemies.map((enemy) => enemy.bulwarkContribution)).toEqual(
-      FORMATION_ORDER.map((id) => definitionOf(id).bulwarkContribution),
+      FORMATION_ORDER.map((id) => BULWARK_CONTRIBUTION_BY_ROLE[definitionOf(id).role]),
     );
   });
 

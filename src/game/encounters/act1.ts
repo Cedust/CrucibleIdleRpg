@@ -54,11 +54,6 @@ const encountersById = new Map<FloorId, Act1EncounterDefinition>(
   ACT_1_ENCOUNTERS.map((encounter) => [encounter.id, encounter]),
 );
 
-const contentError = validateAct1Encounters(ACT_1_ENCOUNTERS);
-if (contentError !== null) {
-  throw new Error(`Ungültiger Akt-1-Encounter-Content: ${contentError}`);
-}
-
 /** Liefert den Floor-1-Einstieg eines freigeschalteten Akt-1-Dungeons. */
 export function getAct1DungeonEntry(dungeonId: Act1DungeonId): Act1EncounterDefinition {
   return resolveAct1Encounter(floorId(dungeonId, 1));

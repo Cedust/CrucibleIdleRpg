@@ -207,8 +207,6 @@ export interface EnemyDefinition {
   accuracy: number;
   /** Einmalig zu Kampfbeginn innerhalb dieser Grenzen gewürfelt (SPEC §1.1). */
   initiativeRange: Range;
-  /** Beitrag zum Bulwark-Malus, solange dieser Gegner in der Frontline lebt (SPEC §2.4). */
-  bulwarkContribution: number;
 }
 
 /** Die drei Slots einer Lane; `null` = unbesetzt. Als Tuple, damit der Index typsicher greift. */

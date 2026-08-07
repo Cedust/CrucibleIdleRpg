@@ -4,6 +4,42 @@ export const DISCIPLINES = ['finesse', 'tempest', 'dominance', 'valor', 'weapon'
 export type DisciplineId = (typeof DISCIPLINES)[number];
 export type MasteryRank = 'initiate' | 'adept' | 'expert' | 'master' | 'grandmaster';
 
+/**
+ * Save keys of every behavior node the engine references. Node ids are declared explicitly
+ * and stay stable when display labels change (pre-release save policy, AGENTS.md).
+ */
+export const MASTERY_IDS = {
+  executioner: 'finesse.executioner',
+  perfectExploit: 'finesse.perfect-exploit',
+  surestrike: 'finesse.surestrike',
+  overcritical: 'finesse.overcritical',
+  convergingStrikes: 'tempest.converging-strikes',
+  relentlessPursuit: 'tempest.relentless-pursuit',
+  echoedStrike: 'tempest.echoed-strike',
+  stormSurge: 'tempest.storm-surge',
+  perfectCadence: 'tempest.perfect-cadence',
+  criticalMass: 'dominance.critical-mass',
+  epicenter: 'dominance.epicenter',
+  focusedBlast: 'dominance.focused-blast',
+  aftershock: 'dominance.aftershock',
+  vengefulEdge: 'valor.vengeful-edge',
+  perfectRiposte: 'valor.perfect-riposte',
+  guardedReprisal: 'valor.guarded-reprisal',
+  escalatingRetaliation: 'valor.escalating-retaliation',
+  committedImpact: 'weapon.committed-impact',
+  titansArc: "weapon.titan's-arc",
+  shieldedAdvance: 'weapon.shielded-advance',
+  immovableGuard: 'weapon.immovable-guard',
+  twinMeasure: 'weapon.twin-measure',
+  razorsEdge: "weapon.razor's-edge",
+  bladePoise: 'weapon.blade-poise',
+  secondWind: 'weapon.second-wind',
+  zeroingIn: 'weapon.zeroing-in',
+  overdraw: 'weapon.overdraw',
+  steadyDraw: 'weapon.steady-draw',
+  patientHunter: 'weapon.patient-hunter',
+} as const;
+
 export interface MasteryNode {
   id: string;
   discipline: DisciplineId;
@@ -40,8 +76,15 @@ export function minimumLevel(node: MasteryNode): number {
   return RANK_LEVEL[node.rank];
 }
 
+function disciplineOf(id: string): DisciplineId {
+  const prefix = id.slice(0, id.indexOf('.'));
+  const discipline = DISCIPLINES.find((candidate) => candidate === prefix);
+  if (!discipline) throw new Error(`Mastery node id without discipline prefix: ${id}`);
+  return discipline;
+}
+
 const stat = (
-  discipline: DisciplineId,
+  id: string,
   rank: MasteryRank,
   label: string,
   name: string,
@@ -50,8 +93,8 @@ const stat = (
   perRank: number,
   effect: string,
 ): MasteryNode => ({
-  id: `${discipline}.${label.toLowerCase().replaceAll(' ', '-')}`,
-  discipline,
+  id,
+  discipline: disciplineOf(id),
   rank,
   label,
   name,
@@ -63,15 +106,15 @@ const stat = (
 });
 
 const behavior = (
-  discipline: DisciplineId,
+  id: string,
   rank: MasteryRank,
   label: string,
   prerequisites: readonly string[],
   effect: string,
   options: Pick<MasteryNode, 'exclusiveWith' | 'sharedCapstone'> = {},
 ): MasteryNode => ({
-  id: `${discipline}.${label.toLowerCase().replaceAll(' ', '-')}`,
-  discipline,
+  id,
+  discipline: disciplineOf(id),
   rank,
   label,
   name: label,
@@ -81,86 +124,86 @@ const behavior = (
   ...options,
 });
 
+const ROMAN_UPPER = ['I', 'II', 'III', 'IV'] as const;
+const ROMAN_LOWER = ['i', 'ii', 'iii', 'iv'] as const;
+
 const chain = (
   discipline: DisciplineId,
+  slug: string,
   label: string,
   effect: string,
-  target: MasteryNode['stat'],
+  target: NonNullable<MasteryNode['stat']>,
   perRank: number,
   count: number,
   ranks: readonly MasteryRank[],
 ) =>
   Array.from({ length: count }, (_, index) =>
     stat(
-      discipline,
+      `${discipline}.${slug}-${ROMAN_LOWER[index] ?? index + 1}`,
       ranks[index] ?? 'master',
-      `${label} ${['I', 'II', 'III', 'IV'][index] ?? index + 1}`,
-      `${label} ${['I', 'II', 'III', 'IV'][index] ?? index + 1}`,
-      index === 0
-        ? []
-        : [
-            `${discipline}.${label.toLowerCase().replaceAll(' ', '-')}-${['i', 'ii', 'iii', 'iv'][index - 1] ?? index}`,
-          ],
-      target!,
+      `${label} ${ROMAN_UPPER[index] ?? index + 1}`,
+      `${label} ${ROMAN_UPPER[index] ?? index + 1}`,
+      index === 0 ? [] : [`${discipline}.${slug}-${ROMAN_LOWER[index - 1] ?? index}`],
+      target,
       perRank,
       effect,
     ),
   );
 
 const shared: MasteryNode[] = [
-  ...chain('finesse', 'CHC', '+3 pp Crit Hit Chance', 'critChance', 0.03, 4, [
+  ...chain('finesse', 'chc', 'CHC', '+3 pp Crit Hit Chance', 'critChance', 0.03, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
-  ...chain('finesse', 'CHD', '+10 pp Crit Hit Damage', 'critDamage', 0.1, 4, [
+  ...chain('finesse', 'chd', 'CHD', '+10 pp Crit Hit Damage', 'critDamage', 0.1, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
   behavior(
-    'finesse',
+    MASTERY_IDS.executioner,
     'expert',
     'Executioner',
     ['finesse.chc-ii', 'finesse.chd-ii'],
     'Critical clean base hits below 25% health gain +50 pp Crit Damage.',
   ),
   behavior(
-    'finesse',
+    MASTERY_IDS.perfectExploit,
     'master',
     'Perfect Exploit',
-    ['finesse.executioner'],
+    [MASTERY_IDS.executioner],
     'Clean crits use MAX RNG.',
-    { exclusiveWith: 'finesse.surestrike' },
+    { exclusiveWith: MASTERY_IDS.surestrike },
   ),
   behavior(
-    'finesse',
+    MASTERY_IDS.surestrike,
     'master',
     'Surestrike',
-    ['finesse.executioner'],
+    [MASTERY_IDS.executioner],
     'Clean base hits are guaranteed critical.',
-    { exclusiveWith: 'finesse.perfect-exploit' },
+    { exclusiveWith: MASTERY_IDS.perfectExploit },
   ),
   behavior(
-    'finesse',
+    MASTERY_IDS.overcritical,
     'grandmaster',
     'Overcritical',
-    ['finesse.perfect-exploit', 'finesse.surestrike'],
+    [MASTERY_IDS.perfectExploit, MASTERY_IDS.surestrike],
     'Crits roll once more for one extra Crit bonus.',
     { sharedCapstone: true },
   ),
-  ...chain('tempest', 'MHC', '+5 pp Multi Hit Chance', 'multiHitChance', 0.05, 3, [
+  ...chain('tempest', 'mhc', 'MHC', '+5 pp Multi Hit Chance', 'multiHitChance', 0.05, 3, [
     'initiate',
     'adept',
     'expert',
   ]),
-  ...chain('tempest', 'MHD', '+3 pp Multi Hit Damage', 'multiHitDamage', 0.03, 2, [
+  ...chain('tempest', 'mhd', 'MHD', '+3 pp Multi Hit Damage', 'multiHitDamage', 0.03, 2, [
     'initiate',
     'expert',
   ]),
-  ...chain('tempest', 'Chain', '+1 Multi Hit Chain', 'multiHitChain', 1, 4, [
+  ...chain('tempest', 'chain', 'Chain', '+1 Multi Hit Chain', 'multiHitChain', 1, 4, [
     'initiate',
     'adept',
     'expert',
@@ -168,6 +211,7 @@ const shared: MasteryNode[] = [
   ]).map((node) => ({ ...node, maxRank: 1 as const })),
   ...chain(
     'tempest',
+    'chain-factor',
     'Chain Factor',
     '+5 pp Multi Hit Chain Factor',
     'multiHitChainFactor',
@@ -176,132 +220,132 @@ const shared: MasteryNode[] = [
     ['adept', 'master'],
   ),
   behavior(
-    'tempest',
+    MASTERY_IDS.convergingStrikes,
     'expert',
     'Converging Strikes',
     ['tempest.mhc-ii', 'tempest.chain-factor-i'],
     'Chain hits may crit.',
   ),
   behavior(
-    'tempest',
+    MASTERY_IDS.relentlessPursuit,
     'expert',
     'Relentless Pursuit',
     ['tempest.chain-ii'],
     'Chain hits retarget after the primary target dies.',
   ),
   behavior(
-    'tempest',
+    MASTERY_IDS.echoedStrike,
     'master',
     'Echoed Strike',
-    ['tempest.converging-strikes'],
+    [MASTERY_IDS.convergingStrikes],
     'A clean base hit repeats once for 50% finished damage.',
-    { exclusiveWith: 'tempest.storm-surge' },
+    { exclusiveWith: MASTERY_IDS.stormSurge },
   ),
   behavior(
-    'tempest',
+    MASTERY_IDS.stormSurge,
     'master',
     'Storm Surge',
-    ['tempest.converging-strikes'],
+    [MASTERY_IDS.convergingStrikes],
     'Original-chain crits add up to two chain hits.',
-    { exclusiveWith: 'tempest.echoed-strike' },
+    { exclusiveWith: MASTERY_IDS.echoedStrike },
   ),
   behavior(
-    'tempest',
+    MASTERY_IDS.perfectCadence,
     'grandmaster',
     'Perfect Cadence',
-    ['tempest.echoed-strike', 'tempest.storm-surge'],
+    [MASTERY_IDS.echoedStrike, MASTERY_IDS.stormSurge],
     'Critical chain hits set the next Chain Factor to 100%.',
     { sharedCapstone: true },
   ),
-  ...chain('dominance', 'SHC', '+4 pp Splash Hit Chance', 'splashChance', 0.04, 4, [
+  ...chain('dominance', 'shc', 'SHC', '+4 pp Splash Hit Chance', 'splashChance', 0.04, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
-  ...chain('dominance', 'SHD', '+3 pp Splash Hit Damage', 'splashDamage', 0.03, 4, [
+  ...chain('dominance', 'shd', 'SHD', '+3 pp Splash Hit Damage', 'splashDamage', 0.03, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
-  ...chain('dominance', 'Radius', '+1 Splash Radius', 'splashRadius', 1, 4, [
+  ...chain('dominance', 'radius', 'Radius', '+1 Splash Radius', 'splashRadius', 1, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]).map((node) => ({ ...node, maxRank: 1 as const })),
   behavior(
-    'dominance',
+    MASTERY_IDS.criticalMass,
     'expert',
     'Critical Mass',
     ['dominance.shc-ii', 'dominance.shd-ii'],
     'Splash hits may crit.',
   ),
   behavior(
-    'dominance',
+    MASTERY_IDS.epicenter,
     'master',
     'Epicenter',
-    ['dominance.critical-mass'],
+    [MASTERY_IDS.criticalMass],
     'Successful splash adds a 50% hit on the primary target.',
-    { exclusiveWith: 'dominance.focused-blast' },
+    { exclusiveWith: MASTERY_IDS.focusedBlast },
   ),
   behavior(
-    'dominance',
+    MASTERY_IDS.focusedBlast,
     'master',
     'Focused Blast',
-    ['dominance.critical-mass'],
+    [MASTERY_IDS.criticalMass],
     'Unused radius adds up to 100% splash damage on the primary target.',
-    { exclusiveWith: 'dominance.epicenter' },
+    { exclusiveWith: MASTERY_IDS.epicenter },
   ),
   behavior(
-    'dominance',
+    MASTERY_IDS.aftershock,
     'grandmaster',
     'Aftershock',
-    ['dominance.epicenter', 'dominance.focused-blast'],
+    [MASTERY_IDS.epicenter, MASTERY_IDS.focusedBlast],
     'Hit secondary targets receive a 50% second wave.',
     { sharedCapstone: true },
   ),
-  ...chain('valor', 'CTC', '+4 pp Counter Chance', 'counterChance', 0.04, 4, [
+  ...chain('valor', 'ctc', 'CTC', '+4 pp Counter Chance', 'counterChance', 0.04, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
-  ...chain('valor', 'CTD', '+5 pp Counter Damage', 'counterDamage', 0.05, 4, [
+  ...chain('valor', 'ctd', 'CTD', '+5 pp Counter Damage', 'counterDamage', 0.05, 4, [
     'initiate',
     'adept',
     'expert',
     'master',
   ]),
   behavior(
-    'valor',
+    MASTERY_IDS.vengefulEdge,
     'expert',
     'Vengeful Edge',
     ['valor.ctc-ii', 'valor.ctd-ii'],
     'Counters may crit.',
   ),
   behavior(
-    'valor',
+    MASTERY_IDS.perfectRiposte,
     'master',
     'Perfect Riposte',
-    ['valor.vengeful-edge'],
+    [MASTERY_IDS.vengefulEdge],
     'Evasion may trigger a normal counter.',
-    { exclusiveWith: 'valor.guarded-reprisal' },
+    { exclusiveWith: MASTERY_IDS.guardedReprisal },
   ),
   behavior(
-    'valor',
+    MASTERY_IDS.guardedReprisal,
     'master',
     'Guarded Reprisal',
-    ['valor.vengeful-edge'],
+    [MASTERY_IDS.vengefulEdge],
     'Successful blocks guarantee a counter.',
-    { exclusiveWith: 'valor.perfect-riposte' },
+    { exclusiveWith: MASTERY_IDS.perfectRiposte },
   ),
   behavior(
-    'valor',
+    MASTERY_IDS.escalatingRetaliation,
     'grandmaster',
     'Escalating Retaliation',
-    ['valor.perfect-riposte', 'valor.guarded-reprisal'],
+    [MASTERY_IDS.perfectRiposte, MASTERY_IDS.guardedReprisal],
     'Counters gain up to +75 pp damage per round.',
     { sharedCapstone: true },
   ),
@@ -309,131 +353,164 @@ const shared: MasteryNode[] = [
 
 const weaponLayout: Record<
   CharacterId,
-  readonly [string, MasteryRank, string, MasteryNode['stat'], readonly string[]][]
+  readonly [
+    string,
+    string,
+    MasteryRank,
+    string,
+    NonNullable<MasteryNode['stat']>,
+    readonly string[],
+  ][]
 > = {
   korvin: [
-    ['DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['DEF I', 'initiate', '+1 Mastery Defense', 'defense', []],
-    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
-    ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['DEF II', 'adept', '+1 Mastery Defense', 'defense', ['weapon.def-i']],
-    ['PRC II', 'adept', '+1 pp Precision', 'precision', ['weapon.prc-i']],
-    ['BLK', 'expert', '+1 pp Block Chance', 'blockChance', ['weapon.def-ii']],
-    ['MAX RNG I', 'expert', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
-    ['MIN RNG', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.max-rng-i']],
-    ['MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.max-rng-i']],
+    ['weapon.dmg-i', 'DMG I', 'initiate', '+1 Damage', 'attack', []],
+    ['weapon.def-i', 'DEF I', 'initiate', '+1 Mastery Defense', 'defense', []],
+    ['weapon.prc-i', 'PRC I', 'initiate', '+1 pp Precision', 'precision', []],
+    ['weapon.dmg-ii', 'DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
+    ['weapon.def-ii', 'DEF II', 'adept', '+1 Mastery Defense', 'defense', ['weapon.def-i']],
+    ['weapon.prc-ii', 'PRC II', 'adept', '+1 pp Precision', 'precision', ['weapon.prc-i']],
+    ['weapon.blk', 'BLK', 'expert', '+1 pp Block Chance', 'blockChance', ['weapon.def-ii']],
+    ['weapon.max-rng-i', 'MAX RNG I', 'expert', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
+    ['weapon.min-rng', 'MIN RNG', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.max-rng-i']],
+    ['weapon.max-rng-ii', 'MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.max-rng-i']],
   ],
   rhaya: [
-    ['DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
-    ['MAX RNG I', 'initiate', '+1 pp MAX RNG', 'maxRng', []],
-    ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['MIN RNG I', 'adept', '+1 pp MIN RNG', 'minRng', ['weapon.prc-i', 'weapon.max-rng-i']],
-    ['INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
-    ['DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
-    ['PRC II', 'expert', '+1 pp Precision', 'precision', ['weapon.min-rng-i']],
-    ['MIN RNG II', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.prc-ii']],
-    ['MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
+    ['weapon.dmg-i', 'DMG I', 'initiate', '+1 Damage', 'attack', []],
+    ['weapon.prc-i', 'PRC I', 'initiate', '+1 pp Precision', 'precision', []],
+    ['weapon.max-rng-i', 'MAX RNG I', 'initiate', '+1 pp MAX RNG', 'maxRng', []],
+    ['weapon.dmg-ii', 'DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
+    [
+      'weapon.min-rng-i',
+      'MIN RNG I',
+      'adept',
+      '+1 pp MIN RNG',
+      'minRng',
+      ['weapon.prc-i', 'weapon.max-rng-i'],
+    ],
+    ['weapon.init', 'INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
+    ['weapon.dmg-iii', 'DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
+    ['weapon.prc-ii', 'PRC II', 'expert', '+1 pp Precision', 'precision', ['weapon.min-rng-i']],
+    ['weapon.min-rng-ii', 'MIN RNG II', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.prc-ii']],
+    ['weapon.max-rng-ii', 'MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
   ],
   quinn: [
-    ['DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
-    ['MIN RNG I', 'initiate', '+1 pp MIN RNG', 'minRng', []],
-    ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['MIN RNG II', 'adept', '+1 pp MIN RNG', 'minRng', ['weapon.min-rng-i']],
-    ['INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
-    ['DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
-    ['MIN RNG III', 'expert', '+1 pp MIN RNG', 'minRng', ['weapon.min-rng-ii']],
-    ['PRC II', 'master', '+1 pp Precision', 'precision', ['weapon.min-rng-iii']],
-    ['MAX RNG I', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.min-rng-iii']],
+    ['weapon.dmg-i', 'DMG I', 'initiate', '+1 Damage', 'attack', []],
+    ['weapon.prc-i', 'PRC I', 'initiate', '+1 pp Precision', 'precision', []],
+    ['weapon.min-rng-i', 'MIN RNG I', 'initiate', '+1 pp MIN RNG', 'minRng', []],
+    ['weapon.dmg-ii', 'DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
+    ['weapon.min-rng-ii', 'MIN RNG II', 'adept', '+1 pp MIN RNG', 'minRng', ['weapon.min-rng-i']],
+    ['weapon.init', 'INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
+    ['weapon.dmg-iii', 'DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
+    [
+      'weapon.min-rng-iii',
+      'MIN RNG III',
+      'expert',
+      '+1 pp MIN RNG',
+      'minRng',
+      ['weapon.min-rng-ii'],
+    ],
+    ['weapon.prc-ii', 'PRC II', 'master', '+1 pp Precision', 'precision', ['weapon.min-rng-iii']],
+    ['weapon.max-rng-i', 'MAX RNG I', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.min-rng-iii']],
   ],
 };
 
 const weaponBehaviors: Record<
   CharacterId,
-  readonly [MasteryRank, string, readonly string[], string, string?][]
+  readonly [string, MasteryRank, string, readonly string[], string, string?][]
 > = {
   korvin: [
     [
+      MASTERY_IDS.committedImpact,
       'expert',
       'Committed Impact',
       ['weapon.dmg-ii', 'weapon.prc-ii'],
       'Clean rolls below 100% become 100%.',
     ],
     [
+      MASTERY_IDS.titansArc,
       'master',
       "Titan's Arc",
-      ['weapon.committed-impact'],
+      [MASTERY_IDS.committedImpact],
       '+5 Damage, +15 pp MAX RNG, -10 pp Precision.',
-      'Shielded Advance',
+      MASTERY_IDS.shieldedAdvance,
     ],
     [
+      MASTERY_IDS.shieldedAdvance,
       'master',
       'Shielded Advance',
-      ['weapon.committed-impact'],
+      [MASTERY_IDS.committedImpact],
       '+5 Damage, +10 pp MIN RNG, +10 pp Precision, -15 pp MAX RNG.',
-      "Titan's Arc",
+      MASTERY_IDS.titansArc,
     ],
     [
+      MASTERY_IDS.immovableGuard,
       'grandmaster',
       'Immovable Guard',
-      ["weapon.titan's-arc", 'weapon.shielded-advance'],
+      [MASTERY_IDS.titansArc, MASTERY_IDS.shieldedAdvance],
       '+15 pp Block Chance and Guarded after blocks.',
     ],
   ],
   rhaya: [
     [
+      MASTERY_IDS.twinMeasure,
       'expert',
       'Twin Measure',
       ['weapon.min-rng-i', 'weapon.init'],
       'Clean hits roll range twice and use the higher value.',
     ],
     [
+      MASTERY_IDS.razorsEdge,
       'master',
       "Razor's Edge",
-      ['weapon.twin-measure'],
+      [MASTERY_IDS.twinMeasure],
       '+3 Damage, -10 pp MIN RNG, +15 pp MAX RNG, -5 pp Precision.',
-      'Blade Poise',
+      MASTERY_IDS.bladePoise,
     ],
     [
+      MASTERY_IDS.bladePoise,
       'master',
       'Blade Poise',
-      ['weapon.twin-measure'],
+      [MASTERY_IDS.twinMeasure],
       '+3 Damage, +10 pp MIN RNG, -5 pp MAX RNG, +5 pp Precision.',
-      "Razor's Edge",
+      MASTERY_IDS.razorsEdge,
     ],
     [
+      MASTERY_IDS.secondWind,
       'grandmaster',
       'Second Wind',
-      ["weapon.razor's-edge", 'weapon.blade-poise'],
+      [MASTERY_IDS.razorsEdge, MASTERY_IDS.bladePoise],
       'Clean hits add the lower Twin Measure roll as a 25% separate hit.',
     ],
   ],
   quinn: [
     [
+      MASTERY_IDS.zeroingIn,
       'expert',
       'Zeroing In',
       ['weapon.min-rng-ii', 'weapon.init'],
       'Consecutive regular attacks gain up to three +5 pp range stacks.',
     ],
     [
+      MASTERY_IDS.overdraw,
       'master',
       'Overdraw',
-      ['weapon.zeroing-in'],
+      [MASTERY_IDS.zeroingIn],
       '+3 Damage, +20 pp MAX RNG, -15 pp Precision.',
-      'Steady Draw',
+      MASTERY_IDS.steadyDraw,
     ],
     [
+      MASTERY_IDS.steadyDraw,
       'master',
       'Steady Draw',
-      ['weapon.zeroing-in'],
+      [MASTERY_IDS.zeroingIn],
       '+3 Damage, +5 pp MIN RNG, +5 pp MAX RNG.',
-      'Overdraw',
+      MASTERY_IDS.overdraw,
     ],
     [
+      MASTERY_IDS.patientHunter,
       'grandmaster',
       'Patient Hunter',
-      ['weapon.overdraw', 'weapon.steady-draw'],
+      [MASTERY_IDS.overdraw, MASTERY_IDS.steadyDraw],
       'Zeroing In reaches five stacks; stacks 4-5 use MAX RNG.',
     ],
   ],
@@ -441,21 +518,14 @@ const weaponBehaviors: Record<
 
 export function nodesFor(characterId: CharacterId): readonly MasteryNode[] {
   const weaponNodes = weaponLayout[characterId].map(
-    ([label, rank, effect, target, prerequisites]) =>
-      stat('weapon', rank, label, label, prerequisites, target ?? 'attack', 1, effect),
+    ([id, label, rank, effect, target, prerequisites]) =>
+      stat(id, rank, label, label, prerequisites, target, 1, effect),
   );
   return [
     ...shared,
     ...weaponNodes,
-    ...weaponBehaviors[characterId].map(([rank, label, prerequisites, effect, other]) =>
-      behavior(
-        'weapon',
-        rank,
-        label,
-        prerequisites,
-        effect,
-        other ? { exclusiveWith: `weapon.${other.toLowerCase().replaceAll(' ', '-')}` } : {},
-      ),
+    ...weaponBehaviors[characterId].map(([id, rank, label, prerequisites, effect, exclusiveWith]) =>
+      behavior(id, rank, label, prerequisites, effect, exclusiveWith ? { exclusiveWith } : {}),
     ),
   ];
 }

@@ -1,5 +1,5 @@
 import { CHARACTERS } from '@/game/characters/characters';
-import { nodeById } from '@/game/weaponMastery/mastery';
+import { MASTERY_IDS, nodeById } from '@/game/weaponMastery/mastery';
 import type { CombatCharacter } from './combatState';
 import { NO_CRIT_NODES, type AttackContext, type MasteryEffects } from './outgoingDamage';
 
@@ -25,50 +25,50 @@ export function masteryContextFor(character: CombatCharacter): AttackContext {
   let max = weapon.damageRange.max + maxBonus;
   let precision = weapon.precision + precisionBonus;
 
-  if (has(character, "weapon.titan's-arc")) {
+  if (has(character, MASTERY_IDS.titansArc)) {
     max += 0.15;
     precision -= 0.1;
-  } else if (has(character, 'weapon.shielded-advance')) {
+  } else if (has(character, MASTERY_IDS.shieldedAdvance)) {
     min += 0.1;
     max -= 0.15;
     precision += 0.1;
-  } else if (has(character, "weapon.razor's-edge")) {
+  } else if (has(character, MASTERY_IDS.razorsEdge)) {
     min -= 0.1;
     max += 0.15;
     precision -= 0.05;
-  } else if (has(character, 'weapon.blade-poise')) {
+  } else if (has(character, MASTERY_IDS.bladePoise)) {
     min += 0.1;
     max -= 0.05;
     precision += 0.05;
-  } else if (has(character, 'weapon.overdraw')) {
+  } else if (has(character, MASTERY_IDS.overdraw)) {
     max += 0.2;
     precision -= 0.15;
-  } else if (has(character, 'weapon.steady-draw')) {
+  } else if (has(character, MASTERY_IDS.steadyDraw)) {
     min += 0.05;
     max += 0.05;
   }
 
   const mastery: MasteryEffects = {
-    executioner: has(character, 'finesse.executioner'),
-    perfectExploit: has(character, 'finesse.perfect-exploit'),
-    surestrike: has(character, 'finesse.surestrike'),
-    overcritical: has(character, 'finesse.overcritical'),
-    relentlessPursuit: has(character, 'tempest.relentless-pursuit'),
-    echoedStrike: has(character, 'tempest.echoed-strike'),
-    stormSurge: has(character, 'tempest.storm-surge'),
-    perfectCadence: has(character, 'tempest.perfect-cadence'),
-    epicenter: has(character, 'dominance.epicenter'),
-    focusedBlast: has(character, 'dominance.focused-blast'),
-    aftershock: has(character, 'dominance.aftershock'),
-    perfectRiposte: has(character, 'valor.perfect-riposte'),
-    guardedReprisal: has(character, 'valor.guarded-reprisal'),
-    escalatingRetaliation: has(character, 'valor.escalating-retaliation'),
-    committedImpact: has(character, 'weapon.committed-impact'),
-    immovableGuard: has(character, 'weapon.immovable-guard'),
-    twinMeasure: has(character, 'weapon.twin-measure'),
-    secondWind: has(character, 'weapon.second-wind'),
-    zeroingIn: has(character, 'weapon.zeroing-in'),
-    patientHunter: has(character, 'weapon.patient-hunter'),
+    executioner: has(character, MASTERY_IDS.executioner),
+    perfectExploit: has(character, MASTERY_IDS.perfectExploit),
+    surestrike: has(character, MASTERY_IDS.surestrike),
+    overcritical: has(character, MASTERY_IDS.overcritical),
+    relentlessPursuit: has(character, MASTERY_IDS.relentlessPursuit),
+    echoedStrike: has(character, MASTERY_IDS.echoedStrike),
+    stormSurge: has(character, MASTERY_IDS.stormSurge),
+    perfectCadence: has(character, MASTERY_IDS.perfectCadence),
+    epicenter: has(character, MASTERY_IDS.epicenter),
+    focusedBlast: has(character, MASTERY_IDS.focusedBlast),
+    aftershock: has(character, MASTERY_IDS.aftershock),
+    perfectRiposte: has(character, MASTERY_IDS.perfectRiposte),
+    guardedReprisal: has(character, MASTERY_IDS.guardedReprisal),
+    escalatingRetaliation: has(character, MASTERY_IDS.escalatingRetaliation),
+    committedImpact: has(character, MASTERY_IDS.committedImpact),
+    immovableGuard: has(character, MASTERY_IDS.immovableGuard),
+    twinMeasure: has(character, MASTERY_IDS.twinMeasure),
+    secondWind: has(character, MASTERY_IDS.secondWind),
+    zeroingIn: has(character, MASTERY_IDS.zeroingIn),
+    patientHunter: has(character, MASTERY_IDS.patientHunter),
     guarded: character.guarded ?? false,
     zeroing: character.zeroing,
     counterStacks: character.counterStacks ?? 0,
@@ -79,9 +79,9 @@ export function masteryContextFor(character: CombatCharacter): AttackContext {
     precision,
     critNodes: {
       ...NO_CRIT_NODES,
-      multiHit: has(character, 'tempest.converging-strikes'),
-      splash: has(character, 'dominance.critical-mass'),
-      counter: has(character, 'valor.vengeful-edge'),
+      multiHit: has(character, MASTERY_IDS.convergingStrikes),
+      splash: has(character, MASTERY_IDS.criticalMass),
+      counter: has(character, MASTERY_IDS.vengefulEdge),
     },
     mastery,
   };

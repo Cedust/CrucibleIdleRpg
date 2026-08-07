@@ -1,5 +1,5 @@
 import { ATTRIBUTE_BONUS_PER_POINT } from '@/game/curves/characterCurves';
-import { nodeById } from '@/game/weaponMastery/mastery';
+import { MASTERY_IDS, nodeById } from '@/game/weaponMastery/mastery';
 import type {
   AttributePoints,
   CharacterDefinition,
@@ -123,16 +123,16 @@ export function deriveCharacterStats(
   const ranks = progression.masteryRanks ?? {};
   const has = (id: string): boolean => (ranks[id] ?? 0) > 0;
 
-  if (has("weapon.titan's-arc") || has('weapon.shielded-advance')) {
+  if (has(MASTERY_IDS.titansArc) || has(MASTERY_IDS.shieldedAdvance)) {
     stats.derived.attack += 5;
   }
-  if (has("weapon.razor's-edge") || has('weapon.blade-poise')) {
+  if (has(MASTERY_IDS.razorsEdge) || has(MASTERY_IDS.bladePoise)) {
     stats.derived.attack += 3;
   }
-  if (has('weapon.overdraw') || has('weapon.steady-draw')) {
+  if (has(MASTERY_IDS.overdraw) || has(MASTERY_IDS.steadyDraw)) {
     stats.derived.attack += 3;
   }
-  if (has('weapon.immovable-guard')) {
+  if (has(MASTERY_IDS.immovableGuard)) {
     stats.defensive.blockChance += 0.15;
   }
 

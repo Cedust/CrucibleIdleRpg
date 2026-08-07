@@ -1,12 +1,49 @@
 import { describe, expect, it } from 'vitest';
 import {
   investedPoints,
+  MASTERY_IDS,
   maximumInvestableCapacity,
   nodeById,
   nodesFor,
   purchaseFailure,
   respecCost,
 } from './mastery';
+
+const CHARACTER_IDS = ['korvin', 'rhaya', 'quinn'] as const;
+
+describe('weapon mastery node ids', () => {
+  it('declares a unique id for every node of every character', () => {
+    for (const characterId of CHARACTER_IDS) {
+      const ids = nodesFor(characterId).map((node) => node.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+  });
+
+  it('resolves every engine-referenced id against the node catalog', () => {
+    for (const [key, id] of Object.entries(MASTERY_IDS)) {
+      const owners = CHARACTER_IDS.filter((characterId) => nodeById(characterId, id));
+      expect(
+        owners.length,
+        `MASTERY_IDS.${key} (${id}) is missing from the catalog`,
+      ).toBeGreaterThan(0);
+    }
+  });
+
+  it('references only catalog ids in prerequisites and exclusiveWith', () => {
+    for (const characterId of CHARACTER_IDS) {
+      const nodes = nodesFor(characterId);
+      const known = new Set(nodes.map((node) => node.id));
+      for (const node of nodes) {
+        for (const prerequisite of node.prerequisites) {
+          expect(known.has(prerequisite), `${node.id} requires unknown ${prerequisite}`).toBe(true);
+        }
+        if (node.exclusiveWith) {
+          expect(known.has(node.exclusiveWith), `${node.id} excludes unknown id`).toBe(true);
+        }
+      }
+    }
+  });
+});
 
 describe('weapon mastery rules', () => {
   it('contains all five disciplines and preserves the 229-rank capacity', () => {

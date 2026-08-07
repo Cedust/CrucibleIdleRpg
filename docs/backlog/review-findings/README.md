@@ -11,7 +11,7 @@ alle Quality-Gates waren zum Review-Zeitpunkt grün (Lint, Typecheck, 274 Unit-T
 
 | Reihenfolge | Task                                                                                           | Schwere | Status    | Hängt ab von |
 | ----------- | ---------------------------------------------------------------------------------------------- | ------- | --------- | ------------ |
-| 1           | [001 — Mastery-Node-IDs explizit machen](001-mastery-node-ids-explizit.md)                     | hoch    | `ready`   | —            |
+| 1           | [001 — Mastery-Node-IDs explizit machen](001-mastery-node-ids-explizit.md)                     | hoch    | `done`    | —            |
 | 2           | [002 — Mastery-Kampfintegration testen](002-mastery-kampfintegration-testen.md)                | hoch    | `ready`   | —            |
 | 3           | [003 — Toten CombatScreen-Flow entfernen](003-toten-combatscreen-flow-entfernen.md)            | hoch    | `ready`   | —            |
 | 4           | [004 — Mastery-Balancing deklarativ](004-mastery-balancing-deklarativ.md)                      | hoch    | `blocked` | 001, 002     |

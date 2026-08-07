@@ -1,10 +1,10 @@
 # 001 — Mastery-Node-IDs explizit machen
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | hoch    |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | hoch   |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -35,13 +35,13 @@ Maschinenlesbare Effektwerte in den Node-Definitionen — das ist
 
 ## Akzeptanzkriterien
 
-- [ ] Jeder `MasteryNode` trägt seine `id` als explizites Feld; die heutigen ID-Werte bleiben
+- [x] Jeder `MasteryNode` trägt seine `id` als explizites Feld; die heutigen ID-Werte bleiben
       unverändert (Save-Kompatibilität).
-- [ ] Labels sind ohne Auswirkung auf IDs änderbar.
-- [ ] Die Engine bezieht referenzierte IDs aus exportierten Konstanten, oder ein Test
+- [x] Labels sind ohne Auswirkung auf IDs änderbar.
+- [x] Die Engine bezieht referenzierte IDs aus exportierten Konstanten, oder ein Test
       validiert jede in `characterStats.ts`/`masteryCombat.ts` referenzierte ID gegen
       `nodeById`.
-- [ ] Ein Test prüft die ID-Eindeutigkeit über alle Nodes.
+- [x] Ein Test prüft die ID-Eindeutigkeit über alle Nodes.
 
 ## Betroffene Dateien
 

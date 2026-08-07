@@ -111,7 +111,7 @@ export function WeaponMasteryScreen() {
           ))}
         </div>
         <div className="overflow-x-auto pb-2">
-          <div className="grid min-w-[850px] grid-cols-[minmax(0,1fr)_17rem] gap-4">
+          <div className="grid min-w-212.5 grid-cols-[minmax(0,1fr)_17rem] gap-4">
             <div
               className="grid grid-cols-5 gap-3"
               aria-label={`${DISCIPLINE_LABEL[discipline]} mastery tree`}

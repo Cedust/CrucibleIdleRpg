@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useShallow } from 'zustand/react/shallow';
 
 const LANES = [
   { id: 'backline', label: 'Backline', offset: 3 },
@@ -123,7 +124,7 @@ export function EnemyFormation() {
         data-testid="enemy-formation-scroll"
         className="mt-2 overflow-x-auto pb-2"
       >
-        <div className="min-w-[30rem] space-y-4">
+        <div className="min-w-120 space-y-4">
           {LANES.map((lane) => (
             <section key={lane.id} aria-labelledby={`${lane.id}-heading`}>
               <h4 id={`${lane.id}-heading`} className="mb-2 text-xs font-semibold text-text-muted">

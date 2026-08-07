@@ -1,4 +1,4 @@
-import { Coins, Flame, Gem, Hammer, Map, ScrollText, Users } from 'lucide-react';
+import { Coins, Flame, Gem, Hammer, Map, ScrollText, Swords, Users } from 'lucide-react';
 import { useEffect, type ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
 import { DungeonRunScreen } from '@/features/combat/DungeonRunScreen';
@@ -8,11 +8,13 @@ import { DungeonSelectionScreen } from '@/features/progression/DungeonSelectionS
 import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
+import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
   dungeons: { label: 'DUNGEONS', icon: Map },
   team: { label: 'TEAM', icon: Users },
   crucible: { label: 'CRUCIBLE', icon: Flame },
+  'weapon-mastery': { label: 'WEAPON MASTERY', icon: Swords },
   blacksmith: { label: 'BLACKSMITH', icon: Hammer },
   jeweler: { label: 'JEWELER', icon: Gem },
   runes: { label: 'RUNES', icon: ScrollText },
@@ -125,6 +127,8 @@ export function AppShell() {
           <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
             {activeView === 'dungeons' ? (
               <DungeonSelectionScreen />
+            ) : activeView === 'weapon-mastery' ? (
+              <WeaponMasteryScreen />
             ) : (
               <PlaceholderView label={VIEW_META[activeView].label} />
             )}

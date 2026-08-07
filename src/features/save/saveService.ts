@@ -6,6 +6,7 @@ import {
   currentSaveSchema,
   saveSchemaV1,
   saveSchemaV2,
+  saveSchemaV3,
   type SaveData,
 } from './saveSchema';
 
@@ -63,16 +64,39 @@ function migrate(data: unknown): SaveData {
         ...saveSchemaV2.parse(versioned),
         version: 3,
         characters: {
-          korvin: createLevelOneProgression(),
-          rhaya: createLevelOneProgression(),
-          quinn: createLevelOneProgression(),
+          korvin: progressionWithoutMastery(),
+          rhaya: progressionWithoutMastery(),
+          quinn: progressionWithoutMastery(),
         },
       });
-    case 3:
+    case 3: {
+      const previous = saveSchemaV3.parse(versioned);
+      return currentSaveSchema.parse({
+        ...previous,
+        version: 4,
+        characters: {
+          korvin: { ...previous.characters.korvin, masteryRanks: {} },
+          rhaya: { ...previous.characters.rhaya, masteryRanks: {} },
+          quinn: { ...previous.characters.quinn, masteryRanks: {} },
+        },
+      });
+    }
+    case 4:
       return currentSaveSchema.parse(versioned);
     default:
       throw new Error(`Unbekannte Save-Version: ${versioned.version}`);
   }
+}
+
+function progressionWithoutMastery() {
+  const progression = createLevelOneProgression();
+  return {
+    level: progression.level,
+    xp: progression.xp,
+    freeAttributePoints: progression.freeAttributePoints,
+    attributePoints: progression.attributePoints,
+    freeMasteryPoints: progression.freeMasteryPoints,
+  };
 }
 
 export type SaveService = ReturnType<typeof createSaveService>;

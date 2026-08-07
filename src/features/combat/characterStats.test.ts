@@ -34,6 +34,15 @@ function progression(overrides: Partial<CharacterProgression> = {}): CharacterPr
 }
 
 describe('deriveCharacterStats', () => {
+  it('adds bought mastery stat ranks and caps chance stats', () => {
+    const stats = deriveCharacterStats(CHARACTERS.korvin, {
+      ...neutralProgression(80),
+      masteryRanks: { 'finesse.chc-i': 5, 'weapon.dmg-i': 5, 'weapon.def-i': 5 },
+    });
+    expect(stats.offensive.critChance).toBe(0.2);
+    expect(stats.derived.attack).toBe(19);
+    expect(stats.derived.defense).toBe(10);
+  });
   it('uses the specified weapon profiles for the three level-one attack values', () => {
     expect(CHARACTERS.korvin.weapon).toEqual({
       baseDamage: 14,

@@ -1,4 +1,5 @@
 import { ATTRIBUTE_BONUS_PER_POINT } from '@/game/curves/characterCurves';
+import { nodeById } from '@/game/weaponMastery/mastery';
 import type {
   AttributePoints,
   CharacterDefinition,
@@ -53,6 +54,7 @@ export interface CharacterProgression {
   attributePoints: AttributePoints;
   /** Crucible-Ebene je Derived Stat als Anteil; `0` ist neutral. */
   crucibleBonus: DerivedStatPercent;
+  masteryRanks?: Readonly<Record<string, number>>;
 }
 
 /**
@@ -88,7 +90,7 @@ export function deriveCharacterStats(
     return (base + coreContribution) * (1 + attributeBonus) * (1 + progression.crucibleBonus[stat]);
   };
 
-  return {
+  const stats: CharacterStats = {
     core,
     derived: {
       attack: deriveStat('attack'),
@@ -99,4 +101,28 @@ export function deriveCharacterStats(
     defensive: { ...definition.baseDefensive },
     utility: { ...definition.baseUtility },
   };
+
+  for (const [id, rank] of Object.entries(progression.masteryRanks ?? {})) {
+    const node = nodeById(definition.id, id);
+    if (node?.stat === undefined || node.perRank === undefined) continue;
+    const bonus = node.perRank * rank;
+    if (node.stat === 'attack' || node.stat === 'defense') {
+      stats.derived[node.stat] += bonus;
+    } else if (node.stat in stats.offensive) {
+      const key = node.stat as keyof CharacterStats['offensive'];
+      stats.offensive[key] += bonus;
+    } else if (node.stat in stats.defensive) {
+      const key = node.stat as keyof CharacterStats['defensive'];
+      stats.defensive[key] += bonus;
+    } else {
+      const key = node.stat as keyof CharacterStats['utility'];
+      stats.utility[key] += bonus;
+    }
+  }
+
+  for (const key of ['critChance', 'multiHitChance', 'splashChance', 'counterChance'] as const) {
+    stats.offensive[key] = Math.min(stats.offensive[key], 1);
+  }
+  stats.defensive.blockChance = Math.min(stats.defensive.blockChance, 1);
+  return stats;
 }

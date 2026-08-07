@@ -23,6 +23,9 @@
 
 ### Ökonomie und Endgame
 
+- [ ] **Weapon Mastery:** Discipline-Respec-Grundpreis und Punktpreis festlegen. Aktuell nutzt
+      `src/game/weaponMastery/mastery.ts` die expliziten Platzhalter `100 Gold + 25 Gold ×
+erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Mastery](../spec/WEAPON-MASTERY.md#31-discipline-respec)
 - [ ] Gold-Drops sowie Attribut-/Crucible-Respec-Kosten und Grund-/Punktpreis des
       Discipline-Respecs. → [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg),
       [Weapon Mastery](../spec/WEAPON-MASTERY.md#31-discipline-respec)

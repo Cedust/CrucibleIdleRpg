@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import type { CharacterProgressionState } from '@/game/types';
+import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
 /**
  * Zod-Schema des Speicherstands (siehe AGENTS.md).
  * Pro Save-Version ein Schema; die Versionsnummer steuert die Migration.
  * Beim Laden wird gegen dieses Schema validiert, bevor Daten in den Store gelangen.
  */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 const uint32Schema = z.number().int().min(0).max(0xffffffff);
 const progressionSchema = z
@@ -115,9 +116,87 @@ export type SaveDataV3 = Omit<z.infer<typeof saveSchemaV3>, 'characters'> & {
   characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
 };
 
+/** Mastery-Ränge ersetzen im Pre-Release-Schema die früheren freien Punkte als alleinige Wahrheit. */
+const masteryProgressionSchema = progressionSchema
+  .extend({
+    freeAttributePoints: z.number().int().nonnegative(),
+    attributePoints: attributePointsSchema,
+    freeMasteryPoints: z.number().int().nonnegative(),
+    masteryRanks: z.record(z.string(), z.number().int().min(1).max(5)),
+  })
+  .superRefine((character, context) => {
+    const spentAttributes = Object.values(character.attributePoints).reduce(
+      (total, points) => total + points,
+      0,
+    );
+    if (character.freeAttributePoints + spentAttributes !== character.level) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Attributpunkte.' });
+    }
+    const spentMastery = Object.values(character.masteryRanks).reduce(
+      (total, rank) => total + rank,
+      0,
+    );
+    if (character.freeMasteryPoints + spentMastery !== character.level) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Mastery-Punkte.' });
+    }
+  });
+
+export const saveSchemaV4 = saveSchemaV3
+  .omit({ version: true, characters: true })
+  .extend({
+    version: z.literal(4),
+    characters: z
+      .object({
+        korvin: masteryProgressionSchema,
+        rhaya: masteryProgressionSchema,
+        quinn: masteryProgressionSchema,
+      })
+      .strict(),
+  })
+  .strict()
+  .superRefine((save, context) => {
+    for (const [characterId, progression] of Object.entries(save.characters) as [
+      keyof typeof save.characters,
+      (typeof save.characters)[keyof typeof save.characters],
+    ][]) {
+      const nodes = nodesFor(characterId);
+      for (const [id, rank] of Object.entries(progression.masteryRanks)) {
+        const node = nodes.find((candidate) => candidate.id === id);
+        if (!node || rank > node.maxRank || progression.level < minimumLevel(node)) {
+          context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültiger Mastery-Node.' });
+          continue;
+        }
+        if (
+          node.prerequisites.length > 0 &&
+          !node.prerequisites.some(
+            (prerequisite) => (progression.masteryRanks[prerequisite] ?? 0) > 0,
+          )
+        ) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Mastery-Voraussetzung fehlt.',
+          });
+        }
+        if (node.exclusiveWith && (progression.masteryRanks[node.exclusiveWith] ?? 0) > 0) {
+          context.addIssue({ code: z.ZodIssueCode.custom, message: 'Exklusive Mastery-Wahl.' });
+        }
+      }
+      const sharedCapstones = nodes.filter(
+        (node) => node.sharedCapstone && (progression.masteryRanks[node.id] ?? 0) > 0,
+      );
+      if (sharedCapstones.length > 1) {
+        context.addIssue({ code: z.ZodIssueCode.custom, message: 'Mehrere gemeinsame Capstones.' });
+      }
+    }
+  });
+
+export type SaveDataV4 = Omit<z.infer<typeof saveSchemaV4>, 'characters'> & {
+  characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
+};
+
 /** Aktuelles Save-Format (Alias auf die neueste Version). */
-export type SaveData = SaveDataV3;
-export const currentSaveSchema = saveSchemaV3;
+export type SaveData = SaveDataV4;
+export const currentSaveSchema = saveSchemaV4;
 
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {
@@ -154,6 +233,7 @@ export function createLevelOneProgression(): CharacterProgressionState {
     freeAttributePoints: 1,
     attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
     freeMasteryPoints: 1,
+    masteryRanks: {},
   };
 }
 

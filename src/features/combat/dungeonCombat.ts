@@ -61,6 +61,7 @@ function createDungeonCombat(
       progression: {
         ...neutralProgression(save.characters[id].level),
         attributePoints: save.characters[id].attributePoints,
+        masteryRanks: save.characters[id].masteryRanks,
       },
       carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
     })),

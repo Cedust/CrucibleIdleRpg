@@ -3,6 +3,14 @@ import type { RewardCommit } from '@/features/progression/rewards';
 import { commitFloorVictory } from '@/features/progression/rewards';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
+import {
+  investedPoints,
+  nodeById,
+  purchaseFailure,
+  respecCost,
+  type DisciplineId,
+} from '@/game/weaponMastery/mastery';
+import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
@@ -21,6 +29,8 @@ export interface SaveStoreState {
     attribute: keyof AttributePoints,
   ) => Promise<boolean>;
   respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
+  buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
+  respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
@@ -129,6 +139,79 @@ export function createSaveStore(service: SaveService) {
       };
       set({ status: 'saving' });
 
+      try {
+        await service.save(next);
+        set({ data: next, status: 'ready' });
+        return true;
+      } catch (error) {
+        set({ status: 'error' });
+        throw error;
+      }
+    },
+
+    buyMasteryNode: async (characterId, nodeId) => {
+      const current = requiredSave(get().data);
+      const progression = current.characters[characterId];
+      if (
+        purchaseFailure(
+          characterId,
+          progression.level,
+          progression.masteryRanks,
+          progression.freeMasteryPoints,
+          nodeId,
+        ) !== null
+      )
+        return false;
+      const node = nodeById(characterId, nodeId);
+      if (node === undefined) return false;
+      const next: SaveData = {
+        ...current,
+        characters: {
+          ...current.characters,
+          [characterId]: {
+            ...progression,
+            freeMasteryPoints: progression.freeMasteryPoints - 1,
+            masteryRanks: {
+              ...progression.masteryRanks,
+              [nodeId]: (progression.masteryRanks[nodeId] ?? 0) + 1,
+            },
+          },
+        },
+      };
+      set({ status: 'saving' });
+      try {
+        await service.save(next);
+        set({ data: next, status: 'ready' });
+        return true;
+      } catch (error) {
+        set({ status: 'error' });
+        throw error;
+      }
+    },
+
+    respecDiscipline: async (characterId, discipline) => {
+      const current = requiredSave(get().data);
+      if (useDungeonRunStore.getState().mode === 'run') return false;
+      const progression = current.characters[characterId];
+      const refunded = investedPoints(progression.masteryRanks, discipline);
+      const cost = respecCost(refunded);
+      if (refunded === 0 || current.currencies.gold < cost) return false;
+      const masteryRanks = Object.fromEntries(
+        Object.entries(progression.masteryRanks).filter(([id]) => !id.startsWith(`${discipline}.`)),
+      );
+      const next: SaveData = {
+        ...current,
+        currencies: { ...current.currencies, gold: current.currencies.gold - cost },
+        characters: {
+          ...current.characters,
+          [characterId]: {
+            ...progression,
+            freeMasteryPoints: progression.freeMasteryPoints + refunded,
+            masteryRanks,
+          },
+        },
+      };
+      set({ status: 'saving' });
       try {
         await service.save(next);
         set({ data: next, status: 'ready' });

@@ -108,6 +108,8 @@ export interface CharacterProgressionState {
   freeAttributePoints: number;
   attributePoints: AttributePoints;
   freeMasteryPoints: number;
+  /** Gekaufte Weapon-Mastery-Nodes; Sperren werden daraus abgeleitet. */
+  masteryRanks: Readonly<Record<string, number>>;
 }
 
 /**

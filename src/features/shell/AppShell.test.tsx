@@ -47,6 +47,17 @@ describe('AppShell', () => {
     expect(useNavigationStore.getState().activeView).toBe('runes');
   });
 
+  it('opens the weapon mastery tree from navigation', async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
+
+    expect(screen.getByRole('heading', { name: 'Weapon Mastery' })).toBeInTheDocument();
+    expect(screen.getByText(/1 Mastery Points available/)).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'FINESSE' })).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('isolates a run from navigation and only exits after confirmed leave', async () => {
     const user = userEvent.setup();
     render(<AppShell />);

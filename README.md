@@ -17,6 +17,7 @@ docs/         # Documentation, ADRs, backlog, and design notes
 e2e/          # Playwright tests
 scripts/      # Build and dev scripts
 src/
+  app/        # App entry, shell, and navigation
   features/   # Domain features (components, hooks, stores, tests)
   game/       # Declarative, typed balancing content
   shared/     # UI primitives, utils, ports

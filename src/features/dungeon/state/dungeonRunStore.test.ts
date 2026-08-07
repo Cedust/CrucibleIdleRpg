@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useCombatStore } from '@/features/combat/combatStore';
-import { createNextDungeonCombat } from '@/features/combat/dungeonCombat';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { createNextDungeonCombat } from '@/features/dungeon/dungeonCombat';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
 import { useDungeonRunStore } from './dungeonRunStore';

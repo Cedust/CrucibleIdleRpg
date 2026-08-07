@@ -1,11 +1,11 @@
 import { Coins, Flame, Gem, Hammer, Map, ScrollText, Swords, Users } from 'lucide-react';
 import { useEffect, type ComponentType } from 'react';
 import { useNavigationStore, VIEWS, type View } from './navigationStore';
-import { DungeonRunScreen } from '@/features/combat/DungeonRunScreen';
-import { useCombatStore } from '@/features/combat/combatStore';
-import { useCombatPlayback } from '@/features/combat/useCombatPlayback';
-import { DungeonSelectionScreen } from '@/features/progression/DungeonSelectionScreen';
-import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { DungeonRunScreen } from '@/features/dungeon/ui/DungeonRunScreen';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useCombatPlayback } from '@/features/combat/state/useCombatPlayback';
+import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';

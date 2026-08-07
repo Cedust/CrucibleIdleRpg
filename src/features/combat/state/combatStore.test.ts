@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
-import { useNavigationStore } from '@/features/shell/navigationStore';
-import { neutralProgression } from './characterStats';
-import { M1_COMBAT_CONTEXT, nextTick } from './combatEngine';
-import { buildCombatState, deriveFloorSeed, deriveRunSeed, type CombatState } from './combatState';
+import { useNavigationStore } from '@/app/navigationStore';
+import { neutralProgression } from '@/features/combat/engine/characterStats';
+import { M1_COMBAT_CONTEXT, nextTick } from '@/features/combat/engine/combatEngine';
+import {
+  buildCombatState,
+  deriveFloorSeed,
+  deriveRunSeed,
+  type CombatState,
+} from '@/features/combat/engine/combatState';
 import { COMBAT_LOG_LIMIT, useCombatStore } from './combatStore';
-import { buildPendingQueue } from './turnOrder';
+import { buildPendingQueue } from '@/features/combat/engine/turnOrder';
 
 function combat(): CombatState {
   return buildCombatState({

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { RewardSummary } from '@/features/progression/rewards';
+import type { RewardSummary } from '@/features/dungeon/rewards';
 import {
   combatOutcome,
   M1_COMBAT_CONTEXT,
@@ -7,9 +7,9 @@ import {
   type CombatContext,
   type CombatOutcome,
   type TickResult,
-} from './combatEngine';
-import type { ActorRef, CombatState } from './combatState';
-import { buildPendingQueue } from './turnOrder';
+} from '@/features/combat/engine/combatEngine';
+import type { ActorRef, CombatState } from '@/features/combat/engine/combatState';
+import { buildPendingQueue } from '@/features/combat/engine/turnOrder';
 
 /** Verfügbare Anzeige-Geschwindigkeiten; 2× wird erst in M2 freigeschaltet. */
 export type PlaybackSpeed = 1 | 2;

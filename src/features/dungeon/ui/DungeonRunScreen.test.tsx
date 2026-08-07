@@ -1,11 +1,11 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
-import { createDungeonEntryCombat } from './dungeonCombat';
-import { useCombatStore } from './combatStore';
+import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
+import { useCombatStore } from '@/features/combat/state/combatStore';
 import { DungeonRunScreen } from './DungeonRunScreen';
 
 describe('DungeonRunScreen', () => {

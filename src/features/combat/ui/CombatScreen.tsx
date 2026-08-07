@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { type Act1DungeonId } from '@/game/encounters/act1';
 import { createFloorReward } from '@/game/rewards/floorRewards';
-import { DungeonSelector } from '@/features/progression/DungeonSelector';
+import { DungeonSelector } from '@/features/dungeon/ui/DungeonSelector';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { CombatLog } from './CombatLog';
-import { useCombatStore } from './combatStore';
+import { useCombatStore } from '@/features/combat/state/combatStore';
 import { EnemyFormation } from './EnemyFormation';
-import { createDungeonEntryCombat } from './dungeonCombat';
+import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
 import { TeamPanel } from './TeamPanel';
 import { TurnOrderBar } from './TurnOrderBar';
 

@@ -1,6 +1,6 @@
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { TEAM_ORDER } from '@/game/characters/characters';
-import { useCombatStore } from './combatStore';
+import { useCombatStore } from '@/features/combat/state/combatStore';
 
 const ROLE_LABEL = {
   tank: 'Tank',

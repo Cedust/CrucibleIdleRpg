@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { SavePort } from '@/shared/ports/savePort';
-import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/combatState';
-import { createM1Combat } from '@/features/combat/m1Combat';
+import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
+import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
 import { createSaveStore } from './saveStore';
@@ -48,7 +48,9 @@ describe('createSaveStore', () => {
         0,
       ),
     ).toBe(deriveFloorSeed(deriveRunSeed(4242, 'A1-D1', 2), 0));
-    expect(persisted === null ? null : createM1Combat(persisted)).toEqual(createM1Combat(second));
+    expect(persisted === null ? null : createDungeonEntryCombat(persisted, 'A1-D1')).toEqual(
+      createDungeonEntryCombat(second, 'A1-D1'),
+    );
   });
 
   it('behält committete Belohnungen nach einem Reload, aber keinen Kampfzustand', async () => {

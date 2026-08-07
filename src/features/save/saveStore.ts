@@ -1,6 +1,6 @@
 import { createStore, useStore } from 'zustand';
-import type { RewardCommit } from '@/features/progression/rewards';
-import { commitFloorVictory } from '@/features/progression/rewards';
+import type { RewardCommit } from '@/features/dungeon/rewards';
+import { commitFloorVictory } from '@/features/dungeon/rewards';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import {
@@ -10,7 +10,7 @@ import {
   respecCost,
   type DisciplineId,
 } from '@/game/weaponMastery/mastery';
-import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';

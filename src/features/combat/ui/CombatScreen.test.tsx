@@ -7,18 +7,18 @@ import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
-import { neutralProgression } from './characterStats';
+import { neutralProgression } from '@/features/combat/engine/characterStats';
 import { CombatLog } from './CombatLog';
 import { CombatControls, CombatScreen } from './CombatScreen';
-import { nextTick, type TickResult } from './combatEngine';
+import { nextTick, type TickResult } from '@/features/combat/engine/combatEngine';
 import {
   buildCombatState,
   deriveFloorSeed,
   deriveRunSeed,
   type ActorRef,
   type CombatState,
-} from './combatState';
-import { useCombatStore } from './combatStore';
+} from '@/features/combat/engine/combatState';
+import { useCombatStore } from '@/features/combat/state/combatStore';
 import { EnemyFormation } from './EnemyFormation';
 import { TeamPanel } from './TeamPanel';
 import { TurnOrderBar } from './TurnOrderBar';

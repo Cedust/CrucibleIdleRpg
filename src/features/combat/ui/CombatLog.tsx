@@ -1,8 +1,8 @@
 import { formatNumber } from '@/shared/utils/formatNumber';
-import type { CombatEvent } from './combatEvents';
-import type { ActorRef, CombatState } from './combatState';
-import { useCombatStore } from './combatStore';
-import type { HitKind } from './outgoingDamage';
+import type { CombatEvent } from '@/features/combat/engine/combatEvents';
+import type { ActorRef, CombatState } from '@/features/combat/engine/combatState';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import type { HitKind } from '@/features/combat/engine/outgoingDamage';
 
 const EMPTY_LOG = [] as const;
 

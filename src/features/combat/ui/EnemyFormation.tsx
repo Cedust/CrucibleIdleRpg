@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
-import { useCombatStore } from './combatStore';
+import { useCombatStore } from '@/features/combat/state/combatStore';
 
 const LANES = [
   { id: 'backline', label: 'Backline', offset: 3 },

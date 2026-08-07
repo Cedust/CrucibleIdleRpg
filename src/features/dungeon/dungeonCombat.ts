@@ -7,8 +7,13 @@ import {
 } from '@/game/encounters/act1';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { SaveData } from '@/features/save/saveSchema';
-import { neutralProgression } from './characterStats';
-import { buildCombatState, deriveFloorSeed, deriveRunSeed, type CombatState } from './combatState';
+import { neutralProgression } from '@/features/combat/engine/characterStats';
+import {
+  buildCombatState,
+  deriveFloorSeed,
+  deriveRunSeed,
+  type CombatState,
+} from '@/features/combat/engine/combatState';
 
 /** Baut den Floor-1-Einstieg eines ausgewählten Dungeons aus dem persistierten Save-Stand. */
 export function createDungeonEntryCombat(save: SaveData, dungeonId: Act1DungeonId): CombatState {

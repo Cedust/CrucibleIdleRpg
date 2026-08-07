@@ -1,6 +1,6 @@
-import type { ActorRef } from './combatState';
-import { useCombatStore } from './combatStore';
-import { sameActor } from './turnOrder';
+import type { ActorRef } from '@/features/combat/engine/combatState';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { sameActor } from '@/features/combat/engine/turnOrder';
 
 const EMPTY_QUEUE: readonly ActorRef[] = [];
 

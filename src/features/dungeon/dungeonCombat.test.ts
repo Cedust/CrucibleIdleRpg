@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultSave } from '@/features/save/saveSchema';
-import { deriveFloorSeed, deriveRunSeed } from './combatState';
+import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat, createNextDungeonCombat } from './dungeonCombat';
 
 describe('createDungeonEntryCombat', () => {

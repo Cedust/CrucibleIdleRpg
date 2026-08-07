@@ -1,10 +1,13 @@
 import { create } from 'zustand';
-import { useCombatStore, type PlaybackSpeed } from '@/features/combat/combatStore';
-import { createDungeonEntryCombat, createNextDungeonCombat } from '@/features/combat/dungeonCombat';
+import { useCombatStore, type PlaybackSpeed } from '@/features/combat/state/combatStore';
+import {
+  createDungeonEntryCombat,
+  createNextDungeonCombat,
+} from '@/features/dungeon/dungeonCombat';
 import { createFloorReward } from '@/game/rewards/floorRewards';
 import { resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
 import { saveStore } from '@/features/save/saveStore';
-import { useNavigationStore } from '@/features/shell/navigationStore';
+import { useNavigationStore } from '@/app/navigationStore';
 
 export type DungeonRunMode = 'selection' | 'starting' | 'run';
 

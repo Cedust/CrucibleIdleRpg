@@ -3,11 +3,16 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
-import { neutralProgression } from './characterStats';
-import { M1_COMBAT_CONTEXT, nextTick, runCombat } from './combatEngine';
-import { buildCombatState, deriveFloorSeed, deriveRunSeed, type CombatState } from './combatState';
+import { neutralProgression } from '@/features/combat/engine/characterStats';
+import { M1_COMBAT_CONTEXT, nextTick, runCombat } from '@/features/combat/engine/combatEngine';
+import {
+  buildCombatState,
+  deriveFloorSeed,
+  deriveRunSeed,
+  type CombatState,
+} from '@/features/combat/engine/combatState';
 import { useCombatStore, type PlaybackSpeed } from './combatStore';
-import type { CombatEvent } from './combatEvents';
+import type { CombatEvent } from '@/features/combat/engine/combatEvents';
 import {
   BASE_TICK_MS,
   MAX_CATCH_UP_MS,

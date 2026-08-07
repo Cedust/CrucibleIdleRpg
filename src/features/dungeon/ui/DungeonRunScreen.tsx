@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useDungeonRunStore } from '@/features/progression/dungeonRunStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
-import { CombatLog } from './CombatLog';
-import { useCombatStore } from './combatStore';
-import { EnemyFormation } from './EnemyFormation';
-import { TeamPanel } from './TeamPanel';
-import { TurnOrderBar } from './TurnOrderBar';
+import { CombatLog } from '@/features/combat/ui/CombatLog';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
+import { TeamPanel } from '@/features/combat/ui/TeamPanel';
+import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
 
 /** Fullscreen arena with lifecycle actions only; it intentionally has no app navigation. */
 export function DungeonRunScreen() {

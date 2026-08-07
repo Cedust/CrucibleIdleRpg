@@ -3,7 +3,7 @@ import { type Act1DungeonId } from '@/game/encounters/act1';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { DungeonSelector } from './DungeonSelector';
-import { useDungeonRunStore } from './dungeonRunStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
 /** Normal shell view for selecting an unlocked dungeon entrance. */
 export function DungeonSelectionScreen() {

@@ -6,7 +6,7 @@ import {
 } from '@/features/dungeon/dungeonCombat';
 import { createFloorReward } from '@/game/rewards/floorRewards';
 import { resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
-import { saveStore } from '@/features/save/saveStore';
+import { registerMasteryRespecGuard, saveStore } from '@/features/save/saveStore';
 import { useNavigationStore } from '@/app/navigationStore';
 
 export type DungeonRunMode = 'selection' | 'starting' | 'run';
@@ -167,3 +167,7 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     set({ mode: 'selection', activeDungeonId: null, startError: null, completionError: null });
   },
 }));
+
+// Während eines laufenden Runs ist Mastery-Respec gesperrt; die Regel gehört zum
+// Dungeon-Lifecycle und wird deshalb hier am Save-Store registriert.
+registerMasteryRespecGuard(() => useDungeonRunStore.getState().mode !== 'run');

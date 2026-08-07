@@ -1,10 +1,10 @@
 # 005 — Save-Store konsolidieren
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | mittel  |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | mittel |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -41,13 +41,13 @@ Spielregeln und von Import-Zyklen zu Laufzeit-Stores.
 
 ## Akzeptanzkriterien
 
-- [ ] Ein privater `persist(next)`-Helper trägt Status-Übergänge und Fehlerpfad; alle Actions
+- [x] Ein privater `persist(next)`-Helper trägt Status-Übergänge und Fehlerpfad; alle Actions
       nutzen ihn.
-- [ ] Schreibvorgänge sind serialisiert (Promise-Queue/Mutex); ein Test belegt, dass zwei
+- [x] Schreibvorgänge sind serialisiert (Promise-Queue/Mutex); ein Test belegt, dass zwei
       überlappende Actions beide Änderungen erhalten.
-- [ ] Der Respec-Guard kommt als injiziertes Prädikat oder liegt im Aufrufer; der
+- [x] Der Respec-Guard kommt als injiziertes Prädikat oder liegt im Aufrufer; der
       Import-Zyklus ist aufgelöst.
-- [ ] Rang-/Refund-Regeln sind pure Funktionen neben `mastery.ts` mit eigenen Unit-Tests.
+- [x] Rang-/Refund-Regeln sind pure Funktionen neben `mastery.ts` mit eigenen Unit-Tests.
 
 ## Betroffene Dateien
 

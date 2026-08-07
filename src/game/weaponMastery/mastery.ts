@@ -1,4 +1,4 @@
-import type { CharacterId, CharacterStats } from '@/game/types';
+import type { CharacterId, CharacterProgressionState, CharacterStats } from '@/game/types';
 
 export const DISCIPLINES = ['finesse', 'tempest', 'dominance', 'valor', 'weapon'] as const;
 export type DisciplineId = (typeof DISCIPLINES)[number];
@@ -661,4 +661,61 @@ export function purchaseFailure(
 export function respecCost(refundedPoints: number): number {
   // Explicit balancing placeholders; replace only after OPEN_ISSUES decision.
   return refundedPoints === 0 ? 0 : 100 + 25 * refundedPoints;
+}
+
+/**
+ * Wendet den Kauf eines Nodes auf die Progression an: ein Mastery Point wird verbraucht, der
+ * Rang steigt um eins. `null`, wenn `purchaseFailure` den Kauf ablehnt.
+ */
+export function purchaseMasteryNode(
+  characterId: CharacterId,
+  progression: CharacterProgressionState,
+  nodeId: string,
+): CharacterProgressionState | null {
+  const failure = purchaseFailure(
+    characterId,
+    progression.level,
+    progression.masteryRanks,
+    progression.freeMasteryPoints,
+    nodeId,
+  );
+  if (failure !== null) {
+    return null;
+  }
+
+  return {
+    ...progression,
+    freeMasteryPoints: progression.freeMasteryPoints - 1,
+    masteryRanks: {
+      ...progression.masteryRanks,
+      [nodeId]: (progression.masteryRanks[nodeId] ?? 0) + 1,
+    },
+  };
+}
+
+/**
+ * Erstattet alle Ränge einer Discipline gegen Gold: die Ränge fallen aus `masteryRanks`, die
+ * Punkte werden wieder frei. `null` ohne Investition oder ohne Gold-Deckung.
+ */
+export function respecMasteryDiscipline(
+  progression: CharacterProgressionState,
+  discipline: DisciplineId,
+  gold: number,
+): { progression: CharacterProgressionState; gold: number } | null {
+  const refundedPoints = investedPoints(progression.masteryRanks, discipline);
+  const cost = respecCost(refundedPoints);
+  if (refundedPoints === 0 || gold < cost) {
+    return null;
+  }
+
+  return {
+    gold: gold - cost,
+    progression: {
+      ...progression,
+      freeMasteryPoints: progression.freeMasteryPoints + refundedPoints,
+      masteryRanks: Object.fromEntries(
+        Object.entries(progression.masteryRanks).filter(([id]) => !id.startsWith(`${discipline}.`)),
+      ),
+    },
+  };
 }

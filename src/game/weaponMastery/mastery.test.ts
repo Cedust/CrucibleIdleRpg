@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { CharacterProgressionState } from '@/game/types';
 import {
   investedPoints,
   MASTERY_BALANCE,
@@ -7,7 +8,9 @@ import {
   nodeById,
   nodesFor,
   purchaseFailure,
+  purchaseMasteryNode,
   respecCost,
+  respecMasteryDiscipline,
   WEAPON_MODE_KEYS,
   WEAPON_MODES,
 } from './mastery';
@@ -154,6 +157,59 @@ describe('weapon mastery stat node units (WEAPON-MASTERY §5)', () => {
     expect(nodeById('korvin', 'weapon.min-rng')?.perRank).toBe(0.01);
     expect(nodeById('rhaya', 'weapon.max-rng-i')?.perRank).toBe(0.01);
     expect(nodeById('quinn', 'weapon.min-rng-iii')?.perRank).toBe(0.01);
+  });
+});
+
+function progression(
+  overrides: Partial<CharacterProgressionState> = {},
+): CharacterProgressionState {
+  return {
+    level: 80,
+    xp: 0,
+    freeAttributePoints: 0,
+    attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+    freeMasteryPoints: 5,
+    masteryRanks: {},
+    ...overrides,
+  };
+}
+
+describe('purchaseMasteryNode & respecMasteryDiscipline', () => {
+  it('verbraucht einen Punkt und erhöht den Rang um eins, ohne den Eingang zu verändern', () => {
+    const before = progression();
+    const after = purchaseMasteryNode('korvin', before, 'finesse.chc-i');
+
+    expect(after?.freeMasteryPoints).toBe(4);
+    expect(after?.masteryRanks['finesse.chc-i']).toBe(1);
+    expect(before.freeMasteryPoints).toBe(5);
+    expect(before.masteryRanks['finesse.chc-i']).toBeUndefined();
+  });
+
+  it('lehnt gesperrte Käufe ab', () => {
+    expect(
+      purchaseMasteryNode('korvin', progression({ freeMasteryPoints: 0 }), 'finesse.chc-i'),
+    ).toBeNull();
+    expect(purchaseMasteryNode('korvin', progression(), 'finesse.unbekannt')).toBeNull();
+    expect(purchaseMasteryNode('korvin', progression({ level: 1 }), 'finesse.chc-ii')).toBeNull();
+  });
+
+  it('erstattet genau die Discipline gegen Gold und lässt andere Ränge stehen', () => {
+    const before = progression({
+      freeMasteryPoints: 0,
+      masteryRanks: { 'finesse.chc-i': 3, 'valor.ctc-i': 2 },
+    });
+    const respec = respecMasteryDiscipline(before, 'finesse', respecCost(3));
+
+    expect(respec?.gold).toBe(0);
+    expect(respec?.progression.freeMasteryPoints).toBe(3);
+    expect(respec?.progression.masteryRanks).toEqual({ 'valor.ctc-i': 2 });
+    expect(before.masteryRanks).toEqual({ 'finesse.chc-i': 3, 'valor.ctc-i': 2 });
+  });
+
+  it('lehnt Respec ohne Investition oder ohne Gold-Deckung ab', () => {
+    expect(respecMasteryDiscipline(progression(), 'finesse', 10_000)).toBeNull();
+    const invested = progression({ masteryRanks: { 'finesse.chc-i': 1 } });
+    expect(respecMasteryDiscipline(invested, 'finesse', respecCost(1) - 1)).toBeNull();
   });
 });
 

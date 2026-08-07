@@ -4,13 +4,10 @@ import { commitFloorVictory } from '@/features/dungeon/rewards';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import {
-  investedPoints,
-  nodeById,
-  purchaseFailure,
-  respecCost,
+  purchaseMasteryNode,
+  respecMasteryDiscipline,
   type DisciplineId,
 } from '@/game/weaponMastery/mastery';
-import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
@@ -35,231 +32,206 @@ export interface SaveStoreState {
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
 
-export function createSaveStore(service: SaveService) {
+export interface SaveStoreOptions {
+  /** Erlaubt dem Kompositionspunkt, Mastery-Respec situativ zu sperren (z. B. im Dungeon-Run). */
+  canRespecMastery?: () => boolean;
+}
+
+/**
+ * Der Plan einer schreibenden Action: `next === null` lehnt die Action ab, ohne zu speichern;
+ * `result` ist in beiden Fällen ihr Rückgabewert.
+ */
+interface WritePlan<T> {
+  next: SaveData | null;
+  result: T;
+}
+
+export function createSaveStore(service: SaveService, options: SaveStoreOptions = {}) {
+  const canRespecMastery = options.canRespecMastery ?? (() => true);
   let hydration: Promise<SaveData> | null = null;
+  let pendingWrite: Promise<unknown> = Promise.resolve();
 
-  return createStore<SaveStoreState>((set, get) => ({
-    data: null,
-    status: 'idle',
+  return createStore<SaveStoreState>((set, get) => {
+    /**
+     * Serialisierter Schreibpfad aller Actions: Der Folgezustand wird erst berechnet, wenn
+     * jeder vorherige Schreibvorgang abgeschlossen ist — überlappende Actions bauen damit
+     * aufeinander auf, statt sich gegenseitig zu überschreiben (Lost Update). Der Helper
+     * trägt die Status-Übergänge `saving` → `ready` und den Fehlerpfad.
+     */
+    const persist = <T>(plan: (current: SaveData) => WritePlan<T>): Promise<T> => {
+      const write = async (): Promise<T> => {
+        const planned = plan(requiredSave(get().data));
+        if (planned.next === null) {
+          return planned.result;
+        }
 
-    hydrate: () => {
-      const loaded = get().data;
-      if (loaded !== null) {
-        return Promise.resolve(loaded);
-      }
-
-      if (hydration !== null) {
-        return hydration;
-      }
-
-      set({ status: 'loading' });
-      hydration = service
-        .load()
-        .then((data) => {
-          set({ data, status: 'ready' });
-          return data;
-        })
-        .catch((error: unknown) => {
+        set({ status: 'saving' });
+        try {
+          await service.save(planned.next);
+          set({ data: planned.next, status: 'ready' });
+          return planned.result;
+        } catch (error) {
           set({ status: 'error' });
           throw error;
-        })
-        .finally(() => {
-          hydration = null;
-        });
-
-      return hydration;
-    },
-
-    beginRun: async () => {
-      const current = requiredSave(get().data);
-      const next: SaveData = { ...current, runCounter: current.runCounter + 1 };
-      set({ status: 'saving' });
-
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return next;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
-
-    commitVictory: async (reward) => {
-      const current = requiredSave(get().data);
-      const commit = commitFloorVictory(current, reward);
-      set({ status: 'saving' });
-
-      try {
-        await service.save(commit.save);
-        set({ data: commit.save, status: 'ready' });
-        return commit;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
-
-    spendAttributePoint: async (characterId, attribute) => {
-      const current = requiredSave(get().data);
-      const progression = spendAttributePoint(current.characters[characterId], attribute);
-      if (progression === null) {
-        return false;
-      }
-      const next: SaveData = {
-        ...current,
-        characters: { ...current.characters, [characterId]: progression },
+        }
       };
-      set({ status: 'saving' });
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return true;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
-
-    respecAttributes: async (characterId, goldCost) => {
-      const current = requiredSave(get().data);
-      const respec = respecAttributes(
-        current.characters[characterId],
-        current.currencies.gold,
-        goldCost,
+      const queued = pendingWrite.then(write, write);
+      pendingWrite = queued.then(
+        () => undefined,
+        () => undefined,
       );
-      if (respec === null) {
-        return false;
-      }
-      const next: SaveData = {
-        ...current,
-        characters: { ...current.characters, [characterId]: respec.progression },
-        currencies: { ...current.currencies, gold: respec.gold },
-      };
-      set({ status: 'saving' });
+      return queued;
+    };
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return true;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+    return {
+      data: null,
+      status: 'idle',
 
-    buyMasteryNode: async (characterId, nodeId) => {
-      const current = requiredSave(get().data);
-      const progression = current.characters[characterId];
-      if (
-        purchaseFailure(
-          characterId,
-          progression.level,
-          progression.masteryRanks,
-          progression.freeMasteryPoints,
-          nodeId,
-        ) !== null
-      )
-        return false;
-      const node = nodeById(characterId, nodeId);
-      if (node === undefined) return false;
-      const next: SaveData = {
-        ...current,
-        characters: {
-          ...current.characters,
-          [characterId]: {
-            ...progression,
-            freeMasteryPoints: progression.freeMasteryPoints - 1,
-            masteryRanks: {
-              ...progression.masteryRanks,
-              [nodeId]: (progression.masteryRanks[nodeId] ?? 0) + 1,
+      hydrate: () => {
+        const loaded = get().data;
+        if (loaded !== null) {
+          return Promise.resolve(loaded);
+        }
+
+        if (hydration !== null) {
+          return hydration;
+        }
+
+        set({ status: 'loading' });
+        hydration = service
+          .load()
+          .then((data) => {
+            set({ data, status: 'ready' });
+            return data;
+          })
+          .catch((error: unknown) => {
+            set({ status: 'error' });
+            throw error;
+          })
+          .finally(() => {
+            hydration = null;
+          });
+
+        return hydration;
+      },
+
+      beginRun: () =>
+        persist((current) => {
+          const next: SaveData = { ...current, runCounter: current.runCounter + 1 };
+          return { next, result: next };
+        }),
+
+      commitVictory: (reward) =>
+        persist((current) => {
+          const commit = commitFloorVictory(current, reward);
+          return { next: commit.save, result: commit };
+        }),
+
+      spendAttributePoint: (characterId, attribute) =>
+        persist((current) => {
+          const progression = spendAttributePoint(current.characters[characterId], attribute);
+          if (progression === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: progression },
             },
-          },
-        },
-      };
-      set({ status: 'saving' });
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return true;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+            result: true,
+          };
+        }),
 
-    respecDiscipline: async (characterId, discipline) => {
-      const current = requiredSave(get().data);
-      if (useDungeonRunStore.getState().mode === 'run') return false;
-      const progression = current.characters[characterId];
-      const refunded = investedPoints(progression.masteryRanks, discipline);
-      const cost = respecCost(refunded);
-      if (refunded === 0 || current.currencies.gold < cost) return false;
-      const masteryRanks = Object.fromEntries(
-        Object.entries(progression.masteryRanks).filter(([id]) => !id.startsWith(`${discipline}.`)),
-      );
-      const next: SaveData = {
-        ...current,
-        currencies: { ...current.currencies, gold: current.currencies.gold - cost },
-        characters: {
-          ...current.characters,
-          [characterId]: {
-            ...progression,
-            freeMasteryPoints: progression.freeMasteryPoints + refunded,
-            masteryRanks,
-          },
-        },
-      };
-      set({ status: 'saving' });
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return true;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+      respecAttributes: (characterId, goldCost) =>
+        persist((current) => {
+          const respec = respecAttributes(
+            current.characters[characterId],
+            current.currencies.gold,
+            goldCost,
+          );
+          if (respec === null) {
+            return { next: null, result: false };
+          }
 
-    completeDungeon: async (dungeonId) => {
-      const current = requiredSave(get().data);
-      const nextDungeonId = nextDungeonIdAfter(dungeonId);
-      const unlockedDungeonIds =
-        nextDungeonId !== null && !current.unlockedDungeonIds.includes(nextDungeonId)
-          ? [...current.unlockedDungeonIds, nextDungeonId]
-          : current.unlockedDungeonIds;
-      const next: SaveData = {
-        ...current,
-        unlockedDungeonIds,
-        completedDungeons: { ...current.completedDungeons, [dungeonId]: true },
-      };
-      set({ status: 'saving' });
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: respec.progression },
+              currencies: { ...current.currencies, gold: respec.gold },
+            },
+            result: true,
+          };
+        }),
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return next;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+      buyMasteryNode: (characterId, nodeId) =>
+        persist((current) => {
+          const progression = purchaseMasteryNode(
+            characterId,
+            current.characters[characterId],
+            nodeId,
+          );
+          if (progression === null) {
+            return { next: null, result: false };
+          }
 
-    setPlaybackSpeed: async (playbackSpeed) => {
-      const current = requiredSave(get().data);
-      const next: SaveData = { ...current, playbackSpeed };
-      set({ status: 'saving' });
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: progression },
+            },
+            result: true,
+          };
+        }),
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
-  }));
+      respecDiscipline: (characterId, discipline) =>
+        persist((current) => {
+          if (!canRespecMastery()) {
+            return { next: null, result: false };
+          }
+
+          const respec = respecMasteryDiscipline(
+            current.characters[characterId],
+            discipline,
+            current.currencies.gold,
+          );
+          if (respec === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: respec.gold },
+              characters: { ...current.characters, [characterId]: respec.progression },
+            },
+            result: true,
+          };
+        }),
+
+      completeDungeon: (dungeonId) =>
+        persist((current) => {
+          const nextDungeonId = nextDungeonIdAfter(dungeonId);
+          const unlockedDungeonIds =
+            nextDungeonId !== null && !current.unlockedDungeonIds.includes(nextDungeonId)
+              ? [...current.unlockedDungeonIds, nextDungeonId]
+              : current.unlockedDungeonIds;
+          const next: SaveData = {
+            ...current,
+            unlockedDungeonIds,
+            completedDungeons: { ...current.completedDungeons, [dungeonId]: true },
+          };
+          return { next, result: next };
+        }),
+
+      setPlaybackSpeed: (playbackSpeed) =>
+        persist((current) => ({
+          next: { ...current, playbackSpeed },
+          result: undefined,
+        })),
+    };
+  });
 }
 
 function requiredSave(data: SaveData | null): SaveData {
@@ -275,11 +247,24 @@ function nextDungeonIdAfter(dungeonId: Act1DungeonId): Act1DungeonId | null {
   return ACT_1_DUNGEON_IDS[index + 1] ?? null;
 }
 
+/**
+ * Situativer Respec-Guard des Browser-Stores. Das Dungeon-Feature registriert beim Laden
+ * seine Run-Sperre (dungeonRunStore.ts); ohne geladenes Dungeon-Feature existiert kein Run,
+ * der Default erlaubt deshalb.
+ */
+let masteryRespecGuard: () => boolean = () => true;
+
+export function registerMasteryRespecGuard(guard: () => boolean): void {
+  masteryRespecGuard = guard;
+}
+
 const browserSaveService = createSaveService(createLocalStorageSavePort(), () =>
   createDefaultSave(createSaveSeed()),
 );
 
-export const saveStore = createSaveStore(browserSaveService);
+export const saveStore = createSaveStore(browserSaveService, {
+  canRespecMastery: () => masteryRespecGuard(),
+});
 
 export function useSaveStore<T>(selector: (state: SaveStoreState) => T): T {
   return useStore(saveStore, selector);

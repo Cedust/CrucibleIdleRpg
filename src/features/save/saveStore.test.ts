@@ -115,6 +115,68 @@ describe('createSaveStore', () => {
     expect(reloaded.getState().data?.unlockedDungeonIds).toEqual(['A1-D1', 'A1-D2']);
   });
 
+  it('serialisiert überlappende Actions ohne Lost Update', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    // Beide Actions starten auf demselben Stand; die Queue lässt die zweite auf dem
+    // Ergebnis der ersten aufbauen, statt es zu überschreiben.
+    const victory = store.getState().commitVictory({
+      floorId: 'A1-D1-01',
+      gold: 10,
+      characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
+    });
+    const speed = store.getState().setPlaybackSpeed(2);
+    await Promise.all([victory, speed]);
+
+    expect(store.getState().data?.currencies.gold).toBe(10);
+    expect(store.getState().data?.playbackSpeed).toBe(2);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.currencies.gold).toBe(10);
+    expect(reloaded.getState().data?.playbackSpeed).toBe(2);
+  });
+
+  it('sperrt Mastery-Respec über das injizierte Prädikat', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    let allowed = false;
+    const store = createSaveStore(service, { canRespecMastery: () => allowed });
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    // Gültiger Stand nach Schema-Invarianten: Level = freie + investierte Punkte je Sorte.
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        characters: {
+          ...base.characters,
+          korvin: {
+            ...base.characters.korvin,
+            level: 2,
+            freeAttributePoints: 2,
+            freeMasteryPoints: 0,
+            masteryRanks: { 'finesse.chc-i': 2 },
+          },
+        },
+      },
+    });
+
+    await expect(store.getState().respecDiscipline('korvin', 'finesse')).resolves.toBe(false);
+    expect(store.getState().data?.characters.korvin.masteryRanks).toEqual({
+      'finesse.chc-i': 2,
+    });
+
+    allowed = true;
+    await expect(store.getState().respecDiscipline('korvin', 'finesse')).resolves.toBe(true);
+    expect(store.getState().data?.characters.korvin.masteryRanks).toEqual({});
+    expect(store.getState().data?.currencies.gold).toBe(1000 - 150);
+  });
+
   it('startet keinen Run, wenn der erhöhte runCounter nicht gespeichert werden kann', async () => {
     const port: SavePort = {
       load: () => Promise.resolve(null),

@@ -141,6 +141,41 @@ const TEAM = [
 
 const ANGREIFER = { side: 'enemy', index: 0 } as const;
 
+describe('Counter Precision', () => {
+  const gestellt = state(TEAM, [enemy(0)]);
+  const korvin = TEAM[0] as CombatCharacter;
+  const target = { ref: ANGREIFER, enemy: gestellt.enemies[0] as CombatEnemy };
+
+  it('rolls counter chance, precision, range and crit for a clean counter', () => {
+    const prng = scriptedPrng([0.1, 0.5, 0.75, 0.1]);
+    const result = resolveCounter(gestellt, { side: 'character', index: 0 }, korvin, target, prng, {
+      damageRange: DAMAGE_RANGE,
+      precision: 0.75,
+      critNodes: VALOR,
+    });
+
+    expect(result.cleanHit).toBe(true);
+    expect(result.baseDamage).toBeCloseTo(105, 10);
+    expect(result.hit?.crit).toBe(true);
+    expect(prng.draws).toEqual(['chance:0.2', 'chance:0.75', 'damageRange', 'chance:0.25']);
+  });
+
+  it('uses MIN RNG and skips crit for a glancing counter after still drawing range', () => {
+    const prng = scriptedPrng([0.1, 0.9, 0.75]);
+    const result = resolveCounter(gestellt, { side: 'character', index: 0 }, korvin, target, prng, {
+      damageRange: DAMAGE_RANGE,
+      precision: 0.75,
+      critNodes: VALOR,
+    });
+
+    expect(result.cleanHit).toBe(false);
+    expect(result.damageRangeRoll).toBeCloseTo(1.05, 10);
+    expect(result.baseDamage).toBeCloseTo(90, 10);
+    expect(result.hit?.crit).toBe(false);
+    expect(prng.draws).toEqual(['chance:0.2', 'chance:0.75', 'damageRange']);
+  });
+});
+
 describe('Counter — Zugreihenfolge je Charakter (COMBAT §2.1)', () => {
   const gestellt = state(TEAM, [enemy(0)]);
   const korvin = TEAM[0] as CombatCharacter;

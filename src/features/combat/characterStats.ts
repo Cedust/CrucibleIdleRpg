@@ -1,8 +1,4 @@
-import {
-  ATTRIBUTE_BONUS_PER_POINT,
-  BASELINE_GROWTH,
-  CORE_STAT_PER_POINT,
-} from '@/game/curves/characterCurves';
+import { ATTRIBUTE_BONUS_PER_POINT } from '@/game/curves/characterCurves';
 import type {
   AttributePoints,
   CharacterDefinition,
@@ -21,11 +17,12 @@ import type {
  * (docs/spec/CHARACTERS.md#2-stats):
  *
  * ```
- * Derived = (Baseline + Core-Stat-Beitrag) × (1 + Attribut-Bonus) × (1 + Crucible-Bonus)
+ * Derived = (feste Basis + Core-Stat) × (1 + Attribut-Bonus) × (1 + Crucible-Bonus)
  * ```
  *
- * Die Baseline wächst je Charakterlevel (docs/spec/CHARACTERS.md#5-charakterlevel), der
- * Core-Stat-Beitrag stammt aus Item-Innate und Emerald-Gems.
+ * Die feste Basis stammt bei Attack aus der Signaturwaffe, bei Defense und Health aus der
+ * Charakter-Definition. Level verändert keinen Derived Stat; Core-Stats stammen aus
+ * Item-Innate und Emerald-Gems.
  *
  * Offensive, Defensive und Utility Stats haben keine solche Schichtung — sie kommen direkt
  * aus der Charakter-Definition. Die Achsen-Trennung bleibt dabei gewahrt: keine Quelle
@@ -71,17 +68,6 @@ export function neutralProgression(level: number): CharacterProgression {
   };
 }
 
-/**
- * Baseline-Multiplikator für ein Level. Die Tabelle deckt Level 1–100 ab; Level außerhalb
- * werden auf die Tabellengrenzen geklemmt, damit der Index typsicher greift
- * (AGENTS.md).
- */
-function baselineGrowth(stat: keyof DerivedStats, level: number): number {
-  const table = BASELINE_GROWTH[stat];
-  const index = Math.min(Math.max(Math.trunc(level), 1), table.length) - 1;
-  return table[index] as number;
-}
-
 export function deriveCharacterStats(
   definition: CharacterDefinition,
   progression: CharacterProgression,
@@ -94,14 +80,12 @@ export function deriveCharacterStats(
 
   const deriveStat = (stat: keyof DerivedStats): number => {
     const source = DERIVED_SOURCES[stat];
-    const baseline = definition.baseDerived[stat] * baselineGrowth(stat, progression.level);
-    const coreContribution = core[source.core] * CORE_STAT_PER_POINT;
+    const base = stat === 'attack' ? definition.weapon.baseDamage : definition.baseDerived[stat];
+    const coreContribution = core[source.core];
     const attributeBonus =
       progression.attributePoints[source.attribute] * ATTRIBUTE_BONUS_PER_POINT;
 
-    return (
-      (baseline + coreContribution) * (1 + attributeBonus) * (1 + progression.crucibleBonus[stat])
-    );
+    return (base + coreContribution) * (1 + attributeBonus) * (1 + progression.crucibleBonus[stat]);
   };
 
   return {

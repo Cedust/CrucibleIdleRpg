@@ -20,7 +20,7 @@ describe('commitFloorVictory', () => {
       level: 1,
       xp: 5,
       freeAttributePoints: 1,
-      freeSkillPoints: 1,
+      freeMasteryPoints: 1,
     });
     expect(result.save.firstVictories).toEqual(['A1-D1-01']);
     expect(before).toEqual(createDefaultSave(1));

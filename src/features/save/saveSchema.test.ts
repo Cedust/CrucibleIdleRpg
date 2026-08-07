@@ -14,24 +14,21 @@ describe('saveSchemaV3', () => {
           xp: 0,
           freeAttributePoints: 1,
           attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
-          freeSkillPoints: 1,
-          spentSkillPoints: 0,
+          freeMasteryPoints: 1,
         },
         rhaya: {
           level: 1,
           xp: 0,
           freeAttributePoints: 1,
           attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
-          freeSkillPoints: 1,
-          spentSkillPoints: 0,
+          freeMasteryPoints: 1,
         },
         quinn: {
           level: 1,
           xp: 0,
           freeAttributePoints: 1,
           attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
-          freeSkillPoints: 1,
-          spentSkillPoints: 0,
+          freeMasteryPoints: 1,
         },
       },
       currencies: { gold: 0, crystals: 0 },
@@ -58,6 +55,21 @@ describe('saveSchemaV3', () => {
     ]) {
       expect(saveSchemaV3.safeParse({ ...save, ...forbidden }).success).toBe(false);
     }
+  });
+
+  it('uses free mastery points directly and rejects the removed skill-point sums', () => {
+    const save = createDefaultSave(123);
+
+    expect(save.characters.korvin.freeMasteryPoints).toBe(1);
+    expect(
+      saveSchemaV3.safeParse({
+        ...save,
+        characters: {
+          ...save.characters,
+          korvin: { ...save.characters.korvin, freeSkillPoints: 1, spentSkillPoints: 0 },
+        },
+      }).success,
+    ).toBe(false);
   });
 
   it('keeps v1 valid for explicit migration without dungeon fields', () => {

@@ -162,6 +162,58 @@ function expectDamages(hits: readonly Hit[], expected: readonly number[]): void 
   });
 }
 
+describe('Precision', () => {
+  const gestellt = state([enemy(0, 14), enemy(1, 9)]);
+
+  it('resolves a clean hit with precision before range and allows crits', () => {
+    const prng = scriptedPrng([0.5, 0.75, 0.1, 0.9, 0.9]);
+    const result = resolveCharacterAttack(gestellt, character(), prng, {
+      damageRange: DAMAGE_RANGE,
+      precision: 0.75,
+      critNodes: ALL_CRIT_NODES,
+    });
+
+    expect(result.cleanHit).toBe(true);
+    expect(result.baseDamage).toBeCloseTo(105, 10);
+    expect(result.hits[0]?.crit).toBe(true);
+    expect(prng.draws).toEqual([
+      'chance:0.75',
+      'damageRange',
+      'chance:0.25',
+      'chance:0.4',
+      'chance:0.3',
+    ]);
+  });
+
+  it('uses MIN RNG for glancing while preserving range and generator draws', () => {
+    const prng = scriptedPrng([0.9, 0.75, 0.1, 0.1]);
+    const result = resolveCharacterAttack(gestellt, character(), prng, {
+      damageRange: DAMAGE_RANGE,
+      precision: 0.75,
+      critNodes: ALL_CRIT_NODES,
+    });
+
+    expect(result.cleanHit).toBe(false);
+    expect(result.damageRangeRoll).toBeCloseTo(1.05, 10);
+    expect(result.baseDamage).toBeCloseTo(90, 10);
+    expect(result.hits.map((hit) => hit.crit)).toEqual([false, false, false, false]);
+    expect(result.hits.map((hit) => hit.rawDamage)).toEqual([90, 45, 27, 36]);
+    expect(prng.draws).toEqual(['chance:0.75', 'damageRange', 'chance:0.4', 'chance:0.3']);
+  });
+
+  it('caps precision at 100 percent', () => {
+    const prng = scriptedPrng([0.99, 0.5, 0.9, 0.9, 0.9]);
+    const result = resolveCharacterAttack(gestellt, character(), prng, {
+      damageRange: DAMAGE_RANGE,
+      precision: 2,
+      critNodes: NO_CRIT_NODES,
+    });
+
+    expect(result.cleanHit).toBe(true);
+    expect(prng.draws[0]).toBe('chance:1');
+  });
+});
+
 describe('Charakter-Zug — Test-Vektor aus COMBAT §2.1', () => {
   /*
    * Gegeben: Attack 100, Damage-Range 90–110 %, Crit Chance 25 %, Crit Damage 200 %,

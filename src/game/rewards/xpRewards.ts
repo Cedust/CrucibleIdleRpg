@@ -64,7 +64,7 @@ export function gainExperience(
   let level = progression.level;
   let remainingXp = progression.xp + Math.max(Math.trunc(xp), 0);
   let freeAttributePoints = progression.freeAttributePoints;
-  let freeSkillPoints = progression.freeSkillPoints;
+  let freeMasteryPoints = progression.freeMasteryPoints;
 
   while (level < MAX_CHARACTER_LEVEL) {
     const required = xpRequiredForNextLevel(level);
@@ -75,7 +75,7 @@ export function gainExperience(
     remainingXp -= required;
     level += 1;
     freeAttributePoints += 1;
-    freeSkillPoints += 1;
+    freeMasteryPoints += 1;
   }
 
   return {
@@ -83,7 +83,7 @@ export function gainExperience(
     level,
     xp: level === MAX_CHARACTER_LEVEL ? 0 : remainingXp,
     freeAttributePoints,
-    freeSkillPoints,
+    freeMasteryPoints,
   };
 }
 

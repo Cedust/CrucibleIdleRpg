@@ -72,10 +72,11 @@ export const NO_CRIT_NODES: CritNodes = { multiHit: false, splash: false, counte
 export interface AttackContext {
   /**
    * Damage-Range der Waffe — Faktor auf den Grundschaden, **einmal pro Angriff** gewürfelt.
-   * Items kommen in M3; in M1 ist es die Start-Main-Hand
-   * (`MAIN_HAND_DAMAGE_RANGE.common`, src/game/curves/weaponCurves.ts).
+   * Sie stammt aus dem festen Weapon Profile des Charakters.
    */
   damageRange: DamageRange;
+  /** Trefferchance der festen Signaturwaffe; wird vor Range auf 100 % gedeckelt. */
+  precision?: number;
   critNodes: CritNodes;
 }
 
@@ -83,6 +84,8 @@ export interface AttackContext {
 export interface AttackResult {
   /** `undefined`, wenn kein Gegner mehr lebt — dann findet kein Angriff statt. */
   primaryTarget: ActorRef | undefined;
+  /** `false`, wenn der Angriff als Glancing Blow aufgelöst wurde. */
+  cleanHit: boolean;
   /** Der gewürfelte Faktor im Waffenintervall. */
   damageRangeRoll: number;
   /** Roher Grundschaden `Attack × Damage-Range`, Bezugsgröße **jedes** Treffers dieses Zuges. */
@@ -103,6 +106,11 @@ function rollCrit(prng: Prng, critChance: number, enabled: boolean): boolean {
 /** Der Abklingfaktor ist echt kleiner als 1 und wird auf die Obergrenze geklemmt (COMBAT §2.1). */
 export function clampChainFactor(chainFactor: number): number {
   return Math.min(Math.max(chainFactor, 0), MULTI_HIT_CHAIN_FACTOR_CAP);
+}
+
+/** Chancen sind auf das geschlossene Intervall 0–100 % begrenzt. */
+export function clampChance(chance: number): number {
+  return Math.min(Math.max(chance, 0), 1);
 }
 
 /** Baut einen Treffer und wendet dabei die Deckung **seines** Ziels an (COMBAT §2.4). */
@@ -133,8 +141,8 @@ function buildHit(
  * **PRNG-Zugreihenfolge (verbindlich, COMBAT §2.1/§2.5):**
  *
  * ```
- * Damage-Range → Crit (Grundtreffer) → Multi Hit Chance → je Kettentreffer Crit (Multi Hit)
- *              → Splash Chance → je Nebenziel Crit (Splash)
+ * Precision → Damage-Range → bei Clean Crit (Grundtreffer) → Multi Hit Chance → bei Clean je
+ * Kettentreffer Crit (Multi Hit) → Splash Chance → bei Clean je Nebenziel Crit (Splash)
  * ```
  *
  * `Multi Hit Chance` und `Splash Chance` werden **immer** gewürfelt, auch bei Chance `0` — die
@@ -151,20 +159,27 @@ export function resolveCharacterAttack(
   const primary = selectPrimaryTarget(state, attacker);
 
   if (primary === undefined) {
-    return { primaryTarget: undefined, damageRangeRoll: 0, baseDamage: 0, hits: [] };
+    return {
+      primaryTarget: undefined,
+      cleanHit: false,
+      damageRangeRoll: 0,
+      baseDamage: 0,
+      hits: [],
+    };
   }
 
   const { offensive, utility, derived } = attacker.stats;
-  const { damageRange, critNodes } = context;
+  const { damageRange, precision, critNodes } = context;
 
-  // 1. Roher Grundschaden — ein Wurf im Waffenintervall, Bezug jedes Treffers dieses Zuges.
+  // 1. Precision vor Range; der Range-Wurf bleibt auch beim Glancing für stabile PRNG-Züge.
+  const cleanHit = precision === undefined || prng.chance(clampChance(precision));
   const damageRangeRoll = damageRange.min + prng.next() * (damageRange.max - damageRange.min);
-  const baseDamage = derived.attack * damageRangeRoll;
+  const baseDamage = derived.attack * (cleanHit ? damageRangeRoll : damageRange.min);
 
   const hits: Hit[] = [];
 
   // 2. Grundtreffer — crittet immer ohne Knoten (COMBAT §2.1, CHARACTERS §4).
-  const baseCrit = rollCrit(prng, offensive.critChance, true);
+  const baseCrit = rollCrit(prng, offensive.critChance, cleanHit);
   hits.push(
     buildHit(
       'base',
@@ -176,7 +191,7 @@ export function resolveCharacterAttack(
   );
 
   // 3. Multi Hit — ein Chance-Wurf, danach steht die Kette in voller Länge fest.
-  const chainLength = prng.chance(offensive.multiHitChance)
+  const chainLength = prng.chance(clampChance(offensive.multiHitChance))
     ? Math.max(Math.trunc(utility.multiHitChain), 0)
     : 0;
   const chainFactor = clampChainFactor(utility.multiHitChainFactor);
@@ -188,7 +203,7 @@ export function resolveCharacterAttack(
 
   for (let k = 1; k <= chainLength; k += 1) {
     const chained = baseDamage * offensive.multiHitDamage * decay;
-    const crit = rollCrit(prng, offensive.critChance, critNodes.multiHit);
+    const crit = rollCrit(prng, offensive.critChance, cleanHit && critNodes.multiHit);
 
     hits.push(
       buildHit(
@@ -205,18 +220,18 @@ export function resolveCharacterAttack(
   }
 
   // 4. Splash — der Chance-Wurf findet unabhängig davon statt, ob Nebenziele existieren.
-  const splashTargets = prng.chance(offensive.splashChance)
+  const splashTargets = prng.chance(clampChance(offensive.splashChance))
     ? selectSplashTargets(state, primary, utility.splashRadius)
     : [];
 
   for (const target of splashTargets) {
     const splashed = baseDamage * offensive.splashDamage;
-    const crit = rollCrit(prng, offensive.critChance, critNodes.splash);
+    const crit = rollCrit(prng, offensive.critChance, cleanHit && critNodes.splash);
 
     hits.push(
       buildHit('splash', state, target, crit ? splashed * offensive.critDamage : splashed, crit),
     );
   }
 
-  return { primaryTarget: primary.ref, damageRangeRoll, baseDamage, hits };
+  return { primaryTarget: primary.ref, cleanHit, damageRangeRoll, baseDamage, hits };
 }

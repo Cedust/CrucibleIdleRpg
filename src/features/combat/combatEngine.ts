@@ -1,4 +1,4 @@
-import { MAIN_HAND_DAMAGE_RANGE } from '@/game/curves/weaponCurves';
+import { CHARACTERS } from '@/game/characters/characters';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
 import {
   beginRound,
@@ -62,13 +62,13 @@ export interface CombatContext {
 }
 
 /**
- * Der Stand in M1: Start-Main-Hand für alle drei Charaktere, kein Generator-Crit-Knoten, keine
- * Mitigation (docs/backlog/ROADMAP.md). Items und Skilltree ersetzen das später, ohne dass das
- * Schrittwerk davon erfährt.
+ * Die Weapon Foundation: feste Signaturwaffe je Charakter, kein Generator-Crit-Knoten und keine
+ * Mitigation. Mastery ergänzt später nur die Knoten, ohne dass das Schrittwerk davon erfährt.
  */
 export const M1_COMBAT_CONTEXT: CombatContext = {
-  contextFor: () => ({
-    damageRange: MAIN_HAND_DAMAGE_RANGE.common,
+  contextFor: (character) => ({
+    damageRange: CHARACTERS[character.id].weapon.damageRange,
+    precision: CHARACTERS[character.id].weapon.precision,
     critNodes: NO_CRIT_NODES,
   }),
   mitigation: NO_MITIGATION,

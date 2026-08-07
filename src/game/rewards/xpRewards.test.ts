@@ -72,20 +72,20 @@ describe('Charakter-XP und Punkte', () => {
       level: 3,
       xp: 10,
       freeAttributePoints: 3,
-      freeSkillPoints: 3,
+      freeMasteryPoints: 3,
     });
   });
 
   it('kappt Level und Rest-XP bei Level 100', () => {
     const result = gainExperience(
-      { ...createLevelOneProgression(), level: 99, freeAttributePoints: 99, freeSkillPoints: 99 },
+      { ...createLevelOneProgression(), level: 99, freeAttributePoints: 99, freeMasteryPoints: 99 },
       xpRequiredForNextLevel(99) + 999_999,
     );
 
     expect(result.level).toBe(MAX_CHARACTER_LEVEL);
     expect(result.xp).toBe(0);
     expect(result.freeAttributePoints).toBe(100);
-    expect(result.freeSkillPoints).toBe(100);
+    expect(result.freeMasteryPoints).toBe(100);
   });
 
   it('erreicht im 300-Floor-Kalibrierungsfall mit 4,5 Gegnern im Schnitt Level 100', () => {

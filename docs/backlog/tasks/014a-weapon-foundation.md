@@ -1,10 +1,10 @@
 # 014a — Weapon Foundation
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M2      |
-| **Hängt ab von** | 013     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 013    |
 
 ## Ziel
 

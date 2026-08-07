@@ -29,8 +29,7 @@ const characterProgressionSchema = progressionSchema
   .extend({
     freeAttributePoints: z.number().int().nonnegative(),
     attributePoints: attributePointsSchema,
-    freeSkillPoints: z.number().int().nonnegative(),
-    spentSkillPoints: z.number().int().nonnegative(),
+    freeMasteryPoints: z.number().int().nonnegative(),
   })
   .strict()
   .superRefine((character, context) => {
@@ -41,8 +40,8 @@ const characterProgressionSchema = progressionSchema
     if (character.freeAttributePoints + spentAttributes !== character.level) {
       context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Attributpunkte.' });
     }
-    if (character.freeSkillPoints + character.spentSkillPoints !== character.level) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Skillpunkte.' });
+    if (character.freeMasteryPoints !== character.level) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Mastery-Punkte.' });
     }
   });
 
@@ -97,7 +96,7 @@ export const saveSchemaV2 = saveSchemaV1
 
 export type SaveDataV2 = z.infer<typeof saveSchemaV2>;
 
-/** Save v3 ergänzt den Charakterfortschritt um freie und verteilte Punkte aus Task 013. */
+/** Aktuelles Pre-Release-Schema mit Attribut- und freien Mastery-Punkten. */
 export const saveSchemaV3 = saveSchemaV2
   .omit({ version: true, characters: true })
   .extend({
@@ -154,8 +153,7 @@ export function createLevelOneProgression(): CharacterProgressionState {
     xp: 0,
     freeAttributePoints: 1,
     attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
-    freeSkillPoints: 1,
-    spentSkillPoints: 0,
+    freeMasteryPoints: 1,
   };
 }
 

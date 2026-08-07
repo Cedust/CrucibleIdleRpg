@@ -59,6 +59,13 @@ export interface Range {
  */
 export type DamageRange = Range;
 
+/** Feste Signaturwaffe eines Charakters, kein ausrüstbares Item. */
+export interface WeaponProfile {
+  baseDamage: number;
+  damageRange: DamageRange;
+  precision: number;
+}
+
 /** Core-Stats speisen die Derived Stats über je eigene Kurven (SPEC §3.0). */
 export interface CoreStats {
   might: number;
@@ -100,9 +107,7 @@ export interface CharacterProgressionState {
   xp: number;
   freeAttributePoints: number;
   attributePoints: AttributePoints;
-  freeSkillPoints: number;
-  /** Bis Task 014 liegt nur die Summe der bereits investierten Skillpunkte vor. */
-  spentSkillPoints: number;
+  freeMasteryPoints: number;
 }
 
 /**
@@ -150,7 +155,9 @@ export interface CharacterDefinition {
   role: Role;
   /** Startwerte auf Level 1, vor Attributen und Ausrüstung. */
   baseCore: CoreStats;
-  baseDerived: DerivedStats;
+  /** Weapon Base Damage speist Attack; Defense und Health starten als feste Charakterwerte. */
+  baseDerived: Omit<DerivedStats, 'attack'>;
+  weapon: WeaponProfile;
   baseOffensive: OffensiveStats;
   baseDefensive: DefensiveStats;
   baseUtility: UtilityStats;

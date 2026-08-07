@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { CHARACTERS } from '@/game/characters/characters';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
 import { ENEMY_ATTACK_MULTIPLIER, ENEMY_HEALTH_MULTIPLIER } from '@/game/curves/enemyCurves';
-import { MAIN_HAND_DAMAGE_RANGE } from '@/game/curves/weaponCurves';
 import { ENEMIES } from '@/game/enemies/enemies';
 import type { EnemyDefinition, FloorId, FormationDefinition } from '@/game/types';
 import { FLOOR_FORMATIONS, FORMATIONS } from './formations';
@@ -107,11 +106,11 @@ describe('Plausibilität A1-D1-01', () => {
 
   /** Ausgehender Team-Schaden pro Runde: je Charakter Attack × Damage-Range-Mitte × Crit-Faktor. */
   const teamSchadenProRunde = Object.values(CHARACTERS).reduce((summe, charakter) => {
-    const range = MAIN_HAND_DAMAGE_RANGE.common;
+    const range = charakter.weapon.damageRange;
     const rangeMitte = (range.min + range.max) / 2;
     const critFaktor =
       1 + charakter.baseOffensive.critChance * (charakter.baseOffensive.critDamage - 1);
-    return summe + charakter.baseDerived.attack * rangeMitte * critFaktor;
+    return summe + charakter.weapon.baseDamage * rangeMitte * critFaktor;
   }, 0);
 
   const gegnerHealth = gegner.reduce((summe, e) => summe + e.health * healthMultiplier, 0);

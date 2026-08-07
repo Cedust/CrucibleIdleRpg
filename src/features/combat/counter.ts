@@ -8,7 +8,7 @@ import {
   type CombatState,
 } from './combatState';
 import type { IncomingDamageResult } from './damagePipeline';
-import type { AttackContext, Hit } from './outgoingDamage';
+import { clampChance, type AttackContext, type Hit } from './outgoingDamage';
 
 /**
  * Counter — der reaktive Gegenangriff eines getroffenen Charakters
@@ -49,6 +49,8 @@ export interface CounterResult {
   source: ActorRef;
   /** `undefined`, wenn der `Counter Chance`-Wurf verloren ging. */
   hit: Hit | undefined;
+  /** `false`, wenn der erfolgreiche Counter als Glancing Blow aufgelöst wurde. */
+  cleanHit: boolean;
   /** Der eigens gewürfelte Faktor im Waffenintervall; `0` ohne Counter. */
   damageRangeRoll: number;
   /** Der eigens gewürfelte rohe Grundschaden `Attack × Damage-Range`; `0` ohne Counter. */
@@ -61,7 +63,8 @@ export interface CounterResult {
  * **PRNG-Zugreihenfolge (verbindlich, COMBAT §2.1/§2.5):**
  *
  * ```
- * Counter Chance → bei Erfolg Damage-Range → bei freigeschaltetem Valor-Knoten Counter Crit
+ * Counter Chance → bei Erfolg Precision → Damage-Range → bei Clean und freigeschaltetem
+ * Valor-Knoten Counter Crit
  * ```
  *
  * Ein Charakter countert pro Gegner-Angriff **höchstens einmal**; die Sequenz enthält je
@@ -81,22 +84,25 @@ export function resolveCounter(
   const { damageRange, critNodes } = context;
 
   // 1. Counter Chance — der einzige Wurf, der immer stattfindet.
-  if (!prng.chance(offensive.counterChance)) {
-    return { source, hit: undefined, damageRangeRoll: 0, baseDamage: 0 };
+  if (!prng.chance(clampChance(offensive.counterChance))) {
+    return { source, hit: undefined, cleanHit: false, damageRangeRoll: 0, baseDamage: 0 };
   }
 
-  // 2. Damage-Range — eigener Wurf, unabhängig vom Grundschaden des eigenen Zuges.
+  // 2. Precision vor Range; Glancing zieht Range trotzdem und verwendet danach MIN RNG.
+  const cleanHit = context.precision === undefined || prng.chance(clampChance(context.precision));
   const damageRangeRoll = damageRange.min + prng.next() * (damageRange.max - damageRange.min);
-  const baseDamage = character.stats.derived.attack * damageRangeRoll;
+  const baseDamage =
+    character.stats.derived.attack * (cleanHit ? damageRangeRoll : damageRange.min);
 
-  // 3. Counter Crit — nur bei freigeschaltetem Valor-Knoten.
-  const crit = critNodes.counter && prng.chance(offensive.critChance);
+  // 3. Counter Crit — nur bei Clean und freigeschaltetem Valor-Knoten.
+  const crit = cleanHit && critNodes.counter && prng.chance(clampChance(offensive.critChance));
   const rawDamage = crit
     ? baseDamage * offensive.counterDamage * offensive.critDamage
     : baseDamage * offensive.counterDamage;
 
   return {
     source,
+    cleanHit,
     hit: {
       kind: 'counter',
       target: target.ref,

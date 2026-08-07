@@ -13,7 +13,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDefinition> = {
     name: 'Korvin',
     role: 'tank',
     baseCore: { might: 0, toughness: 0, vitality: 0 },
-    baseDerived: { attack: 12, defense: 5, health: 320 },
+    baseDerived: { defense: 5, health: 320 },
+    weapon: { baseDamage: 14, damageRange: { min: 0.7, max: 1.3 }, precision: 0.7 },
     baseOffensive: {
       critChance: 0.05,
       critDamage: 1.5,
@@ -32,7 +33,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDefinition> = {
     name: 'Rhaya',
     role: 'melee',
     baseCore: { might: 0, toughness: 0, vitality: 0 },
-    baseDerived: { attack: 18, defense: 3, health: 220 },
+    baseDerived: { defense: 3, health: 220 },
+    weapon: { baseDamage: 18, damageRange: { min: 0.8, max: 1.2 }, precision: 0.8 },
     baseOffensive: {
       critChance: 0.05,
       critDamage: 1.5,
@@ -51,7 +53,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDefinition> = {
     name: 'Quinn',
     role: 'ranged',
     baseCore: { might: 0, toughness: 0, vitality: 0 },
-    baseDerived: { attack: 20, defense: 3, health: 200 },
+    baseDerived: { defense: 3, health: 200 },
+    weapon: { baseDamage: 20, damageRange: { min: 0.9, max: 1.1 }, precision: 0.9 },
     baseOffensive: {
       critChance: 0.05,
       critDamage: 1.5,

@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
-import type { CharacterId, DefensiveStats, Role } from '@/game/types';
-import type { Prng } from '@/shared/utils/prng';
 import type { CombatCharacter } from './combatState';
 import {
   defenseDamageFactor,
@@ -11,6 +9,7 @@ import {
   resolveEnemyAttack,
   resolveIncomingDamage,
 } from './damagePipeline';
+import { characterFixture, scriptedPrng, type CharacterFixture } from './testFixtures';
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft werden **Summen-Erhaltung**,
@@ -18,86 +17,13 @@ import {
  * (docs/backlog/README.md#4-umgang-mit-offenen-balancing-werten).
  */
 
-/**
- * Ein gestellter PRNG: liefert die Werte in der übergebenen Reihenfolge und **protokolliert
- * jeden Zug**. Das Protokoll ist die Absicherung der verbindlichen Zugreihenfolge — ein
- * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
- */
-interface ScriptedPrng extends Prng {
-  readonly draws: readonly string[];
-}
-
-function scriptedPrng(values: readonly number[]): ScriptedPrng {
-  const draws: string[] = [];
-  let index = 0;
-
-  const take = (label: string): number => {
-    const value = values[index];
-
-    if (value === undefined) {
-      throw new Error(`PRNG-Zug ${index + 1} (${label}) ist nicht gestellt`);
-    }
-
-    index += 1;
-    draws.push(label);
-
-    return value;
-  };
-
-  return {
-    seed: 0,
-    draws,
-    next: () => take('damageRange'),
-    nextInt: (min, max) => min + Math.floor(take('nextInt') * (max - min + 1)),
-    chance: (p) => take(`chance:${p}`) < p,
-  };
-}
-
-interface CharacterSetup {
-  id: CharacterId;
-  role: Role;
-  slotIndex: number;
-  defense?: number;
-  health?: number;
-  maxHealth?: number;
-  barrier?: number;
-  defensive?: Partial<DefensiveStats>;
-}
-
-function character(setup: CharacterSetup): CombatCharacter {
-  const maxHealth = setup.maxHealth ?? 1000;
-
-  return {
-    id: setup.id,
-    name: setup.id,
-    role: setup.role,
-    slotIndex: setup.slotIndex,
-    stats: {
-      core: { might: 0, toughness: 0, vitality: 0 },
-      derived: { attack: 100, defense: setup.defense ?? 0, health: maxHealth },
-      offensive: {
-        critChance: 0,
-        critDamage: 1,
-        multiHitChance: 0,
-        multiHitDamage: 0,
-        splashChance: 0,
-        splashDamage: 0,
-        counterChance: 0,
-        counterDamage: 0,
-      },
-      defensive: {
-        barrier: setup.barrier ?? 0,
-        blockChance: 0,
-        evasion: 0,
-        regeneration: 0,
-        ...setup.defensive,
-      },
-      utility: { initiative: 10, multiHitChain: 1, multiHitChainFactor: 0.4, splashRadius: 1 },
-    },
-    health: setup.health ?? maxHealth,
-    maxHealth,
-    barrier: setup.barrier ?? 0,
-  };
+/** Profil dieser Datei: rein defensiv, alle Offensiv-Stats neutralisiert. */
+function character(setup: CharacterFixture): CombatCharacter {
+  return characterFixture({
+    ...setup,
+    offensive: { critDamage: 1, multiHitDamage: 0, splashDamage: 0, counterDamage: 0 },
+    utility: { multiHitChain: 1, multiHitChainFactor: 0.4 },
+  });
 }
 
 /** Summe der verteilten Anteile — die Größe, die exakt `S` bleiben muss. */

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { Lane, Role } from '@/game/types';
+import type { Role } from '@/game/types';
 import { applyBulwark, bulwarkDamageFactor, bulwarkMalus } from './bulwark';
 import type { CombatEnemy } from './combatState';
+import { enemyFixture } from './testFixtures';
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft wird die **multiplikative Stapelung**,
@@ -14,21 +15,16 @@ function enemy(
   bulwarkContribution: number,
   health = 50,
 ): CombatEnemy {
-  const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
-
-  return {
-    definitionId: 'ashenGhoul',
-    name: `Enemy ${formationIndex}`,
-    role,
-    lane,
+  return enemyFixture({
     formationIndex,
+    role,
+    bulwarkContribution,
     health,
     maxHealth: 50,
     attack: 10,
     accuracy: 0.5,
     initiative: 10,
-    bulwarkContribution,
-  };
+  });
 }
 
 describe('Bulwark — Test-Vektor aus COMBAT §2.4', () => {

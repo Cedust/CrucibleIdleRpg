@@ -1,10 +1,10 @@
 # 010 — Testqualität: Invarianten statt Zahlen-Pins
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | mittel  |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | mittel |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -49,14 +49,15 @@ Neue Testabdeckung für Mastery-Kampfpfade — [002](002-mastery-kampfintegratio
 
 ## Akzeptanzkriterien
 
-- [ ] Kurven-Tests prüfen Länge (300), strikte Monotonie, Accuracy-Cap und Multiplier > 1.
-- [ ] Zahlen-Pins in `xpRewards.test.ts`/`mastery.test.ts` sind über die API bzw. als
+- [x] Kurven-Tests prüfen Länge (300), strikte Monotonie, Accuracy-Cap und Multiplier > 1.
+- [x] Zahlen-Pins in `xpRewards.test.ts`/`mastery.test.ts` sind über die API bzw. als
       Regel-Invariante ausgedrückt.
-- [ ] Die `CHARACTERS`-Assertion prüft `TEAM`.
-- [ ] Die Casts in `formations.test.ts` sind durch Guards/`toBeDefined()` ersetzt.
-- [ ] Der `beginRun`-Mock wird per `try/finally` oder `beforeEach` restauriert.
-- [ ] `scriptedPrng` und die Engine-Test-Factories liegen in einem gemeinsamen Helper-Modul.
-- [ ] Der Mastery-Katalog-Test prüft Referenz-Existenz und Exclusive-Symmetrie.
+- [x] Die `CHARACTERS`-Assertion prüft `TEAM`.
+- [x] Die Casts in `formations.test.ts` sind durch Guards/`toBeDefined()` ersetzt.
+- [x] Der `beginRun`-Mock wird per `try/finally` oder `beforeEach` restauriert.
+- [x] `scriptedPrng` und die Engine-Test-Factories liegen in einem gemeinsamen Helper-Modul
+      (`testFixtures.ts`); die Testdateien halten ihre Profile als dünne Wrapper.
+- [x] Der Mastery-Katalog-Test prüft Referenz-Existenz und Exclusive-Symmetrie.
 
 ## Betroffene Dateien
 

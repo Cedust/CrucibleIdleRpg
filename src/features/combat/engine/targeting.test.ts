@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CharacterId, CharacterStats, Lane, Role } from '@/game/types';
+import type { CharacterId, Role } from '@/game/types';
 import type { CombatCharacter, CombatEnemy, CombatState } from './combatState';
 import {
   attackableEnemies,
@@ -9,6 +9,7 @@ import {
   selectSplashTargets,
   type EnemyTarget,
 } from './targeting';
+import { characterFixture, combatStateFixture, enemyFixture } from './testFixtures';
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft wird die **Auswahlregel**, nicht das
@@ -16,36 +17,8 @@ import {
  * Hand gestellt, damit Rollen-Lock, Taunt und Gleichstände erzwingbar sind.
  */
 
-function stats(splashRadius = 1): CharacterStats {
-  return {
-    core: { might: 0, toughness: 0, vitality: 0 },
-    derived: { attack: 100, defense: 10, health: 100 },
-    offensive: {
-      critChance: 0,
-      critDamage: 1,
-      multiHitChance: 0,
-      multiHitDamage: 0,
-      splashChance: 0,
-      splashDamage: 0,
-      counterChance: 0,
-      counterDamage: 0,
-    },
-    defensive: { barrier: 0, blockChance: 0, evasion: 0, regeneration: 0 },
-    utility: { initiative: 10, multiHitChain: 1, multiHitChainFactor: 0.5, splashRadius },
-  };
-}
-
 function character(id: CharacterId, role: Role, slotIndex = 0): CombatCharacter {
-  return {
-    id,
-    name: id,
-    role,
-    slotIndex,
-    stats: stats(),
-    health: 100,
-    maxHealth: 100,
-    barrier: 0,
-  };
+  return characterFixture({ id, role, slotIndex, health: 100, maxHealth: 100 });
 }
 
 function enemy(
@@ -54,35 +27,19 @@ function enemy(
   role: Role = 'melee',
   health = 50,
 ): CombatEnemy {
-  const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
-
-  return {
-    definitionId: 'ashenGhoul',
-    name: `Enemy ${formationIndex}`,
-    role,
-    lane,
+  return enemyFixture({
     formationIndex,
+    initiative,
+    role,
     health,
     maxHealth: 50,
     attack: 10,
     accuracy: 0.5,
-    initiative,
-    bulwarkContribution: 0,
-  };
+  });
 }
 
 function state(enemies: CombatEnemy[]): CombatState {
-  return {
-    floorId: 'A1-D1-01',
-    floorIndex: 0,
-    floorSeed: 1,
-    combatPrngState: 1,
-    characters: [],
-    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
-    enemies,
-    round: 1,
-    pending: [],
-  };
+  return combatStateFixture([], enemies);
 }
 
 function slots(targets: readonly EnemyTarget[]): number[] {

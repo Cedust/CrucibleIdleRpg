@@ -99,8 +99,11 @@ describe('Plausibilität A1-D1-01', () => {
   if (startFormationId === undefined) throw new Error('Formation fehlt für A1-D1-01');
   const formation = FORMATIONS[startFormationId];
   const gegner = besetzung(formation);
-  const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX] as number;
-  const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX] as number;
+  const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX];
+  const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX];
+  if (healthMultiplier === undefined || attackMultiplier === undefined) {
+    throw new Error('Floor-Kurven decken Index 0 nicht ab');
+  }
 
   /** Ausgehender Team-Schaden pro Runde: je Charakter Attack × Damage-Range-Mitte × Crit-Faktor. */
   const teamSchadenProRunde = Object.values(CHARACTERS).reduce((summe, charakter) => {

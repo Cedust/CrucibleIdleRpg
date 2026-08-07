@@ -58,6 +58,17 @@ describe('weapon mastery node ids', () => {
       }
     }
   });
+
+  it('keeps every exclusive master pair symmetric', () => {
+    for (const characterId of CHARACTER_IDS) {
+      const nodes = nodesFor(characterId);
+      for (const node of nodes) {
+        if (node.exclusiveWith === undefined) continue;
+        const other = nodes.find((candidate) => candidate.id === node.exclusiveWith);
+        expect(other?.exclusiveWith, `${node.id} ↔ ${node.exclusiveWith}`).toBe(node.id);
+      }
+    }
+  });
 });
 
 describe('effect texts match the declared balance (mastery balancing declarative)', () => {
@@ -214,12 +225,17 @@ describe('purchaseMasteryNode & respecMasteryDiscipline', () => {
 });
 
 describe('weapon mastery rules', () => {
-  it('contains all five disciplines and preserves the 229-rank capacity', () => {
+  it('contains all five disciplines and derives capacity from the exclusive master pairs', () => {
     const nodes = nodesFor('korvin');
     expect(new Set(nodes.map((node) => node.discipline))).toEqual(
       new Set(['finesse', 'tempest', 'dominance', 'valor', 'weapon']),
     );
-    expect(maximumInvestableCapacity('korvin')).toBe(229);
+
+    // Regel-Invariante statt Zahlen-Pin: Jedes exklusive Master-Paar trägt genau einen Rang.
+    const totalRanks = nodes.reduce((total, node) => total + node.maxRank, 0);
+    const exclusivePairs = nodes.filter((node) => node.exclusiveWith !== undefined).length / 2;
+    expect(exclusivePairs).toBeGreaterThan(0);
+    expect(maximumInvestableCapacity('korvin')).toBe(totalRanks - exclusivePairs);
   });
 
   it('enforces rank gates, prerequisites, master choices, caps, and the shared capstone lock', () => {

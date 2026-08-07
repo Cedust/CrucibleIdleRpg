@@ -34,12 +34,16 @@ describe('useDungeonRunStore', () => {
     const beginRun = saveStore.getState().beginRun;
     saveStore.setState({ beginRun: vi.fn(() => Promise.reject(new Error('save failed'))) });
 
-    await expect(useDungeonRunStore.getState().startRun('A1-D1')).resolves.toBe(false);
+    // `finally` restauriert den Mock auch bei fehlgeschlagener Assertion.
+    try {
+      await expect(useDungeonRunStore.getState().startRun('A1-D1')).resolves.toBe(false);
 
-    expect(useDungeonRunStore.getState().mode).toBe('selection');
-    expect(useCombatStore.getState().combat).toBeNull();
-    expect(saveStore.getState().data?.runCounter).toBe(0);
-    saveStore.setState({ beginRun });
+      expect(useDungeonRunStore.getState().mode).toBe('selection');
+      expect(useCombatStore.getState().combat).toBeNull();
+      expect(saveStore.getState().data?.runCounter).toBe(0);
+    } finally {
+      saveStore.setState({ beginRun });
+    }
   });
 
   it('rejects a locked dungeon without persisting a run', async () => {

@@ -20,18 +20,26 @@ const EQUAL_DAMAGE = { korvin: 1, rhaya: 1, quinn: 1 } as const;
 describe('XP-Tabellen', () => {
   it('decken genau die Grenzen von 300 Floors und 100 Levels ab', () => {
     expect(XP_PER_ENEMY_BY_FLOOR).toHaveLength(300);
-    expect(XP_PER_ENEMY_BY_FLOOR[0]).toBe(12);
-    expect(XP_PER_ENEMY_BY_FLOOR.at(-1)).toBe(82_700);
     expect(XP_REQUIRED_PER_LEVEL).toHaveLength(99);
-    expect(xpRequiredForNextLevel(1)).toBe(75);
+    // Clamp an den Rändern über die API statt gepinnter Tabellenwerte:
+    expect(xpPerEnemyForFloor(-1)).toBe(xpPerEnemyForFloor(0));
+    expect(xpPerEnemyForFloor(300)).toBe(xpPerEnemyForFloor(299));
+    expect(xpRequiredForNextLevel(1)).toBe(XP_REQUIRED_PER_LEVEL[0]);
     expect(xpRequiredForNextLevel(100)).toBe(0);
-    expect(xpPerEnemyForFloor(-1)).toBe(12);
-    expect(xpPerEnemyForFloor(300)).toBe(82_700);
+  });
+
+  it('wachsen beide Tabellen monoton mit positiven Einträgen', () => {
+    for (const table of [XP_PER_ENEMY_BY_FLOOR, XP_REQUIRED_PER_LEVEL]) {
+      expect(table[0]).toBeGreaterThan(0);
+      for (let index = 1; index < table.length; index += 1) {
+        expect(table[index], `Index ${index}`).toBeGreaterThanOrEqual(table[index - 1] ?? Infinity);
+      }
+    }
   });
 
   it('baut den Pool aus dem Wert pro Gegner und der tatsächlichen Gegnerzahl', () => {
-    expect(floorXpPool(0, 4)).toBe(48);
-    expect(floorXpPool(299, 6)).toBe(496_200);
+    expect(floorXpPool(0, 4)).toBe(4 * xpPerEnemyForFloor(0));
+    expect(floorXpPool(299, 6)).toBe(6 * xpPerEnemyForFloor(299));
   });
 });
 
@@ -66,7 +74,11 @@ describe('distributeFloorXp', () => {
 
 describe('Charakter-XP und Punkte', () => {
   it('verarbeitet mehrere Level-Ups mit je einem freien Attribut- und Skillpunkt', () => {
-    const result = gainExperience(createLevelOneProgression(), 75 + 82 + 10);
+    // Genau zwei Level-Ups plus 10 Rest-XP, über die API statt gepinnter Tabellenwerte.
+    const result = gainExperience(
+      createLevelOneProgression(),
+      xpRequiredForNextLevel(1) + xpRequiredForNextLevel(2) + 10,
+    );
 
     expect(result).toMatchObject({
       level: 3,

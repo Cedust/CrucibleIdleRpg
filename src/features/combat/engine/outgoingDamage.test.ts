@@ -1,15 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MULTI_HIT_CHAIN_FACTOR_CAP } from '@/game/curves/combatConstants';
-import type {
-  CharacterId,
-  CharacterStats,
-  DamageRange,
-  Lane,
-  OffensiveStats,
-  Role,
-  UtilityStats,
-} from '@/game/types';
-import type { Prng } from '@/shared/utils/prng';
+import type { CharacterId, DamageRange, OffensiveStats, Role, UtilityStats } from '@/game/types';
 import type { CombatCharacter, CombatEnemy, CombatState } from './combatState';
 import {
   clampChainFactor,
@@ -20,6 +11,7 @@ import {
   type Hit,
   type MasteryEffects,
 } from './outgoingDamage';
+import { characterFixture, combatStateFixture, enemyFixture, scriptedPrng } from './testFixtures';
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft werden **Zugreihenfolge**, der Bezug
@@ -27,83 +19,29 @@ import {
  * (docs/backlog/README.md#4-umgang-mit-offenen-balancing-werten).
  */
 
-/**
- * Ein gestellter PRNG: liefert die Werte in der übergebenen Reihenfolge und **protokolliert
- * jeden Zug**. Das Protokoll ist die Absicherung der verbindlichen Zugreihenfolge — ein
- * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
- */
-interface ScriptedPrng extends Prng {
-  readonly draws: readonly string[];
-}
-
-function scriptedPrng(values: readonly number[]): ScriptedPrng {
-  const draws: string[] = [];
-  let index = 0;
-
-  const take = (label: string): number => {
-    const value = values[index];
-
-    if (value === undefined) {
-      throw new Error(`PRNG-Zug ${index + 1} (${label}) ist nicht gestellt`);
-    }
-
-    index += 1;
-    draws.push(label);
-
-    return value;
-  };
-
-  return {
-    seed: 0,
-    draws,
-    next: () => take('damageRange'),
-    nextInt: (min, max) => min + Math.floor(take('nextInt') * (max - min + 1)),
-    chance: (p) => take(`chance:${p}`) < p,
-  };
-}
-
-function stats(offensive: Partial<OffensiveStats>, utility: Partial<UtilityStats>): CharacterStats {
-  return {
-    core: { might: 0, toughness: 0, vitality: 0 },
-    derived: { attack: 100, defense: 10, health: 100 },
-    offensive: {
-      critChance: 0.25,
-      critDamage: 2,
-      multiHitChance: 0.4,
-      multiHitDamage: 0.5,
-      splashChance: 0.3,
-      splashDamage: 0.4,
-      counterChance: 0,
-      counterDamage: 0,
-      ...offensive,
-    },
-    defensive: { barrier: 0, blockChance: 0, evasion: 0, regeneration: 0 },
-    utility: {
-      initiative: 10,
-      multiHitChain: 2,
-      multiHitChainFactor: 0.6,
-      splashRadius: 1,
-      ...utility,
-    },
-  };
-}
-
+/** Profil dieser Datei: Generator-Chancen aktiv, Angreifer mit 100/100 Health in Slot 1. */
 function character(
   role: Role = 'melee',
   offensive: Partial<OffensiveStats> = {},
   utility: Partial<UtilityStats> = {},
   id: CharacterId = 'rhaya',
 ): CombatCharacter {
-  return {
+  return characterFixture({
     id,
-    name: id,
     role,
     slotIndex: 1,
-    stats: stats(offensive, utility),
+    defense: 10,
     health: 100,
     maxHealth: 100,
-    barrier: 0,
-  };
+    offensive: {
+      critChance: 0.25,
+      multiHitChance: 0.4,
+      splashChance: 0.3,
+      counterDamage: 0,
+      ...offensive,
+    },
+    utility,
+  });
 }
 
 function enemy(
@@ -112,35 +50,19 @@ function enemy(
   bulwarkContribution = 0,
   health = 5000,
 ): CombatEnemy {
-  const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
-
-  return {
-    definitionId: 'ashenGhoul',
-    name: `Enemy ${formationIndex}`,
-    role: lane === 'frontline' ? 'melee' : 'ranged',
-    lane,
+  return enemyFixture({
     formationIndex,
+    initiative,
+    bulwarkContribution,
     health,
     maxHealth: 5000,
     attack: 10,
     accuracy: 0.5,
-    initiative,
-    bulwarkContribution,
-  };
+  });
 }
 
 function state(enemies: CombatEnemy[]): CombatState {
-  return {
-    floorId: 'A1-D1-01',
-    floorIndex: 0,
-    floorSeed: 1,
-    combatPrngState: 1,
-    characters: [],
-    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
-    enemies,
-    round: 1,
-    pending: [],
-  };
+  return combatStateFixture([], enemies);
 }
 
 /** 90 %–110 % wie im Test-Vektor der Spec. */

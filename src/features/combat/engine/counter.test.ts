@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { CHARACTERS } from '@/game/characters/characters';
-import type {
-  CharacterId,
-  DamageRange,
-  DefensiveStats,
-  Lane,
-  OffensiveStats,
-  Role,
-} from '@/game/types';
+import type { DamageRange } from '@/game/types';
 import { MASTERY_IDS } from '@/game/weaponMastery/mastery';
-import type { Prng } from '@/shared/utils/prng';
 import type { CombatCharacter, CombatEnemy, CombatState } from './combatState';
 import { resolveCounter, resolveCounters } from './counter';
 import { NO_MITIGATION, resolveEnemyAttack } from './damagePipeline';
 import { masteryContextFor } from './masteryCombat';
 import { NO_CRIT_NODES, type AttackContext, type CritNodes } from './outgoingDamage';
+import {
+  characterFixture,
+  combatStateFixture,
+  enemyFixture,
+  scriptedPrng,
+  type CharacterFixture,
+  type ScriptedPrng,
+} from './testFixtures';
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft werden **Auslösung**, **Ziel**,
@@ -22,113 +22,33 @@ import { NO_CRIT_NODES, type AttackContext, type CritNodes } from './outgoingDam
  * (docs/backlog/README.md#4-umgang-mit-offenen-balancing-werten).
  */
 
-/**
- * Ein gestellter PRNG: liefert die Werte in der übergebenen Reihenfolge und **protokolliert
- * jeden Zug**. Das Protokoll ist die Absicherung der verbindlichen Zugreihenfolge — ein
- * zusätzlicher oder entfallener Wurf fällt damit auf (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
- */
-interface ScriptedPrng extends Prng {
-  readonly draws: readonly string[];
-}
-
-function scriptedPrng(values: readonly number[]): ScriptedPrng {
-  const draws: string[] = [];
-  let index = 0;
-
-  const take = (label: string): number => {
-    const value = values[index];
-
-    if (value === undefined) {
-      throw new Error(`PRNG-Zug ${index + 1} (${label}) ist nicht gestellt`);
-    }
-
-    index += 1;
-    draws.push(label);
-
-    return value;
-  };
-
-  return {
-    seed: 0,
-    draws,
-    next: () => take('damageRange'),
-    nextInt: (min, max) => min + Math.floor(take('nextInt') * (max - min + 1)),
-    chance: (p) => take(`chance:${p}`) < p,
-  };
-}
-
-interface CharacterSetup {
-  id: CharacterId;
-  role: Role;
-  slotIndex: number;
-  health?: number;
-  offensive?: Partial<OffensiveStats>;
-  defensive?: Partial<DefensiveStats>;
-  masteryRanks?: Readonly<Record<string, number>>;
-  counterStacks?: number;
-}
-
-function character(setup: CharacterSetup): CombatCharacter {
-  return {
-    id: setup.id,
-    name: setup.id,
-    role: setup.role,
-    slotIndex: setup.slotIndex,
-    stats: {
-      core: { might: 0, toughness: 0, vitality: 0 },
-      derived: { attack: 100, defense: 0, health: 1000 },
-      offensive: {
-        critChance: 0.25,
-        critDamage: 2,
-        multiHitChance: 0.4,
-        multiHitDamage: 0.5,
-        splashChance: 0.3,
-        splashDamage: 0.4,
-        counterChance: 0.2,
-        counterDamage: 0.6,
-        ...setup.offensive,
-      },
-      defensive: { barrier: 0, blockChance: 0, evasion: 0, regeneration: 0, ...setup.defensive },
-      utility: { initiative: 10, multiHitChain: 2, multiHitChainFactor: 0.6, splashRadius: 1 },
+/** Profil dieser Datei: alle Generator-Chancen aktiv, Counter Chance 20 %. */
+function character(setup: CharacterFixture): CombatCharacter {
+  return characterFixture({
+    ...setup,
+    offensive: {
+      critChance: 0.25,
+      multiHitChance: 0.4,
+      splashChance: 0.3,
+      counterChance: 0.2,
+      ...setup.offensive,
     },
-    health: setup.health ?? 1000,
-    maxHealth: 1000,
-    barrier: 0,
-    masteryRanks: setup.masteryRanks,
-    counterStacks: setup.counterStacks ?? 0,
-  };
+  });
 }
 
 function enemy(formationIndex: number, bulwarkContribution = 0, health = 5000): CombatEnemy {
-  const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
-
-  return {
-    definitionId: 'ashenGhoul',
-    name: `Enemy ${formationIndex}`,
-    role: lane === 'frontline' ? 'melee' : 'ranged',
-    lane,
+  return enemyFixture({
     formationIndex,
     health,
     maxHealth: 5000,
     attack: 300,
-    accuracy: 1,
     initiative: 10 - formationIndex,
     bulwarkContribution,
-  };
+  });
 }
 
 function state(characters: CombatCharacter[], enemies: CombatEnemy[]): CombatState {
-  return {
-    floorId: 'A1-D1-01',
-    floorIndex: 0,
-    floorSeed: 1,
-    combatPrngState: 1,
-    characters,
-    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
-    enemies,
-    round: 1,
-    pending: [],
-  };
+  return combatStateFixture(characters, enemies);
 }
 
 /** 90 %–110 % wie im Test-Vektor der Spec. */

@@ -2,15 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import { MASTERY_IDS } from '@/game/weaponMastery/mastery';
-import type {
-  CharacterId,
-  DamageRange,
-  DefensiveStats,
-  Lane,
-  OffensiveStats,
-  Role,
-  UtilityStats,
-} from '@/game/types';
+import type { DamageRange } from '@/game/types';
 import { neutralProgression } from './characterStats';
 import {
   buildCombatState,
@@ -32,6 +24,12 @@ import {
 import type { CombatEvent, CombatEventType } from './combatEvents';
 import { NO_MITIGATION } from './damagePipeline';
 import { NO_CRIT_NODES } from './outgoingDamage';
+import {
+  characterFixture as character,
+  combatStateFixture,
+  enemyFixture,
+  type EnemyFixture,
+} from './testFixtures';
 
 /**
  * Geprüft wird die **Struktur** des Schrittwerks — Reinheit, Reproduzierbarkeit, Zug-Block,
@@ -50,105 +48,20 @@ const contextWith = (mitigation = NO_MITIGATION): CombatContext => ({
   mitigation,
 });
 
-interface CharacterSetup {
-  id: CharacterId;
-  role: Role;
-  slotIndex: number;
-  attack?: number;
-  health?: number;
-  maxHealth?: number;
-  offensive?: Partial<OffensiveStats>;
-  defensive?: Partial<DefensiveStats>;
-  utility?: Partial<UtilityStats>;
-  masteryRanks?: Readonly<Record<string, number>>;
-  guarded?: boolean;
-  zeroing?: { target: number; stacks: number };
-  counterStacks?: number;
-}
-
-function character(setup: CharacterSetup): CombatCharacter {
-  const maxHealth = setup.maxHealth ?? 1000;
-
-  return {
-    id: setup.id,
-    name: setup.id,
-    role: setup.role,
-    slotIndex: setup.slotIndex,
-    stats: {
-      core: { might: 0, toughness: 0, vitality: 0 },
-      derived: { attack: setup.attack ?? 100, defense: 0, health: maxHealth },
-      offensive: {
-        critChance: 0,
-        critDamage: 2,
-        multiHitChance: 0,
-        multiHitDamage: 0.5,
-        splashChance: 0,
-        splashDamage: 0.4,
-        counterChance: 0,
-        counterDamage: 0.6,
-        ...setup.offensive,
-      },
-      defensive: { barrier: 0, blockChance: 0, evasion: 0, regeneration: 0, ...setup.defensive },
-      utility: {
-        initiative: 10,
-        multiHitChain: 2,
-        multiHitChainFactor: 0.6,
-        splashRadius: 1,
-        ...setup.utility,
-      },
-    },
-    health: setup.health ?? maxHealth,
-    maxHealth,
-    barrier: 0,
-    masteryRanks: setup.masteryRanks,
-    guarded: setup.guarded ?? false,
-    zeroing: setup.zeroing,
-    counterStacks: setup.counterStacks ?? 0,
-  };
-}
-
-interface EnemySetup {
-  formationIndex: number;
-  health?: number;
-  attack?: number;
-  initiative?: number;
-}
-
-function enemy(setup: EnemySetup): CombatEnemy {
-  const lane: Lane = setup.formationIndex < 3 ? 'frontline' : 'backline';
-  const health = setup.health ?? 100_000;
-
-  return {
-    definitionId: 'ashenGhoul',
-    name: `Enemy ${setup.formationIndex}`,
-    role: lane === 'frontline' ? 'melee' : 'ranged',
-    lane,
-    formationIndex: setup.formationIndex,
-    health,
-    maxHealth: health,
-    attack: setup.attack ?? 30,
-    accuracy: 1,
-    initiative: setup.initiative ?? 5,
-    // Ohne Deckung bleibt der Endschaden gleich dem rohen Treffer — der Test misst den Block,
-    // nicht den Bulwark-Malus (docs/spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline).
-    bulwarkContribution: 0,
-  };
+// Ohne Deckung bleibt der Endschaden gleich dem rohen Treffer — die Tests messen den Block,
+// nicht den Bulwark-Malus (docs/spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline).
+function enemy(setup: EnemyFixture): CombatEnemy {
+  return enemyFixture({ health: 100_000, ...setup });
 }
 
 function gestellt(characters: CombatCharacter[], enemies: CombatEnemy[]): CombatState {
   const floorSeed = 4711;
 
-  return {
-    floorId: 'A1-D1-01',
-    floorIndex: 0,
+  return combatStateFixture(characters, enemies, {
     floorSeed,
     combatPrngState: combatStreamPrng(floorSeed).state(),
-    characters,
-    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
-    enemies,
     round: 0,
-    pending: [],
-  };
+  });
 }
 
 /* ------------------------------------------------------------------ Echter Content */

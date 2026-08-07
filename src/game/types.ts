@@ -1,17 +1,46 @@
 /**
- * Gemeinsame Interfaces für den deklarativen Balancing-Content (siehe AGENTS.md §4).
+ * Gemeinsame Interfaces für den deklarativen Balancing-Content (siehe AGENTS.md).
  * Content liegt getrennt von der Spiellogik unter src/game/. Alle Spieltexte Englisch.
  *
- * Die Regeln aus SPEC.md §1–§3 sind festgelegt, die Zahlen noch offen (BALANCING.md §5).
+ * Die Regeln aus docs/spec/README.md sind festgelegt, die Zahlen noch offen (docs/backlog/OPEN_ISSUES.md).
  * Diese Datei beschreibt die Form, die der Content annimmt.
  */
 
 export type CharacterId = 'korvin' | 'rhaya' | 'quinn';
-export type EnemyId = string;
-export type FormationId = string;
+
+/** Alle Gegner-Kennungen; `ENEMIES` (enemies.ts) muss genau diese Keys tragen. */
+export const ENEMY_IDS = ['ashenGhoul', 'emberHound', 'cinderWretch', 'slagBulwark'] as const;
+export type EnemyId = (typeof ENEMY_IDS)[number];
+
+/** Alle Formations-Kennungen; `FORMATIONS` (formations.ts) muss genau diese Keys tragen. */
+export const FORMATION_IDS = [
+  'rampSingleLanePair',
+  'rampBothLanes',
+  'rampBothLanesCrowded',
+  'rampWithTank',
+  'dungeonSkirmish',
+  'dungeonPursuit',
+  'dungeonStronghold',
+] as const;
+export type FormationId = (typeof FORMATION_IDS)[number];
+
+export type DungeonId = `A${number}-D${number}`;
 
 /** Floor-Kennung in der Notation `A<Akt>-D<Dungeon>-<Floor>`, Floor zweistellig (SPEC §4.1). */
-export type FloorId = string;
+export type FloorId = `${DungeonId}-${string}`;
+
+/** Klassifikation eines Floors für Elite-/Boss-Multiplikatoren (SPEC §1 Struktur). */
+export type EncounterClass = 'normal' | 'elite' | 'boss';
+
+/** Deklarative Zuordnung eines Floors zu einer Formation und seiner Progressionsposition. */
+export interface FloorEncounterDefinition {
+  id: FloorId;
+  dungeonId: DungeonId;
+  floorNumber: number;
+  floorIndex: number;
+  classification: EncounterClass;
+  formationId: FormationId;
+}
 
 /** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */
 export interface FloorRewardDefinition {
@@ -40,10 +69,17 @@ export interface Range {
 
 /**
  * Damage-Range einer Waffe: Faktor auf den Grundschaden, **einmal pro Angriff** per PRNG
- * innerhalb dieser Grenzen gewürfelt (docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden).
+ * innerhalb dieser Grenzen gewürfelt (docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden).
  * `1` ist der neutrale Wert — `{ min: 0.9, max: 1.1 }` entspricht 90 %–110 %.
  */
 export type DamageRange = Range;
+
+/** Feste Signaturwaffe eines Charakters, kein ausrüstbares Item. */
+export interface WeaponProfile {
+  baseDamage: number;
+  damageRange: DamageRange;
+  precision: number;
+}
 
 /** Core-Stats speisen die Derived Stats über je eigene Kurven (SPEC §3.0). */
 export interface CoreStats {
@@ -79,6 +115,18 @@ export interface AttributePoints {
   vigor: number;
 }
 
+/** Persistierter Fortschritt eines Charakters außerhalb des laufenden Kampfes. */
+export interface CharacterProgressionState {
+  level: number;
+  /** Noch nicht für das nächste Level verbrauchte XP. */
+  xp: number;
+  freeAttributePoints: number;
+  attributePoints: AttributePoints;
+  freeMasteryPoints: number;
+  /** Gekaufte Weapon-Mastery-Nodes; Sperren werden daraus abgeleitet. */
+  masteryRanks: Readonly<Record<string, number>>;
+}
+
 /**
  * Offensive Stats — paarweise Chance + Damage je Muster (SPEC §3.0).
  * Chancen als Anteil 0..1; Damage-Werte als Anteil des rohen Grundschadens (SPEC §2.1).
@@ -110,7 +158,7 @@ export interface UtilityStats {
   /**
    * Abklingfaktor der Multi-Hit-Kette, echt kleiner als 1 — Kettentreffer k verursacht
    * multiHitDamage * multiHitChainFactor^(k-1) des rohen Grundschadens.
-   * Siehe docs/spec/COMBAT.md#21-charakter-zug-ausgehender-schaden (Schritt 3) und
+   * Siehe docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden (Schritt 3) und
    * docs/adr/0006-multi-hit-kette-garantierte-laenge.md.
    */
   multiHitChainFactor: number;
@@ -124,7 +172,9 @@ export interface CharacterDefinition {
   role: Role;
   /** Startwerte auf Level 1, vor Attributen und Ausrüstung. */
   baseCore: CoreStats;
-  baseDerived: DerivedStats;
+  /** Weapon Base Damage speist Attack; Defense und Health starten als feste Charakterwerte. */
+  baseDerived: Omit<DerivedStats, 'attack'>;
+  weapon: WeaponProfile;
   baseOffensive: OffensiveStats;
   baseDefensive: DefensiveStats;
   baseUtility: UtilityStats;
@@ -157,8 +207,6 @@ export interface EnemyDefinition {
   accuracy: number;
   /** Einmalig zu Kampfbeginn innerhalb dieser Grenzen gewürfelt (SPEC §1.1). */
   initiativeRange: Range;
-  /** Beitrag zum Bulwark-Malus, solange dieser Gegner in der Frontline lebt (SPEC §2.4). */
-  bulwarkContribution: number;
 }
 
 /** Die drei Slots einer Lane; `null` = unbesetzt. Als Tuple, damit der Index typsicher greift. */

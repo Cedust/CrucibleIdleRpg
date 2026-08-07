@@ -18,17 +18,17 @@ die Reihenfolge, in der gehandelt wird — nicht das Handeln selbst.
 
 ## Verbindliche Spec-Anker
 
-- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — dreistufige totale Ordnung
+- [Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — dreistufige totale Ordnung
   (Initiative → Gegner vor Charakter → niedrigerer Slot-Index), Pending-Queue aus **lebenden**
   Akteuren, Barrier-Reset zu Rundenbeginn ohne Stacking
-- [Gegnerformation](../../spec/COMBAT.md#13-gegnerformation) — 2×3-Lanes, max. sechs Gegner,
+- [Gegnerformation](../../spec/COMBAT-RUN.md#13-gegnerformation) — 2×3-Lanes, max. sechs Gegner,
   max. ein Tank; Gegner-Initiative einmalig zu Kampfbeginn in **Formations-Index-Reihenfolge**
   gewürfelt
 - [Seeds und Zufalls-Ströme](../../spec/SIMULATION.md#4-seeds-und-zufalls-ströme) — die
   Initiative läuft über den `init`-Strom, getrennt von `combat`
 - [Team](../../spec/CHARACTERS.md#1-team) — besiegte Slots fallen aus Reihenfolge und
   Verteilung heraus
-- [AGENTS.md §9](../../../AGENTS.md#9-typescript-konfiguration) — `noUncheckedIndexedAccess`:
+- [AGENTS.md](../../../AGENTS.md) — `noUncheckedIndexedAccess`:
   Slot-Zugriffe liefern `| undefined`
 
 ## Akzeptanzkriterien

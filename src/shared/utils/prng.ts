@@ -1,7 +1,7 @@
 /**
  * Seedbarer Pseudozufallsgenerator (mulberry32).
  *
- * Pflicht für allen Zufall in der Spiellogik (siehe AGENTS.md §5): gleicher Seed
+ * Pflicht für allen Zufall in der Spiellogik (siehe AGENTS.md): gleicher Seed
  * ⇒ exakt gleiche Sequenz ⇒ reproduzierbare Kämpfe und deterministische Tests.
  * Niemals Math.random() in Spiellogik verwenden.
  */
@@ -20,7 +20,7 @@ export interface Prng {
  * Ein PRNG, dessen Sequenz sich exakt fortsetzen lässt: `resumePrng(prng.state())` liefert
  * einen Generator, der genau dort weiterzieht.
  *
- * Grundlage der reinen Takt-Funktion der Kampf-Engine (AGENTS.md §5): Der Fortschritt im
+ * Grundlage der reinen Takt-Funktion der Kampf-Engine (AGENTS.md): Der Fortschritt im
  * `combat`-Strom liegt als Zahl im Kampfzustand, statt als mitgeschleppte Instanz. Damit hängt
  * ein Takt ausschließlich an seinem Eingangszustand.
  */
@@ -30,7 +30,7 @@ export interface ResumablePrng extends Prng {
 }
 
 /**
- * Namen der Zufalls-Ströme (siehe SPEC.md §5.3). Der Determinismus hängt daran, dass diese
+ * Namen der Zufalls-Ströme (siehe docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme). Der Determinismus hängt daran, dass diese
  * Label stabil bleiben — deshalb liegen sie hier als Konstanten und nicht als Literale
  * in den Aufrufern.
  */
@@ -47,7 +47,7 @@ export type PrngStream = (typeof PRNG_STREAM)[keyof typeof PRNG_STREAM];
 
 /**
  * Mischt Strings und Zahlen zu einem uint32-Seed (xmur3).
- * Basis der Seed-Hierarchie saveSeed → runSeed → floorSeed → Strom (SPEC.md §5.3).
+ * Basis der Seed-Hierarchie saveSeed → runSeed → floorSeed → Strom (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme).
  */
 export function deriveSeed(parentSeed: number, ...parts: (string | number)[]): number {
   let h = parentSeed >>> 0;
@@ -68,7 +68,7 @@ export function deriveSeed(parentSeed: number, ...parts: (string | number)[]): n
   return h >>> 0;
 }
 
-/** Erzeugt einen abgeleiteten PRNG für einen benannten Strom (SPEC.md §5.3). */
+/** Erzeugt einen abgeleiteten PRNG für einen benannten Strom (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme). */
 export function derivePrng(parentSeed: number, ...parts: (string | number)[]): ResumablePrng {
   return createPrng(deriveSeed(parentSeed, ...parts));
 }

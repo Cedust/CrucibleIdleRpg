@@ -2,20 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { CHARACTERS } from '@/game/characters/characters';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
 import { ENEMY_ATTACK_MULTIPLIER, ENEMY_HEALTH_MULTIPLIER } from '@/game/curves/enemyCurves';
-import { MAIN_HAND_DAMAGE_RANGE } from '@/game/curves/weaponCurves';
 import { ENEMIES } from '@/game/enemies/enemies';
-import type { EnemyDefinition, FormationDefinition } from '@/game/types';
-import { FLOOR_FORMATIONS, FORMATIONS } from './formations';
+import type { EnemyDefinition, EnemyId, FormationDefinition } from '@/game/types';
+import { ACT_1_ENCOUNTERS, resolveAct1Encounter } from './act1';
+import { FORMATIONS } from './formations';
 
 /** Alle besetzten Slots einer Vorlage als Gegner-Definitionen, in Formations-Index-Reihenfolge. */
 function besetzung(formation: FormationDefinition): EnemyDefinition[] {
   return [...formation.slots.frontline, ...formation.slots.backline]
-    .filter((id): id is string => id !== null)
-    .map((id) => {
-      const enemy = ENEMIES[id];
-      if (enemy === undefined) throw new Error(`Unbekannter Gegner: ${id}`);
-      return enemy;
-    });
+    .filter((id): id is EnemyId => id !== null)
+    .map((id) => ENEMIES[id]);
 }
 
 describe('FORMATIONS', () => {
@@ -30,10 +26,10 @@ describe('FORMATIONS', () => {
   it('stellen Tank und Melee in die Frontline, Ranged in die Backline', () => {
     for (const formation of Object.values(FORMATIONS)) {
       for (const id of formation.slots.frontline) {
-        if (id !== null) expect(ENEMIES[id]?.role).not.toBe('ranged');
+        if (id !== null) expect(ENEMIES[id].role).not.toBe('ranged');
       }
       for (const id of formation.slots.backline) {
-        if (id !== null) expect(ENEMIES[id]?.role).toBe('ranged');
+        if (id !== null) expect(ENEMIES[id].role).toBe('ranged');
       }
     }
   });
@@ -67,21 +63,18 @@ describe('FORMATIONS', () => {
   });
 });
 
-describe('FLOOR_FORMATIONS', () => {
+describe('Floor→Formation für A1-D1 (eine Quelle: act1.ts)', () => {
+  const dungeonFloors = ACT_1_ENCOUNTERS.filter((encounter) => encounter.dungeonId === 'A1-D1');
+
   it('deckt die 20 Floors von A1-D1 mit bekannten Vorlagen ab', () => {
-    const floors = Object.keys(FLOOR_FORMATIONS);
-    expect(floors).toHaveLength(20);
-    for (let i = 1; i <= 20; i++) {
-      const floorId = `A1-D1-${String(i).padStart(2, '0')}`;
-      const formationId = FLOOR_FORMATIONS[floorId];
-      expect(formationId, floorId).toBeDefined();
-      expect(FORMATIONS[formationId as string]).toBeDefined();
+    expect(dungeonFloors).toHaveLength(20);
+    for (const encounter of dungeonFloors) {
+      expect(FORMATIONS[encounter.formationId], encounter.id).toBeDefined();
     }
   });
 
   it('führt die vier Ramp-Up-Phasen der Reihe nach ein', () => {
-    const reihenfolge = Object.values(FLOOR_FORMATIONS);
-    const ersteVorkommen = [...new Set(reihenfolge)];
+    const ersteVorkommen = [...new Set(dungeonFloors.map((encounter) => encounter.formationId))];
     expect(ersteVorkommen).toEqual([
       'rampSingleLanePair',
       'rampBothLanes',
@@ -100,18 +93,21 @@ describe('FLOOR_FORMATIONS', () => {
  */
 describe('Plausibilität A1-D1-01', () => {
   const FLOOR_INDEX = 0;
-  const formation = FORMATIONS[FLOOR_FORMATIONS['A1-D1-01'] as string] as FormationDefinition;
+  const formation = FORMATIONS[resolveAct1Encounter('A1-D1-01').formationId];
   const gegner = besetzung(formation);
-  const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX] as number;
-  const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX] as number;
+  const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX];
+  const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX];
+  if (healthMultiplier === undefined || attackMultiplier === undefined) {
+    throw new Error('Floor-Kurven decken Index 0 nicht ab');
+  }
 
   /** Ausgehender Team-Schaden pro Runde: je Charakter Attack × Damage-Range-Mitte × Crit-Faktor. */
   const teamSchadenProRunde = Object.values(CHARACTERS).reduce((summe, charakter) => {
-    const range = MAIN_HAND_DAMAGE_RANGE.common;
+    const range = charakter.weapon.damageRange;
     const rangeMitte = (range.min + range.max) / 2;
     const critFaktor =
       1 + charakter.baseOffensive.critChance * (charakter.baseOffensive.critDamage - 1);
-    return summe + charakter.baseDerived.attack * rangeMitte * critFaktor;
+    return summe + charakter.weapon.baseDamage * rangeMitte * critFaktor;
   }, 0);
 
   const gegnerHealth = gegner.reduce((summe, e) => summe + e.health * healthMultiplier, 0);

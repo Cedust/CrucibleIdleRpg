@@ -21,16 +21,16 @@ laufenden Kampf.
 - [Playback](../../spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit) — pro Takt rückt
   die Markierung einen Eintrag weiter und im Log erscheint **ein** Eintrag: der vollständige
   Zug als Block, nicht als Einzelzeilen
-- [Gegnerformation](../../spec/COMBAT.md#13-gegnerformation) — 2×3-Darstellung mit Lanes
-- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — die Anzeige hält die vollständige
+- [Gegnerformation](../../spec/COMBAT-RUN.md#13-gegnerformation) — 2×3-Darstellung mit Lanes
+- [Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — die Anzeige hält die vollständige
   Zugreihenfolge stabil; pro Takt wandert nur die aktive Markierung
-- [AGENTS.md §8](../../../AGENTS.md#8-ui-styling--accessibility) — Dark Mode, eigene
+- [AGENTS.md](../../../AGENTS.md) — Dark Mode, eigene
   UI-Primitives, Tailwind, Accessibility-Basisanspruch
 
 ## Akzeptanzkriterien
 
 - [x] Health-Bars nutzen die Inline-Style-Ausnahme ausschließlich für die berechnete Breite
-      ([AGENTS.md §14](../../../AGENTS.md#14-do-not)); alles andere sind Tailwind-Klassen
+      ([AGENTS.md](../../../AGENTS.md)); alles andere sind Tailwind-Klassen
 - [x] Die Barrier ist als eigener Anteil erkennbar, nicht in die Health gerechnet
 - [x] Der Log zeigt Crit, Multi Hit, Splash, Block, Evade und Counter unterscheidbar an
 - [x] Der Log ist gedeckelt und wächst nicht unbegrenzt
@@ -38,7 +38,7 @@ laufenden Kampf.
 - [x] Component-Tests mit React Testing Library; Playwright-Smoke-Test „Kampf starten →
       Takte laufen ab → Kampf endet"
 - [x] Alle Spieltexte sind Englisch
-      ([AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich))
+      ([AGENTS.md](../../../AGENTS.md))
 
 ## Betroffene Dateien
 

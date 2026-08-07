@@ -1,0 +1,2 @@
+# Erzwingt Conventional Commits (siehe AGENTS.md, Konfiguration in commitlint.config.js).
+npx --no -- commitlint --edit "$1"

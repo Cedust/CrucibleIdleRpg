@@ -21,19 +21,19 @@ Timing und Anzeige — Takt-Länge, Pause und Catch-up liegen in
 
 - [Grundmodell](../../spec/SIMULATION.md#1-grundmodell-verbindlich) — inkrementell, kein
   Vorabdurchlauf; **dasselbe Schrittwerk** bedient Playback und Catch-up
-- [Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — Rundenbeginn, Aktionen, Rundenende;
+- [Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — Rundenbeginn, Aktionen, Rundenende;
   Sieg-, Wipe- und Abbruchbedingungen; kein Rundenlimit
-- [Feststehende Regeln](../../spec/COMBAT.md#25-feststehende-regeln) — Events in
+- [Feststehende Regeln](../../spec/DAMAGE-SYSTEM.md#15-feststehende-regeln) — Events in
   deterministisch fester Reihenfolge; sie sind später die Anbindung der Rune-Trigger
 - [Playback](../../spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit) — **ein Takt =
   ein Akteur am Zug**; der Zug ist ein Block, keine Einzelzeilen
-- [SPEC § Invarianten](../../SPEC.md#invarianten) — Punkt 7: die Gegner-Gesamt-Health sinkt
+- [SPEC § Invarianten](../../spec/COMBAT-RUN.md#11-rundenablauf) — Punkt 7: die Gegner-Gesamt-Health sinkt
   monoton, jeder Kampf endet in endlicher Rundenzahl
 
 ## Akzeptanzkriterien
 
 - [x] Die Funktion ist rein: kein `Date.now()`, kein Timer, kein DOM, kein Store-Zugriff
-      ([AGENTS.md §5](../../../AGENTS.md#5-architektur-des-game-loops))
+      ([AGENTS.md](../../../AGENTS.md))
 - [x] Ein vollständiger Kampf, Takt für Takt bis zum Ende gerechnet, ist bei gleichem Seed
       bit-identisch reproduzierbar
 - [x] Derselbe Seed liefert dasselbe Ergebnis, ob die Takte einzeln oder in einer Schleife

@@ -26,6 +26,7 @@ describe('createSaveService', () => {
   it.each([
     ['ungültigem JSON', '{kaputt'],
     ['schema-verletzendem JSON', JSON.stringify({ ...createDefaultSave(777), runCounter: -4 })],
+    ['fremder Save-Version', JSON.stringify({ ...createDefaultSave(777), version: 99 })],
   ])('fällt bei %s kontrolliert auf einen neuen Default zurück', async (_label, raw) => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const fallback = createDefaultSave(777);
@@ -42,7 +43,7 @@ describe('createSaveService', () => {
 
     await service.save(save);
 
-    expect(port.raw()).toBe(JSON.stringify(save));
+    expect(JSON.parse(port.raw() ?? 'null')).toEqual(save);
     await expect(service.load()).resolves.toEqual(save);
   });
 });

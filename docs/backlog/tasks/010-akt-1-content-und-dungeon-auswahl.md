@@ -1,10 +1,10 @@
 # 010 — Akt-1-Content & Dungeon-Auswahl
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M2      |
-| **Hängt ab von** | 009     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 009    |
 
 ## Ziel
 
@@ -17,9 +17,9 @@ Die Floor-Kette, Attrition und das Freischalten weiterer Einstiege folgen in [01
 ## Verbindliche Spec-Anker
 
 - [Struktur](../../spec/PROGRESSION.md#1-struktur-akte-dungeons-floors) — IDs, 5 × 20 Floors, Elite-/Boss-Floors, Ramp-Up und wiederholbare Dungeons
-- [Gegnerformation](../../spec/COMBAT.md#13-gegnerformation) — jeder Floor referenziert eine Formation mit zwei bis sechs Gegnern
+- [Gegnerformation](../../spec/COMBAT-RUN.md#13-gegnerformation) — jeder Floor referenziert eine Formation mit zwei bis sechs Gegnern
 - [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) — Checkpoints und Vollendet-Flags je Dungeon sind persistierter Fortschritt
-- [AGENTS.md §4](../../../AGENTS.md#4-content--balancing) — typisierter, deklarativer Content; provisorische Zahlen bleiben markiert
+- [AGENTS.md](../../../AGENTS.md) — typisierter, deklarativer Content; provisorische Zahlen bleiben markiert
 
 ## Akzeptanzkriterien
 
@@ -36,4 +36,4 @@ Die Floor-Kette, Attrition und das Freischalten weiterer Einstiege folgen in [01
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

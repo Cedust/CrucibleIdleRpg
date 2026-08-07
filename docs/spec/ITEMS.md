@@ -1,42 +1,38 @@
 # SPEC — Items, Loot & Handwerk
 
-> Teil der [SPEC](../SPEC.md): Slots, Item-Anatomie, Seltenheit, Sockel, Gems, Sigils und die
+> Teil der [SPEC](../spec/README.md): Slots, Item-Anatomie, Seltenheit, Sockel, Gems, Sigils und die
 > Handwerks-Stationen. **Wohnort aller item-bezogenen Regeln.**
 > Verwandt: [Team & Charaktere](CHARACTERS.md) · [Fortschritt & Belohnungen](PROGRESSION.md)
 
-Der Ausbau der Ausrüstung ist der **Hauptmotor** des Fortschritts
-([BALANCING §3](../BALANCING.md#3-wachstumsquellen-woher-die-zahlen-kommen)).
+Der Ausbau der Armor ist eine dauerhafte Progressionsachse neben Attributen, Weapon Mastery und
+Crucible ([BALANCING §3](../spec/BALANCE.md#1-wachstum-und-zahlenraum)).
 
 ---
 
 ## 1. Slots, Basen & Innate-Affixe
 
-- Jeder Charakter trägt Ausrüstung in **sechs Slots** ([Ausrüstung](CHARACTERS.md#6-ausrüstung)).
+- Jeder Charakter trägt Armor in **vier Slots** ([Ausrüstung](CHARACTERS.md#6-ausrüstung)).
   Ein Slot wird über den Crucible (Anvil Sparks,
   [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)) gegen Crystals freigeschaltet;
   dabei entsteht die rollenspezifische **Basis** als `Common +1` und bleibt dem Slot für das
   ganze Spiel erhalten. **Item-Basen droppen nicht.**
-- **Ausnahme — die Main Hand ist bei allen drei Charakteren ab Spielstart freigeschaltet**
-  (ebenfalls als `Common +1`). Ohne Waffe gäbe es keine Damage-Range und damit keinen
-  definierten Grundschaden ([Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden)); ein
-  Sonderfall für unbewaffnete Charaktere entfällt so.
-  Die übrigen fünf Slots sowie Blacksmith und Jeweler sind Anvil-Sparks-Unlocks.
+- Main Hand und Off Hand existieren nicht. Die permanenten Signaturwaffen sind keine Items und
+  besitzen weder die fünf Item-Schichten noch Handwerks-Interaktionen
+  ([Weapon Mastery](WEAPON-MASTERY.md#1-grundmodell-und-abgrenzung)).
+- Alle vier Armor-Slots sowie Blacksmith und Jeweler sind Anvil-Sparks-Unlocks.
 - Jeder Slot hat einen **Innate-Affix** — einen festen Basis-Stat, der mit dem **Item-Level**
   skaliert ([§2](#2-item-anatomie-fünf-schichten)):
 
-  | Slot          | Item-Typ (rollenspezifisch)                                           | Innate-Affix                          |
-  | ------------- | --------------------------------------------------------------------- | ------------------------------------- |
-  | **Main Hand** | Waffe (alle Charaktere) — trägt **Damage-Range**                      | **Might**                             |
-  | **Off Hand**  | Rhaya/Quinn: Dolch/Köcher → **Might**; Korvin: Schild → **Toughness** | **Might** (DD) / **Toughness** (Tank) |
-  | **Head**      | Helm                                                                  | **Vitality**                          |
-  | **Chest**     | Rüstung                                                               | **Toughness**                         |
-  | **Legs**      | Beinschutz                                                            | **Toughness**                         |
-  | **Feet**      | Schuhe                                                                | **Initiative**                        |
+  | Slot      | Item-Typ   | Innate-Affix   |
+  | --------- | ---------- | -------------- |
+  | **Head**  | Helm       | **Vitality**   |
+  | **Chest** | Rüstung    | **Toughness**  |
+  | **Legs**  | Beinschutz | **Toughness**  |
+  | **Feet**  | Schuhe     | **Initiative** |
 
-- Item-Typen sind **rollenspezifisch** (Schild nur Korvin usw.); die getragenen **Stats bleiben
-  universell** (kein charakterexklusiver Stat, [Team](CHARACTERS.md#1-team)).
-- Waffen haben zusätzlich eine prozentuale **Damage-Range**, die den Grundschaden moduliert
-  ([Charakter-Zug](COMBAT.md#21-charakter-zug-ausgehender-schaden)).
+- Die getragenen Stats bleiben universell (kein charakterexklusiver Stat,
+  [Team](CHARACTERS.md#1-team)). Might besitzt keinen festen Armor-Innate und stammt aus
+  Emerald-Gems.
 
 ## 2. Item-Anatomie (fünf Schichten)
 
@@ -63,8 +59,10 @@ die drei übrigen Handwerks-Schichten hängen.
 
 ## 3. Seltenheit, Sockel & Level-Cap
 
-Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Items und bestimmt drei Dinge:
+Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Armor-Items und bestimmt drei Dinge:
 **Sockelzahl**, **Gem-Level-Cap** (siehe Jeweler) und **Item-Level-Cap**.
+
+Weapon Mastery Ranks sind keine Seltenheit; Waffen verwenden diese Tabelle nicht.
 
 | Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für den Refine **auf** diese Stufe |
 | ------------- | -------------- | -------------- | ----------------------------------------- |
@@ -77,7 +75,7 @@ Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Items und best
 - Die Seltenheit deckelt das Item-Level **nach oben**. Gehoben wird sie per **Refine**
   (siehe Blacksmith); ein Refine ist **jederzeit** möglich, sobald Cinder vorhanden ist — es gibt
   **keine Mindestlevel-Regel**. Der Rhythmus entsteht allein aus der Cinder-Knappheit
-  ([BALANCING §4](../BALANCING.md#4-ökonomie-anker)).
+  ([BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 - Ein frisch freigeschalteter Slot startet als **`Common +1` ohne Sockel**; der erste Sockel
   entsteht mit dem ersten **Refine**.
 - Landmarken auf einem Item (abgeleitet aus der Tabelle oben und der Prismatic-Formel unten):
@@ -102,7 +100,8 @@ Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Items und best
 - Das **Implicit** kommt per Brand (siehe Blacksmith) auf ein **Legendary**-Item; seine Stärke
   skaliert mit dem Sigil-Level.
 - Jedes Sigil ist **teamweit genau einmal aktiv** und nur auf seinem gebundenen Slot(-Typ)
-  einsetzbar. Die **Pool-Größe liegt unter 18** (Zahl der Slots) → es tragen nie alle Slots ein Sigil.
+  einsetzbar. Die **Pool-Größe liegt unter 12** (Zahl der Armor-Slots) → es tragen nie alle Slots
+  ein Sigil.
 
 ## 6. Drops: Gems, Cinder & Sigils
 
@@ -129,7 +128,7 @@ ausschüttet (XP, Gold, Crystals), steht in
   gewichtet (Gewicht = Balancing). **Ein Sigil auf Level 5 verlässt den Drop-Pool**; sind alle
   Sigils auf Level 5, droppen keine Sigils mehr.
 - Aller Loot-Zufall läuft über den **`loot`-Strom** des seedbaren PRNG
-  ([Feststehende Regeln](COMBAT.md#25-feststehende-regeln),
+  ([Feststehende Regeln](DAMAGE-SYSTEM.md#15-feststehende-regeln),
   [Seeds und Zufalls-Ströme](SIMULATION.md#4-seeds-und-zufalls-ströme)).
 
 ## 7. Blacksmith — Temper, Refine & Brand
@@ -144,7 +143,7 @@ Verbindlicher Wohnort der drei Blacksmith-Aktionen. Alle drei sind **RNG-frei**.
 - **Brand (Implicit):** überträgt das Implicit eines bekannten **Sigils** auf ein **Legendary**-Item.
   Kosten: **Cinder** plus **Gold**.
   - **Re-Brand** überschreibt einen bestehenden Brand und kostet **deutlich weniger** als der
-    Erst-Brand (Kostenziel: [BALANCING §4](../BALANCING.md#4-ökonomie-anker)).
+    Erst-Brand (Kostenziel: [BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 
 ## 8. Jeweler — Inlay, Attune & Recut
 
@@ -164,7 +163,7 @@ im Handwerk**.
   Range neu (seed-PRNG).
 - **Gem-Farben** — Farb-Pools entlang der Stat-Kategorien ([Stats](CHARACTERS.md#2-stats)), die
   Offensiv-Pools getrennt in **Chance** (Amber) und **Damage** (Ruby). Design-Absicht dieser
-  Trennung: [DESIGN §3.2](../DESIGN.md#32-build-entscheidungen-die-sich-unterscheiden-sollen).
+  Trennung: [DESIGN §3.2](../DESIGN.md#3-player-experience--der-kern-loop).
 
   | Gem                 | Kategorie          | Pool                                                                                         | Sockel                 |
   | ------------------- | ------------------ | -------------------------------------------------------------------------------------------- | ---------------------- |
@@ -177,10 +176,12 @@ im Handwerk**.
 - **Amber, Ruby, Sapphire & Emerald** sind die regulär gefarmten Fodder-Farben; **Diamond** ist der
   seltene Elite/Boss-Chase (Drop-Bedingungen: [§6](#6-drops-gems-cinder--sigils)).
 - **Ohne Gem-Quelle:** die **Derived Stats** (Attack/Defense/Health — sie ergeben sich aus
-  Core/Attribut/Baseline, [Stats](CHARACTERS.md#2-stats)), **Multi Hit Chain**, **Multi Hit Chain
-  Factor** und **Splash Radius** (Skilltree) sowie **Initiative** (Innate Feet + Crucible).
+  Weapon-/Startwerten, Core, Attributen und Crucible, [Stats](CHARACTERS.md#2-stats)),
+  **Multi Hit Chain**, **Multi Hit Chain Factor**, **Splash Radius** und **Precision**
+  ([Weapon Mastery](WEAPON-MASTERY.md)) sowie **Initiative** (Innate Feet + Crucible +
+  charakterindividuelle Weapon-Node).
 - Konkrete Pool-Gewichte, Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing
-  (`src/game/`, [BALANCING §4](../BALANCING.md#4-ökonomie-anker)).
+  (`src/game/`, [BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 
 <!-- TODO (Spec): Prismatic/Diamond-Effekte, Sigil-Katalog und Implicit-Abgrenzung —
      siehe docs/backlog/OPEN_ISSUES.md, Abschnitt „Offene Spec-Punkte". -->

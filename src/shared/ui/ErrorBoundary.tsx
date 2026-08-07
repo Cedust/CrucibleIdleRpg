@@ -10,7 +10,7 @@ interface ErrorBoundaryState {
 
 /**
  * Fängt Render-Crashes ab und zeigt einen Fallback statt eines weißen Bildschirms.
- * Bewusst ohne externe Telemetrie (siehe AGENTS.md §7).
+ * Bewusst ohne externe Telemetrie (siehe AGENTS.md).
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false };

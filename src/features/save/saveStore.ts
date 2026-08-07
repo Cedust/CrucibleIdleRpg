@@ -1,7 +1,19 @@
 import { createStore, useStore } from 'zustand';
-import type { RewardCommit } from '@/features/progression/rewards';
-import { commitFloorVictory } from '@/features/progression/rewards';
-import type { FloorRewardDefinition } from '@/game/types';
+import type { RewardCommit } from '@/features/dungeon/rewards';
+import { commitFloorVictory } from '@/features/dungeon/rewards';
+import {
+  purchaseCrucibleNode,
+  respecCrucibleTree,
+  type RespeccableTreeId,
+} from '@/game/crucible/crucible';
+import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
+import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
+import {
+  purchaseMasteryNode,
+  respecMasteryDiscipline,
+  type DisciplineId,
+} from '@/game/weaponMastery/mastery';
+import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
 import { createSaveService, type SaveService } from './saveService';
@@ -14,88 +26,266 @@ export interface SaveStoreState {
   hydrate: () => Promise<SaveData>;
   beginRun: () => Promise<SaveData>;
   commitVictory: (reward: FloorRewardDefinition) => Promise<RewardCommit>;
+  spendAttributePoint: (
+    characterId: CharacterId,
+    attribute: keyof AttributePoints,
+  ) => Promise<boolean>;
+  respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
+  buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
+  respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
+  buyCrucibleNode: (nodeId: string) => Promise<boolean>;
+  respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
+  completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
 
-export function createSaveStore(service: SaveService) {
+export interface SaveStoreOptions {
+  /**
+   * Erlaubt dem Kompositionspunkt, die Optimierung situativ zu sperren — während eines
+   * Dungeon-Runs sind Respecs und der Crucible gesperrt
+   * (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch).
+   */
+  canOptimize?: () => boolean;
+}
+
+/**
+ * Der Plan einer schreibenden Action: `next === null` lehnt die Action ab, ohne zu speichern;
+ * `result` ist in beiden Fällen ihr Rückgabewert.
+ */
+interface WritePlan<T> {
+  next: SaveData | null;
+  result: T;
+}
+
+export function createSaveStore(service: SaveService, options: SaveStoreOptions = {}) {
+  const canOptimize = options.canOptimize ?? (() => true);
   let hydration: Promise<SaveData> | null = null;
+  let pendingWrite: Promise<unknown> = Promise.resolve();
 
-  return createStore<SaveStoreState>((set, get) => ({
-    data: null,
-    status: 'idle',
+  return createStore<SaveStoreState>((set, get) => {
+    /**
+     * Serialisierter Schreibpfad aller Actions: Der Folgezustand wird erst berechnet, wenn
+     * jeder vorherige Schreibvorgang abgeschlossen ist — überlappende Actions bauen damit
+     * aufeinander auf, statt sich gegenseitig zu überschreiben (Lost Update). Der Helper
+     * trägt die Status-Übergänge `saving` → `ready` und den Fehlerpfad.
+     */
+    const persist = <T>(plan: (current: SaveData) => WritePlan<T>): Promise<T> => {
+      const write = async (): Promise<T> => {
+        const planned = plan(requiredSave(get().data));
+        if (planned.next === null) {
+          return planned.result;
+        }
 
-    hydrate: () => {
-      const loaded = get().data;
-      if (loaded !== null) {
-        return Promise.resolve(loaded);
-      }
-
-      if (hydration !== null) {
-        return hydration;
-      }
-
-      set({ status: 'loading' });
-      hydration = service
-        .load()
-        .then((data) => {
-          set({ data, status: 'ready' });
-          return data;
-        })
-        .catch((error: unknown) => {
+        set({ status: 'saving' });
+        try {
+          await service.save(planned.next);
+          set({ data: planned.next, status: 'ready' });
+          return planned.result;
+        } catch (error) {
           set({ status: 'error' });
           throw error;
-        })
-        .finally(() => {
-          hydration = null;
-        });
+        }
+      };
 
-      return hydration;
-    },
+      const queued = pendingWrite.then(write, write);
+      pendingWrite = queued.then(
+        () => undefined,
+        () => undefined,
+      );
+      return queued;
+    };
 
-    beginRun: async () => {
-      const current = requiredSave(get().data);
-      const next: SaveData = { ...current, runCounter: current.runCounter + 1 };
-      set({ status: 'saving' });
+    return {
+      data: null,
+      status: 'idle',
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-        return next;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+      hydrate: () => {
+        const loaded = get().data;
+        if (loaded !== null) {
+          return Promise.resolve(loaded);
+        }
 
-    commitVictory: async (reward) => {
-      const current = requiredSave(get().data);
-      const commit = commitFloorVictory(current, reward);
-      set({ status: 'saving' });
+        if (hydration !== null) {
+          return hydration;
+        }
 
-      try {
-        await service.save(commit.save);
-        set({ data: commit.save, status: 'ready' });
-        return commit;
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
+        set({ status: 'loading' });
+        hydration = service
+          .load()
+          .then((data) => {
+            set({ data, status: 'ready' });
+            return data;
+          })
+          .catch((error: unknown) => {
+            set({ status: 'error' });
+            throw error;
+          })
+          .finally(() => {
+            hydration = null;
+          });
 
-    setPlaybackSpeed: async (playbackSpeed) => {
-      const current = requiredSave(get().data);
-      const next: SaveData = { ...current, playbackSpeed };
-      set({ status: 'saving' });
+        return hydration;
+      },
 
-      try {
-        await service.save(next);
-        set({ data: next, status: 'ready' });
-      } catch (error) {
-        set({ status: 'error' });
-        throw error;
-      }
-    },
-  }));
+      beginRun: () =>
+        persist((current) => {
+          const next: SaveData = { ...current, runCounter: current.runCounter + 1 };
+          return { next, result: next };
+        }),
+
+      commitVictory: (reward) =>
+        persist((current) => {
+          const commit = commitFloorVictory(current, reward);
+          return { next: commit.save, result: commit };
+        }),
+
+      spendAttributePoint: (characterId, attribute) =>
+        persist((current) => {
+          const progression = spendAttributePoint(current.characters[characterId], attribute);
+          if (progression === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: progression },
+            },
+            result: true,
+          };
+        }),
+
+      respecAttributes: (characterId, goldCost) =>
+        persist((current) => {
+          const respec = respecAttributes(
+            current.characters[characterId],
+            current.currencies.gold,
+            goldCost,
+          );
+          if (respec === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: respec.progression },
+              currencies: { ...current.currencies, gold: respec.gold },
+            },
+            result: true,
+          };
+        }),
+
+      buyMasteryNode: (characterId, nodeId) =>
+        persist((current) => {
+          const progression = purchaseMasteryNode(
+            characterId,
+            current.characters[characterId],
+            nodeId,
+          );
+          if (progression === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              characters: { ...current.characters, [characterId]: progression },
+            },
+            result: true,
+          };
+        }),
+
+      respecDiscipline: (characterId, discipline) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const respec = respecMasteryDiscipline(
+            current.characters[characterId],
+            discipline,
+            current.currencies.gold,
+          );
+          if (respec === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: respec.gold },
+              characters: { ...current.characters, [characterId]: respec.progression },
+            },
+            result: true,
+          };
+        }),
+
+      buyCrucibleNode: (nodeId) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const purchase = purchaseCrucibleNode(
+            current.crucible,
+            current.currencies.crystals,
+            current.completedDungeons,
+            nodeId,
+          );
+          if (purchase === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              crucible: purchase.ranks,
+              currencies: { ...current.currencies, crystals: purchase.crystals },
+            },
+            result: true,
+          };
+        }),
+
+      respecCrucible: (tree) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const respec = respecCrucibleTree(current.crucible, current.currencies.crystals, tree);
+          if (respec === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              crucible: respec.ranks,
+              currencies: { ...current.currencies, crystals: respec.crystals },
+            },
+            result: true,
+          };
+        }),
+
+      // Der Abschluss setzt nur das Vollendet-Flag; ein neuer Einstieg entsteht ausschließlich
+      // über den Waystone-Kauf (docs/spec/PROGRESSION.md#31-anvil-sparks).
+      completeDungeon: (dungeonId) =>
+        persist((current) => {
+          const next: SaveData = {
+            ...current,
+            completedDungeons: { ...current.completedDungeons, [dungeonId]: true },
+          };
+          return { next, result: next };
+        }),
+
+      setPlaybackSpeed: (playbackSpeed) =>
+        persist((current) => ({
+          next: { ...current, playbackSpeed },
+          result: undefined,
+        })),
+    };
+  });
 }
 
 function requiredSave(data: SaveData | null): SaveData {
@@ -106,11 +296,24 @@ function requiredSave(data: SaveData | null): SaveData {
   return data;
 }
 
+/**
+ * Situativer Optimierungs-Guard des Browser-Stores. Das Dungeon-Feature registriert beim Laden
+ * seine Run-Sperre (dungeonRunStore.ts); ohne geladenes Dungeon-Feature existiert kein Run,
+ * der Default erlaubt deshalb.
+ */
+let optimizationGuard: () => boolean = () => true;
+
+export function registerOptimizationGuard(guard: () => boolean): void {
+  optimizationGuard = guard;
+}
+
 const browserSaveService = createSaveService(createLocalStorageSavePort(), () =>
   createDefaultSave(createSaveSeed()),
 );
 
-export const saveStore = createSaveStore(browserSaveService);
+export const saveStore = createSaveStore(browserSaveService, {
+  canOptimize: () => optimizationGuard(),
+});
 
 export function useSaveStore<T>(selector: (state: SaveStoreState) => T): T {
   return useStore(saveStore, selector);

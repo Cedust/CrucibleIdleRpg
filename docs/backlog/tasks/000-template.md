@@ -19,7 +19,7 @@ Was ausdrücklich in einem späteren Task liegt — mit Verweis auf diesen, soba
 ## Verbindliche Spec-Anker
 
 Je Zeile ein Link plus ein Halbsatz, was daraus gilt — Form:
-`[Rundenablauf](../../spec/COMBAT.md#11-rundenablauf) — Initiative-Ordnung und Pending-Queue`.
+`[Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — Initiative-Ordnung und Pending-Queue`.
 
 Regeln werden hier verlinkt, nicht wiederholt. Fehlt eine Regel, wird sie nicht erfunden:
 Eintrag nach [OPEN_ISSUES.md](../OPEN_ISSUES.md) und Status auf `blocked`.
@@ -27,7 +27,7 @@ Eintrag nach [OPEN_ISSUES.md](../OPEN_ISSUES.md) und Status auf `blocked`.
 ## Akzeptanzkriterien
 
 - [ ] prüfbare Aussage, eine pro Zeile
-- [ ] Unit-Tests für neue Spiellogik ([AGENTS.md §10](../../../AGENTS.md#10-tests))
+- [ ] Unit-Tests für neue Spiellogik ([AGENTS.md](../../../AGENTS.md))
 
 ## Betroffene Dateien
 
@@ -35,4 +35,4 @@ Eintrag nach [OPEN_ISSUES.md](../OPEN_ISSUES.md) und Status auf `blocked`.
 
 ## Definition of Done
 
-[AGENTS.md §11](../../../AGENTS.md#11-entwicklungs-workflow-für-agenten-verbindlich).
+[AGENTS.md](../../../AGENTS.md).

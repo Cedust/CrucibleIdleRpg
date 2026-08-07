@@ -1,13 +1,12 @@
-import { z } from 'zod';
 import type { SavePort } from '@/shared/ports/savePort';
-import { currentSaveSchema, saveSchemaV1, type SaveData } from './saveSchema';
+import { saveSchema, type SaveData } from './saveSchema';
 
 /**
- * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md §7).
+ * Serialisierungs-/Validierungsschicht über dem SavePort (siehe AGENTS.md).
  *
- * Zuständig für JSON, Versionierung/Migration und Zod-Validierung. Bei korruptem
- * oder inkompatiblem Save wird kontrolliert auf den Default zurückgesetzt statt
- * mit fehlerhaftem Zustand abzustürzen.
+ * Zuständig für JSON und Zod-Validierung. Im Pre-Release wird ausschließlich das
+ * aktuelle Schema geladen; korrupte oder anders versionierte Saves werden kontrolliert
+ * auf den Default zurückgesetzt. Migrationen entstehen nur auf explizite Anforderung.
  */
 export function createSaveService(port: SavePort, createFallback: () => SaveData) {
   return {
@@ -18,8 +17,7 @@ export function createSaveService(port: SavePort, createFallback: () => SaveData
       }
 
       try {
-        const parsed: unknown = JSON.parse(raw);
-        return migrate(parsed);
+        return saveSchema.parse(JSON.parse(raw));
       } catch (error) {
         console.warn('Speicherstand ungültig — Zurücksetzen auf Default.', error);
         return createFallback();
@@ -27,7 +25,7 @@ export function createSaveService(port: SavePort, createFallback: () => SaveData
     },
 
     async save(data: SaveData): Promise<void> {
-      const validated = currentSaveSchema.parse(data);
+      const validated = saveSchema.parse(data);
       await port.save(JSON.stringify(validated));
     },
 
@@ -35,20 +33,6 @@ export function createSaveService(port: SavePort, createFallback: () => SaveData
       await port.clear();
     },
   };
-}
-
-const versionSchema = z.object({ version: z.number().int() }).passthrough();
-
-/** Hebt jede bekannte Save-Version explizit auf das aktuelle Format an. */
-function migrate(data: unknown): SaveData {
-  const versioned = versionSchema.parse(data);
-
-  switch (versioned.version) {
-    case 1:
-      return saveSchemaV1.parse(versioned);
-    default:
-      throw new Error(`Unbekannte Save-Version: ${versioned.version}`);
-  }
 }
 
 export type SaveService = ReturnType<typeof createSaveService>;

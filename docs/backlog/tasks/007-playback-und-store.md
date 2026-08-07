@@ -27,7 +27,7 @@ folgt in M2 — die Stufe ist als Parameter vorzusehen. Rendering liegt in
   Akkumulator trägt, Page Visibility ist nur Beschleuniger; **Deckel 5 Minuten**, darüber
   hinaus verfällt Zeit; Zeitbudget pro Frame mit Abgabe an den Browser
 - [Grundmodell](../../spec/SIMULATION.md#1-grundmodell-verbindlich) — kein Offline-Progress
-- [AGENTS.md §6](../../../AGENTS.md#6-state-management-zustand) — Zustand-Store pro Feature,
+- [AGENTS.md](../../../AGENTS.md) — Zustand-Store pro Feature,
   selektive Subscriptions
 
 ## Akzeptanzkriterien
@@ -40,7 +40,7 @@ folgt in M2 — die Stufe ist als Parameter vorzusehen. Rendering liegt in
 - [x] Ein Catch-up-Batch gibt zwischendurch an den Browser ab
 - [x] Pause hält das Playback an, ohne Zeit zu akkumulieren
 - [x] Der Store hält den laufenden Kampf und wird beim Ansichtswechsel nicht zurückgesetzt
-      ([AGENTS.md §6](../../../AGENTS.md#6-state-management-zustand))
+      ([AGENTS.md](../../../AGENTS.md))
 - [x] Die Zeitquelle ist injizierbar, damit der Test ohne echte Uhr läuft
 
 ## Betroffene Dateien

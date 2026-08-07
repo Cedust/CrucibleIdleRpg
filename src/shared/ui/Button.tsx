@@ -12,7 +12,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   ghost: 'bg-transparent text-text hover:bg-surface-raised',
 };
 
-/** Basis-Button-Primitive (Plain Tailwind, siehe AGENTS.md §8). */
+/** Basis-Button-Primitive (Plain Tailwind, siehe AGENTS.md). */
 export function Button({ variant = 'primary', className = '', ...props }: ButtonProps) {
   return (
     <button

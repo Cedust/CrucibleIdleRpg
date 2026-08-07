@@ -19,8 +19,10 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true,
-    environment: 'jsdom',
+    // Logiktests laufen unter Node; DOM-abhängige Tests deklarieren jsdom per
+    // `// @vitest-environment jsdom`-Pragma. Das spart den jsdom-Aufbau für die
+    // reine Spiellogik, die den Großteil der Suite stellt.
+    environment: 'node',
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     // Playwright-E2E-Tests laufen separat (npm run test:e2e), nicht über Vitest

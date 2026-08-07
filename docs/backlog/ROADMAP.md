@@ -21,14 +21,15 @@ Ob dieser Kern trägt, zeigt sich am Bildschirm, nicht in der Testsuite.
 
 ## 2. Meilensteine
 
-| #      | Meilenstein                                                      | Ergebnis                                                                      |
-| ------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| **M1** | [Ein Floor, sichtbar gekämpft](#m1--ein-floor-sichtbar-gekämpft) | Ein Kampf läuft live ab, endet mit Sieg oder Wipe, das Ergebnis liegt im Save |
-| **M2** | [Fortschritt](#m2--fortschritt)                                  | Dungeon-Kette, XP, Level, Attribute, Weapon Mastery, Crucible                 |
-| **M3** | [Ausrüstung](#m3--ausrüstung)                                    | Armor-Slots, Innate, Item-Drops, Equip-Ansicht                                |
-| **M4** | [Handwerk](#m4--handwerk)                                        | Blacksmith, Jeweler, Gems, Cinder                                             |
-| **M5** | [Runen & Sigils](#m5--runen--sigils)                             | Talisman, Rite, Grimoire, Sigil Codex                                         |
-| **M6** | [Endgame & Politur](#m6--endgame--politur)                       | Akt 2/3, Bosse, Balancing-Pass, Deploy                                        |
+| #        | Meilenstein                                                      | Ergebnis                                                                         |
+| -------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **M1**   | [Ein Floor, sichtbar gekämpft](#m1--ein-floor-sichtbar-gekämpft) | Ein Kampf läuft live ab, endet mit Sieg oder Wipe, das Ergebnis liegt im Save    |
+| **M2**   | [Fortschritt](#m2--fortschritt)                                  | Dungeon-Kette, XP, Level, Attribute, Weapon Mastery, Crucible                    |
+| **M2.5** | [UI-Fundament](#m25--ui-fundament)                               | „Gilded Ruins“-Design-System, Assets, Combat View und Skill Trees in Spiel-Optik |
+| **M3**   | [Ausrüstung](#m3--ausrüstung)                                    | Armor-Slots, Innate, Item-Drops, Equip-Ansicht                                   |
+| **M4**   | [Handwerk](#m4--handwerk)                                        | Blacksmith, Jeweler, Gems, Cinder                                                |
+| **M5**   | [Runen & Sigils](#m5--runen--sigils)                             | Talisman, Rite, Grimoire, Sigil Codex                                            |
+| **M6**   | [Endgame & Politur](#m6--endgame--politur)                       | Akt 2/3, Bosse, Balancing-Pass, Deploy                                           |
 
 Nur der **aktive** Meilenstein hat ausformulierte Tasks. Spätere Meilensteine stehen als
 Umriss — sie werden erst geschnitten, wenn der vorherige läuft, weil sich der Zuschnitt am
@@ -80,6 +81,24 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 | 8           | [014c — Mastery Combat Arts](tasks/014c-mastery-combat-arts.md)                           | done   | 014b         |
 | 9           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | done   | 012, 014c    |
 | 10          | [016 — Molten Cast Vertiefungen](tasks/016-molten-cast-vertiefungen.md)                   | done   | 015          |
+
+## M2.5 — UI-Fundament
+
+**Fertig, wenn:** Alle bestehenden Screens tragen das „Gilded Ruins“-Design-System
+([DESIGN §5](../DESIGN.md#5-visuelle-umsetzung)): Combat View und Skill Trees nutzen Assets,
+Hintergründe und Ornamentrahmen, und die M3+-Screens bauen auf denselben Tokens und Primitives
+auf. Der vollständige Politur-Pass über alle Screens bleibt in [M6](#m6--endgame--politur).
+
+| Reihenfolge | Task                                                                              | Status  | Hängt ab von |
+| ----------- | --------------------------------------------------------------------------------- | ------- | ------------ |
+| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md) | ready   | 016          |
+| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)     | blocked | 017          |
+| 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)       | blocked | 018          |
+| 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)       | blocked | 018          |
+
+**019 und 020** hängen beide nur an 018 und berühren getrennte Screens — sie sind parallel
+bearbeitbar. Der Meilenstein ist reine View-Arbeit: Simulation, Stores und Save-Schema bleiben
+unverändert.
 
 ## M3 — Ausrüstung
 

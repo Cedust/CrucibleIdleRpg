@@ -47,7 +47,21 @@ geheimnisvoll, aber nie hoffnungslos.
 Das Trio vermittelt Found-Family: Korvin ist ruhig und beschützend, Rhaya impulsiv, Quinn trocken
 und analytisch. Spieltexte sind englisch, kurz, atmosphärisch und eindeutig.
 
-## 5. Bewusste Nicht-Ziele (Design-Perspektive)
+## 5. Visuelle Umsetzung
+
+Die UI setzt „Gilded Ruins“ als eigenes Design-System um: Farben, Typografie und Ornamentik
+leben als Tailwind-`@theme`-Tokens, wiederkehrende Bausteine (Panel, Rahmen, Balken, Tooltip)
+als Primitives in `src/shared/ui/`.
+
+- **Asset-Strategie (hybrid):** Icons stammen aus freien Bibliotheken (z. B.
+  [game-icons.net](https://game-icons.net), CC BY 3.0) und werden per CSS auf die Palette
+  eingefärbt; Hintergründe und Portraits werden KI-generiert. Jedes Asset steht mit Quelle und
+  Lizenz in einem Manifest unter `public/assets/`.
+- **Kampfdarstellung:** Charaktere und Gegner erscheinen als statische Portraits; Treffer,
+  Schaden und Tod vermitteln Animationen und schwebende Schadenszahlen. Das erhält die
+  Zug-für-Zug-Lesbarkeit (Pillar 2).
+
+## 6. Bewusste Nicht-Ziele (Design-Perspektive)
 
 Kein unendlicher Prestige-Treadmill, keine passive Offline-Fortschrittsmaschine und keine
 Framework-Default-Optik. Die genauen Produkt- und Technikgrenzen stehen in

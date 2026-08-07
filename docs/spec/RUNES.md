@@ -131,7 +131,7 @@ Verbindlicher Wohnort der Runedust-Drop-Regeln.
   Modifier und erhält eine **zufällige noch unbekannte** Rune dieser Kategorie, gezogen aus
   dem nach **Mindesttiefe** gestaffelten Pool. Kosten: Runedust + Gold.
   - **Es werden ausschließlich Unbekannte gezogen** — keine Duplikate, keine Fehlzüge
-    (Design-Absicht: [DESIGN §5](../DESIGN.md#5-bewusste-nicht-ziele-design-perspektive)).
+    (Design-Absicht: [DESIGN §6](../DESIGN.md#6-bewusste-nicht-ziele-design-perspektive)).
   - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
 - **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
   Kosten: Runedust + Gold, pro Level steigend. Kein RNG.

@@ -538,9 +538,11 @@ const weaponBehaviors: Record<
       MASTERY_IDS.razorsEdge,
     ],
     [
+      // Sichtbar `Twin Echo` (docs/spec/WEAPON-MASTERY.md#52-twin-blades--rhaya); der
+      // persistierte Identifier bleibt `weapon.second-wind` — Spielstände laden unverändert.
       MASTERY_IDS.secondWind,
       'grandmaster',
-      'Second Wind',
+      'Twin Echo',
       [MASTERY_IDS.razorsEdge, MASTERY_IDS.bladePoise],
       'Clean hits add the lower Twin Measure roll as a 25% separate hit.',
     ],

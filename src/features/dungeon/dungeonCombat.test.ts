@@ -72,6 +72,17 @@ describe('createDungeonEntryCombat', () => {
     expect(second.characters[0]?.health).toBe(second.characters[0]?.maxHealth);
   });
 
+  it('trägt den Second-Wind-Verbrauch über die Floors eines Runs; ein neuer Run beginnt unverbraucht (SIGNATURES §2.4)', () => {
+    const save = createDefaultSave(4242);
+    const first = createDungeonEntryCombat(save, 'A1-D1');
+    expect(first.secondWindConsumed).toBe(false);
+
+    const second = createNextDungeonCombat(save, { ...first, secondWindConsumed: true });
+    expect(second.secondWindConsumed).toBe(true);
+
+    expect(createDungeonEntryCombat(save, 'A1-D1').secondWindConsumed).toBe(false);
+  });
+
   it('lässt Gefallene ohne Rally besiegt', () => {
     const save = createDefaultSave(4242);
     const first = createDungeonEntryCombat(save, 'A1-D1');

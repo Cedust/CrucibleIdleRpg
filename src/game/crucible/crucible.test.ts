@@ -1,17 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ambushBonus,
   CRUCIBLE_IDS,
   CRUCIBLE_NODES,
   crucibleNodeById,
   deriveUnlockedDungeonIds,
   investedCrystals,
   meetsPrerequisites,
+  menaceReduction,
   mitigationShare,
+  momentumCap,
   purchaseCrucibleNode,
   purchaseFailure,
   rallyShare,
   rankCost,
   respecCrucibleTree,
+  secondWindShare,
   smeltingEffects,
   sunderEffect,
   suppressionPlaces,
@@ -58,7 +62,7 @@ describe('crucible node catalog', () => {
     }
   });
 
-  it('locks armory, blacksmith, jeweler, masterwork and the four molten deepenings', () => {
+  it('locks armory, blacksmith, jeweler and masterwork', () => {
     const lockedIds = CRUCIBLE_NODES.filter((node) => node.lockedUntil !== undefined).map(
       (node) => node.id,
     );
@@ -67,10 +71,6 @@ describe('crucible node catalog', () => {
         CRUCIBLE_IDS.armory,
         CRUCIBLE_IDS.blacksmith,
         CRUCIBLE_IDS.jeweler,
-        CRUCIBLE_IDS.ambush,
-        CRUCIBLE_IDS.menace,
-        CRUCIBLE_IDS.momentum,
-        CRUCIBLE_IDS.secondWind,
         CRUCIBLE_IDS.runeGrimoire,
         CRUCIBLE_IDS.talisman,
         CRUCIBLE_IDS.runicFocus,
@@ -79,7 +79,7 @@ describe('crucible node catalog', () => {
     );
   });
 
-  it('offers exactly 130 active crystal costs: 10 anvil, 60 smelting, 60 molten (PROGRESSION §3.5)', () => {
+  it('offers exactly 190 active crystal costs: 10 anvil, 60 smelting, 120 molten (PROGRESSION §3.5)', () => {
     const active = CRUCIBLE_NODES.filter((node) => node.lockedUntil === undefined);
     const costOf = (tree: string): number =>
       active
@@ -88,7 +88,7 @@ describe('crucible node catalog', () => {
 
     expect(costOf('anvil')).toBe(10);
     expect(costOf('smelting')).toBe(60);
-    expect(costOf('molten')).toBe(60);
+    expect(costOf('molten')).toBe(120);
     expect(costOf('masterwork')).toBe(0);
   });
 });
@@ -151,13 +151,25 @@ describe('purchase rules', () => {
       CRUCIBLE_IDS.armory,
       CRUCIBLE_IDS.blacksmith,
       CRUCIBLE_IDS.jeweler,
-      CRUCIBLE_IDS.ambush,
-      CRUCIBLE_IDS.menace,
-      CRUCIBLE_IDS.momentum,
-      CRUCIBLE_IDS.secondWind,
       CRUCIBLE_IDS.runeGrimoire,
     ]) {
       expect(purchaseFailure({}, 100, ALL_DUNGEONS, id)).toMatch(/^Locked until /);
+    }
+  });
+
+  it('sells each molten deepening only from rank 1 of its base node (PROGRESSION §3.3)', () => {
+    const pairs = [
+      [CRUCIBLE_IDS.sunder, CRUCIBLE_IDS.ambush],
+      [CRUCIBLE_IDS.mitigation, CRUCIBLE_IDS.menace],
+      [CRUCIBLE_IDS.suppression, CRUCIBLE_IDS.momentum],
+      [CRUCIBLE_IDS.rally, CRUCIBLE_IDS.secondWind],
+    ] as const;
+
+    for (const [base, deepening] of pairs) {
+      expect(purchaseFailure({}, 100, NO_DUNGEONS, deepening)).toBe(
+        'A prerequisite node is missing.',
+      );
+      expect(purchaseFailure({ [base]: 1 }, 100, NO_DUNGEONS, deepening)).toBeNull();
     }
   });
 
@@ -212,6 +224,18 @@ describe('tree respec (PROGRESSION §3)', () => {
     });
   });
 
+  it('refunds base nodes and deepenings in the same atomic molten respec', () => {
+    const invested = {
+      [CRUCIBLE_IDS.rally]: 2,
+      [CRUCIBLE_IDS.secondWind]: 3,
+      [CRUCIBLE_IDS.overpower]: 1,
+    };
+
+    const respec = respecCrucibleTree(invested, 0, 'molten');
+
+    expect(respec).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 1 }, crystals: 3 + 6 });
+  });
+
   it('rejects a respec without investment', () => {
     expect(respecCrucibleTree({ [CRUCIBLE_IDS.waystones]: 2 }, 0, 'smelting')).toBeNull();
   });
@@ -256,6 +280,30 @@ describe('rank values (SIGNATURES §1, PROGRESSION §3.2, §4)', () => {
   it('maps rally ranks to 10/15/20/25/30% of max health', () => {
     expect(rallyShare({})).toBe(0);
     expect(rallyShare({ [CRUCIBLE_IDS.rally]: 3 })).toBe(0.2);
+  });
+
+  it('maps ambush ranks to 5/10/15/20/25% round-1 damage and 0 before unlock (SIGNATURES §2.1)', () => {
+    expect(ambushBonus({})).toBe(0);
+    expect(ambushBonus({ [CRUCIBLE_IDS.ambush]: 1 })).toBe(0.05);
+    expect(ambushBonus({ [CRUCIBLE_IDS.ambush]: 5 })).toBe(0.25);
+  });
+
+  it('maps menace ranks to 2/4/6/8/10% accuracy reduction and 0 before unlock (SIGNATURES §2.2)', () => {
+    expect(menaceReduction({})).toBe(0);
+    expect(menaceReduction({ [CRUCIBLE_IDS.menace]: 1 })).toBe(0.02);
+    expect(menaceReduction({ [CRUCIBLE_IDS.menace]: 5 })).toBe(0.1);
+  });
+
+  it('maps momentum ranks to the initiative cap and 0 before unlock (SIGNATURES §2.3)', () => {
+    expect(momentumCap({})).toBe(0);
+    expect(momentumCap({ [CRUCIBLE_IDS.momentum]: 3 })).toBe(3);
+    expect(momentumCap({ [CRUCIBLE_IDS.momentum]: 5 })).toBe(5);
+  });
+
+  it('maps second wind ranks to 10/15/20/25/30% of max health and 0 before unlock (SIGNATURES §2.4)', () => {
+    expect(secondWindShare({})).toBe(0);
+    expect(secondWindShare({ [CRUCIBLE_IDS.secondWind]: 3 })).toBe(0.2);
+    expect(secondWindShare({ [CRUCIBLE_IDS.secondWind]: 5 })).toBe(0.3);
   });
 
   it('adds smelting nodes additively within the crucible layer and quick step flat', () => {

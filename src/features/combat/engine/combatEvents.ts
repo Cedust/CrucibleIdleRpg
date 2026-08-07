@@ -25,7 +25,8 @@ import type { HitKind } from './outgoingDamage';
  * [combatEnd]   wenn Sieg oder Wipe feststeht
  * ```
  *
- * Ein `defeat` folgt unmittelbar auf das Event, das den Akteur gefällt hat.
+ * Ein `defeat` folgt unmittelbar auf das Event, das den Akteur gefällt hat; ein `secondWind`
+ * steht an dessen Stelle, wenn der tödliche Treffer verhindert wurde.
  */
 
 /** Rundenbeginn: Barrier neu gesetzt, Pending-Queue gebildet (COMBAT §1.1, Schritt 1). */
@@ -106,6 +107,18 @@ export interface DefeatEvent {
   actor: ActorRef;
 }
 
+/**
+ * Second Wind (docs/spec/SIGNATURES.md#24-second-wind-nach-rally): Der erste tödliche Treffer
+ * des Dungeon-Runs wurde verhindert; der Charakter überlebt mit dem Rang-Anteil seiner
+ * Max-Health.
+ */
+export interface SecondWindEvent {
+  type: 'secondWind';
+  actor: ActorRef;
+  /** Health nach der Auslösung. */
+  health: number;
+}
+
 /** Rundenende — ohne gesonderte Effekte (COMBAT §1.1, Schritt 3). */
 export interface RoundEndEvent {
   type: 'roundEnd';
@@ -127,6 +140,7 @@ export type CombatEvent =
   | DamageTakenEvent
   | RegenerationEvent
   | DefeatEvent
+  | SecondWindEvent
   | RoundEndEvent
   | CombatEndEvent;
 

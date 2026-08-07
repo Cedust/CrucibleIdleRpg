@@ -111,6 +111,34 @@ describe('CombatLog', () => {
     expect(entry).toHaveTextContent('Counter');
   });
 
+  it('stellt Second Wind als überlebten tödlichen Treffer dar (SIGNATURES §2.4)', () => {
+    const state = combat();
+    const tick: TickResult = {
+      state,
+      actor: { side: 'enemy', index: 0 },
+      outcome: 'ongoing',
+      events: [
+        { type: 'secondWind', actor: { side: 'character', index: 0 }, health: 40 },
+        {
+          type: 'hit',
+          source: { side: 'character', index: 1 },
+          target: { side: 'enemy', index: 0 },
+          kind: 'secondWind',
+          damage: 6,
+          crit: false,
+          targetHealth: 34,
+        },
+      ],
+    };
+    useCombatStore.setState({ combat: state, outcome: 'ongoing', tickLog: [{ id: 0, tick }] });
+    render(<CombatLog />);
+
+    const entry = screen.getByRole('listitem');
+    expect(entry).toHaveTextContent('Second Wind: Korvin survives with 40 health');
+    // Der Mastery-Treffer `weapon.second-wind` heißt sichtbar Twin Echo (WEAPON-MASTERY §5.2).
+    expect(entry).toHaveTextContent('Twin Echo: 6 damage');
+  });
+
   it('zeigt den neuesten Zugblock im gedeckelten Log zuerst', () => {
     const state = combat();
     const first: TickResult = {

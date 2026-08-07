@@ -130,20 +130,26 @@ describe('saveSchema', () => {
     const save = createDefaultSave(123);
     const valid = {
       ...save,
-      crucible: { 'anvil.waystones': 1, 'smelting.overpower': 3, 'molten.rally': 5 },
+      crucible: {
+        'anvil.waystones': 1,
+        'smelting.overpower': 3,
+        'molten.rally': 5,
+        'molten.second-wind': 2,
+      },
       completedDungeons: { ...save.completedDungeons, 'A1-D1': true },
     };
 
     expect(saveSchema.safeParse(valid).success).toBe(true);
   });
 
-  it('lehnt unbekannte Crucible-IDs, Überränge und gesperrte Nodes ab', () => {
+  it('lehnt unbekannte Crucible-IDs, Überränge, fehlende Voraussetzungen und gesperrte Nodes ab', () => {
     const save = createDefaultSave(123);
 
     expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.unknown': 1 } }).success).toBe(false);
     expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.waystones': 5 } }).success).toBe(
       false,
     );
+    // Ambush verlangt Sunder Rang 1 (PROGRESSION §3.3).
     expect(saveSchema.safeParse({ ...save, crucible: { 'molten.ambush': 1 } }).success).toBe(false);
     expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.armory': 1 } }).success).toBe(false);
   });

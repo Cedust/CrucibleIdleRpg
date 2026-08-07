@@ -12,11 +12,16 @@ import {
 } from './combatState';
 import type { CombatEvent } from './combatEvents';
 import { resolveCounters } from './counter';
-import { NO_MITIGATION, resolveEnemyAttack } from './damagePipeline';
+import {
+  menacedAccuracy,
+  NO_MITIGATION,
+  resolveEnemyAttack,
+  type IncomingDamageResult,
+} from './damagePipeline';
 import { masteryContextFor } from './masteryCombat';
 import { resolveCharacterAttack, type AttackContext, type Hit } from './outgoingDamage';
 import { resolveRegeneration } from './regeneration';
-import { pruneDefeated, suppressPendingAction, takeNextActor } from './turnOrder';
+import { pruneDefeated, sameActor, suppressPendingAction, takeNextActor } from './turnOrder';
 
 /**
  * Das Schrittwerk der Kampf-Engine — die reine „Zustand → nächster Takt"-Funktion
@@ -67,6 +72,27 @@ export interface CombatContext {
    * Treffer des tragenden Charakters. Ohne Freischaltung nicht gesetzt.
    */
   suppression?: { characterId: CharacterId; places: number };
+  /**
+   * Ambush (docs/spec/SIGNATURES.md#21-ambush-nach-sunder): Bonus auf den finalen ausgehenden
+   * Schaden aller charaktererzeugten Treffer in Runde 1. Ohne Freischaltung nicht gesetzt.
+   */
+  ambush?: { bonus: number };
+  /**
+   * Menace (docs/spec/SIGNATURES.md#22-menace-nach-mitigation): relative Accuracy-Minderung
+   * eines Gegnerangriffs, solange der Tank zu Angriffsbeginn lebt. Ohne Freischaltung nicht
+   * gesetzt.
+   */
+  menace?: { reduction: number };
+  /**
+   * Momentum (docs/spec/SIGNATURES.md#23-momentum-nach-suppression): Cap des temporären
+   * Initiative-Bonus der Charaktere bei der Queue-Erzeugung. Ohne Freischaltung nicht gesetzt.
+   */
+  momentum?: { cap: number };
+  /**
+   * Second Wind (docs/spec/SIGNATURES.md#24-second-wind-nach-rally): Max-Health-Anteil, mit dem
+   * der erste tödliche Treffer des Dungeon-Runs überlebt wird. Ohne Freischaltung nicht gesetzt.
+   */
+  secondWind?: { share: number };
 }
 
 /**
@@ -118,14 +144,20 @@ interface TurnDraft {
   enemies: CombatEnemy[];
   effectiveDamage: Record<CombatCharacter['id'], number>;
   events: CombatEvent[];
+  /** Ambush (SIGNATURES §2.1): Multiplikator auf den finalen Schaden; `1` außerhalb Runde 1. */
+  finalDamageFactor: number;
+  /** Second-Wind-Verbrauch nach diesem Takt (SIGNATURES §2.4). */
+  secondWindConsumed: boolean;
 }
 
-function draftOf(state: CombatState): TurnDraft {
+function draftOf(state: CombatState, finalDamageFactor: number): TurnDraft {
   return {
     characters: state.characters.map((character) => ({ ...character })),
     enemies: state.enemies.map((enemy) => ({ ...enemy })),
     effectiveDamage: { ...state.effectiveDamage },
     events: [],
+    finalDamageFactor,
+    secondWindConsumed: state.secondWindConsumed,
   };
 }
 
@@ -144,7 +176,10 @@ function damageEnemy(draft: TurnDraft, source: ActorRef, hit: Hit): void {
     return;
   }
 
-  const removedHealth = Math.min(hit.damage, enemy.health);
+  // Ambush wirkt hier, nach allen bestehenden Modifikatoren einschließlich Bulwark — jeder
+  // charaktererzeugte Treffer läuft durch diese Funktion, auch der Counter (SIGNATURES §2.1).
+  const damage = hit.damage * draft.finalDamageFactor;
+  const removedHealth = Math.min(damage, enemy.health);
   enemy.health -= removedHealth;
 
   if (source.side === 'character') {
@@ -159,7 +194,7 @@ function damageEnemy(draft: TurnDraft, source: ActorRef, hit: Hit): void {
     source,
     target: hit.target,
     kind: hit.kind,
-    damage: hit.damage,
+    damage,
     crit: hit.crit,
     targetHealth: enemy.health,
     ...(hit.chainIndex === undefined ? {} : { chainIndex: hit.chainIndex }),
@@ -214,7 +249,7 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
   let current = state;
 
   if (current.pending.length === 0) {
-    current = beginRound(current);
+    current = beginRound(current, context.momentum?.cap ?? 0);
     events.push({ type: 'roundStart', round: current.round });
   }
 
@@ -227,7 +262,11 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
   events.push({ type: 'turnStart', round: current.round, actor });
 
   const prng = resumePrng(current.combatPrngState);
-  const draft = draftOf(current);
+  // Ambush gilt für alle charaktererzeugten Treffer der Runde 1 — auch die Counter eines
+  // Gegner-Takts; ab Runde 2 ist der Multiplikator neutral (SIGNATURES §2.1).
+  const ambushFactor =
+    current.round === 1 && context.ambush !== undefined ? 1 + context.ambush.bonus : 1;
+  const draft = draftOf(current, ambushFactor);
   const tickContext = perTickContext(context);
   let primaryTarget: ActorRef | undefined;
 
@@ -246,6 +285,7 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
     effectiveDamage: draft.effectiveDamage,
     enemies: draft.enemies,
     pending: remaining,
+    secondWindConsumed: draft.secondWindConsumed,
   };
   let next: CombatState = { ...applied, pending: pruneDefeated(applied, remaining) };
 
@@ -464,6 +504,43 @@ function applySuppression(
 }
 
 /**
+ * Second Wind (docs/spec/SIGNATURES.md#24-second-wind-nach-rally): verhindert einmal je
+ * Dungeon-Run das erste tödliche Ergebnis eines Gegnerangriffs. Die Pipeline-Ergebnisse stehen
+ * in Slot-Reihenfolge (Korvin → Rhaya → Quinn) — genau der festen, seedunabhängigen
+ * Team-Reihenfolge des Verbrauchs. Weitere tödliche Ergebnisse desselben Angriffs bleiben
+ * tödlich. Der Gerettete ist getroffen und lebt — er countert deshalb regulär und bleibt in
+ * der Pending-Queue.
+ */
+function applySecondWind(
+  state: CombatState,
+  context: CombatContext,
+  results: readonly IncomingDamageResult[],
+): { results: readonly IncomingDamageResult[]; saved: ActorRef | undefined } {
+  const secondWind = context.secondWind;
+
+  if (secondWind === undefined || state.secondWindConsumed) {
+    return { results, saved: undefined };
+  }
+
+  const index = results.findIndex((result) => result.defeated);
+  const lethal = index === -1 ? undefined : results[index];
+  const character = lethal === undefined ? undefined : state.characters[lethal.ref.index];
+
+  if (lethal === undefined || character === undefined) {
+    return { results, saved: undefined };
+  }
+
+  const health = secondWind.share * character.maxHealth;
+
+  return {
+    results: results.map((result, position) =>
+      position === index ? { ...result, health, defeated: false } : result,
+    ),
+    saved: lethal.ref,
+  };
+}
+
+/**
  * Der Zug eines Gegners: ein team-weiter Schwung durch die Schadenspipeline (COMBAT §2.3),
  * **danach** die Counter der getroffenen Überlebenden in Slot-Reihenfolge (COMBAT §1.1, §2.1).
  *
@@ -484,12 +561,19 @@ function resolveEnemyTurn(
     throw new Error(`Zug eines unbekannten Gegners: Slot ${actor.index}`);
   }
 
-  const attack = resolveEnemyAttack(state.characters, enemy, prng, context.mitigation);
-  const counters = resolveCounters(state, actor, attack.results, prng, context.contextFor);
+  // Menace legt die Accuracy zu Angriffsbeginn fest — fällt der Tank an diesem Angriff, gilt
+  // sie noch für dessen vollständige Auflösung (SIGNATURES §2.2).
+  const attacker = {
+    attack: enemy.attack,
+    accuracy: menacedAccuracy(state.characters, enemy.accuracy, context.menace?.reduction ?? 0),
+  };
+  const attack = resolveEnemyAttack(state.characters, attacker, prng, context.mitigation);
+  const { results, saved } = applySecondWind(state, context, attack.results);
+  const counters = resolveCounters(state, actor, results, prng, context.contextFor);
 
   draft.events.push({ type: 'enemyAttack', source: actor, attack: attack.attack });
 
-  for (const result of attack.results) {
+  for (const result of results) {
     const character = draft.characters[result.ref.index];
 
     if (character === undefined) {
@@ -509,6 +593,11 @@ function resolveEnemyTurn(
       healthLost: result.healthLost,
       health: result.health,
     });
+
+    if (saved !== undefined && sameActor(saved, result.ref)) {
+      draft.secondWindConsumed = true;
+      draft.events.push({ type: 'secondWind', actor: result.ref, health: result.health });
+    }
 
     if (result.defeated) {
       draft.events.push({ type: 'defeat', actor: result.ref });

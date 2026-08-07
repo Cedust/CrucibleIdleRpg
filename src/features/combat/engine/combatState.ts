@@ -24,7 +24,7 @@ import {
   type ResumablePrng,
 } from '@/shared/utils/prng';
 import { deriveCharacterStats, type CharacterProgression } from './characterStats';
-import { buildPendingQueue } from './turnOrder';
+import { buildPendingQueue, momentumBonus } from './turnOrder';
 
 /**
  * Kampfzustand — Typen und deterministischer Aufbau aus Floor-Seed und Formation
@@ -127,6 +127,12 @@ export interface CombatState {
   round: number;
   /** Offene Aktionen der laufenden Runde (COMBAT §1.1). */
   pending: readonly ActorRef[];
+  /**
+   * Second Wind ist im laufenden Dungeon-Run bereits verbraucht
+   * (docs/spec/SIGNATURES.md#24-second-wind-nach-rally). Der Wert wird über die Floors eines
+   * Runs mitgeschleppt; erst ein neuer Run setzt ihn zurück.
+   */
+  secondWindConsumed: boolean;
 }
 
 /** Ein Team-Mitglied für den Kampfaufbau. */
@@ -148,6 +154,11 @@ export interface CombatSetup {
   formation: FormationDefinition;
   /** Alle drei Charaktere; die Reihenfolge im Array ist unerheblich. */
   team: readonly TeamMemberSetup[];
+  /**
+   * Übernommener Second-Wind-Verbrauch aus dem vorigen Floor desselben Runs
+   * (docs/spec/SIGNATURES.md#24-second-wind-nach-rally). Ohne Angabe unverbraucht.
+   */
+  secondWindConsumed?: boolean;
 }
 
 /* ------------------------------------------------------------------ Seed-Kette */
@@ -322,6 +333,7 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     enemies,
     round: 0,
     pending: [],
+    secondWindConsumed: setup.secondWindConsumed ?? false,
   };
 }
 
@@ -340,11 +352,13 @@ export function isAlive(actor: { health: number }): boolean {
 /**
  * Rundenbeginn (COMBAT §1.1, Schritt 1): Die Barrier jedes lebenden Charakters wird auf den
  * Barrier-Stat **neu gesetzt** — der Rest der Vorrunde verfällt, Barrier stackt nicht. Danach
- * steht die Pending-Queue aus allen lebenden Akteuren in Zugordnung.
+ * steht die Pending-Queue aus allen lebenden Akteuren in Zugordnung; `momentumCap` fließt als
+ * temporärer Initiative-Bonus `min(Runde − 1, Cap)` der Charaktere ein
+ * (docs/spec/SIGNATURES.md#23-momentum-nach-suppression).
  *
  * Verbraucht keinen PRNG-Zug.
  */
-export function beginRound(state: CombatState): CombatState {
+export function beginRound(state: CombatState, momentumCap = 0): CombatState {
   const characters = state.characters.map((character) => ({
     ...character,
     barrier: isAlive(character) ? character.stats.defensive.barrier : 0,
@@ -358,5 +372,5 @@ export function beginRound(state: CombatState): CombatState {
     pending: [],
   };
 
-  return { ...next, pending: buildPendingQueue(next) };
+  return { ...next, pending: buildPendingQueue(next, momentumBonus(next.round, momentumCap)) };
 }

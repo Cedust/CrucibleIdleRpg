@@ -140,6 +140,23 @@ export function hitChance(accuracy: number, evasion: number): number {
 }
 
 /**
+ * Menace (docs/spec/SIGNATURES.md#22-menace-nach-mitigation): mindert die Accuracy eines
+ * Gegnerangriffs relativ um `reduction`, **bevor** Evasion angewandt wird —
+ * `Accuracy × (1 − Menace) × (1 − Evasion)`. Die Minderung greift nur, solange der Tank zu
+ * Angriffsbeginn lebt; wie bei der Mitigation zielt sie strukturell auf die Tank-Rolle. Der
+ * Angriff verwendet die zu Angriffsbeginn festgelegte Accuracy für seine gesamte Auflösung.
+ */
+export function menacedAccuracy(
+  characters: readonly CombatCharacter[],
+  accuracy: number,
+  reduction: number,
+): number {
+  const tankAlive = characters.some((character) => character.role === 'tank' && isAlive(character));
+
+  return tankAlive ? accuracy * (1 - Math.min(Math.max(reduction, 0), 1)) : accuracy;
+}
+
+/**
  * **Proportionale Mitigation** über die globale Defense-Konstante `K` (COMBAT §2.3, Schritt 4):
  *
  * ```

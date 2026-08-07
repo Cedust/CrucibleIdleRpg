@@ -27,7 +27,10 @@ export function createDungeonEntryCombat(save: SaveData, dungeonId: Act1DungeonI
  *
  * **Rally** (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch) wirkt genau hier — am
  * erfolgreichen Floor-Übergang: Alle Gefallenen betreten den Folgefloor mit dem Rang-Anteil
- * ihrer Max-Health. Wipe, Verlassen und Dungeon-Ende laufen nicht über diese Funktion.
+ * ihrer Max-Health. Der **Second-Wind-Verbrauch** wird mitgeschleppt — er gilt für den ganzen
+ * Run (docs/spec/SIGNATURES.md#24-second-wind-nach-rally); erst ein neuer Run über
+ * `createDungeonEntryCombat` beginnt unverbraucht. Wipe, Verlassen und Dungeon-Ende laufen
+ * nicht über diese Funktion.
  */
 export function createNextDungeonCombat(save: SaveData, previous: CombatState): CombatState {
   const previousEncounter = resolveAct1Encounter(previous.floorId);
@@ -46,6 +49,7 @@ export function createNextDungeonCombat(save: SaveData, previous: CombatState): 
       id: character.id,
       carriedHealth: character.health > 0 ? character.health : rally * character.maxHealth,
     })),
+    previous.secondWindConsumed,
   );
 }
 
@@ -53,6 +57,7 @@ function createDungeonCombat(
   save: SaveData,
   encounter: ReturnType<typeof getAct1DungeonEntry>,
   carriedTeam: readonly { id: (typeof TEAM_ORDER)[number]; carriedHealth?: number }[] = [],
+  secondWindConsumed = false,
 ): CombatState {
   // `FORMATIONS` ist ein totales Record über `FormationId` — der Zugriff ist typsicher.
   const formation = FORMATIONS[encounter.formationId];
@@ -77,5 +82,6 @@ function createDungeonCombat(
       },
       carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
     })),
+    secondWindConsumed,
   });
 }

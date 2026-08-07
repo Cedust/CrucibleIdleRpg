@@ -10,6 +10,9 @@ function actorName(state: CombatState, actor: ActorRef): string {
   return participant?.name ?? 'Unknown actor';
 }
 
+// `secondWind` ist der Treffer des Mastery-Nodes `weapon.second-wind` — sichtbar `Twin Echo`
+// (docs/spec/WEAPON-MASTERY.md#52-twin-blades--rhaya), damit der Molten-Skill Second Wind
+// (docs/spec/SIGNATURES.md#24-second-wind-nach-rally) den Namen allein trägt.
 const HIT_LABEL: Record<HitKind, string> = {
   base: 'Hit',
   multiHit: 'Multi Hit',
@@ -18,7 +21,7 @@ const HIT_LABEL: Record<HitKind, string> = {
   epicenter: 'Epicenter',
   focusedBlast: 'Focused Blast',
   aftershock: 'Aftershock',
-  secondWind: 'Second Wind',
+  secondWind: 'Twin Echo',
   counter: 'Counter',
 };
 
@@ -46,6 +49,8 @@ function eventText(state: CombatState, event: CombatEvent): string {
       return `${actorName(state, event.actor)} regenerates ${formatNumber(event.healed)} health`;
     case 'defeat':
       return `${actorName(state, event.actor)} is defeated`;
+    case 'secondWind':
+      return `Second Wind: ${actorName(state, event.actor)} survives with ${formatNumber(event.health)} health`;
     case 'roundEnd':
       return `Round ${event.round} ends`;
     case 'combatEnd':

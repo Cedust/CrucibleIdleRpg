@@ -164,6 +164,7 @@ export function combatStateFixture(
     enemies,
     round: 1,
     pending: [],
+    secondWindConsumed: false,
     ...overrides,
   };
 }

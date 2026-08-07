@@ -79,10 +79,7 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 | 7           | [014b — Weapon Mastery](tasks/014b-weapon-mastery.md)                                     | done   | 014a         |
 | 8           | [014c — Mastery Combat Arts](tasks/014c-mastery-combat-arts.md)                           | done   | 014b         |
 | 9           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | done   | 012, 014c    |
-| 10          | [016 — Molten Cast Vertiefungen](tasks/016-molten-cast-vertiefungen.md)                   | ready  | 015          |
-
-**016** ist `ready`: Die Vertiefungen setzen auf Katalog, Persistenz und Kampf-Hebeln aus 015 auf;
-ihre Kampfwirkungen stehen in [Signatur- und Molten-Skills](../spec/SIGNATURES.md#2-molten-cast-vertiefungen).
+| 10          | [016 — Molten Cast Vertiefungen](tasks/016-molten-cast-vertiefungen.md)                   | done   | 015          |
 
 ## M3 — Ausrüstung
 

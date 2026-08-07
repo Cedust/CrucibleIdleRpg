@@ -82,8 +82,8 @@ const node = (
 
 /**
  * Der vollständige Katalog (PROGRESSION §3.1–§3.4). Gesperrte Nodes erscheinen sichtbar als
- * Voraussetzungen späterer Systeme; kaufbar sind in M2 Waystones, Smelting und die vier
- * Molten-Basisnodes — zusammen 130 aktive Crystal-Kosten (PROGRESSION §3.5).
+ * Voraussetzungen späterer Systeme; kaufbar sind in M2 Waystones, Smelting und der komplette
+ * Molten-Tree — zusammen 190 aktive Crystal-Kosten (PROGRESSION §3.5).
  */
 export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   node(
@@ -145,7 +145,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   ),
   node(CRUCIBLE_IDS.ambush, 'molten', 'Ambush', 5, '+5/10/15/20/25% final damage in round 1.', {
     prerequisites: [{ nodeId: CRUCIBLE_IDS.sunder, rank: 1 }],
-    lockedUntil: 'Molten follow-up',
   }),
   node(
     CRUCIBLE_IDS.menace,
@@ -155,7 +154,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     '-2/4/6/8/10% enemy Accuracy while Korvin lives.',
     {
       prerequisites: [{ nodeId: CRUCIBLE_IDS.mitigation, rank: 1 }],
-      lockedUntil: 'Molten follow-up',
     },
   ),
   node(
@@ -166,7 +164,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'Up to +1/2/3/4/5 Initiative as rounds pass.',
     {
       prerequisites: [{ nodeId: CRUCIBLE_IDS.suppression, rank: 1 }],
-      lockedUntil: 'Molten follow-up',
     },
   ),
   node(
@@ -177,7 +174,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'Once per dungeon the first lethal hit leaves 10/15/20/25/30% Max Health.',
     {
       prerequisites: [{ nodeId: CRUCIBLE_IDS.rally, rank: 1 }],
-      lockedUntil: 'Molten follow-up',
     },
   ),
   node(
@@ -380,6 +376,15 @@ const SUNDER_CAP = [0.04, 0.08, 0.12, 0.16, 0.2] as const;
 /** Max-Health-Anteil je Rally-Rang (PROGRESSION §4). */
 const RALLY_SHARE = [0.1, 0.15, 0.2, 0.25, 0.3] as const;
 
+/** Runde-1-Bonus auf den finalen ausgehenden Schaden je Ambush-Rang (SIGNATURES §2.1). */
+const AMBUSH_BONUS = [0.05, 0.1, 0.15, 0.2, 0.25] as const;
+
+/** Relative Accuracy-Minderung je Menace-Rang (SIGNATURES §2.2). */
+const MENACE_REDUCTION = [0.02, 0.04, 0.06, 0.08, 0.1] as const;
+
+/** Max-Health-Anteil je Second-Wind-Rang (SIGNATURES §2.4). */
+const SECOND_WIND_SHARE = [0.1, 0.15, 0.2, 0.25, 0.3] as const;
+
 /** `+3 %` je Smelting-Rang auf den gekoppelten Derived Stat (PROGRESSION §3.2). */
 export const SMELTING_BONUS_PER_RANK = 0.03;
 
@@ -411,6 +416,23 @@ export function suppressionPlaces(ranks: CrucibleRanks): number {
 
 export function rallyShare(ranks: CrucibleRanks): number {
   return rankValue(RALLY_SHARE, ranks[CRUCIBLE_IDS.rally] ?? 0);
+}
+
+export function ambushBonus(ranks: CrucibleRanks): number {
+  return rankValue(AMBUSH_BONUS, ranks[CRUCIBLE_IDS.ambush] ?? 0);
+}
+
+export function menaceReduction(ranks: CrucibleRanks): number {
+  return rankValue(MENACE_REDUCTION, ranks[CRUCIBLE_IDS.menace] ?? 0);
+}
+
+/** Initiative-Cap je Momentum-Rang (SIGNATURES §2.3); `0` vor Freischaltung. */
+export function momentumCap(ranks: CrucibleRanks): number {
+  return ranks[CRUCIBLE_IDS.momentum] ?? 0;
+}
+
+export function secondWindShare(ranks: CrucibleRanks): number {
+  return rankValue(SECOND_WIND_SHARE, ranks[CRUCIBLE_IDS.secondWind] ?? 0);
 }
 
 /**

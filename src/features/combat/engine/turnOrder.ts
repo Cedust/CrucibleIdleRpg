@@ -40,10 +40,24 @@ export function compareTurnOrder(a: TurnOrderEntry, b: TurnOrderEntry): number {
 }
 
 /**
- * Sortier-Einträge aller **lebenden** Akteure. Besiegte Akteure fallen heraus
- * (docs/spec/CHARACTERS.md#1-team).
+ * Momentum (docs/spec/SIGNATURES.md#23-momentum-nach-suppression): der temporäre
+ * Initiative-Bonus der Charaktere bei der Queue-Erzeugung der Runde `round` —
+ * `min(round − 1, cap)`. Runde 1 beginnt ohne Bonus; der Bonus wächst nie über den Cap,
+ * verändert keine persistierten Stats und verbraucht keinen PRNG-Zug.
  */
-export function turnOrderEntries(state: CombatState): TurnOrderEntry[] {
+export function momentumBonus(round: number, cap: number): number {
+  return Math.min(Math.max(Math.trunc(round) - 1, 0), Math.max(Math.trunc(cap), 0));
+}
+
+/**
+ * Sortier-Einträge aller **lebenden** Akteure. Besiegte Akteure fallen heraus
+ * (docs/spec/CHARACTERS.md#1-team). `characterInitiativeBonus` ist der temporäre
+ * Momentum-Bonus — er zählt nur hier, nicht in den Stats.
+ */
+export function turnOrderEntries(
+  state: CombatState,
+  characterInitiativeBonus = 0,
+): TurnOrderEntry[] {
   const entries: TurnOrderEntry[] = [];
 
   state.enemies.forEach((enemy, index) => {
@@ -60,7 +74,7 @@ export function turnOrderEntries(state: CombatState): TurnOrderEntry[] {
     if (character.health > 0) {
       entries.push({
         ref: { side: 'character', index },
-        initiative: character.stats.utility.initiative,
+        initiative: character.stats.utility.initiative + characterInitiativeBonus,
         slotIndex: character.slotIndex,
       });
     }
@@ -73,8 +87,8 @@ export function turnOrderEntries(state: CombatState): TurnOrderEntry[] {
  * Pending-Queue zu Rundenbeginn: alle lebenden Akteure in Zugordnung. Sie enthält im weiteren
  * Verlauf der Runde nur noch die **offenen** Aktionen.
  */
-export function buildPendingQueue(state: CombatState): ActorRef[] {
-  return turnOrderEntries(state)
+export function buildPendingQueue(state: CombatState, characterInitiativeBonus = 0): ActorRef[] {
+  return turnOrderEntries(state, characterInitiativeBonus)
     .sort(compareTurnOrder)
     .map((entry) => entry.ref);
 }

@@ -28,14 +28,6 @@ describe('DungeonRunScreen', () => {
     expect(useDungeonRunStore.getState().mode).toBe('selection');
   });
 
-  it('treats a wipe as a terminal run result', async () => {
-    render(<DungeonRunScreen />);
-    act(() => useCombatStore.setState({ outcome: 'wipe' }));
-
-    await waitFor(() => expect(useDungeonRunStore.getState().mode).toBe('selection'));
-    expect(useCombatStore.getState().combat).toBeNull();
-  });
-
   it('keeps the run open for a failed reward commit retry', () => {
     useCombatStore.setState({ outcome: 'victory', completionStatus: 'failed' });
     render(<DungeonRunScreen />);
@@ -65,19 +57,6 @@ describe('DungeonRunScreen', () => {
     await user.click(screen.getByRole('button', { name: '2× Playback' }));
 
     await waitFor(() => expect(useCombatStore.getState().playbackSpeed).toBe(2));
-  });
-
-  it('automatically starts the next floor after its reward is saved', async () => {
-    const combat = useCombatStore.getState().combat;
-    if (combat === null) throw new Error('expected dungeon combat');
-    useCombatStore.setState({ combat, outcome: 'victory', completionStatus: 'saved' });
-
-    render(<DungeonRunScreen />);
-
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { name: 'A1-D1-02' })).toBeInTheDocument(),
-    );
-    expect(screen.queryByRole('button', { name: 'Start Next Floor' })).not.toBeInTheDocument();
   });
 
   it('keeps a saved floor 20 open for manual dungeon completion', () => {

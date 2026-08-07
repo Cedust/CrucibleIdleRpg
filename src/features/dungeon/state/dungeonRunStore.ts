@@ -1,15 +1,32 @@
 import { create } from 'zustand';
+import type { CombatState } from '@/features/combat/engine/combatState';
 import { useCombatStore, type PlaybackSpeed } from '@/features/combat/state/combatStore';
 import {
   createDungeonEntryCombat,
   createNextDungeonCombat,
 } from '@/features/dungeon/dungeonCombat';
+import type { RewardSummary } from '@/features/dungeon/rewards';
 import { createFloorReward } from '@/game/rewards/floorRewards';
-import { resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
+import { isFinalAct1Floor, resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
 import { registerMasteryRespecGuard, saveStore } from '@/features/save/saveStore';
 import { useNavigationStore } from '@/app/navigationStore';
 
 export type DungeonRunMode = 'selection' | 'starting' | 'run';
+
+/** Gemeinsamer Sieg-Commit jedes Floors: Reward erzeugen, persistieren, Summary melden. */
+async function commitFloorReward(result: CombatState): Promise<RewardSummary> {
+  const commit = await saveStore
+    .getState()
+    .commitVictory(
+      createFloorReward(
+        result.floorId,
+        result.floorIndex,
+        result.enemies.length,
+        result.effectiveDamage,
+      ),
+    );
+  return commit.reward;
+}
 
 interface DungeonRunState {
   mode: DungeonRunMode;
@@ -43,31 +60,23 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     }
 
     set({ mode: 'starting', startError: null, completionError: null });
+
+    // Das `catch` deckt nur den Save-Schritt; ein Fehler im Kampfaufbau bliebe sichtbar.
+    let save;
     try {
-      const save = await saveStore.getState().beginRun();
-      const combat = createDungeonEntryCombat(save, dungeonId);
-      useCombatStore
-        .getState()
-        .setPlaybackSpeed(save.completedDungeons[dungeonId] ? save.playbackSpeed : 1);
-      useCombatStore.getState().startCombat(combat, undefined, async (result) => {
-        const commit = await saveStore
-          .getState()
-          .commitVictory(
-            createFloorReward(
-              result.floorId,
-              result.floorIndex,
-              result.enemies.length,
-              result.effectiveDamage,
-            ),
-          );
-        return commit.reward;
-      });
-      set({ mode: 'run', activeDungeonId: dungeonId, completionError: null });
-      return true;
+      save = await saveStore.getState().beginRun();
     } catch {
       set({ mode: 'selection', activeDungeonId: null, startError: 'Unable to start dungeon run.' });
       return false;
     }
+
+    const combat = createDungeonEntryCombat(save, dungeonId);
+    useCombatStore
+      .getState()
+      .setPlaybackSpeed(save.completedDungeons[dungeonId] ? save.playbackSpeed : 1);
+    useCombatStore.getState().startCombat(combat, undefined, commitFloorReward);
+    set({ mode: 'run', activeDungeonId: dungeonId, completionError: null });
+    return true;
   },
 
   startNextFloor: () => {
@@ -86,24 +95,12 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     }
 
     const encounter = resolveAct1Encounter(combat.combat.floorId);
-    if (encounter.dungeonId !== run.activeDungeonId || encounter.floorNumber === 20) {
+    if (encounter.dungeonId !== run.activeDungeonId || isFinalAct1Floor(encounter)) {
       return false;
     }
 
     const nextCombat = createNextDungeonCombat(save, combat.combat);
-    useCombatStore.getState().startCombat(nextCombat, undefined, async (result) => {
-      const commit = await saveStore
-        .getState()
-        .commitVictory(
-          createFloorReward(
-            result.floorId,
-            result.floorIndex,
-            result.enemies.length,
-            result.effectiveDamage,
-          ),
-        );
-      return commit.reward;
-    });
+    useCombatStore.getState().startCombat(nextCombat, undefined, commitFloorReward);
     return true;
   },
 
@@ -119,13 +116,15 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
       return false;
     }
 
+    // Das `catch` deckt nur den Save-Schritt; die Laufzeit-Umschaltung wirft nicht.
     try {
       await saveStore.getState().setPlaybackSpeed(speed);
-      useCombatStore.getState().setPlaybackSpeed(speed);
-      return true;
     } catch {
       return false;
     }
+
+    useCombatStore.getState().setPlaybackSpeed(speed);
+    return true;
   },
 
   leaveRun: () => {
@@ -146,7 +145,7 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
       combat.completionStatus !== 'saved' ||
       encounter === null ||
       encounter.dungeonId !== run.activeDungeonId ||
-      encounter.floorNumber !== 20
+      !isFinalAct1Floor(encounter)
     ) {
       return false;
     }
@@ -171,3 +170,29 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
 // Während eines laufenden Runs ist Mastery-Respec gesperrt; die Regel gehört zum
 // Dungeon-Lifecycle und wird deshalb hier am Save-Store registriert.
 registerMasteryRespecGuard(() => useDungeonRunStore.getState().mode !== 'run');
+
+/**
+ * Lifecycle-Reaktionen des Runs, als Store-Subscription statt View-Effekt (COMBAT-RUN):
+ * Ein Wipe beendet den Run terminal; ein gespeicherter Floor-Sieg startet automatisch den
+ * nächsten Floor — außer auf dem letzten Floor, dessen Abschluss manuell bleibt.
+ */
+useCombatStore.subscribe((combatState) => {
+  const run = useDungeonRunStore.getState();
+  if (run.mode !== 'run') {
+    return;
+  }
+
+  if (combatState.outcome === 'wipe') {
+    run.leaveRun();
+    return;
+  }
+
+  if (
+    combatState.outcome === 'victory' &&
+    combatState.completionStatus === 'saved' &&
+    combatState.combat !== null &&
+    !isFinalAct1Floor(resolveAct1Encounter(combatState.combat.floorId))
+  ) {
+    run.startNextFloor();
+  }
+});

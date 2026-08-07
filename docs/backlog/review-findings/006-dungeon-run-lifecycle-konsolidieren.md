@@ -2,7 +2,7 @@
 
 | Feld             | Wert                                            |
 | ---------------- | ----------------------------------------------- |
-| **Status**       | `ready`                                         |
+| **Status**       | `done`                                          |
 | **Schwere**      | mittel                                          |
 | **Hängt ab von** | [003](003-toten-combatscreen-flow-entfernen.md) |
 
@@ -41,13 +41,13 @@ Neue Auto-Progression-Features; es geht um Verlagerung und Entdopplung bestehend
 
 ## Akzeptanzkriterien
 
-- [ ] Eine gemeinsame Commit-Factory ersetzt die duplizierten Callbacks.
-- [ ] `isFinalFloor` (bzw. die Floor-Anzahl) kommt aus dem Encounter-Modul; UI und Store
+- [x] Eine gemeinsame Commit-Factory ersetzt die duplizierten Callbacks.
+- [x] `isFinalFloor` (bzw. die Floor-Anzahl) kommt aus dem Encounter-Modul; UI und Store
       nutzen dieselbe Quelle, der String-Suffix-Check ist ersetzt.
-- [ ] Wipe- und Auto-Advance-Reaktionen liegen im Store/Controller und sind per Store-Test
+- [x] Wipe- und Auto-Advance-Reaktionen liegen im Store/Controller und sind per Store-Test
       abgedeckt; die `useEffect`s in der View entfallen.
-- [ ] `catch` umfasst nur den Save-Schritt oder protokolliert den Originalfehler.
-- [ ] `crystalRewardForFirstVictory` arbeitet auf strukturierten Encounter-Daten.
+- [x] `catch` umfasst nur den Save-Schritt oder protokolliert den Originalfehler.
+- [x] `crystalRewardForFirstVictory` arbeitet auf strukturierten Encounter-Daten.
 
 ## Betroffene Dateien
 

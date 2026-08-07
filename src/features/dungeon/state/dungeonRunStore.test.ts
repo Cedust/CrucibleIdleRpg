@@ -57,7 +57,7 @@ describe('useDungeonRunStore', () => {
     expect(useCombatStore.getState().combat).toBeNull();
   });
 
-  it('starts the next floor only after its reward is saved and keeps carried health', async () => {
+  it('advances automatically only after the saved reward and keeps carried health', async () => {
     await useDungeonRunStore.getState().startRun('A1-D1');
     const first = useCombatStore.getState().combat;
     if (first === null) throw new Error('expected first dungeon floor');
@@ -68,18 +68,54 @@ describe('useDungeonRunStore', () => {
         health: index === 2 ? 0 : character.health - 10,
       })),
     };
+
+    // Ein Sieg ohne gespeicherten Reward schaltet nicht weiter.
     useCombatStore.setState({
       combat: victorious,
       outcome: 'victory',
-      completionStatus: 'saved',
+      completionStatus: 'saving',
     });
+    expect(useCombatStore.getState().combat?.floorId).toBe('A1-D1-01');
 
-    expect(useDungeonRunStore.getState().startNextFloor()).toBe(true);
+    // Der gespeicherte Reward startet den nächsten Floor ohne View-Beteiligung.
+    useCombatStore.setState({ completionStatus: 'saved' });
     expect(useCombatStore.getState().combat?.floorId).toBe('A1-D1-02');
+    expect(useCombatStore.getState().outcome).toBe('ongoing');
     expect(
       useCombatStore.getState().combat?.characters.map((character) => character.health),
     ).toEqual(victorious.characters.map((character) => character.health));
     expect(useDungeonRunStore.getState().startNextFloor()).toBe(false);
+  });
+
+  it('ends the run terminally on a wipe', async () => {
+    await useDungeonRunStore.getState().startRun('A1-D1');
+
+    useCombatStore.setState({ outcome: 'wipe' });
+
+    expect(useDungeonRunStore.getState().mode).toBe('selection');
+    expect(useCombatStore.getState().combat).toBeNull();
+  });
+
+  it('keeps a saved final floor open instead of auto-advancing', async () => {
+    await useDungeonRunStore.getState().startRun('A1-D1');
+    const initial = useCombatStore.getState().combat;
+    if (initial === null) throw new Error('expected first dungeon floor');
+    let finalFloor = initial;
+    for (let index = 0; index < 19; index += 1) {
+      finalFloor = createNextDungeonCombat(
+        saveStore.getState().data ?? createDefaultSave(42),
+        finalFloor,
+      );
+    }
+
+    useCombatStore.setState({
+      combat: finalFloor,
+      outcome: 'victory',
+      completionStatus: 'saved',
+    });
+
+    expect(useCombatStore.getState().combat?.floorId).toBe('A1-D1-20');
+    expect(useDungeonRunStore.getState().mode).toBe('run');
   });
 
   it('allows 2× playback only after the active dungeon has been completed', async () => {

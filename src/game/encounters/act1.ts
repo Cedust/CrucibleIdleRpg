@@ -73,11 +73,16 @@ export function resolveAct1Encounter(floorId: FloorId): Act1EncounterDefinition 
   return encounter;
 }
 
+/** Letzter Floor eines Dungeons: Dort endet der Auto-Advance, der Abschluss ist manuell. */
+export function isFinalAct1Floor(encounter: Act1EncounterDefinition): boolean {
+  return encounter.floorNumber === FLOORS_PER_DUNGEON;
+}
+
 /** Liefert den Folgekampf desselben Dungeons oder `null` nach dessen letzten Floor. */
 export function getNextAct1DungeonEncounter(
   encounter: Act1EncounterDefinition,
 ): Act1EncounterDefinition | null {
-  if (encounter.floorNumber === FLOORS_PER_DUNGEON) {
+  if (isFinalAct1Floor(encounter)) {
     return null;
   }
 

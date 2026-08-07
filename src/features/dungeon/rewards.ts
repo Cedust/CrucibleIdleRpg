@@ -1,6 +1,7 @@
 import type { SaveData } from '@/features/save/saveSchema';
+import { resolveAct1Encounter } from '@/game/encounters/act1';
 import { gainExperience } from '@/game/rewards/xpRewards';
-import type { FloorId, FloorRewardDefinition } from '@/game/types';
+import type { EncounterClass, FloorId, FloorRewardDefinition } from '@/game/types';
 
 export interface RewardSummary {
   gold: number;
@@ -13,21 +14,16 @@ export interface RewardCommit {
   reward: RewardSummary;
 }
 
-/** Crystal-Wert eines Erstsiegs: normal 1, Elite 3, Akt-Boss 10 (PROGRESSION §2). */
+/** Crystal-Wert eines Erstsiegs je Encounter-Klasse (PROGRESSION §2). */
+const FIRST_VICTORY_CRYSTALS: Readonly<Record<EncounterClass, number>> = {
+  normal: 1,
+  elite: 3,
+  boss: 10,
+};
+
+/** Crystal-Wert eines Erstsiegs über die strukturierte Encounter-Klassifikation. */
 export function crystalRewardForFirstVictory(floorId: FloorId): number {
-  const match = /^A\d+-D(\d+)-(\d{2})$/.exec(floorId);
-  const dungeon = match?.[1];
-  const floor = match?.[2];
-
-  if (dungeon === undefined || floor === undefined) {
-    throw new Error(`Ungültige Floor-ID: ${floorId}`);
-  }
-
-  if (floor !== '20') {
-    return 1;
-  }
-
-  return dungeon === '5' ? 10 : 3;
+  return FIRST_VICTORY_CRYSTALS[resolveAct1Encounter(floorId).classification];
 }
 
 /** Committet die Belohnung eines Floor-Siegs einschließlich aller daraus folgenden Level-Ups. */

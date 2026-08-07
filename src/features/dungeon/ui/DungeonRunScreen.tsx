@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { CombatLog } from '@/features/combat/ui/CombatLog';
@@ -20,7 +21,6 @@ export function DungeonRunScreen() {
   const setPaused = useCombatStore((state) => state.setPaused);
   const retryVictoryCommit = useCombatStore((state) => state.retryVictoryCommit);
   const leaveRun = useDungeonRunStore((state) => state.leaveRun);
-  const startNextFloor = useDungeonRunStore((state) => state.startNextFloor);
   const setRunPlaybackSpeed = useDungeonRunStore((state) => state.setRunPlaybackSpeed);
   const completeRun = useDungeonRunStore((state) => state.completeRun);
   const completionError = useDungeonRunStore((state) => state.completionError);
@@ -30,23 +30,13 @@ export function DungeonRunScreen() {
   const doubleSpeedUnlocked =
     activeDungeonId !== null && completedDungeons?.[activeDungeonId] === true;
 
-  useEffect(() => {
-    if (outcome === 'wipe') {
-      leaveRun();
-    }
-  }, [leaveRun, outcome]);
-
-  useEffect(() => {
-    if (outcome === 'victory' && completionStatus === 'saved' && !floorId?.endsWith('-20')) {
-      startNextFloor();
-    }
-  }, [completionStatus, floorId, outcome, startNextFloor]);
-
   if (floorId === null) {
     return (
       <main className="min-h-0 flex-1 bg-background p-6 text-text">Preparing dungeon run...</main>
     );
   }
+
+  const isFinalFloor = isFinalAct1Floor(resolveAct1Encounter(floorId));
 
   return (
     <main className="min-h-0 flex-1 overflow-auto bg-background p-4 text-text sm:p-6">
@@ -111,7 +101,7 @@ export function DungeonRunScreen() {
                   Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +
                   {lastReward.crystals} {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
                 </p>
-                {floorId.endsWith('-20') ? (
+                {isFinalFloor ? (
                   <>
                     {completionError !== null && <p role="alert">{completionError}</p>}
                     <Button onClick={() => void completeRun()}>Complete Dungeon</Button>

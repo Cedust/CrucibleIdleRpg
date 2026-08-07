@@ -72,5 +72,5 @@ Use Node 24 or newer, then install with `npm ci`.
 
 - Only commit or open a Pull Request when explicitly requested.
 - Follow Conventional Commits (e.g. `feat(combat): ...`, `fix: ...`, `docs: ...`, `chore: ...`).
-- Pre-commit hooks format staged files (`npx lint-staged`) and validate repository documentation links (`npm run docs:links`).
-- Before committing, run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` to ensure the build passes and tests succeed. Add `npm run test:e2e` for affected flows and `npm run docs:links` for docs.
+- Pre-commit hooks format staged files (`npx lint-staged`), type-check the project (`npm run typecheck`), and validate repository documentation links (`npm run docs:links`). A commit-msg hook enforces Conventional Commits (`commitlint`). A pre-push hook runs the production build and the unit tests (`npm run build`, `npm test`).
+- Before committing, run `npm run test:e2e` for affected flows.

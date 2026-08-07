@@ -1,0 +1,6 @@
+# Produktionsbuild inklusive Vite-Bundling; fängt Fehler, die tsc nicht sieht
+# (Imports, Assets). Der Typecheck-Anteil läuft inkrementell.
+npm run build
+
+# Unit- und Komponententests vor jedem Push; ein roter Test bricht den Push ab.
+npm test

@@ -1,4 +1,10 @@
+# Formatiert und lintet nur die gestagten Dateien (Konfiguration in package.json)
+# und staged die Korrekturen automatisch nach.
 npx lint-staged
+
+# Inkrementell über tsbuildinfo und damit schnell; prüft das ganze Projekt,
+# weil Typfehler oft in Dateien entstehen, die selbst nicht gestagt sind.
+npm run typecheck
 
 # Ganzes Repo, nicht nur die gestagten Dateien: Ein Link bricht typischerweise in
 # einer Datei, die man selbst gar nicht angefasst hat (Überschrift umbenannt ->

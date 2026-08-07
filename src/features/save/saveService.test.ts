@@ -26,6 +26,7 @@ describe('createSaveService', () => {
   it.each([
     ['ungültigem JSON', '{kaputt'],
     ['schema-verletzendem JSON', JSON.stringify({ ...createDefaultSave(777), runCounter: -4 })],
+    ['fremder Save-Version', JSON.stringify({ ...createDefaultSave(777), version: 99 })],
   ])('fällt bei %s kontrolliert auf einen neuen Default zurück', async (_label, raw) => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const fallback = createDefaultSave(777);
@@ -44,45 +45,5 @@ describe('createSaveService', () => {
 
     expect(JSON.parse(port.raw() ?? 'null')).toEqual(save);
     await expect(service.load()).resolves.toEqual(save);
-  });
-
-  it('migrates a v1 save with the level-one point state', async () => {
-    const current = createDefaultSave(42);
-    const saveV1 = {
-      version: 1,
-      saveSeed: current.saveSeed,
-      runCounter: current.runCounter,
-      playbackSpeed: current.playbackSpeed,
-      characters: {
-        korvin: { level: 1, xp: 0 },
-        rhaya: { level: 1, xp: 0 },
-        quinn: { level: 1, xp: 0 },
-      },
-      currencies: current.currencies,
-      firstVictories: current.firstVictories,
-    };
-    const service = createSaveService(memoryPort(JSON.stringify(saveV1)), () =>
-      createDefaultSave(1),
-    );
-
-    await expect(service.load()).resolves.toEqual(createDefaultSave(42));
-  });
-
-  it('resets legacy v2 character progression to the level-one start state', async () => {
-    const current = createDefaultSave(42);
-    const legacy = {
-      ...current,
-      version: 2,
-      characters: {
-        korvin: { level: 7, xp: 99 },
-        rhaya: { level: 12, xp: 42 },
-        quinn: { level: 1, xp: 0 },
-      },
-    };
-    const service = createSaveService(memoryPort(JSON.stringify(legacy)), () =>
-      createDefaultSave(1),
-    );
-
-    await expect(service.load()).resolves.toEqual(createDefaultSave(42));
   });
 });

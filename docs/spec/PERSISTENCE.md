@@ -1,9 +1,8 @@
 # SPEC — Persistenz (Save-Verhalten)
 
 > Teil der [SPEC](../spec/README.md): wann gespeichert wird und was im Save liegt.
-> Der technische Aufbau — `localStorage`, `SavePort`-Adapter, Versionsfeld,
-> Migrations-Mechanismus und Zod-Validierung beim Laden — steht in
-> [AGENTS.md](../../AGENTS.md).
+> Der technische Aufbau — `localStorage`, `SavePort`-Adapter, Versionsfeld
+> und Zod-Validierung beim Laden — steht in [AGENTS.md](../../AGENTS.md).
 > Verwandt: [Simulation & Zeitverhalten](SIMULATION.md) · [Fortschritt & Belohnungen](PROGRESSION.md)
 
 ---
@@ -49,9 +48,17 @@
   Laufzeit-Zustand. Ein Reload verwirft ihn, lädt die normale Auswahl und erhält alle davor
   committeten Belohnungen.
 
-### 2.1 Save v1 (M1)
+### 2.1 Migrationen im Pre-Release
 
-Save v1 enthält den in M1 verfügbaren Teil des Speicherstands in dieser Struktur:
+Während der Pre-Release-Entwicklung existiert genau ein aktuelles Save-Schema. Schemaänderungen
+ersetzen Basissave, Schema und Tests atomar; ein Speicherstand in einem anderen Format fällt beim
+Laden kontrolliert auf den Default zurück. Eine Migration entsteht nur, wenn eine Spec oder ein
+Task sie ausdrücklich fordert.
+
+### 2.2 Aktuelles Pre-Release-Schema
+
+Das aktuelle Schema (Version 1) enthält den implementierten Teil des
+[Save-Inhalts](#2-save-inhalt):
 
 ```text
 version: 1
@@ -62,36 +69,32 @@ characters:
   korvin | rhaya | quinn:
     level: Ganzzahl 1–100
     xp: nichtnegative Ganzzahl
+    freeAttributePoints: nichtnegative Ganzzahl
+    attributePoints:
+      ferocity | resilience | vigor: nichtnegative Ganzzahl
+    freeMasteryPoints: nichtnegative Ganzzahl
+    masteryRanks: Node-ID → Rang 1–5
 currencies:
   gold: nichtnegative Ganzzahl
   crystals: nichtnegative Ganzzahl
 firstVictories: FloorId[]
+unlockedDungeonIds: Act1DungeonId[]
+completedDungeons:
+  A1-D1 … A1-D5: boolean
 ```
 
-v1 ist das erste Save-Format und hat keinen Vorgänger. Spätere persistierte Systeme aus
-[Save-Inhalt](#2-save-inhalt) erweitern den Speicherstand über eine neue Version mit expliziter
-Migration von v1.
-
-### 2.2 Aktuelles Pre-Release-Schema
-
-Das aktuelle Pre-Release-Schema enthält freie Punkte und die drei verteilten Attribute. Mit
-Weapon Mastery werden die bisherigen Skillpunkt-Summen direkt durch `freeMasteryPoints` und
-Node-Ränge ersetzt. Für diese Änderung wird keine Migration geschrieben: Vor Release bestehen
-keine zu erhaltenden Spielstände; Basissave, Schema und Tests wechseln atomar auf das neue Modell.
+Frei plus verteilte Attributpunkte sowie frei plus investierte Mastery-Punkte entsprechen dem
+Charakterlevel; Mastery-Ränge werden gegen den Node-Katalog der Discipline validiert
+([Weapon Mastery](WEAPON-MASTERY.md#8-persistenz-und-laufzeitzustand)).
 
 ### 2.3 Crucible-Save-Version
 
 Die Crucible-Version ergänzt das Schema um die Node-Ränge und entfernt das gespeicherte
-Checkpoint-Feld, weil die Einstiege nun aus `anvil.waystones` folgen
-([Anvil Sparks](PROGRESSION.md#31-anvil-sparks)). Sie erhält ausdrücklich eine Migration:
+Checkpoint-Feld, weil die Einstiege aus `anvil.waystones` folgen
+([Anvil Sparks](PROGRESSION.md#31-anvil-sparks)). Sie folgt
+[Migrationen im Pre-Release](#21-migrationen-im-pre-release): Basissave, Schema und Tests
+wechseln atomar auf die neue Version.
 
-- **Erhalten:** Vollendet-Flags, Erstsieg-Flags, höchster erreichter Floor, Währungen,
-  Charakterlevel, XP, Attribut- und Mastery-Stände.
-- **Zurückgesetzt:** die zugänglichen Dungeon-Einstiege auf ausschließlich `A1-D1`. Die
-  Node-Ränge starten leer.
-- **Folge:** Wer einen Dungeon bereits vollendet hat, erfüllt die Kaufvoraussetzung des
-  zugehörigen Waystone-Rangs sofort und kann mehrere Ränge unmittelbar regulär nachkaufen.
-
-Die Migration validiert die Node-Ränge gegen den Katalog aus
+Das Schema validiert die Node-Ränge gegen den Katalog aus
 [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree): unbekannte IDs, Ränge über dem Maximum
 und verletzte Voraussetzungen sind ungültige Speicherstände.

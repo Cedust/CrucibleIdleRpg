@@ -39,9 +39,9 @@ wendet die freigeschalteten Wirkungen deterministisch an.
 - [Signatur-Skills](../../spec/CHARACTERS.md#7-signatur-skills) — drei charaktergebundene
   Molten-Nodes mit Level 1–5
 - [Crucible-Save-Version](../../spec/PERSISTENCE.md#23-crucible-save-version) — Node-Ränge sind
-  die alleinige Wahrheit, Checkpoints sind abgeleitet, Migration erhält Flags und setzt die
-  Einstiege zurück
-- [Kapazität und Save-Migration](../../spec/PROGRESSION.md#35-kapazität-und-save-migration) —
+  die alleinige Wahrheit, Checkpoints sind abgeleitet; Basissave, Schema und Tests wechseln
+  atomar ([Migrationen im Pre-Release](../../spec/PERSISTENCE.md#21-migrationen-im-pre-release))
+- [Kapazität](../../spec/PROGRESSION.md#35-kapazität) —
   `130` aktive Crystal-Kosten gegen `117` Crystals aus Akt 1
 
 ## Akzeptanzkriterien
@@ -64,12 +64,11 @@ wendet die freigeschalteten Wirkungen deterministisch an.
       und Kampf und wirkt erst auf nachfolgende Angriffe
 - [ ] Rally hebt am erfolgreichen Floor-Übergang alle Gefallenen auf den Rang-Anteil ihrer
       Max-Health, nicht nach Wipe, Verlassen oder Dungeon-Ende
-- [ ] Die Save-Migration erhält Vollendet-Flags, Erstsiege, Währungen und Charakterfortschritt und
-      setzt die zugänglichen Einstiege auf `A1-D1` zurück; das Schema lehnt unbekannte IDs,
-      Überränge und verletzte Voraussetzungen ab
+- [ ] Basissave, Schema und Tests wechseln atomar auf die Crucible-Save-Version; das Schema lehnt
+      unbekannte IDs, Überränge und verletzte Voraussetzungen ab
 - [ ] Der Crucible-Screen zeigt die vier Trees mit Rängen, Kosten, Voraussetzungen, Sperrgründen
       und den beiden Respec-Aktionen; während eines Runs ist er lesend
-- [ ] Unit-Tests decken Kosten, Caps, Voraussetzungen, beide Respecs, Migration, Persistenz und
+- [ ] Unit-Tests decken Kosten, Caps, Voraussetzungen, beide Respecs, Persistenz und
       die vier Basiswirkungen deterministisch ab
 
 ## Betroffene Dateien
@@ -77,7 +76,7 @@ wendet die freigeschalteten Wirkungen deterministisch an.
 - `src/game/crucible/` — Node-Katalog, Rangwerte und Kostenfunktion
 - `src/features/progression/` — Crucible-Store, Kaufen, Respec und abgeleitete Einstiege
 - `src/features/combat/` — Mitigation, Sunder, Suppression und Rally an ihren Hebeln
-- `src/features/save/` — Schema, Migration und Persistenz der Node-Ränge
+- `src/features/save/` — Schema und Persistenz der Node-Ränge
 
 ## Definition of Done
 

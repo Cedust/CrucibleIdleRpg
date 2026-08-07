@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createDefaultSave, saveSchemaV1, saveSchemaV4 } from './saveSchema';
+import { createDefaultSave, saveSchema } from './saveSchema';
 
-describe('saveSchemaV4', () => {
+describe('saveSchema', () => {
   it('creates a complete save with dungeon checkpoints and no runtime combat state', () => {
     expect(createDefaultSave(0x12345678)).toEqual({
-      version: 4,
+      version: 1,
       saveSeed: 0x12345678,
       runCounter: 0,
       playbackSpeed: 1,
@@ -56,8 +56,14 @@ describe('saveSchemaV4', () => {
       { combatPrngState: 42 },
       { floorIndex: 0 },
     ]) {
-      expect(saveSchemaV4.safeParse({ ...save, ...forbidden }).success).toBe(false);
+      expect(saveSchema.safeParse({ ...save, ...forbidden }).success).toBe(false);
     }
+  });
+
+  it('rejects saves with a foreign version number', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, version: 2 }).success).toBe(false);
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {
@@ -65,7 +71,7 @@ describe('saveSchemaV4', () => {
 
     expect(save.characters.korvin.freeMasteryPoints).toBe(1);
     expect(
-      saveSchemaV4.safeParse({
+      saveSchema.safeParse({
         ...save,
         characters: {
           ...save.characters,
@@ -90,9 +96,9 @@ describe('saveSchemaV4', () => {
         },
       },
     };
-    expect(saveSchemaV4.safeParse(valid).success).toBe(true);
+    expect(saveSchema.safeParse(valid).success).toBe(true);
     expect(
-      saveSchemaV4.safeParse({
+      saveSchema.safeParse({
         ...valid,
         characters: {
           ...valid.characters,
@@ -117,25 +123,6 @@ describe('saveSchemaV4', () => {
         },
       },
     };
-    expect(saveSchemaV4.safeParse(invalid).success).toBe(false);
-  });
-
-  it('keeps v1 valid for explicit migration without dungeon fields', () => {
-    const current = createDefaultSave(123);
-    const saveV1 = {
-      version: 1,
-      saveSeed: current.saveSeed,
-      runCounter: current.runCounter,
-      playbackSpeed: current.playbackSpeed,
-      characters: {
-        korvin: { level: 1, xp: 0 },
-        rhaya: { level: 1, xp: 0 },
-        quinn: { level: 1, xp: 0 },
-      },
-      currencies: current.currencies,
-      firstVictories: current.firstVictories,
-    };
-
-    expect(saveSchemaV1.safeParse(saveV1).success).toBe(true);
+    expect(saveSchema.safeParse(invalid).success).toBe(false);
   });
 });

@@ -5,12 +5,14 @@ import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
 /**
  * Zod-Schema des Speicherstands (siehe AGENTS.md).
- * Pro Save-Version ein Schema; die Versionsnummer steuert die Migration.
- * Beim Laden wird gegen dieses Schema validiert, bevor Daten in den Store gelangen.
+ * Im Pre-Release existiert genau ein aktuelles Schema; Schemaänderungen ersetzen
+ * Basissave, Schema und Tests atomar. Beim Laden wird gegen dieses Schema validiert,
+ * bevor Daten in den Store gelangen; jedes andere Format fällt auf den Default zurück.
  */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 1;
 
 const uint32Schema = z.number().int().min(0).max(0xffffffff);
+
 const progressionSchema = z
   .object({
     level: z.number().int().min(1).max(100),
@@ -26,98 +28,8 @@ const attributePointsSchema = z
   })
   .strict();
 
+/** Mastery-Ränge sind die alleinige Wahrheit über investierte Mastery-Punkte. */
 const characterProgressionSchema = progressionSchema
-  .extend({
-    freeAttributePoints: z.number().int().nonnegative(),
-    attributePoints: attributePointsSchema,
-    freeMasteryPoints: z.number().int().nonnegative(),
-  })
-  .strict()
-  .superRefine((character, context) => {
-    const spentAttributes = Object.values(character.attributePoints).reduce(
-      (total, points) => total + points,
-      0,
-    );
-    if (character.freeAttributePoints + spentAttributes !== character.level) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Attributpunkte.' });
-    }
-    if (character.freeMasteryPoints !== character.level) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Mastery-Punkte.' });
-    }
-  });
-
-export const saveSchemaV1 = z
-  .object({
-    version: z.literal(1),
-    saveSeed: uint32Schema,
-    runCounter: z.number().int().nonnegative(),
-    playbackSpeed: z.union([z.literal(1), z.literal(2)]),
-    characters: z
-      .object({
-        korvin: progressionSchema,
-        rhaya: progressionSchema,
-        quinn: progressionSchema,
-      })
-      .strict(),
-    currencies: z
-      .object({
-        gold: z.number().int().nonnegative(),
-        crystals: z.number().int().nonnegative(),
-      })
-      .strict(),
-    firstVictories: z.array(z.string()).readonly(),
-  })
-  .strict();
-
-export type SaveDataV1 = z.infer<typeof saveSchemaV1>;
-
-const completedDungeonsSchema = z
-  .object({
-    'A1-D1': z.boolean(),
-    'A1-D2': z.boolean(),
-    'A1-D3': z.boolean(),
-    'A1-D4': z.boolean(),
-    'A1-D5': z.boolean(),
-  })
-  .strict();
-
-/**
- * Save v2 ergänzt die M1-Daten um die Dungeon-Granularität aus PROGRESSION §4.
- * `unlockedDungeonIds` ist die Menge der Checkpoints; die Vollendet-Flags liegen explizit
- * je Akt-1-Dungeon vor und werden erst in Task 011 fortgeschrieben.
- */
-export const saveSchemaV2 = saveSchemaV1
-  .omit({ version: true })
-  .extend({
-    version: z.literal(2),
-    unlockedDungeonIds: z.array(z.enum(ACT_1_DUNGEON_IDS)).readonly(),
-    completedDungeons: completedDungeonsSchema,
-  })
-  .strict();
-
-export type SaveDataV2 = z.infer<typeof saveSchemaV2>;
-
-/** Aktuelles Pre-Release-Schema mit Attribut- und freien Mastery-Punkten. */
-export const saveSchemaV3 = saveSchemaV2
-  .omit({ version: true, characters: true })
-  .extend({
-    version: z.literal(3),
-    characters: z
-      .object({
-        korvin: characterProgressionSchema,
-        rhaya: characterProgressionSchema,
-        quinn: characterProgressionSchema,
-      })
-      .strict(),
-  })
-  .strict();
-
-export type SaveDataV3 = Omit<z.infer<typeof saveSchemaV3>, 'characters'> & {
-  characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
-};
-
-/** Mastery-Ränge ersetzen im Pre-Release-Schema die früheren freien Punkte als alleinige Wahrheit. */
-const masteryProgressionSchema = progressionSchema
   .extend({
     freeAttributePoints: z.number().int().nonnegative(),
     attributePoints: attributePointsSchema,
@@ -141,17 +53,38 @@ const masteryProgressionSchema = progressionSchema
     }
   });
 
-export const saveSchemaV4 = saveSchemaV3
-  .omit({ version: true, characters: true })
-  .extend({
-    version: z.literal(4),
+const completedDungeonsSchema = z
+  .object({
+    'A1-D1': z.boolean(),
+    'A1-D2': z.boolean(),
+    'A1-D3': z.boolean(),
+    'A1-D4': z.boolean(),
+    'A1-D5': z.boolean(),
+  })
+  .strict();
+
+export const saveSchema = z
+  .object({
+    version: z.literal(SAVE_VERSION),
+    saveSeed: uint32Schema,
+    runCounter: z.number().int().nonnegative(),
+    playbackSpeed: z.union([z.literal(1), z.literal(2)]),
     characters: z
       .object({
-        korvin: masteryProgressionSchema,
-        rhaya: masteryProgressionSchema,
-        quinn: masteryProgressionSchema,
+        korvin: characterProgressionSchema,
+        rhaya: characterProgressionSchema,
+        quinn: characterProgressionSchema,
       })
       .strict(),
+    currencies: z
+      .object({
+        gold: z.number().int().nonnegative(),
+        crystals: z.number().int().nonnegative(),
+      })
+      .strict(),
+    firstVictories: z.array(z.string()).readonly(),
+    unlockedDungeonIds: z.array(z.enum(ACT_1_DUNGEON_IDS)).readonly(),
+    completedDungeons: completedDungeonsSchema,
   })
   .strict()
   .superRefine((save, context) => {
@@ -190,13 +123,9 @@ export const saveSchemaV4 = saveSchemaV3
     }
   });
 
-export type SaveDataV4 = Omit<z.infer<typeof saveSchemaV4>, 'characters'> & {
+export type SaveData = Omit<z.infer<typeof saveSchema>, 'characters'> & {
   characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
 };
-
-/** Aktuelles Save-Format (Alias auf die neueste Version). */
-export type SaveData = SaveDataV4;
-export const currentSaveSchema = saveSchemaV4;
 
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {

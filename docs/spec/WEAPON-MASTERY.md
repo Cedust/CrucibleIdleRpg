@@ -371,5 +371,5 @@ Seitennode und ist keine Voraussetzung der zentralen Linie.
   Laden validiert; sie benötigen keine zweite persistierte Wahrheitsquelle.
 - `Guarded`, Zeroing-Stacks und andere kampfinterne Mastery-Zustände sind Teil des flüchtigen
   Combat-State und werden nie im Save gespeichert.
-- Das Pre-Release-Save-Schema wird direkt auf Mastery umgestellt; es gibt keine Migration von
-  `freeSkillPoints` oder `spentSkillPoints`.
+- Das Pre-Release-Save-Schema stellt direkt auf Mastery um; es gilt
+  [Migrationen im Pre-Release](PERSISTENCE.md#21-migrationen-im-pre-release).

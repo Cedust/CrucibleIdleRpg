@@ -24,7 +24,8 @@ Crucible Idle RPG is a React 19, TypeScript, and Vite single-page app. Read [REA
 - Keep balancing declarative and typed in `src/game/`, separate from logic and stores.
 - Keep simulation pure: no DOM, timers, stores, `Date.now()`, or `Math.random()`. Playback and catch-up share the state-to-next-step engine and seeded PRNG.
 - Use feature-scoped Zustand stores and selective subscriptions. Keep runtime state outside views; navigation is state-based.
-- Use `SavePort`. Version and validate saves with Zod; provide migrations, fallbacks, and error boundaries.
+- Use `SavePort`. Version and validate saves with Zod; provide fallbacks and error boundaries.
+- Pre-release save policy: there is exactly one current save schema. Schema changes replace the default save, schema, and tests atomically; saves in any other format reset to the default on load. Write a save migration only when a spec or task explicitly requires one.
 - Do not install new libraries unless asked.
 
 ## Coding Style & Naming Conventions

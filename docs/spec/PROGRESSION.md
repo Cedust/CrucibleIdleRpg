@@ -146,16 +146,12 @@ Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman 
 | `masterwork.runic-focus`   |     3 |            6 | Modifier für Charakter 1 / 2 / 3 |
 | `masterwork.rune-mastery`  |     4 |           10 | Rune-Level-Cap 2 / 3 / 4 / 5     |
 
-### 3.5 Kapazität und Save-Migration
+### 3.5 Kapazität
 
 - Task 015 stellt `130` aktive Crystal-Kosten bereit: `10` Anvil, `60` Smelting und `60`
   Molten-Basis. Mit den vier Molten-Vertiefungen steigt die aktive Kapazität auf `190`.
 - Akt 1 vergibt insgesamt `117` Crystals. Selbst nach einem Respec kann deshalb nicht alles
   gleichzeitig maximiert werden.
-- Die erste Crucible-Save-Migration erhält Vollendet-Flags, Erstsiege, Währungen und
-  Charakterfortschritt, setzt die zugänglichen Dungeon-Einstiege aber auf `A1-D1` zurück.
-  Bereits erfüllte Dungeon-Abschlüsse erlauben anschließend den sofortigen regulären Nachkauf
-  mehrerer Waystone-Ränge.
 
 ## 4. Checkpoints, Wipe & Abbruch
 

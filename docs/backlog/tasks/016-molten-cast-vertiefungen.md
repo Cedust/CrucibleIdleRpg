@@ -37,7 +37,7 @@ Molten-Basisnodes müssen gemergt sein, bevor die Vertiefungen daran anschließe
   des zugeordneten Basisnodes
 - [Twin Echo](../../spec/WEAPON-MASTERY.md#52-twin-blades--rhaya) — sichtbare Umbenennung des
   Grandmaster-Nodes bei unverändertem Identifier `weapon.second-wind`
-- [Kapazität und Save-Migration](../../spec/PROGRESSION.md#35-kapazität-und-save-migration) — die
+- [Kapazität](../../spec/PROGRESSION.md#35-kapazität) — die
   aktive Kapazität steigt auf `190` Crystals
 
 ## Akzeptanzkriterien

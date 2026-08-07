@@ -4,8 +4,6 @@ import type { ActorRef, CombatState } from '@/features/combat/engine/combatState
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import type { HitKind } from '@/features/combat/engine/outgoingDamage';
 
-const EMPTY_LOG = [] as const;
-
 function actorName(state: CombatState, actor: ActorRef): string {
   const participant =
     actor.side === 'character' ? state.characters[actor.index] : state.enemies[actor.index];
@@ -57,7 +55,7 @@ function eventText(state: CombatState, event: CombatEvent): string {
 
 /** Gedeckeltes Kampf-Log: ein Listeneintrag entspricht genau einem vollständigen Zugblock. */
 export function CombatLog() {
-  const ticks = useCombatStore((state) => state.tickLog ?? EMPTY_LOG);
+  const ticks = useCombatStore((state) => state.tickLog);
 
   return (
     <section

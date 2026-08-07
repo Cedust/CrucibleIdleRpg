@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { Profiler } from 'react';
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -35,20 +36,21 @@ function combat(formation: FormationDefinition = FORMATIONS.rampBothLanesCrowded
 function positionNextActorWithVisibleChange(side: 'character' | 'enemy'): void {
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const state = useCombatStore.getState();
-    if (state.combat === null) {
+    const combat = state.combat;
+    if (combat === null) {
       throw new Error('Testkampf fehlt');
     }
 
-    const preview = nextTick(state.combat, state.context);
+    const preview = nextTick(combat, state.context);
     const changed =
       side === 'character'
         ? preview.state.enemies.some(
-            (enemy, index) => enemy.health !== state.combat?.enemies[index]?.health,
+            (enemy, index) => enemy.health !== combat.enemies[index]?.health,
           )
         : preview.state.characters.some(
             (character, index) =>
-              character.health !== state.combat?.characters[index]?.health ||
-              character.barrier !== state.combat?.characters[index]?.barrier,
+              character.health !== combat.characters[index]?.health ||
+              character.barrier !== combat.characters[index]?.barrier,
           );
 
     if (preview.actor?.side === side && changed) {

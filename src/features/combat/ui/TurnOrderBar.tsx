@@ -2,8 +2,6 @@ import type { ActorRef } from '@/features/combat/engine/combatState';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { sameActor } from '@/features/combat/engine/turnOrder';
 
-const EMPTY_QUEUE: readonly ActorRef[] = [];
-
 /** Ein Eintrag löst seinen Namen reaktiv über die eigene Subscription auf. */
 function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean }) {
   const name = useCombatStore((state) => {
@@ -31,7 +29,7 @@ function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean
 
 /** Stabile Kampf-Reihenfolge; pro Takt wandert ausschließlich die aktive Markierung. */
 export function TurnOrderBar() {
-  const turnOrder = useCombatStore((state) => state.turnOrder ?? EMPTY_QUEUE);
+  const turnOrder = useCombatStore((state) => state.turnOrder);
   const active = useCombatStore((state) => {
     if (state.outcome !== 'ongoing' || state.combat === null) {
       return null;

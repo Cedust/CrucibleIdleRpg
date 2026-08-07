@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { createNextDungeonCombat } from '@/features/dungeon/dungeonCombat';

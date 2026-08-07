@@ -42,14 +42,14 @@ const characterProgressionSchema = progressionSchema
       0,
     );
     if (character.freeAttributePoints + spentAttributes !== character.level) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Attributpunkte.' });
+      context.addIssue({ code: 'custom', message: 'Ungültige Attributpunkte.' });
     }
     const spentMastery = Object.values(character.masteryRanks).reduce(
       (total, rank) => total + rank,
       0,
     );
     if (character.freeMasteryPoints + spentMastery !== character.level) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültige Mastery-Punkte.' });
+      context.addIssue({ code: 'custom', message: 'Ungültige Mastery-Punkte.' });
     }
   });
 
@@ -102,7 +102,7 @@ export const saveSchema = z
       for (const [id, rank] of Object.entries(progression.masteryRanks)) {
         const node = nodes.find((candidate) => candidate.id === id);
         if (!node || rank > node.maxRank || progression.level < minimumLevel(node)) {
-          context.addIssue({ code: z.ZodIssueCode.custom, message: 'Ungültiger Mastery-Node.' });
+          context.addIssue({ code: 'custom', message: 'Ungültiger Mastery-Node.' });
           continue;
         }
         if (
@@ -112,19 +112,19 @@ export const saveSchema = z
           )
         ) {
           context.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: 'Mastery-Voraussetzung fehlt.',
           });
         }
         if (node.exclusiveWith && (progression.masteryRanks[node.exclusiveWith] ?? 0) > 0) {
-          context.addIssue({ code: z.ZodIssueCode.custom, message: 'Exklusive Mastery-Wahl.' });
+          context.addIssue({ code: 'custom', message: 'Exklusive Mastery-Wahl.' });
         }
       }
       const sharedCapstones = nodes.filter(
         (node) => node.sharedCapstone && (progression.masteryRanks[node.id] ?? 0) > 0,
       );
       if (sharedCapstones.length > 1) {
-        context.addIssue({ code: z.ZodIssueCode.custom, message: 'Mehrere gemeinsame Capstones.' });
+        context.addIssue({ code: 'custom', message: 'Mehrere gemeinsame Capstones.' });
       }
     }
   });

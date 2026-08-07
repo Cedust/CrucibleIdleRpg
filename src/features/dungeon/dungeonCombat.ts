@@ -47,11 +47,8 @@ function createDungeonCombat(
   encounter: ReturnType<typeof getAct1DungeonEntry>,
   carriedTeam: readonly { id: (typeof TEAM_ORDER)[number]; carriedHealth?: number }[] = [],
 ): CombatState {
+  // `FORMATIONS` ist ein totales Record über `FormationId` — der Zugriff ist typsicher.
   const formation = FORMATIONS[encounter.formationId];
-
-  if (formation === undefined) {
-    throw new Error(`Keine Formation für ${encounter.id} definiert`);
-  }
 
   return buildCombatState({
     floorId: encounter.id,

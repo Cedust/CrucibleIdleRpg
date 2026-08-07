@@ -13,10 +13,9 @@ export function DungeonSelectionScreen() {
   const startError = useDungeonRunStore((state) => state.startError);
   const startRun = useDungeonRunStore((state) => state.startRun);
   const [requestedDungeonId, setRequestedDungeonId] = useState<Act1DungeonId>('A1-D1');
-  const selectedDungeonId =
-    unlockedDungeonIds !== null && unlockedDungeonIds.includes(requestedDungeonId)
-      ? requestedDungeonId
-      : (unlockedDungeonIds?.[0] ?? 'A1-D1');
+  const selectedDungeonId = unlockedDungeonIds?.includes(requestedDungeonId)
+    ? requestedDungeonId
+    : (unlockedDungeonIds?.[0] ?? 'A1-D1');
 
   return (
     <section className="mx-auto max-w-5xl space-y-6">

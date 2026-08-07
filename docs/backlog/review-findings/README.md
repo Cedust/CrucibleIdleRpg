@@ -9,21 +9,21 @@ alle Quality-Gates waren zum Review-Zeitpunkt grün (Lint, Typecheck, 274 Unit-T
 
 ## Tasks
 
-| Reihenfolge | Task                                                                                           | Schwere | Status  | Hängt ab von |
-| ----------- | ---------------------------------------------------------------------------------------------- | ------- | ------- | ------------ |
-| 1           | [001 — Mastery-Node-IDs explizit machen](001-mastery-node-ids-explizit.md)                     | hoch    | `done`  | —            |
-| 2           | [002 — Mastery-Kampfintegration testen](002-mastery-kampfintegration-testen.md)                | hoch    | `done`  | —            |
-| 3           | [003 — Toten CombatScreen-Flow entfernen](003-toten-combatscreen-flow-entfernen.md)            | hoch    | `done`  | —            |
-| 4           | [004 — Mastery-Balancing deklarativ](004-mastery-balancing-deklarativ.md)                      | hoch    | `done`  | 001, 002     |
-| 5           | [005 — Save-Store konsolidieren](005-save-store-konsolidieren.md)                              | mittel  | `done`  | —            |
-| 6           | [006 — Dungeon-Run-Lifecycle konsolidieren](006-dungeon-run-lifecycle-konsolidieren.md)        | mittel  | `done`  | 003          |
-| 7           | [007 — UI-Subscriptions & Render-Hygiene](007-ui-subscriptions-und-render-hygiene.md)          | mittel  | `done`  | 003          |
-| 8           | [008 — WeaponMasteryScreen: A11y & Zerlegung](008-weapon-mastery-screen-a11y-und-zerlegung.md) | mittel  | `done`  | —            |
-| 9           | [009 — Typ- & Schema-Härtung](009-typ-und-schema-haertung.md)                                  | mittel  | `done`  | —            |
-| 10          | [010 — Testqualität: Invarianten statt Zahlen-Pins](010-testqualitaet-invarianten.md)          | mittel  | `done`  | —            |
-| 11          | [011 — Engine-Aufräumarbeiten](011-engine-aufraeumarbeiten.md)                                 | niedrig | `done`  | —            |
-| 12          | [012 — Content-Aufräumarbeiten](012-content-aufraeumarbeiten.md)                               | niedrig | `done`  | —            |
-| 13          | [013 — Tooling-Feinschliff](013-tooling-feinschliff.md)                                        | niedrig | `ready` | —            |
+| Reihenfolge | Task                                                                                           | Schwere | Status | Hängt ab von |
+| ----------- | ---------------------------------------------------------------------------------------------- | ------- | ------ | ------------ |
+| 1           | [001 — Mastery-Node-IDs explizit machen](001-mastery-node-ids-explizit.md)                     | hoch    | `done` | —            |
+| 2           | [002 — Mastery-Kampfintegration testen](002-mastery-kampfintegration-testen.md)                | hoch    | `done` | —            |
+| 3           | [003 — Toten CombatScreen-Flow entfernen](003-toten-combatscreen-flow-entfernen.md)            | hoch    | `done` | —            |
+| 4           | [004 — Mastery-Balancing deklarativ](004-mastery-balancing-deklarativ.md)                      | hoch    | `done` | 001, 002     |
+| 5           | [005 — Save-Store konsolidieren](005-save-store-konsolidieren.md)                              | mittel  | `done` | —            |
+| 6           | [006 — Dungeon-Run-Lifecycle konsolidieren](006-dungeon-run-lifecycle-konsolidieren.md)        | mittel  | `done` | 003          |
+| 7           | [007 — UI-Subscriptions & Render-Hygiene](007-ui-subscriptions-und-render-hygiene.md)          | mittel  | `done` | 003          |
+| 8           | [008 — WeaponMasteryScreen: A11y & Zerlegung](008-weapon-mastery-screen-a11y-und-zerlegung.md) | mittel  | `done` | —            |
+| 9           | [009 — Typ- & Schema-Härtung](009-typ-und-schema-haertung.md)                                  | mittel  | `done` | —            |
+| 10          | [010 — Testqualität: Invarianten statt Zahlen-Pins](010-testqualitaet-invarianten.md)          | mittel  | `done` | —            |
+| 11          | [011 — Engine-Aufräumarbeiten](011-engine-aufraeumarbeiten.md)                                 | niedrig | `done` | —            |
+| 12          | [012 — Content-Aufräumarbeiten](012-content-aufraeumarbeiten.md)                               | niedrig | `done` | —            |
+| 13          | [013 — Tooling-Feinschliff](013-tooling-feinschliff.md)                                        | niedrig | `done` | —            |
 
 **001–004 hängen fachlich zusammen** (Mastery-Effekte deklarativ und testbar): 001 sichert die
 Save-Keys, 002 legt das Sicherheitsnetz für den Umbau in 004, 003 räumt vorher den toten

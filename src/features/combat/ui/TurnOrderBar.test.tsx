@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { act, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
@@ -62,7 +63,7 @@ describe('TurnOrderBar', () => {
     expect(within(order).getAllByRole('listitem')).toHaveLength(initialOrder.length);
     const currentCombat = useCombatStore.getState().combat;
     const nextActive = currentCombat?.pending[0];
-    if (currentCombat === null || currentCombat === undefined || nextActive === undefined) {
+    if (currentCombat === null || nextActive === undefined) {
       throw new Error('Offener Folgezug fehlt');
     }
 

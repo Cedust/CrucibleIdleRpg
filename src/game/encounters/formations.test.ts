@@ -26,10 +26,10 @@ describe('FORMATIONS', () => {
   it('stellen Tank und Melee in die Frontline, Ranged in die Backline', () => {
     for (const formation of Object.values(FORMATIONS)) {
       for (const id of formation.slots.frontline) {
-        if (id !== null) expect(ENEMIES[id]?.role).not.toBe('ranged');
+        if (id !== null) expect(ENEMIES[id].role).not.toBe('ranged');
       }
       for (const id of formation.slots.backline) {
-        if (id !== null) expect(ENEMIES[id]?.role).toBe('ranged');
+        if (id !== null) expect(ENEMIES[id].role).toBe('ranged');
       }
     }
   });

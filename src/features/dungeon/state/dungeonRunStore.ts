@@ -54,7 +54,7 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     }
 
     const currentSave = saveStore.getState().data;
-    if (currentSave === null || !currentSave.unlockedDungeonIds.includes(dungeonId)) {
+    if (!currentSave?.unlockedDungeonIds.includes(dungeonId)) {
       set({ startError: 'This dungeon is not available.' });
       return false;
     }
@@ -136,17 +136,18 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
   completeRun: async () => {
     const run = get();
     const combat = useCombatStore.getState();
-    const encounter = combat.combat === null ? null : resolveAct1Encounter(combat.combat.floorId);
     if (
       run.mode !== 'run' ||
       run.activeDungeonId === null ||
       combat.combat === null ||
       combat.outcome !== 'victory' ||
-      combat.completionStatus !== 'saved' ||
-      encounter === null ||
-      encounter.dungeonId !== run.activeDungeonId ||
-      !isFinalAct1Floor(encounter)
+      combat.completionStatus !== 'saved'
     ) {
+      return false;
+    }
+
+    const encounter = resolveAct1Encounter(combat.combat.floorId);
+    if (encounter.dungeonId !== run.activeDungeonId || !isFinalAct1Floor(encounter)) {
       return false;
     }
 

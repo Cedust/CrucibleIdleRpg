@@ -2,7 +2,7 @@
 
 | Feld             | Wert    |
 | ---------------- | ------- |
-| **Status**       | `ready` |
+| **Status**       | `done`  |
 | **Schwere**      | niedrig |
 | **Hängt ab von** | —       |
 
@@ -37,13 +37,14 @@ Neue Lint-Regeln jenseits des Preset-Wechsels; Änderungen an der Hook-Struktur 
 
 ## Akzeptanzkriterien
 
-- [ ] `npm run lint` läuft in einem Gate über das ganze Repo (pre-push oder CI); AGENTS.md
+- [x] `npm run lint` läuft in einem Gate über das ganze Repo (pre-push); AGENTS.md
       beschreibt die Kette danach korrekt.
-- [ ] ESLint nutzt `strictTypeChecked`; neue Befunde sind behoben oder begründet
-      abgeschaltet.
-- [ ] `test.globals` ist entfernt; Logiktests laufen unter `environment: 'node'`,
-      Komponententests unter jsdom.
-- [ ] `npm run test:coverage` existiert.
+- [x] ESLint nutzt `strictTypeChecked` + `stylisticTypeChecked`; neue Befunde sind behoben
+      oder begründet abgeschaltet (Zahlen in Templates, Arrow-Shorthands, `as`-Cast-Stil,
+      `no-unnecessary-condition` in Tests).
+- [x] `test.globals` ist entfernt; Logiktests laufen unter `environment: 'node'`,
+      DOM-abhängige Tests deklarieren jsdom per Datei-Pragma.
+- [x] `npm run test:coverage` existiert.
 
 ## Betroffene Dateien
 

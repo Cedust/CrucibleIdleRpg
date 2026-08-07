@@ -1,4 +1,3 @@
-import { FORMATIONS } from '@/game/encounters/formations';
 import type {
   DungeonId,
   EncounterClass,
@@ -98,9 +97,7 @@ export function validateAct1Encounters(
     if (encounter.id !== expectedId || ids.has(encounter.id)) {
       return `ungültige oder doppelte ID ${encounter.id}`;
     }
-    if (FORMATIONS[encounter.formationId] === undefined) {
-      return `unbekannte Formation ${encounter.formationId}`;
-    }
+    // Formations-Referenzen prüft der Compiler: `FormationId` ist eine abgeleitete Union.
     if (encounter.classification !== encounterClass(encounter.dungeonId, encounter.floorNumber)) {
       return `falsche Klassifikation für ${encounter.id}`;
     }

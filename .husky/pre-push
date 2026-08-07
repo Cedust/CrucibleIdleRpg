@@ -1,3 +1,7 @@
+# ESLint über das ganze Repo: lint-staged im pre-commit prüft nur gestagte Dateien;
+# nach einer Konfig-Änderung lägen Verstöße in unberührten Dateien sonst erst remote.
+npm run lint
+
 # Produktionsbuild inklusive Vite-Bundling; fängt Fehler, die tsc nicht sieht
 # (Imports, Assets). Der Typecheck-Anteil läuft inkrementell.
 npm run build

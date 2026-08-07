@@ -1,10 +1,10 @@
 # 014c — Mastery Combat Arts
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M2        |
-| **Hängt ab von** | 014b      |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M2      |
+| **Hängt ab von** | 014b    |
 
 ## Ziel
 
@@ -32,8 +32,7 @@ Armor, Blacksmith und Jeweler folgen in M3/M4.
 
 ## Blockiert durch
 
-Task 014b muss gemerged sein; dessen validierte Node-Ränge sind die einzige Quelle für aktive
-Mastery-Verhalten.
+-
 
 ## Akzeptanzkriterien
 

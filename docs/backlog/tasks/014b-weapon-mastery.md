@@ -1,10 +1,10 @@
 # 014b — Weapon Mastery
 
-| Feld             | Wert          |
-| ---------------- | ------------- |
-| **Status**       | `in progress` |
-| **Meilenstein**  | M2            |
-| **Hängt ab von** | 014a          |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 014a   |
 
 ## Ziel
 

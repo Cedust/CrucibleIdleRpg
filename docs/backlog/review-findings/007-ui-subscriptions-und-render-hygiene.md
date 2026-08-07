@@ -2,7 +2,7 @@
 
 | Feld             | Wert                                            |
 | ---------------- | ----------------------------------------------- |
-| **Status**       | `ready`                                         |
+| **Status**       | `done`                                          |
 | **Schwere**      | mittel                                          |
 | **Hängt ab von** | [003](003-toten-combatscreen-flow-entfernen.md) |
 
@@ -39,12 +39,12 @@ Umbau des WeaponMasteryScreens — [008](008-weapon-mastery-screen-a11y-und-zerl
 
 ## Akzeptanzkriterien
 
-- [ ] Kein `getState()`-Read im Render-Pfad; `TurnOrderBar` leitet Namen aus der abonnierten
+- [x] Kein `getState()`-Read im Render-Pfad; `TurnOrderBar` leitet Namen aus der abonnierten
       Selektion ab.
-- [ ] `DungeonRunScreen` abonniert `floorId`, `DungeonSelectionScreen` die benötigten
+- [x] `DungeonRunScreen` abonniert `floorId`, `DungeonSelectionScreen` die benötigten
       Save-Felder.
-- [ ] Log-Einträge tragen einen stabilen Key (z. B. monotone Tick-ID aus dem Store).
-- [ ] Die Profiler-Tests (Commit nur auf der veränderten Kampfseite) bleiben grün.
+- [x] Log-Einträge tragen einen stabilen Key (z. B. monotone Tick-ID aus dem Store).
+- [x] Die Profiler-Tests (Commit nur auf der veränderten Kampfseite) bleiben grün.
 
 ## Betroffene Dateien
 

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 
@@ -14,19 +15,20 @@ interface EnemySlotProps {
 }
 
 function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
-  const name = useCombatStore(
-    (state) =>
-      state.combat?.enemies.find((enemy) => enemy.formationIndex === formationIndex)?.name ?? null,
+  // Ein Scan je Slot; die Shallow-Gleichheit hält unveränderte Slots ohne Re-Render.
+  const slot = useCombatStore(
+    useShallow((state) => {
+      const enemy = state.combat?.enemies.find(
+        (candidate) => candidate.formationIndex === formationIndex,
+      );
+      return enemy === undefined
+        ? null
+        : { name: enemy.name, health: enemy.health, maxHealth: enemy.maxHealth };
+    }),
   );
-  const health = useCombatStore(
-    (state) =>
-      state.combat?.enemies.find((enemy) => enemy.formationIndex === formationIndex)?.health ?? 0,
-  );
-  const maxHealth = useCombatStore(
-    (state) =>
-      state.combat?.enemies.find((enemy) => enemy.formationIndex === formationIndex)?.maxHealth ??
-      0,
-  );
+  const name = slot?.name ?? null;
+  const health = slot?.health ?? 0;
+  const maxHealth = slot?.maxHealth ?? 0;
 
   return (
     <div
@@ -54,21 +56,16 @@ export function EnemyFormation() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const updateScrollState = useCallback(() => {
-    const element = scroller.current;
-    if (element === null) {
-      return;
-    }
-
-    setCanScrollLeft(element.scrollLeft > 0);
-    setCanScrollRight(element.scrollLeft + element.clientWidth < element.scrollWidth - 1);
-  }, []);
-
   useEffect(() => {
     const element = scroller.current;
     if (element === null) {
       return;
     }
+
+    const updateScrollState = () => {
+      setCanScrollLeft(element.scrollLeft > 0);
+      setCanScrollRight(element.scrollLeft + element.clientWidth < element.scrollWidth - 1);
+    };
 
     updateScrollState();
     element.addEventListener('scroll', updateScrollState);
@@ -78,7 +75,7 @@ export function EnemyFormation() {
       element.removeEventListener('scroll', updateScrollState);
       window.removeEventListener('resize', updateScrollState);
     };
-  }, [updateScrollState]);
+  }, []);
 
   const scrollFormation = (direction: -1 | 1) => {
     scroller.current?.scrollBy({ left: direction * 240 });

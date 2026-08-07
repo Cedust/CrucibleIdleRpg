@@ -11,8 +11,7 @@ import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
 
 /** Fullscreen arena with lifecycle actions only; it intentionally has no app navigation. */
 export function DungeonRunScreen() {
-  const combat = useCombatStore((state) => state.combat);
-  const floorId = combat?.floorId ?? null;
+  const floorId = useCombatStore((state) => state.combat?.floorId ?? null);
   const outcome = useCombatStore((state) => state.outcome);
   const isPaused = useCombatStore((state) => state.isPaused);
   const completionStatus = useCombatStore((state) => state.completionStatus);

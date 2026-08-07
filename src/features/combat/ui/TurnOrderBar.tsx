@@ -4,11 +4,29 @@ import { sameActor } from '@/features/combat/engine/turnOrder';
 
 const EMPTY_QUEUE: readonly ActorRef[] = [];
 
-function actorName(actor: ActorRef): string {
-  const combat = useCombatStore.getState().combat;
-  const participant =
-    actor.side === 'character' ? combat?.characters[actor.index] : combat?.enemies[actor.index];
-  return participant?.name ?? 'Unknown actor';
+/** Ein Eintrag löst seinen Namen reaktiv über die eigene Subscription auf. */
+function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean }) {
+  const name = useCombatStore((state) => {
+    const participant =
+      actor.side === 'character'
+        ? state.combat?.characters[actor.index]
+        : state.combat?.enemies[actor.index];
+    return participant?.name ?? 'Unknown actor';
+  });
+
+  return (
+    <li
+      aria-current={isActive ? 'step' : undefined}
+      className={
+        isActive
+          ? 'rounded-full border border-accent bg-accent/15 px-3 py-1.5 text-sm font-semibold text-accent'
+          : 'rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm text-text-muted'
+      }
+    >
+      {isActive && <span className="sr-only">Active: </span>}
+      {name}
+    </li>
+  );
 }
 
 /** Stabile Kampf-Reihenfolge; pro Takt wandert ausschließlich die aktive Markierung. */
@@ -47,24 +65,13 @@ export function TurnOrderBar() {
         <p className="mt-3 text-sm text-text-muted">No turn order yet.</p>
       ) : (
         <ol aria-label="Combat turn order" className="mt-3 flex flex-wrap gap-2">
-          {turnOrder.map((actor) => {
-            const isActive = active !== null && sameActor(actor, active);
-
-            return (
-              <li
-                key={`${actor.side}-${actor.index}`}
-                aria-current={isActive ? 'step' : undefined}
-                className={
-                  isActive
-                    ? 'rounded-full border border-accent bg-accent/15 px-3 py-1.5 text-sm font-semibold text-accent'
-                    : 'rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm text-text-muted'
-                }
-              >
-                {isActive && <span className="sr-only">Active: </span>}
-                {actorName(actor)}
-              </li>
-            );
-          })}
+          {turnOrder.map((actor) => (
+            <TurnOrderItem
+              key={`${actor.side}-${actor.index}`}
+              actor={actor}
+              isActive={active !== null && sameActor(actor, active)}
+            />
+          ))}
         </ol>
       )}
     </section>

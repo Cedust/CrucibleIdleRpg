@@ -93,10 +93,14 @@ describe('useCombatStore', () => {
 
     const state = useCombatStore.getState();
     expect(state.tickLog).toHaveLength(COMBAT_LOG_LIMIT);
-    expect(state.tickLog.at(-1)).toBe(state.lastTick);
+    expect(state.tickLog.at(-1)?.tick).toBe(state.lastTick);
     expect(
-      state.tickLog.every((tick) => tick.events.some((event) => event.type === 'turnStart')),
+      state.tickLog.every((entry) => entry.tick.events.some((event) => event.type === 'turnStart')),
     ).toBe(true);
+    // Die IDs bleiben auch nach dem Deckeln monoton — stabile Anzeige-Keys.
+    expect(state.tickLog.map((entry) => entry.id)).toEqual(
+      Array.from({ length: COMBAT_LOG_LIMIT }, (_, index) => index + 5),
+    );
   });
 
   it('committet einen Sieg genau einmal und meldet die gespeicherte Belohnung', async () => {

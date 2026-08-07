@@ -78,19 +78,19 @@ export function CombatLog() {
         aria-live="polite"
         className={ticks.length === 0 ? 'sr-only' : 'mt-3 max-h-80 space-y-2 overflow-y-auto'}
       >
-        {[...ticks].reverse().map((tick, tickIndex) => (
+        {[...ticks].reverse().map((entry) => (
           <li
-            key={`${tick.state.round}-${tick.actor?.side ?? 'none'}-${tick.actor?.index ?? tickIndex}`}
+            key={entry.id}
             className="rounded-lg border border-border bg-background/40 px-3 py-2 text-sm"
           >
             <div className="flex flex-wrap gap-x-2 gap-y-1">
-              {tick.events.map((event, eventIndex) => (
+              {entry.tick.events.map((event, eventIndex) => (
                 <span
                   key={`${event.type}-${eventIndex}`}
                   data-event-type={event.type}
                   className="after:ml-2 after:text-border after:content-['•'] last:after:content-none"
                 >
-                  {eventText(tick.state, event)}
+                  {eventText(entry.tick.state, event)}
                 </span>
               ))}
             </div>

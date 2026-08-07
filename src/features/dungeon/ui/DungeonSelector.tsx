@@ -1,20 +1,23 @@
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
-import type { SaveData } from '@/features/save/saveSchema';
 
 interface DungeonSelectorProps {
-  save: SaveData;
+  unlockedDungeonIds: readonly Act1DungeonId[];
   selectedDungeonId: Act1DungeonId;
   onSelect: (dungeonId: Act1DungeonId) => void;
 }
 
 /** Shows locked entrances too, but only persisted checkpoints can be selected. */
-export function DungeonSelector({ save, selectedDungeonId, onSelect }: DungeonSelectorProps) {
+export function DungeonSelector({
+  unlockedDungeonIds,
+  selectedDungeonId,
+  onSelect,
+}: DungeonSelectorProps) {
   return (
     <fieldset className="flex flex-wrap gap-2" aria-label="Dungeon selection">
       <legend className="sr-only">Choose a dungeon</legend>
       {ACT_1_DUNGEON_IDS.map((dungeonId, index) => {
         const selected = dungeonId === selectedDungeonId;
-        const unlocked = save.unlockedDungeonIds.includes(dungeonId);
+        const unlocked = unlockedDungeonIds.includes(dungeonId);
 
         return (
           <label

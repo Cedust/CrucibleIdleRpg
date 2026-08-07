@@ -98,7 +98,7 @@ describe('CombatLog', () => {
         },
       ],
     };
-    useCombatStore.setState({ combat: state, outcome: 'ongoing', tickLog: [tick] });
+    useCombatStore.setState({ combat: state, outcome: 'ongoing', tickLog: [{ id: 0, tick }] });
     render(<CombatLog />);
 
     const entries = screen.getAllByRole('listitem');
@@ -126,11 +126,18 @@ describe('CombatLog', () => {
       events: [{ type: 'roundStart', round: 2 }],
       outcome: 'ongoing',
     };
-    useCombatStore.setState({ combat: state, tickLog: [first] });
+    useCombatStore.setState({ combat: state, tickLog: [{ id: 0, tick: first }] });
     render(<CombatLog />);
     const originalFirstEntry = screen.getByRole('listitem');
 
-    act(() => useCombatStore.setState({ tickLog: [first, second] }));
+    act(() =>
+      useCombatStore.setState({
+        tickLog: [
+          { id: 0, tick: first },
+          { id: 1, tick: second },
+        ],
+      }),
+    );
 
     const entries = screen.getAllByRole('listitem');
     expect(entries[0]).toHaveTextContent('Round 2 begins');

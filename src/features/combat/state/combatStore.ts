@@ -14,6 +14,12 @@ import { buildPendingQueue } from '@/features/combat/engine/turnOrder';
 /** Verfügbare Anzeige-Geschwindigkeiten; 2× wird erst in M2 freigeschaltet. */
 export type PlaybackSpeed = 1 | 2;
 
+/** Ein Zug-Block im Anzeige-Log; `id` ist monoton je Kampf und damit ein stabiler Key. */
+export interface CombatLogEntry {
+  id: number;
+  tick: TickResult;
+}
+
 export interface CombatStoreState {
   /** Laufzeit-Zustand des aktuellen Kampfes; wird nie in den Save geschrieben. */
   combat: CombatState | null;
@@ -22,7 +28,9 @@ export interface CombatStoreState {
   /** Vollständiger Zug-Block des zuletzt gerechneten Takts für Anzeige und Kampf-Log. */
   lastTick: TickResult | null;
   /** Gedeckelte Zug-Blöcke für die Anzeige; genau ein Eintrag je gerechneten Takt. */
-  tickLog: readonly TickResult[];
+  tickLog: readonly CombatLogEntry[];
+  /** Nächste Log-ID; zählt je Kampf monoton hoch. */
+  nextLogId: number;
   /** Stabile Anzeige-Reihenfolge aller Akteure des Kampfes. */
   turnOrder: readonly ActorRef[];
   isPaused: boolean;
@@ -50,7 +58,8 @@ const INITIAL_PLAYBACK_STATE = {
   context: DEFAULT_COMBAT_CONTEXT,
   outcome: null,
   lastTick: null,
-  tickLog: [] as readonly TickResult[],
+  tickLog: [] as readonly CombatLogEntry[],
+  nextLogId: 0,
   turnOrder: [] as readonly ActorRef[],
   isPaused: true,
   playbackSpeed: 1,
@@ -73,6 +82,7 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       outcome: combatOutcome(combat),
       lastTick: null,
       tickLog: [],
+      nextLogId: 0,
       turnOrder: buildPendingQueue(combat),
       // Playback startet verbindlich pausiert (SIMULATION §2).
       isPaused: true,
@@ -103,7 +113,8 @@ export const useCombatStore = create<CombatStoreState>((set, get) => ({
       combat: tick.state,
       outcome: tick.outcome,
       lastTick: tick,
-      tickLog: [...current.tickLog, tick].slice(-COMBAT_LOG_LIMIT),
+      tickLog: [...current.tickLog, { id: current.nextLogId, tick }].slice(-COMBAT_LOG_LIMIT),
+      nextLogId: current.nextLogId + 1,
       // Ein entschiedener Kampf erzeugt keine weiteren Playback-Frames.
       isPaused: tick.outcome === 'ongoing' ? current.isPaused : true,
       completionStatus: 'idle',

@@ -7,16 +7,16 @@ import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
 /** Normal shell view for selecting an unlocked dungeon entrance. */
 export function DungeonSelectionScreen() {
-  const save = useSaveStore((state) => state.data);
+  const unlockedDungeonIds = useSaveStore((state) => state.data?.unlockedDungeonIds ?? null);
   const saveStatus = useSaveStore((state) => state.status);
   const mode = useDungeonRunStore((state) => state.mode);
   const startError = useDungeonRunStore((state) => state.startError);
   const startRun = useDungeonRunStore((state) => state.startRun);
   const [requestedDungeonId, setRequestedDungeonId] = useState<Act1DungeonId>('A1-D1');
   const selectedDungeonId =
-    save !== null && save.unlockedDungeonIds.includes(requestedDungeonId)
+    unlockedDungeonIds !== null && unlockedDungeonIds.includes(requestedDungeonId)
       ? requestedDungeonId
-      : (save?.unlockedDungeonIds[0] ?? 'A1-D1');
+      : (unlockedDungeonIds?.[0] ?? 'A1-D1');
 
   return (
     <section className="mx-auto max-w-5xl space-y-6">
@@ -25,7 +25,7 @@ export function DungeonSelectionScreen() {
         <p className="mt-1 text-sm text-text-muted">Choose an unlocked dungeon entrance.</p>
       </header>
 
-      {save === null ? (
+      {unlockedDungeonIds === null ? (
         <p aria-live="polite" className="text-text-muted">
           {saveStatus === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress...'}
         </p>
@@ -41,7 +41,7 @@ export function DungeonSelectionScreen() {
             <p className="text-sm text-text-muted">Choose a dungeon checkpoint.</p>
           </div>
           <DungeonSelector
-            save={save}
+            unlockedDungeonIds={unlockedDungeonIds}
             selectedDungeonId={selectedDungeonId}
             onSelect={setRequestedDungeonId}
           />

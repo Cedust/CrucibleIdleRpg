@@ -1,15 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { createDefaultSave } from '@/features/save/saveSchema';
 import { DungeonSelector } from './DungeonSelector';
 
 describe('DungeonSelector', () => {
   it('shows only unlocked checkpoints and reports the accessible selection', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
-    const save = { ...createDefaultSave(1), unlockedDungeonIds: ['A1-D1', 'A1-D3'] as const };
-    render(<DungeonSelector save={save} selectedDungeonId="A1-D1" onSelect={onSelect} />);
+    render(
+      <DungeonSelector
+        unlockedDungeonIds={['A1-D1', 'A1-D3']}
+        selectedDungeonId="A1-D1"
+        onSelect={onSelect}
+      />,
+    );
 
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(5);

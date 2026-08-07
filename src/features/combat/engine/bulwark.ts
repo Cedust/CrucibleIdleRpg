@@ -17,9 +17,8 @@ import { isAlive, type CombatEnemy } from './combatState';
  * Counter-Treffer bekommt den Faktor des Gegners, den er trifft.
  *
  * **Sunder** (docs/spec/SIGNATURES.md#12-sunder-rhaya-melee) senkt das `bᵢ` einzelner
- * Frontline-Gegner während des Kampfes. Er ist Crucible-gebunden und in M1 nicht umgesetzt;
- * er braucht hier keine eigene Bahn, weil `bulwarkContribution` im Kampfzustand liegt und
- * dieselbe Formel bedient.
+ * Frontline-Gegner während des Kampfes — `applySunder` unten; `bulwarkContribution` liegt im
+ * Kampfzustand und bedient dieselbe Formel.
  *
  * Reine Funktionen ohne Timer, DOM oder Store (AGENTS.md); kein PRNG-Zug.
  */
@@ -53,4 +52,32 @@ export function applyBulwark(
   target: Pick<CombatEnemy, 'lane'>,
 ): number {
   return damage * bulwarkDamageFactor(enemies, target);
+}
+
+/** Abbau je Angriff und kumulatives Cap eines Sunder-Rangs (docs/spec/SIGNATURES.md#12-sunder-rhaya-melee). */
+export interface SunderEffect {
+  perAttack: number;
+  cap: number;
+}
+
+/**
+ * Eine Sunder-Anwendung — genau einmal je Angriff und getroffenem Frontline-Ziel
+ * (docs/spec/SIGNATURES.md#12-sunder-rhaya-melee). Der Abbau ist dreifach begrenzt: durch den
+ * Rangwert je Angriff, das kumulative Cap je Ziel und Kampf und dadurch, dass `bᵢ` nie unter
+ * `0` fällt.
+ */
+export function applySunder(
+  target: Pick<CombatEnemy, 'bulwarkContribution' | 'sunderedBulwark'>,
+  effect: SunderEffect,
+): Pick<CombatEnemy, 'bulwarkContribution' | 'sunderedBulwark'> {
+  const applied = Math.min(
+    effect.perAttack,
+    Math.max(effect.cap - target.sunderedBulwark, 0),
+    target.bulwarkContribution,
+  );
+
+  return {
+    bulwarkContribution: target.bulwarkContribution - applied,
+    sunderedBulwark: target.sunderedBulwark + applied,
+  };
 }

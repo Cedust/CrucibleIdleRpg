@@ -1,5 +1,7 @@
+import type { CharacterId } from '@/game/types';
 import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
+import { applySunder, type SunderEffect } from './bulwark';
 import {
   beginRound,
   isAlive,
@@ -14,7 +16,7 @@ import { NO_MITIGATION, resolveEnemyAttack } from './damagePipeline';
 import { masteryContextFor } from './masteryCombat';
 import { resolveCharacterAttack, type AttackContext, type Hit } from './outgoingDamage';
 import { resolveRegeneration } from './regeneration';
-import { pruneDefeated, takeNextActor } from './turnOrder';
+import { pruneDefeated, suppressPendingAction, takeNextActor } from './turnOrder';
 
 /**
  * Das Schrittwerk der Kampf-Engine — die reine „Zustand → nächster Takt"-Funktion
@@ -51,10 +53,20 @@ export interface CombatContext {
   contextFor: (character: CombatCharacter) => AttackContext;
   /**
    * Der auf den Tank umgeleitete Anteil `m` des DD-Ticks
-   * (docs/spec/SIGNATURES.md#11-mitigation-korvin-tank). In M1 konstant `0`
-   * (docs/backlog/ROADMAP.md).
+   * (docs/spec/SIGNATURES.md#11-mitigation-korvin-tank). `0` vor Freischaltung des
+   * Crucible-Nodes `molten.mitigation`.
    */
   mitigation: number;
+  /**
+   * Sunder (docs/spec/SIGNATURES.md#12-sunder-rhaya-melee): Bulwark-Abbau je Angriff des
+   * tragenden Charakters. Ohne Freischaltung nicht gesetzt.
+   */
+  sunder?: SunderEffect & { characterId: CharacterId };
+  /**
+   * Suppression (docs/spec/SIGNATURES.md#13-suppression-quinn-ranged): Queue-Plätze `L` je
+   * Treffer des tragenden Charakters. Ohne Freischaltung nicht gesetzt.
+   */
+  suppression?: { characterId: CharacterId; places: number };
 }
 
 /**
@@ -169,7 +181,7 @@ function perTickContext(context: CombatContext): CombatContext {
   const cache = new Map<CombatCharacter, AttackContext>();
 
   return {
-    mitigation: context.mitigation,
+    ...context,
     contextFor: (character) => {
       let resolved = cache.get(character);
       if (resolved === undefined) {
@@ -217,9 +229,10 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
   const prng = resumePrng(current.combatPrngState);
   const draft = draftOf(current);
   const tickContext = perTickContext(context);
+  let primaryTarget: ActorRef | undefined;
 
   if (actor.side === 'character') {
-    resolveCharacterTurn(current, draft, actor, prng, tickContext);
+    primaryTarget = resolveCharacterTurn(current, draft, actor, prng, tickContext);
   } else {
     resolveEnemyTurn(current, draft, actor, prng, tickContext);
   }
@@ -234,7 +247,12 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
     enemies: draft.enemies,
     pending: remaining,
   };
-  const next: CombatState = { ...applied, pending: pruneDefeated(applied, remaining) };
+  let next: CombatState = { ...applied, pending: pruneDefeated(applied, remaining) };
+
+  if (actor.side === 'character' && primaryTarget !== undefined) {
+    next = applySuppression(next, tickContext, actor, primaryTarget);
+  }
+
   const outcome = combatOutcome(next);
 
   // Das Rundenende meldet nur der offene Kampf — ist er entschieden, steht das Ergebnis am
@@ -306,12 +324,14 @@ export function runCombat(
 
 /**
  * Der Zug eines Charakters: **ein Basisangriff** auf das priorisierte Ziel samt Offensiv-Procs
- * (COMBAT §2.1), danach die Regeneration (COMBAT §1.1, §2.6).
+ * (COMBAT §2.1), danach die Regeneration (COMBAT §1.1, §2.6). Liefert das Primärziel des
+ * Angriffs — den Ansatzpunkt der Suppression (SIGNATURES §1.3).
  *
  * Die Trefferliste steht **vor** dem Anwenden fest: Sie wird gegen den Zustand zu Zugbeginn
  * aufgelöst, inklusive des Bulwark-Malus je Ziel. Ein Nebenziel profitiert also nicht davon,
  * dass der Grundtreffer soeben einen Frontline-Gegner gefällt hat — der Zug ist ein Block
- * (docs/spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit).
+ * (docs/spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit). Sunder greift erst nach dem
+ * Anwenden und wirkt damit ausschließlich auf nachfolgende Angriffe (SIGNATURES §1.2).
  */
 function resolveCharacterTurn(
   state: CombatState,
@@ -319,7 +339,7 @@ function resolveCharacterTurn(
   actor: ActorRef,
   prng: ResumablePrng,
   context: CombatContext,
-): void {
+): ActorRef | undefined {
   const character = state.characters[actor.index];
 
   if (character === undefined) {
@@ -342,6 +362,8 @@ function resolveCharacterTurn(
     damageEnemy(draft, actor, hit);
   }
 
+  applySunderForAttack(state, draft, character, context, attack.hits);
+
   // Regeneration — einmal je Handlung, unabhängig von der Trefferzahl (COMBAT §2.6).
   const regeneration = resolveRegeneration(character);
 
@@ -358,6 +380,87 @@ function resolveCharacterTurn(
       });
     }
   }
+
+  return attack.primaryTarget;
+}
+
+/**
+ * Sunder nach einem vollständigen Angriff des tragenden Charakters (SIGNATURES §1.2): je
+ * mindestens einmal getroffenem Frontline-Ziel genau eine Anwendung — Multi Hit und
+ * wiederholte Treffer desselben Angriffs stapeln nicht. Die Lane stammt aus dem Zustand zu
+ * Zugbeginn; ein Counter läuft als eigenständiger Angriff erneut hierdurch.
+ */
+function applySunderForAttack(
+  state: CombatState,
+  draft: TurnDraft,
+  attacker: CombatCharacter,
+  context: CombatContext,
+  hits: readonly Hit[],
+): void {
+  const sunder = context.sunder;
+
+  if (sunder === undefined) {
+    return;
+  }
+  if (attacker.id !== sunder.characterId) {
+    return;
+  }
+
+  const hitFrontline = new Set<number>();
+  for (const hit of hits) {
+    if (state.enemies[hit.target.index]?.lane === 'frontline') {
+      hitFrontline.add(hit.target.index);
+    }
+  }
+
+  for (const index of hitFrontline) {
+    const enemy = draft.enemies[index];
+    if (enemy !== undefined) {
+      Object.assign(enemy, applySunder(enemy, sunder));
+    }
+  }
+}
+
+/**
+ * Suppression nach dem vollständigen Angriff (SIGNATURES §1.3): Die noch offene Aktion des
+ * **primären** Ziels rutscht um `L` offene Plätze nach hinten — sofern das Ziel lebt, noch
+ * nicht gehandelt hat und in dieser Runde noch nicht supprimiert wurde. Splash-Nebenziele
+ * bleiben unberührt; ein Counter suppresst strukturell nie, weil sein Ziel bereits gehandelt
+ * hat und nicht mehr in der Queue steht.
+ */
+function applySuppression(
+  state: CombatState,
+  context: CombatContext,
+  actor: ActorRef,
+  primaryTarget: ActorRef,
+): CombatState {
+  const suppression = context.suppression;
+  const attacker = state.characters[actor.index];
+
+  if (suppression === undefined || attacker === undefined) {
+    return state;
+  }
+  if (attacker.id !== suppression.characterId || primaryTarget.side !== 'enemy') {
+    return state;
+  }
+
+  const enemy = state.enemies[primaryTarget.index];
+  if (enemy === undefined || !isAlive(enemy) || enemy.suppressedRound === state.round) {
+    return state;
+  }
+
+  const pending = suppressPendingAction(state.pending, primaryTarget, suppression.places);
+  if (pending === null) {
+    return state;
+  }
+
+  return {
+    ...state,
+    enemies: state.enemies.map((candidate, index) =>
+      index === primaryTarget.index ? { ...candidate, suppressedRound: state.round } : candidate,
+    ),
+    pending,
+  };
 }
 
 /**
@@ -419,6 +522,11 @@ function resolveEnemyTurn(
   for (const counter of counters) {
     if (counter.hit !== undefined) {
       damageEnemy(draft, counter.source, counter.hit);
+      // Ein Counter ist ein eigenständiger Angriff — eigene Sunder-Anwendung (SIGNATURES §1.2).
+      const counterSource = state.characters[counter.source.index];
+      if (counterSource !== undefined) {
+        applySunderForAttack(state, draft, counterSource, context, [counter.hit]);
+      }
       const countering = draft.characters[counter.source.index];
       if (
         countering !== undefined &&

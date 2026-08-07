@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { type Act1DungeonId } from '@/game/encounters/act1';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
@@ -7,7 +8,9 @@ import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
 /** Normal shell view for selecting an unlocked dungeon entrance. */
 export function DungeonSelectionScreen() {
-  const unlockedDungeonIds = useSaveStore((state) => state.data?.unlockedDungeonIds ?? null);
+  // Die Einstiege folgen aus den Waystone-Rängen; gespeichert sind nur die Node-Ränge.
+  const crucible = useSaveStore((state) => state.data?.crucible ?? null);
+  const unlockedDungeonIds = crucible === null ? null : deriveUnlockedDungeonIds(crucible);
   const saveStatus = useSaveStore((state) => state.status);
   const mode = useDungeonRunStore((state) => state.mode);
   const startError = useDungeonRunStore((state) => state.startError);

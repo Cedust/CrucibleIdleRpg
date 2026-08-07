@@ -1,10 +1,10 @@
 # 016 — Molten Cast Vertiefungen
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M2        |
-| **Hängt ab von** | 015       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M2      |
+| **Hängt ab von** | 015     |
 
 ## Ziel
 

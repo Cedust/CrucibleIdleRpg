@@ -36,7 +36,7 @@ describe('saveSchema', () => {
       },
       currencies: { gold: 0, crystals: 0 },
       firstVictories: [],
-      unlockedDungeonIds: ['A1-D1'],
+      crucible: {},
       completedDungeons: {
         'A1-D1': false,
         'A1-D2': false,
@@ -108,7 +108,7 @@ describe('saveSchema', () => {
     ).toBe(false);
   });
 
-  it('validiert Format und Eindeutigkeit von Erstsiegen und Freischaltungen', () => {
+  it('validiert Format und Eindeutigkeit von Erstsiegen', () => {
     const save = createDefaultSave(123);
 
     expect(
@@ -118,9 +118,56 @@ describe('saveSchema', () => {
     expect(
       saveSchema.safeParse({ ...save, firstVictories: ['A1-D1-01', 'A1-D1-01'] }).success,
     ).toBe(false);
-    expect(saveSchema.safeParse({ ...save, unlockedDungeonIds: ['A1-D1', 'A1-D1'] }).success).toBe(
+  });
+
+  it('lehnt das entfernte Checkpoint-Feld ab — die Einstiege folgen aus anvil.waystones', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, unlockedDungeonIds: ['A1-D1'] }).success).toBe(false);
+  });
+
+  it('akzeptiert Crucible-Ränge, deren Voraussetzungen der Speicherstand erfüllt', () => {
+    const save = createDefaultSave(123);
+    const valid = {
+      ...save,
+      crucible: { 'anvil.waystones': 1, 'smelting.overpower': 3, 'molten.rally': 5 },
+      completedDungeons: { ...save.completedDungeons, 'A1-D1': true },
+    };
+
+    expect(saveSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it('lehnt unbekannte Crucible-IDs, Überränge und gesperrte Nodes ab', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.unknown': 1 } }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.waystones': 5 } }).success).toBe(
       false,
     );
+    expect(saveSchema.safeParse({ ...save, crucible: { 'molten.ambush': 1 } }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.armory': 1 } }).success).toBe(false);
+  });
+
+  it('lehnt Waystone-Ränge ohne die Vollendet-Flags der vorherigen Dungeons ab', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.waystones': 1 } }).success).toBe(
+      false,
+    );
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        crucible: { 'anvil.waystones': 2 },
+        completedDungeons: { ...save.completedDungeons, 'A1-D1': true },
+      }).success,
+    ).toBe(false);
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        crucible: { 'anvil.waystones': 2 },
+        completedDungeons: { ...save.completedDungeons, 'A1-D1': true, 'A1-D2': true },
+      }).success,
+    ).toBe(true);
   });
 
   it('rejects mastery saves with unknown nodes or missing prerequisites', () => {

@@ -63,6 +63,8 @@ export interface CharacterProgression {
   attributePoints: AttributePoints;
   /** Crucible-Ebene je Derived Stat als Anteil; `0` ist neutral. */
   crucibleBonus: DerivedStatPercent;
+  /** Quick Step: flacher Initiative-Zuschlag je Rang (PROGRESSION §3.2). */
+  crucibleInitiative?: number;
   masteryRanks?: Readonly<Record<string, number>>;
 }
 
@@ -108,7 +110,10 @@ export function deriveCharacterStats(
     },
     offensive: { ...definition.baseOffensive },
     defensive: { ...definition.baseDefensive },
-    utility: { ...definition.baseUtility },
+    utility: {
+      ...definition.baseUtility,
+      initiative: definition.baseUtility.initiative + (progression.crucibleInitiative ?? 0),
+    },
   };
 
   for (const [id, rank] of Object.entries(progression.masteryRanks ?? {})) {

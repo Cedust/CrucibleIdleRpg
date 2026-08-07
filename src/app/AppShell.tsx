@@ -8,6 +8,7 @@ import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionSc
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
+import { CrucibleScreen } from '@/features/crucible/CrucibleScreen';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
@@ -127,6 +128,8 @@ export function AppShell() {
           <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
             {activeView === 'dungeons' ? (
               <DungeonSelectionScreen />
+            ) : activeView === 'crucible' ? (
+              <CrucibleScreen />
             ) : activeView === 'weapon-mastery' ? (
               <WeaponMasteryScreen />
             ) : (

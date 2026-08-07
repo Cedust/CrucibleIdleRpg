@@ -1,4 +1,5 @@
 import { TEAM_ORDER } from '@/game/characters/characters';
+import { rallyShare, smeltingEffects } from '@/game/crucible/crucible';
 import {
   getAct1DungeonEntry,
   getNextAct1DungeonEncounter,
@@ -23,6 +24,10 @@ export function createDungeonEntryCombat(save: SaveData, dungeonId: Act1DungeonI
 /**
  * Baut den nächsten Floor desselben Runs mit dem Endzustand des vorherigen Kampfs.
  * Gefallene Charaktere bleiben bei `0`, lebende behalten ihre verbleibende Health.
+ *
+ * **Rally** (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch) wirkt genau hier — am
+ * erfolgreichen Floor-Übergang: Alle Gefallenen betreten den Folgefloor mit dem Rang-Anteil
+ * ihrer Max-Health. Wipe, Verlassen und Dungeon-Ende laufen nicht über diese Funktion.
  */
 export function createNextDungeonCombat(save: SaveData, previous: CombatState): CombatState {
   const previousEncounter = resolveAct1Encounter(previous.floorId);
@@ -32,12 +37,14 @@ export function createNextDungeonCombat(save: SaveData, previous: CombatState): 
     throw new Error(`Dungeon ${previousEncounter.dungeonId} hat keinen weiteren Floor.`);
   }
 
+  const rally = rallyShare(save.crucible);
+
   return createDungeonCombat(
     save,
     encounter,
     previous.characters.map((character) => ({
       id: character.id,
-      carriedHealth: character.health,
+      carriedHealth: character.health > 0 ? character.health : rally * character.maxHealth,
     })),
   );
 }
@@ -49,6 +56,7 @@ function createDungeonCombat(
 ): CombatState {
   // `FORMATIONS` ist ein totales Record über `FormationId` — der Zugriff ist typsicher.
   const formation = FORMATIONS[encounter.formationId];
+  const smelting = smeltingEffects(save.crucible);
 
   return buildCombatState({
     floorId: encounter.id,
@@ -64,6 +72,8 @@ function createDungeonCombat(
         ...neutralProgression(save.characters[id].level),
         attributePoints: save.characters[id].attributePoints,
         masteryRanks: save.characters[id].masteryRanks,
+        crucibleBonus: smelting.crucibleBonus,
+        crucibleInitiative: smelting.initiative,
       },
       carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
     })),

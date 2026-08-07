@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
+import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
+import type { Act1DungeonId } from '@/game/encounters/act1';
 import type { CharacterProgressionState } from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
@@ -8,6 +9,12 @@ import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
  * Im Pre-Release existiert genau ein aktuelles Schema; Schemaänderungen ersetzen
  * Basissave, Schema und Tests atomar. Beim Laden wird gegen dieses Schema validiert,
  * bevor Daten in den Store gelangen; jedes andere Format fällt auf den Default zurück.
+ *
+ * Das aktuelle Schema ist die Crucible-Save-Version
+ * (docs/spec/PERSISTENCE.md#23-crucible-save-version): Die Node-Ränge sind die alleinige
+ * Wahrheit, die freigeschalteten Dungeon-Einstiege werden aus `anvil.waystones` abgeleitet
+ * statt gespeichert. Das Versionsfeld bleibt im Pre-Release konstant `1`; es wird erst mit
+ * einem Release relevant.
  */
 export const SAVE_VERSION = 1;
 
@@ -86,14 +93,22 @@ export const saveSchema = z
       .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
       .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
       .readonly(),
-    unlockedDungeonIds: z
-      .array(z.enum(ACT_1_DUNGEON_IDS))
-      .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Dungeon-Freischaltungen.')
-      .readonly(),
+    /** Crucible-Node-Ränge über alle vier Trees — die alleinige Wahrheit (PERSISTENCE §2.3). */
+    crucible: z.record(z.string(), z.number().int().min(1).max(5)).readonly(),
     completedDungeons: completedDungeonsSchema,
   })
   .strict()
   .superRefine((save, context) => {
+    for (const [id, rank] of Object.entries(save.crucible)) {
+      const node = crucibleNodeById(id);
+      if (node === undefined || rank > node.maxRank || node.lockedUntil !== undefined) {
+        context.addIssue({ code: 'custom', message: 'Ungültiger Crucible-Node.' });
+        continue;
+      }
+      if (!meetsPrerequisites(save.crucible, save.completedDungeons, node, rank)) {
+        context.addIssue({ code: 'custom', message: 'Crucible-Voraussetzung verletzt.' });
+      }
+    }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,
       (typeof save.characters)[keyof typeof save.characters],
@@ -169,7 +184,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     },
     currencies: { gold: 0, crystals: 0 },
     firstVictories: [],
-    unlockedDungeonIds: ['A1-D1'],
+    crucible: {},
     completedDungeons: createDefaultCompletedDungeons(),
   };
 }

@@ -160,6 +160,15 @@ describe('deriveCharacterStats', () => {
     );
   });
 
+  it('adds the quick step ranks flat onto the initiative (PROGRESSION §3.2)', () => {
+    const stats = deriveCharacterStats(PROBAND, progression({ crucibleInitiative: 3 }));
+
+    expect(stats.utility.initiative).toBe(PROBAND.baseUtility.initiative + 3);
+    expect(deriveCharacterStats(PROBAND, progression()).utility.initiative).toBe(
+      PROBAND.baseUtility.initiative,
+    );
+  });
+
   it('applies the new formulas in their separate core, attribute and crucible layers', () => {
     const stats = deriveCharacterStats(
       PROBAND,

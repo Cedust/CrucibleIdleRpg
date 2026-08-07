@@ -145,6 +145,7 @@ export function enemyFixture(setup: EnemyFixture): CombatEnemy {
     accuracy: setup.accuracy ?? 1,
     initiative: setup.initiative ?? 5,
     bulwarkContribution: setup.bulwarkContribution ?? 0,
+    sunderedBulwark: 0,
   };
 }
 

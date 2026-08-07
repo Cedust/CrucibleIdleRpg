@@ -95,6 +95,29 @@ export function takeNextActor(queue: readonly ActorRef[]): {
 }
 
 /**
+ * Suppression (docs/spec/SIGNATURES.md#13-suppression-quinn-ranged): verschiebt die noch
+ * offene Aktion des Ziels um `places` **offene** Plätze nach hinten. `min(idx + places, Länge)`
+ * **nach** dem Entfernen klemmt ans Rundenende — die Aktion verfällt nie. `null`, wenn das
+ * Ziel nicht mehr offen ist.
+ */
+export function suppressPendingAction(
+  queue: readonly ActorRef[],
+  target: ActorRef,
+  places: number,
+): ActorRef[] | null {
+  const index = queue.findIndex((ref) => sameActor(ref, target));
+
+  if (index === -1) {
+    return null;
+  }
+
+  const remaining = queue.filter((_, position) => position !== index);
+  const insertAt = Math.min(index + Math.max(Math.trunc(places), 0), remaining.length);
+
+  return [...remaining.slice(0, insertAt), target, ...remaining.slice(insertAt)];
+}
+
+/**
  * Entfernt alle inzwischen besiegten Akteure aus der offenen Queue. Ein Verweis, der ins Leere
  * zeigt, fällt ebenfalls heraus (AGENTS.md).
  */

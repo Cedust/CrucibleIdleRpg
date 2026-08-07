@@ -1,6 +1,11 @@
 import { createStore, useStore } from 'zustand';
 import type { RewardCommit } from '@/features/dungeon/rewards';
 import { commitFloorVictory } from '@/features/dungeon/rewards';
+import {
+  purchaseCrucibleNode,
+  respecCrucibleTree,
+  type RespeccableTreeId,
+} from '@/game/crucible/crucible';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import {
@@ -8,7 +13,7 @@ import {
   respecMasteryDiscipline,
   type DisciplineId,
 } from '@/game/weaponMastery/mastery';
-import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
+import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createLocalStorageSavePort } from '@/shared/ports/savePort';
 import { createDefaultSave, createSaveSeed, type SaveData } from './saveSchema';
 import { createSaveService, type SaveService } from './saveService';
@@ -28,13 +33,19 @@ export interface SaveStoreState {
   respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
   buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
+  buyCrucibleNode: (nodeId: string) => Promise<boolean>;
+  respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
 
 export interface SaveStoreOptions {
-  /** Erlaubt dem Kompositionspunkt, Mastery-Respec situativ zu sperren (z. B. im Dungeon-Run). */
-  canRespecMastery?: () => boolean;
+  /**
+   * Erlaubt dem Kompositionspunkt, die Optimierung situativ zu sperren — während eines
+   * Dungeon-Runs sind Respecs und der Crucible gesperrt
+   * (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch).
+   */
+  canOptimize?: () => boolean;
 }
 
 /**
@@ -47,7 +58,7 @@ interface WritePlan<T> {
 }
 
 export function createSaveStore(service: SaveService, options: SaveStoreOptions = {}) {
-  const canRespecMastery = options.canRespecMastery ?? (() => true);
+  const canOptimize = options.canOptimize ?? (() => true);
   let hydration: Promise<SaveData> | null = null;
   let pendingWrite: Promise<unknown> = Promise.resolve();
 
@@ -187,7 +198,7 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
 
       respecDiscipline: (characterId, discipline) =>
         persist((current) => {
-          if (!canRespecMastery()) {
+          if (!canOptimize()) {
             return { next: null, result: false };
           }
 
@@ -210,16 +221,59 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
           };
         }),
 
+      buyCrucibleNode: (nodeId) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const purchase = purchaseCrucibleNode(
+            current.crucible,
+            current.currencies.crystals,
+            current.completedDungeons,
+            nodeId,
+          );
+          if (purchase === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              crucible: purchase.ranks,
+              currencies: { ...current.currencies, crystals: purchase.crystals },
+            },
+            result: true,
+          };
+        }),
+
+      respecCrucible: (tree) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const respec = respecCrucibleTree(current.crucible, current.currencies.crystals, tree);
+          if (respec === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              crucible: respec.ranks,
+              currencies: { ...current.currencies, crystals: respec.crystals },
+            },
+            result: true,
+          };
+        }),
+
+      // Der Abschluss setzt nur das Vollendet-Flag; ein neuer Einstieg entsteht ausschließlich
+      // über den Waystone-Kauf (docs/spec/PROGRESSION.md#31-anvil-sparks).
       completeDungeon: (dungeonId) =>
         persist((current) => {
-          const nextDungeonId = nextDungeonIdAfter(dungeonId);
-          const unlockedDungeonIds =
-            nextDungeonId !== null && !current.unlockedDungeonIds.includes(nextDungeonId)
-              ? [...current.unlockedDungeonIds, nextDungeonId]
-              : current.unlockedDungeonIds;
           const next: SaveData = {
             ...current,
-            unlockedDungeonIds,
             completedDungeons: { ...current.completedDungeons, [dungeonId]: true },
           };
           return { next, result: next };
@@ -242,20 +296,15 @@ function requiredSave(data: SaveData | null): SaveData {
   return data;
 }
 
-function nextDungeonIdAfter(dungeonId: Act1DungeonId): Act1DungeonId | null {
-  const index = ACT_1_DUNGEON_IDS.indexOf(dungeonId);
-  return ACT_1_DUNGEON_IDS[index + 1] ?? null;
-}
-
 /**
- * Situativer Respec-Guard des Browser-Stores. Das Dungeon-Feature registriert beim Laden
+ * Situativer Optimierungs-Guard des Browser-Stores. Das Dungeon-Feature registriert beim Laden
  * seine Run-Sperre (dungeonRunStore.ts); ohne geladenes Dungeon-Feature existiert kein Run,
  * der Default erlaubt deshalb.
  */
-let masteryRespecGuard: () => boolean = () => true;
+let optimizationGuard: () => boolean = () => true;
 
-export function registerMasteryRespecGuard(guard: () => boolean): void {
-  masteryRespecGuard = guard;
+export function registerOptimizationGuard(guard: () => boolean): void {
+  optimizationGuard = guard;
 }
 
 const browserSaveService = createSaveService(createLocalStorageSavePort(), () =>
@@ -263,7 +312,7 @@ const browserSaveService = createSaveService(createLocalStorageSavePort(), () =>
 );
 
 export const saveStore = createSaveStore(browserSaveService, {
-  canRespecMastery: () => masteryRespecGuard(),
+  canOptimize: () => optimizationGuard(),
 });
 
 export function useSaveStore<T>(selector: (state: SaveStoreState) => T): T {

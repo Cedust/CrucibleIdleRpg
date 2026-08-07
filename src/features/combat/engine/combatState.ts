@@ -97,6 +97,10 @@ export interface CombatEnemy {
   /** Einmalig zu Kampfbeginn gewürfelt, für den restlichen Kampf fix (COMBAT §1.1). */
   initiative: number;
   bulwarkContribution: number;
+  /** Kumulativ durch Sunder abgebaute Prozentpunkte — Cap je Ziel und Kampf (SIGNATURES §1.2). */
+  sunderedBulwark: number;
+  /** Runde der letzten Suppression — höchstens eine je Ziel und Runde (SIGNATURES §1.3). */
+  suppressedRound?: number;
 }
 
 export interface CombatState {
@@ -252,6 +256,7 @@ function buildEnemy(
     initiative,
     // Der Beitrag folgt der Rolle; im Kampfzustand liegt er je Gegner, damit Sunder ihn senken kann.
     bulwarkContribution: BULWARK_CONTRIBUTION_BY_ROLE[definition.role],
+    sunderedBulwark: 0,
   };
 }
 

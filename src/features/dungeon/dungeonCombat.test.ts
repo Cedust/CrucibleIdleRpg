@@ -51,4 +51,66 @@ describe('createDungeonEntryCombat', () => {
     expect(third.floorId).toBe('A1-D1-03');
     expect(third.floorSeed).toBe(deriveFloorSeed(runSeed, 2));
   });
+
+  it('hebt Gefallene mit Rally am Floor-Übergang auf den Rang-Anteil ihrer Max-Health (PROGRESSION §4)', () => {
+    // Test-Vektor: Rang 3 setzt einen Gefallenen auf 20 % seiner Max-Health (200 → 40).
+    const save = { ...createDefaultSave(4242), crucible: { 'molten.rally': 3 } };
+    const first = createDungeonEntryCombat(save, 'A1-D1');
+    const afterFirst = {
+      ...first,
+      characters: first.characters.map((character, index) => ({
+        ...character,
+        health: index === 1 ? 0 : character.health,
+      })),
+    };
+
+    const second = createNextDungeonCombat(save, afterFirst);
+
+    const fallen = second.characters[1];
+    if (fallen === undefined) throw new Error('Charakter fehlt');
+    expect(fallen.health).toBeCloseTo(0.2 * fallen.maxHealth, 10);
+    expect(second.characters[0]?.health).toBe(second.characters[0]?.maxHealth);
+  });
+
+  it('lässt Gefallene ohne Rally besiegt', () => {
+    const save = createDefaultSave(4242);
+    const first = createDungeonEntryCombat(save, 'A1-D1');
+    const afterFirst = {
+      ...first,
+      characters: first.characters.map((character, index) => ({
+        ...character,
+        health: index === 1 ? 0 : character.health,
+      })),
+    };
+
+    expect(createNextDungeonCombat(save, afterFirst).characters[1]?.health).toBe(0);
+  });
+
+  it('wendet die Smelting-Nodes multiplikativ auf die Derived Stats und flach auf die Initiative an', () => {
+    const base = createDungeonEntryCombat(createDefaultSave(4242), 'A1-D1');
+    const boosted = createDungeonEntryCombat(
+      {
+        ...createDefaultSave(4242),
+        crucible: {
+          'smelting.overpower': 5,
+          'smelting.iron-skin': 2,
+          'smelting.unyielding': 1,
+          'smelting.quick-step': 4,
+        },
+      },
+      'A1-D1',
+    );
+
+    boosted.characters.forEach((character, index) => {
+      const reference = base.characters[index];
+      if (reference === undefined) throw new Error('Charakter fehlt');
+      expect(character.stats.derived.attack).toBeCloseTo(reference.stats.derived.attack * 1.15, 8);
+      expect(character.stats.derived.defense).toBeCloseTo(
+        reference.stats.derived.defense * 1.06,
+        8,
+      );
+      expect(character.maxHealth).toBeCloseTo(reference.maxHealth * 1.03, 8);
+      expect(character.stats.utility.initiative).toBe(reference.stats.utility.initiative + 4);
+    });
+  });
 });

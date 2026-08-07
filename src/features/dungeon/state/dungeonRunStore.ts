@@ -1,14 +1,16 @@
 import { create } from 'zustand';
 import type { CombatState } from '@/features/combat/engine/combatState';
+import { crucibleCombatContext } from '@/features/combat/engine/crucibleCombat';
 import { useCombatStore, type PlaybackSpeed } from '@/features/combat/state/combatStore';
 import {
   createDungeonEntryCombat,
   createNextDungeonCombat,
 } from '@/features/dungeon/dungeonCombat';
 import type { RewardSummary } from '@/features/dungeon/rewards';
+import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createFloorReward } from '@/game/rewards/floorRewards';
 import { isFinalAct1Floor, resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
-import { registerMasteryRespecGuard, saveStore } from '@/features/save/saveStore';
+import { registerOptimizationGuard, saveStore } from '@/features/save/saveStore';
 import { useNavigationStore } from '@/app/navigationStore';
 
 export type DungeonRunMode = 'selection' | 'starting' | 'run';
@@ -53,8 +55,12 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
       return false;
     }
 
+    // Die freigeschalteten Einstiege sind aus den Waystone-Rängen abgeleitet (PERSISTENCE §2.3).
     const currentSave = saveStore.getState().data;
-    if (!currentSave?.unlockedDungeonIds.includes(dungeonId)) {
+    if (
+      currentSave === null ||
+      !deriveUnlockedDungeonIds(currentSave.crucible).includes(dungeonId)
+    ) {
       set({ startError: 'This dungeon is not available.' });
       return false;
     }
@@ -74,7 +80,9 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     useCombatStore
       .getState()
       .setPlaybackSpeed(save.completedDungeons[dungeonId] ? save.playbackSpeed : 1);
-    useCombatStore.getState().startCombat(combat, undefined, commitFloorReward);
+    useCombatStore
+      .getState()
+      .startCombat(combat, crucibleCombatContext(save.crucible), commitFloorReward);
     set({ mode: 'run', activeDungeonId: dungeonId, completionError: null });
     return true;
   },
@@ -100,7 +108,9 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
     }
 
     const nextCombat = createNextDungeonCombat(save, combat.combat);
-    useCombatStore.getState().startCombat(nextCombat, undefined, commitFloorReward);
+    useCombatStore
+      .getState()
+      .startCombat(nextCombat, crucibleCombatContext(save.crucible), commitFloorReward);
     return true;
   },
 
@@ -168,9 +178,9 @@ export const useDungeonRunStore = create<DungeonRunState>((set, get) => ({
   },
 }));
 
-// Während eines laufenden Runs ist Mastery-Respec gesperrt; die Regel gehört zum
-// Dungeon-Lifecycle und wird deshalb hier am Save-Store registriert.
-registerMasteryRespecGuard(() => useDungeonRunStore.getState().mode !== 'run');
+// Während eines laufenden Runs sind Respecs und der Crucible gesperrt (PROGRESSION §4); die
+// Regel gehört zum Dungeon-Lifecycle und wird deshalb hier am Save-Store registriert.
+registerOptimizationGuard(() => useDungeonRunStore.getState().mode !== 'run');
 
 /**
  * Lifecycle-Reaktionen des Runs, als Store-Subscription statt View-Effekt (COMBAT-RUN):

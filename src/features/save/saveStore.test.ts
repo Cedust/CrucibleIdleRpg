@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { SavePort } from '@/shared/ports/savePort';
 import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
+import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
 import { createSaveStore } from './saveStore';
@@ -96,7 +97,7 @@ describe('createSaveStore', () => {
     expect(reloaded.getState().data?.currencies.gold).toBe(0);
   });
 
-  it('marks only the completed dungeon and unlocks its next checkpoint', async () => {
+  it('marks only the completed dungeon; the entry follows from the waystone purchase', async () => {
     const port = memoryPort();
     const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
     await store.getState().hydrate();
@@ -112,7 +113,98 @@ describe('createSaveStore', () => {
       'A1-D4': false,
       'A1-D5': false,
     });
-    expect(reloaded.getState().data?.unlockedDungeonIds).toEqual(['A1-D1', 'A1-D2']);
+    // Der Abschluss allein schaltet nichts frei (PROGRESSION §3.1).
+    expect(deriveUnlockedDungeonIds(reloaded.getState().data?.crucible ?? {})).toEqual(['A1-D1']);
+  });
+
+  it('kauft Crucible-Ränge gegen Crystals und leitet den Einstieg aus dem Waystone-Rang ab', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    // Ohne Vollendet-Flag ist der Waystone-Kauf abgelehnt, auch mit Deckung.
+    await store.getState().commitVictory({
+      floorId: 'A1-D1-20',
+      gold: 0,
+      characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
+    });
+    await expect(store.getState().buyCrucibleNode('anvil.waystones')).resolves.toBe(false);
+
+    await store.getState().completeDungeon('A1-D1');
+    await expect(store.getState().buyCrucibleNode('anvil.waystones')).resolves.toBe(true);
+    await expect(store.getState().buyCrucibleNode('smelting.overpower')).resolves.toBe(true);
+    // Elite-Erstsieg = 3 Crystals; Waystone Rang 1 + Overpower Rang 1 kosten 2.
+    expect(store.getState().data?.currencies.crystals).toBe(1);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.crucible).toEqual({
+      'anvil.waystones': 1,
+      'smelting.overpower': 1,
+    });
+    expect(deriveUnlockedDungeonIds(reloaded.getState().data?.crucible ?? {})).toEqual([
+      'A1-D1',
+      'A1-D2',
+    ]);
+  });
+
+  it('erstattet beim Tree-Respec exakt die investierten Crystals und lässt Anvil unberührt', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, crystals: 0 },
+        crucible: {
+          'anvil.waystones': 1,
+          'smelting.overpower': 2,
+          'smelting.quick-step': 1,
+          'molten.rally': 2,
+        },
+        completedDungeons: { ...base.completedDungeons, 'A1-D1': true },
+      },
+    });
+
+    await expect(store.getState().respecCrucible('smelting')).resolves.toBe(true);
+    expect(store.getState().data?.crucible).toEqual({
+      'anvil.waystones': 1,
+      'molten.rally': 2,
+    });
+    expect(store.getState().data?.currencies.crystals).toBe(4);
+
+    await expect(store.getState().respecCrucible('smelting')).resolves.toBe(false);
+  });
+
+  it('sperrt Crucible-Kauf und -Respec über das injizierte Optimierungs-Prädikat', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    let allowed = false;
+    const store = createSaveStore(service, { canOptimize: () => allowed });
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, crystals: 10 },
+        crucible: { 'molten.rally': 1 },
+      },
+    });
+
+    await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(false);
+    await expect(store.getState().respecCrucible('molten')).resolves.toBe(false);
+    expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 1 });
+
+    allowed = true;
+    await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(true);
+    expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 2 });
+    expect(store.getState().data?.currencies.crystals).toBe(8);
   });
 
   it('serialisiert überlappende Actions ohne Lost Update', async () => {
@@ -143,7 +235,7 @@ describe('createSaveStore', () => {
   it('sperrt Mastery-Respec über das injizierte Prädikat', async () => {
     const service = createSaveService(memoryPort(), () => createDefaultSave(7));
     let allowed = false;
-    const store = createSaveStore(service, { canRespecMastery: () => allowed });
+    const store = createSaveStore(service, { canOptimize: () => allowed });
     await store.getState().hydrate();
 
     const base = store.getState().data;

@@ -2,7 +2,7 @@
 
 | Feld             | Wert      |
 | ---------------- | --------- |
-| **Status**       | `ready`   |
+| **Status**       | `done`    |
 | **Meilenstein**  | M2        |
 | **Hängt ab von** | 012, 014c |
 
@@ -74,7 +74,7 @@ wendet die freigeschalteten Wirkungen deterministisch an.
 ## Betroffene Dateien
 
 - `src/game/crucible/` — Node-Katalog, Rangwerte und Kostenfunktion
-- `src/features/progression/` — Crucible-Store, Kaufen, Respec und abgeleitete Einstiege
+- `src/features/crucible/` — Crucible-Screen, Kaufen, Respec und abgeleitete Einstiege
 - `src/features/combat/` — Mitigation, Sunder, Suppression und Rally an ihren Hebeln
 - `src/features/save/` — Schema und Persistenz der Node-Ränge
 

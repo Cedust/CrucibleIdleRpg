@@ -5,6 +5,7 @@ import {
   buildPendingQueue,
   compareTurnOrder,
   pruneDefeated,
+  suppressPendingAction,
   takeNextActor,
   turnOrderEntries,
 } from './turnOrder';
@@ -204,5 +205,36 @@ describe('Pending-Queue — Entnahme und Todesfall', () => {
 
   it('entfernt Verweise, die ins Leere zeigen', () => {
     expect(pruneDefeated(gestellt, [{ side: 'enemy', index: 9 }])).toEqual([]);
+  });
+});
+
+describe('suppressPendingAction — Queue-Operation der Suppression (SIGNATURES §1.3)', () => {
+  const E2: ActorRef = { side: 'enemy', index: 2 };
+  const E1: ActorRef = { side: 'enemy', index: 1 };
+  const E4: ActorRef = { side: 'enemy', index: 4 };
+  const RHAYA: ActorRef = { side: 'character', index: 1 };
+  const KORVIN: ActorRef = { side: 'character', index: 0 };
+
+  it('verschiebt um L offene Plätze nach hinten (Test-Vektor, L = 2)', () => {
+    // Pending-Queue nach Quinns Zug, Quinn bereits entnommen.
+    const queue = [E2, E1, RHAYA, E4, KORVIN];
+
+    expect(suppressPendingAction(queue, E2, 2)).toEqual([E1, RHAYA, E2, E4, KORVIN]);
+  });
+
+  it('klemmt am Rundenende: idx 3 mit L = 2 verschiebt effektiv nur um 1 (Test-Vektor)', () => {
+    const queue = [E1, RHAYA, E2, KORVIN, E4];
+
+    expect(suppressPendingAction(queue, KORVIN, 2)).toEqual([E1, RHAYA, E2, E4, KORVIN]);
+  });
+
+  it('verschiebt um 0, wenn das Ziel bereits als Letztes steht', () => {
+    const queue = [E1, E2];
+
+    expect(suppressPendingAction(queue, E2, 3)).toEqual([E1, E2]);
+  });
+
+  it('liefert null, wenn das Ziel in dieser Runde schon gehandelt hat', () => {
+    expect(suppressPendingAction([E1, RHAYA], E2, 2)).toBeNull();
   });
 });

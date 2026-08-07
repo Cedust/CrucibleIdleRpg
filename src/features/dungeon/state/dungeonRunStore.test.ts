@@ -4,6 +4,7 @@ import { useCombatStore } from '@/features/combat/state/combatStore';
 import { createNextDungeonCombat } from '@/features/dungeon/dungeonCombat';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
+import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { useDungeonRunStore } from './dungeonRunStore';
 
 describe('useDungeonRunStore', () => {
@@ -141,6 +142,7 @@ describe('useDungeonRunStore', () => {
   it('starts an incomplete dungeon at 1× even when 2× is saved for a completed dungeon', async () => {
     await saveStore.getState().completeDungeon('A1-D1');
     await saveStore.getState().setPlaybackSpeed(2);
+    await unlockSecondDungeon();
 
     await useDungeonRunStore.getState().startRun('A1-D2');
 
@@ -167,7 +169,28 @@ describe('useDungeonRunStore', () => {
     await expect(useDungeonRunStore.getState().completeRun()).resolves.toBe(true);
 
     expect(saveStore.getState().data?.completedDungeons['A1-D1']).toBe(true);
-    expect(saveStore.getState().data?.unlockedDungeonIds).toEqual(['A1-D1', 'A1-D2']);
+    // Der Abschluss schaltet keinen Einstieg frei — das tut erst der Waystone-Kauf.
+    expect(deriveUnlockedDungeonIds(saveStore.getState().data?.crucible ?? {})).toEqual(['A1-D1']);
     expect(useDungeonRunStore.getState().mode).toBe('selection');
   });
+
+  it('unlocks the next entry through the waystone purchase and starts it', async () => {
+    await saveStore.getState().completeDungeon('A1-D1');
+    await unlockSecondDungeon();
+
+    await expect(useDungeonRunStore.getState().startRun('A1-D2')).resolves.toBe(true);
+    expect(useCombatStore.getState().combat?.floorId).toBe('A1-D2-01');
+  });
 });
+
+/** Kauft `anvil.waystones` Rang 1 — Voraussetzung ist das gesetzte Vollendet-Flag von A1-D1. */
+async function unlockSecondDungeon(): Promise<void> {
+  const data = saveStore.getState().data;
+  if (data === null) throw new Error('Save fehlt');
+  saveStore.setState({
+    data: { ...data, currencies: { ...data.currencies, crystals: data.currencies.crystals + 1 } },
+  });
+  if (!(await saveStore.getState().buyCrucibleNode('anvil.waystones'))) {
+    throw new Error('Waystone-Kauf fehlgeschlagen');
+  }
+}

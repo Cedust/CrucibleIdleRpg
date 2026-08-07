@@ -53,12 +53,13 @@
 Während der Pre-Release-Entwicklung existiert genau ein aktuelles Save-Schema. Schemaänderungen
 ersetzen Basissave, Schema und Tests atomar; ein Speicherstand in einem anderen Format fällt beim
 Laden kontrolliert auf den Default zurück. Eine Migration entsteht nur, wenn eine Spec oder ein
-Task sie ausdrücklich fordert.
+Task sie ausdrücklich fordert. Das Versionsfeld bleibt im Pre-Release konstant `1`; es wird erst
+mit einem Release relevant.
 
 ### 2.2 Aktuelles Pre-Release-Schema
 
-Das aktuelle Schema (Version 1) enthält den implementierten Teil des
-[Save-Inhalts](#2-save-inhalt):
+Das aktuelle Schema — die [Crucible-Save-Version](#23-crucible-save-version) — enthält den
+implementierten Teil des [Save-Inhalts](#2-save-inhalt):
 
 ```text
 version: 1
@@ -78,7 +79,7 @@ currencies:
   gold: nichtnegative Ganzzahl
   crystals: nichtnegative Ganzzahl
 firstVictories: FloorId[]
-unlockedDungeonIds: Act1DungeonId[]
+crucible: Node-ID → Rang 1–5, gegen den Crucible-Katalog validiert
 completedDungeons:
   A1-D1 … A1-D5: boolean
 ```
@@ -89,11 +90,11 @@ Charakterlevel; Mastery-Ränge werden gegen den Node-Katalog der Discipline vali
 
 ### 2.3 Crucible-Save-Version
 
-Die Crucible-Version ergänzt das Schema um die Node-Ränge und entfernt das gespeicherte
+Die Crucible-Save-Version ergänzt das Schema um die Node-Ränge und entfernt das gespeicherte
 Checkpoint-Feld, weil die Einstiege aus `anvil.waystones` folgen
 ([Anvil Sparks](PROGRESSION.md#31-anvil-sparks)). Sie folgt
 [Migrationen im Pre-Release](#21-migrationen-im-pre-release): Basissave, Schema und Tests
-wechseln atomar auf die neue Version.
+wechseln atomar, das Versionsfeld bleibt `1`.
 
 Das Schema validiert die Node-Ränge gegen den Katalog aus
 [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree): unbekannte IDs, Ränge über dem Maximum

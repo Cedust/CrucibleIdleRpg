@@ -1,10 +1,10 @@
 # 003 — Toten CombatScreen-Flow entfernen
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | hoch    |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | hoch   |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -13,16 +13,17 @@ wertvollen Testblöcke des alten Screens leben an den echten Komponenten weiter.
 
 ## Befund
 
-- [CombatScreen.tsx](../../../src/features/combat/ui/CombatScreen.tsx) wird ausschließlich vom
-  eigenen Test importiert; die AppShell rendert die Dungeon-Screens. Der Screen enthält eine
-  dritte Kopie der Run-Start-Orchestrierung (Z. 34–52) und driftet bereits (Playback-Speed
-  fehlt).
-- [CombatScreen.test.tsx](../../../src/features/combat/ui/CombatScreen.test.tsx) deckt
-  zugleich `EnemyFormation`, `TeamPanel`, `TurnOrderBar` und `CombatLog` ab: Profiler-Tests
-  (Z. 109–125, 186–229), Lane-Rendering (ab Z. 232), Log-DOM-Stabilität (Z. 399–423). Diese
-  Abdeckung ist beim Entfernen zu erhalten.
-- Der Selected-Dungeon-Fallback existiert doppelt
-  ([CombatScreen.tsx](../../../src/features/combat/ui/CombatScreen.tsx) Z. 29–32,
+Bezog sich auf die inzwischen entfernten Dateien `src/features/combat/ui/CombatScreen.tsx`
+und `CombatScreen.test.tsx`:
+
+- `CombatScreen.tsx` wurde ausschließlich vom eigenen Test importiert; die AppShell rendert
+  die Dungeon-Screens. Der Screen enthielt eine dritte Kopie der Run-Start-Orchestrierung
+  (Z. 34–52) und driftete bereits (Playback-Speed fehlte).
+- `CombatScreen.test.tsx` deckte zugleich `EnemyFormation`, `TeamPanel`, `TurnOrderBar` und
+  `CombatLog` ab: Profiler-Tests (Z. 109–125, 186–229), Lane-Rendering (ab Z. 232),
+  Log-DOM-Stabilität (Z. 399–423). Diese Abdeckung lebt jetzt als Komponenten-Tests neben den
+  Bausteinen weiter.
+- Der Selected-Dungeon-Fallback existierte doppelt (`CombatScreen.tsx` Z. 29–32,
   [DungeonSelectionScreen.tsx](../../../src/features/dungeon/ui/DungeonSelectionScreen.tsx)
   Z. 16–19).
 
@@ -36,10 +37,10 @@ Umbau des Dungeon-Run-Lifecycles — [006](006-dungeon-run-lifecycle-konsolidier
 
 ## Akzeptanzkriterien
 
-- [ ] `CombatScreen.tsx` ist entfernt.
-- [ ] Profiler-, Lane-, Turn-Order- und Log-Tests laufen gegen die echten Screens bzw. direkt
+- [x] `CombatScreen.tsx` ist entfernt.
+- [x] Profiler-, Lane-, Turn-Order- und Log-Tests laufen gegen die echten Screens bzw. direkt
       gegen `EnemyFormation`/`TeamPanel`/`TurnOrderBar`/`CombatLog` und bleiben grün.
-- [ ] Der Selected-Dungeon-Fallback lebt an genau einer Stelle.
+- [x] Der Selected-Dungeon-Fallback lebt an genau einer Stelle.
 
 ## Betroffene Dateien
 

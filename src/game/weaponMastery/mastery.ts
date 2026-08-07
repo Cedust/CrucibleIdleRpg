@@ -40,6 +40,69 @@ export const MASTERY_IDS = {
   patientHunter: 'weapon.patient-hunter',
 } as const;
 
+/** Zahleneffekt eines Weapon-Mode-Nodes: Flat-Attack plus Range- und Precision-Deltas. */
+export interface WeaponModeBalance {
+  attackFlat: number;
+  minRngDelta: number;
+  maxRngDelta: number;
+  precisionDelta: number;
+}
+
+/** Reihenfolge = Präzedenz der exklusiven Weapon-Mode-Kette in der Engine. */
+export const WEAPON_MODE_KEYS = [
+  'titansArc',
+  'shieldedAdvance',
+  'razorsEdge',
+  'bladePoise',
+  'overdraw',
+  'steadyDraw',
+] as const;
+export type WeaponModeKey = (typeof WEAPON_MODE_KEYS)[number];
+
+/** Weapon-Mode-Deltas der Master-Wahl (WEAPON-MASTERY §5). */
+export const WEAPON_MODES: Readonly<Record<WeaponModeKey, WeaponModeBalance>> = {
+  titansArc: { attackFlat: 5, minRngDelta: 0, maxRngDelta: 0.15, precisionDelta: -0.1 },
+  shieldedAdvance: { attackFlat: 5, minRngDelta: 0.1, maxRngDelta: -0.15, precisionDelta: 0.1 },
+  razorsEdge: { attackFlat: 3, minRngDelta: -0.1, maxRngDelta: 0.15, precisionDelta: -0.05 },
+  bladePoise: { attackFlat: 3, minRngDelta: 0.1, maxRngDelta: -0.05, precisionDelta: 0.05 },
+  overdraw: { attackFlat: 3, minRngDelta: 0, maxRngDelta: 0.2, precisionDelta: -0.15 },
+  steadyDraw: { attackFlat: 3, minRngDelta: 0.05, maxRngDelta: 0.05, precisionDelta: 0 },
+};
+
+/**
+ * Zahleneffekte der Behavior-Nodes, maschinenlesbar und je `MASTERY_IDS`-Key deklariert
+ * (WEAPON-MASTERY §4–5). Die Engine wendet ausschließlich diese Werte an; die
+ * `effect`-Anzeigetexte sind per Test gegen sie geprüft (mastery.test.ts).
+ */
+export const MASTERY_BALANCE = {
+  /** +50 pp Crit Damage auf kritische Clean-Basistreffer unter 25 % Ziel-Health. */
+  executioner: { bonusCritDamage: 0.5, healthThreshold: 0.25 },
+  /** Clean-Range-Würfe unter 100 % werden auf 100 % angehoben. */
+  committedImpact: { minCleanRoll: 1 },
+  /** Kritische Kettenglieder setzen den nächsten Chain Factor auf 100 %. */
+  perfectCadence: { chainFactorReset: 1 },
+  /** Clean-Basistreffer wiederholt sich einmal mit 50 % des fertigen Schadens. */
+  echoedStrike: { damageFactor: 0.5 },
+  /** Original-Chain-Crits gewähren höchstens zwei Bonus-Kettenglieder. */
+  stormSurge: { maxBonusHits: 2 },
+  /** Erfolgreicher Splash trifft das Primärziel zusätzlich mit 50 % Splash-Schaden. */
+  epicenter: { damageFactor: 0.5 },
+  /** Je ungenutztem Radius +25 pp Splash-Schaden auf das Primärziel, gedeckelt bei 100 %. */
+  focusedBlast: { damagePerUnusedRadius: 0.25, damageFactorCap: 1 },
+  /** Getroffene Nebenziele erhalten eine zweite Welle mit 50 % Splash-Schaden. */
+  aftershock: { damageFactor: 0.5 },
+  /** Der niedrigere Twin-Measure-Wurf trifft als separater 25 %-Treffer. */
+  secondWind: { damageFactor: 0.25 },
+  /** +5 pp Range je Stack auf dasselbe Ziel, höchstens drei Stacks. */
+  zeroingIn: { rangePerStack: 0.05, maxStacks: 3 },
+  /** Hebt das Zeroing-Cap auf fünf; ab Stack 4 gilt MAX RNG. */
+  patientHunter: { maxStacks: 5, maxRngFromStack: 4 },
+  /** +25 pp Counter Damage je Stack derselben Runde, höchstens drei Stacks. */
+  escalatingRetaliation: { counterDamagePerStack: 0.25, maxStacks: 3 },
+  /** Dauerhaft +15 pp Block Chance. */
+  immovableGuard: { blockChanceFlat: 0.15 },
+} as const;
+
 export interface MasteryNode {
   id: string;
   discipline: DisciplineId;

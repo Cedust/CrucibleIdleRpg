@@ -1,5 +1,6 @@
 import { MULTI_HIT_CHAIN_FACTOR_CAP } from '@/game/curves/combatConstants';
 import type { DamageRange } from '@/game/types';
+import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import type { Prng } from '@/shared/utils/prng';
 import { applyBulwark, bulwarkDamageFactor } from './bulwark';
 import type { ActorRef, CombatCharacter, CombatState } from './combatState';
@@ -120,7 +121,9 @@ function rollDamage(
   const crit = cleanHit && canCrit && (guaranteedCrit || prng.chance(clampChance(critChance)));
   if (!crit) return { damage, crit: false };
 
-  let multiplier = critDamage + (executioner && mastery?.executioner ? 0.5 : 0);
+  let multiplier =
+    critDamage +
+    (executioner && mastery?.executioner ? MASTERY_BALANCE.executioner.bonusCritDamage : 0);
   if (mastery?.overcritical && prng.chance(clampChance(critChance))) {
     multiplier += critDamage;
   }
@@ -148,10 +151,13 @@ function zeroingRange(
     return { range: context.damageRange, forceMax: false };
   }
   const stacks = mastery.zeroing.stacks;
-  const bonus = Math.min(stacks, mastery.patientHunter ? 5 : 3) * 0.05;
+  const maxStacks = mastery.patientHunter
+    ? MASTERY_BALANCE.patientHunter.maxStacks
+    : MASTERY_BALANCE.zeroingIn.maxStacks;
+  const bonus = Math.min(stacks, maxStacks) * MASTERY_BALANCE.zeroingIn.rangePerStack;
   return {
     range: { min: context.damageRange.min + bonus, max: context.damageRange.max + bonus },
-    forceMax: mastery.patientHunter && stacks >= 4,
+    forceMax: mastery.patientHunter && stacks >= MASTERY_BALANCE.patientHunter.maxRngFromStack,
   };
 }
 
@@ -187,11 +193,13 @@ export function resolveCharacterAttack(
       ? rangeEffect.range.min + prng.next() * (rangeEffect.range.max - rangeEffect.range.min)
       : undefined;
   let damageRangeRoll = secondRoll === undefined ? firstRoll : Math.max(firstRoll, secondRoll);
-  if (cleanHit && mastery?.committedImpact) damageRangeRoll = Math.max(damageRangeRoll, 1);
+  if (cleanHit && mastery?.committedImpact)
+    damageRangeRoll = Math.max(damageRangeRoll, MASTERY_BALANCE.committedImpact.minCleanRoll);
   if (rangeEffect.forceMax) damageRangeRoll = rangeEffect.range.max;
   const baseDamage = derived.attack * (cleanHit ? damageRangeRoll : rangeEffect.range.min);
   const hits: Hit[] = [];
-  const executioner = primary.enemy.health / primary.enemy.maxHealth < 0.25;
+  const executioner =
+    primary.enemy.health / primary.enemy.maxHealth < MASTERY_BALANCE.executioner.healthThreshold;
   let base = rollDamage(
     prng,
     baseDamage,
@@ -229,8 +237,17 @@ export function resolveCharacterAttack(
       context,
     );
     hits.push(buildHit('multiHit', state, target, rolled.damage, rolled.crit, chainIndex));
-    if (mastery?.stormSurge && original && rolled.crit && bonusHits < 2) bonusHits += 1;
-    decay = mastery?.perfectCadence && rolled.crit ? 1 : decay * chainFactor;
+    if (
+      mastery?.stormSurge &&
+      original &&
+      rolled.crit &&
+      bonusHits < MASTERY_BALANCE.stormSurge.maxBonusHits
+    )
+      bonusHits += 1;
+    decay =
+      mastery?.perfectCadence && rolled.crit
+        ? MASTERY_BALANCE.perfectCadence.chainFactorReset
+        : decay * chainFactor;
   };
   for (let index = 1; index <= chainLength; index += 1) resolveChain(index, true);
   for (let index = 1; index <= bonusHits; index += 1) resolveChain(chainLength + index, false);
@@ -254,19 +271,37 @@ export function resolveCharacterAttack(
   }
   if (splashTriggered) {
     if (mastery?.epicenter)
-      hits.push(buildHit('epicenter', state, primary, splashBase * 0.5, false));
+      hits.push(
+        buildHit(
+          'epicenter',
+          state,
+          primary,
+          splashBase * MASTERY_BALANCE.epicenter.damageFactor,
+          false,
+        ),
+      );
     if (mastery?.focusedBlast) {
       const unused = Math.max(Math.trunc(utility.splashRadius) - splashTargets.length, 0);
       if (unused > 0)
         hits.push(
-          buildHit('focusedBlast', state, primary, splashBase * Math.min(unused * 0.25, 1), false),
+          buildHit(
+            'focusedBlast',
+            state,
+            primary,
+            splashBase *
+              Math.min(
+                unused * MASTERY_BALANCE.focusedBlast.damagePerUnusedRadius,
+                MASTERY_BALANCE.focusedBlast.damageFactorCap,
+              ),
+            false,
+          ),
         );
     }
     if (mastery?.aftershock) {
       for (const target of splashTargets) {
         const rolled = rollDamage(
           prng,
-          splashBase * 0.5,
+          splashBase * MASTERY_BALANCE.aftershock.damageFactor,
           cleanHit,
           context.critNodes.splash,
           offensive.critChance,
@@ -278,12 +313,20 @@ export function resolveCharacterAttack(
     }
   }
   if (cleanHit && mastery?.echoedStrike)
-    hits.push(buildHit('echo', state, primary, base.damage * 0.5, base.crit));
+    hits.push(
+      buildHit(
+        'echo',
+        state,
+        primary,
+        base.damage * MASTERY_BALANCE.echoedStrike.damageFactor,
+        base.crit,
+      ),
+    );
   if (cleanHit && mastery?.secondWind && secondRoll !== undefined) {
     const lower = Math.min(firstRoll, secondRoll);
     const rolled = rollDamage(
       prng,
-      derived.attack * lower * 0.25,
+      derived.attack * lower * MASTERY_BALANCE.secondWind.damageFactor,
       true,
       true,
       offensive.critChance,
@@ -292,7 +335,9 @@ export function resolveCharacterAttack(
     );
     hits.push(buildHit('secondWind', state, primary, rolled.damage, rolled.crit));
   }
-  const maxStacks = mastery?.patientHunter ? 5 : 3;
+  const maxStacks = mastery?.patientHunter
+    ? MASTERY_BALANCE.patientHunter.maxStacks
+    : MASTERY_BALANCE.zeroingIn.maxStacks;
   const nextZeroing = mastery?.zeroingIn
     ? {
         target: primary.ref.index,

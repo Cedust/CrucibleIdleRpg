@@ -1,3 +1,4 @@
+import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
 import {
   beginRound,
@@ -401,7 +402,10 @@ function resolveEnemyTurn(
         countering !== undefined &&
         context.contextFor(countering).mastery?.escalatingRetaliation
       ) {
-        countering.counterStacks = Math.min((countering.counterStacks ?? 0) + 1, 3);
+        countering.counterStacks = Math.min(
+          (countering.counterStacks ?? 0) + 1,
+          MASTERY_BALANCE.escalatingRetaliation.maxStacks,
+        );
       }
     }
   }

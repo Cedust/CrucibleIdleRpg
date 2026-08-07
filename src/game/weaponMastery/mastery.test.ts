@@ -1,15 +1,27 @@
 import { describe, expect, it } from 'vitest';
 import {
   investedPoints,
+  MASTERY_BALANCE,
   MASTERY_IDS,
   maximumInvestableCapacity,
   nodeById,
   nodesFor,
   purchaseFailure,
   respecCost,
+  WEAPON_MODE_KEYS,
+  WEAPON_MODES,
 } from './mastery';
 
 const CHARACTER_IDS = ['korvin', 'rhaya', 'quinn'] as const;
+
+/** Effekt-Text eines Behavior-Nodes, egal in wessen Baum er lebt. */
+function effectOf(id: string): string {
+  for (const characterId of CHARACTER_IDS) {
+    const node = nodeById(characterId, id);
+    if (node) return node.effect;
+  }
+  throw new Error(`Node ohne Katalog-Eintrag: ${id}`);
+}
 
 describe('weapon mastery node ids', () => {
   it('declares a unique id for every node of every character', () => {
@@ -40,6 +52,90 @@ describe('weapon mastery node ids', () => {
         if (node.exclusiveWith) {
           expect(known.has(node.exclusiveWith), `${node.id} excludes unknown id`).toBe(true);
         }
+      }
+    }
+  });
+});
+
+describe('effect texts match the declared balance (mastery balancing declarative)', () => {
+  const pp = (value: number): string => `${Math.round(Math.abs(value) * 100)}`;
+  const signedPp = (value: number): string => `${value < 0 ? '-' : '+'}${pp(value)} pp`;
+  const WORDS = ['one', 'two', 'three', 'four', 'five'] as const;
+
+  it('describes every weapon mode with its flat attack and range deltas', () => {
+    for (const key of WEAPON_MODE_KEYS) {
+      const mode = WEAPON_MODES[key];
+      const effect = effectOf(MASTERY_IDS[key]);
+
+      expect(effect, key).toContain(`+${mode.attackFlat} Damage`);
+      if (mode.minRngDelta !== 0) {
+        expect(effect, key).toContain(`${signedPp(mode.minRngDelta)} MIN RNG`);
+      }
+      if (mode.maxRngDelta !== 0) {
+        expect(effect, key).toContain(`${signedPp(mode.maxRngDelta)} MAX RNG`);
+      }
+      if (mode.precisionDelta !== 0) {
+        expect(effect, key).toContain(`${signedPp(mode.precisionDelta)} Precision`);
+      }
+    }
+  });
+
+  it('mentions every declared behavior balance value in its effect text', () => {
+    const balance = MASTERY_BALANCE;
+
+    expect(effectOf(MASTERY_IDS.executioner)).toContain(
+      `below ${pp(balance.executioner.healthThreshold)}%`,
+    );
+    expect(effectOf(MASTERY_IDS.executioner)).toContain(
+      `+${pp(balance.executioner.bonusCritDamage)} pp Crit Damage`,
+    );
+    expect(effectOf(MASTERY_IDS.committedImpact)).toContain(
+      `become ${pp(balance.committedImpact.minCleanRoll)}%`,
+    );
+    expect(effectOf(MASTERY_IDS.perfectCadence)).toContain(
+      `Chain Factor to ${pp(balance.perfectCadence.chainFactorReset)}%`,
+    );
+    expect(effectOf(MASTERY_IDS.echoedStrike)).toContain(
+      `${pp(balance.echoedStrike.damageFactor)}% finished damage`,
+    );
+    expect(effectOf(MASTERY_IDS.stormSurge)).toContain(
+      `up to ${WORDS[balance.stormSurge.maxBonusHits - 1]} chain hits`,
+    );
+    expect(effectOf(MASTERY_IDS.epicenter)).toContain(`${pp(balance.epicenter.damageFactor)}% hit`);
+    expect(effectOf(MASTERY_IDS.focusedBlast)).toContain(
+      `up to ${pp(balance.focusedBlast.damageFactorCap)}% splash damage`,
+    );
+    expect(effectOf(MASTERY_IDS.aftershock)).toContain(
+      `${pp(balance.aftershock.damageFactor)}% second wave`,
+    );
+    expect(effectOf(MASTERY_IDS.secondWind)).toContain(
+      `${pp(balance.secondWind.damageFactor)}% separate hit`,
+    );
+    expect(effectOf(MASTERY_IDS.zeroingIn)).toContain(
+      `up to ${WORDS[balance.zeroingIn.maxStacks - 1]} +${pp(balance.zeroingIn.rangePerStack)} pp range stacks`,
+    );
+    expect(effectOf(MASTERY_IDS.patientHunter)).toContain(
+      `${WORDS[balance.patientHunter.maxStacks - 1]} stacks`,
+    );
+    expect(effectOf(MASTERY_IDS.patientHunter)).toContain(
+      `stacks ${balance.patientHunter.maxRngFromStack}-${balance.patientHunter.maxStacks}`,
+    );
+    expect(effectOf(MASTERY_IDS.escalatingRetaliation)).toContain(
+      `+${pp(balance.escalatingRetaliation.counterDamagePerStack * balance.escalatingRetaliation.maxStacks)} pp damage`,
+    );
+    expect(effectOf(MASTERY_IDS.immovableGuard)).toContain(
+      `+${pp(balance.immovableGuard.blockChanceFlat)} pp Block Chance`,
+    );
+  });
+
+  it('carries the perRank value in every stat node effect text', () => {
+    for (const characterId of CHARACTER_IDS) {
+      for (const node of nodesFor(characterId)) {
+        if (node.perRank === undefined) continue;
+        const expected = node.effect.includes(' pp ')
+          ? `+${Math.round(node.perRank * 100)} pp `
+          : `+${node.perRank} `;
+        expect(node.effect.startsWith(expected), `${node.id}: ${node.effect}`).toBe(true);
       }
     }
   });

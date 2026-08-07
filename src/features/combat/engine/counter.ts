@@ -1,3 +1,4 @@
+import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import type { Prng } from '@/shared/utils/prng';
 import { applyBulwark, bulwarkDamageFactor } from './bulwark';
 import {
@@ -98,7 +99,10 @@ export function resolveCounter(
   // 3. Counter Crit — nur bei Clean und freigeschaltetem Valor-Knoten.
   const crit = cleanHit && critNodes.counter && prng.chance(clampChance(offensive.critChance));
   const counterDamage =
-    offensive.counterDamage + (mastery?.escalatingRetaliation ? mastery.counterStacks * 0.25 : 0);
+    offensive.counterDamage +
+    (mastery?.escalatingRetaliation
+      ? mastery.counterStacks * MASTERY_BALANCE.escalatingRetaliation.counterDamagePerStack
+      : 0);
   const rawDamage = crit
     ? baseDamage * counterDamage * offensive.critDamage
     : baseDamage * counterDamage;

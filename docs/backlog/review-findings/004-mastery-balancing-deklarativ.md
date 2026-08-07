@@ -2,7 +2,7 @@
 
 | Feld             | Wert                                                                                   |
 | ---------------- | -------------------------------------------------------------------------------------- |
-| **Status**       | `ready`                                                                                |
+| **Status**       | `done`                                                                                 |
 | **Schwere**      | hoch                                                                                   |
 | **Hängt ab von** | [001](001-mastery-node-ids-explizit.md), [002](002-mastery-kampfintegration-testen.md) |
 
@@ -42,13 +42,14 @@ beschreiben dieselben Werte als Freitext — Anzeige und Wirkung können lautlos
 
 ## Akzeptanzkriterien
 
-- [ ] Zahleneffekte der Behavior-Nodes sind als typisierte Felder der `MasteryNode`-Definitionen
-      deklariert (z. B. Flat-Boni, Multiplikatoren, Caps).
-- [ ] Die Engine bezieht alle oben gelisteten Werte aus `src/game/`; im Engine-Code stehen
+- [x] Zahleneffekte der Behavior-Nodes sind als typisierte Felder der `MasteryNode`-Definitionen
+      deklariert (z. B. Flat-Boni, Multiplikatoren, Caps) — `MASTERY_BALANCE` und
+      `WEAPON_MODES` neben dem Node-Katalog in `mastery.ts`, je `MASTERY_IDS`-Key.
+- [x] Die Engine bezieht alle oben gelisteten Werte aus `src/game/`; im Engine-Code stehen
       keine Mastery-Balancing-Literale mehr.
-- [ ] Der `effect`-Anzeigetext ist aus denselben Daten abgeleitet oder per Test gegen sie
+- [x] Der `effect`-Anzeigetext ist aus denselben Daten abgeleitet oder per Test gegen sie
       geprüft.
-- [ ] Die Tests aus [002](002-mastery-kampfintegration-testen.md) bleiben grün
+- [x] Die Tests aus [002](002-mastery-kampfintegration-testen.md) bleiben grün
       (Verhaltens-Äquivalenz des Umbaus).
 
 ## Betroffene Dateien

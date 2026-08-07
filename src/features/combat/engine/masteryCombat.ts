@@ -1,5 +1,10 @@
 import { CHARACTERS } from '@/game/characters/characters';
-import { MASTERY_IDS, nodeById } from '@/game/weaponMastery/mastery';
+import {
+  MASTERY_IDS,
+  nodeById,
+  WEAPON_MODE_KEYS,
+  WEAPON_MODES,
+} from '@/game/weaponMastery/mastery';
 import type { CombatCharacter } from './combatState';
 import { NO_CRIT_NODES, type AttackContext, type MasteryEffects } from './outgoingDamage';
 
@@ -25,27 +30,13 @@ export function masteryContextFor(character: CombatCharacter): AttackContext {
   let max = weapon.damageRange.max + maxBonus;
   let precision = weapon.precision + precisionBonus;
 
-  if (has(character, MASTERY_IDS.titansArc)) {
-    max += 0.15;
-    precision -= 0.1;
-  } else if (has(character, MASTERY_IDS.shieldedAdvance)) {
-    min += 0.1;
-    max -= 0.15;
-    precision += 0.1;
-  } else if (has(character, MASTERY_IDS.razorsEdge)) {
-    min -= 0.1;
-    max += 0.15;
-    precision -= 0.05;
-  } else if (has(character, MASTERY_IDS.bladePoise)) {
-    min += 0.1;
-    max -= 0.05;
-    precision += 0.05;
-  } else if (has(character, MASTERY_IDS.overdraw)) {
-    max += 0.2;
-    precision -= 0.15;
-  } else if (has(character, MASTERY_IDS.steadyDraw)) {
-    min += 0.05;
-    max += 0.05;
+  // Exklusive Weapon-Mode-Kette: Der erste aktive Mode in Präzedenz-Reihenfolge gilt.
+  const modeKey = WEAPON_MODE_KEYS.find((key) => has(character, MASTERY_IDS[key]));
+  if (modeKey !== undefined) {
+    const mode = WEAPON_MODES[modeKey];
+    min += mode.minRngDelta;
+    max += mode.maxRngDelta;
+    precision += mode.precisionDelta;
   }
 
   const mastery: MasteryEffects = {

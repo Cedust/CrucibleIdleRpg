@@ -161,6 +161,27 @@ function damageEnemy(draft: TurnDraft, source: ActorRef, hit: Hit): void {
 /* ------------------------------------------------------------------ Takt */
 
 /**
+ * Löst den Angriffs-Kontext je Charakter-Objekt höchstens einmal pro Takt auf — im Catch-up
+ * (bis 100k Takte über `runCombat`) der heißeste Pfad. Der Cache lebt genau einen Takt und
+ * keyt auf Objekt-Identität; Kopien im Arbeitsstand lösen deshalb korrekt neu auf.
+ */
+function perTickContext(context: CombatContext): CombatContext {
+  const cache = new Map<CombatCharacter, AttackContext>();
+
+  return {
+    mitigation: context.mitigation,
+    contextFor: (character) => {
+      let resolved = cache.get(character);
+      if (resolved === undefined) {
+        resolved = context.contextFor(character);
+        cache.set(character, resolved);
+      }
+      return resolved;
+    },
+  };
+}
+
+/**
  * Rechnet **einen** Takt: Der vorderste Akteur der Pending-Queue handelt.
  *
  * Ist die Queue leer, beginnt der Takt mit dem **Rundenbeginn** (Barrier-Reset, neue Queue,
@@ -195,11 +216,12 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
 
   const prng = resumePrng(current.combatPrngState);
   const draft = draftOf(current);
+  const tickContext = perTickContext(context);
 
   if (actor.side === 'character') {
-    resolveCharacterTurn(current, draft, actor, prng, context);
+    resolveCharacterTurn(current, draft, actor, prng, tickContext);
   } else {
-    resolveEnemyTurn(current, draft, actor, prng, context);
+    resolveEnemyTurn(current, draft, actor, prng, tickContext);
   }
 
   events.push(...draft.events);

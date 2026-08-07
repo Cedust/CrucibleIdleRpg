@@ -106,28 +106,42 @@ function buildHit(
   };
 }
 
-function rollDamage(
-  prng: Prng,
-  damage: number,
-  cleanHit: boolean,
-  canCrit: boolean,
-  critChance: number,
-  critDamage: number,
-  context: AttackContext,
-  executioner = false,
-  guaranteedCrit = false,
-): { damage: number; crit: boolean } {
+interface RollDamageOptions {
+  damage: number;
+  cleanHit: boolean;
+  canCrit: boolean;
+  critChance: number;
+  critDamage: number;
+  /** Executioner-Bonus gilt nur für den Grundtreffer unter der Health-Schwelle. */
+  executioner?: boolean;
+  /** Surestrike: Clean-Basistreffer sind garantiert kritisch — ohne Crit-Wurf. */
+  guaranteedCrit?: boolean;
+}
+
+interface RolledDamage {
+  damage: number;
+  crit: boolean;
+  /** Angewandter Crit-Multiplikator; `1` ohne Crit. */
+  multiplier: number;
+}
+
+function rollDamage(prng: Prng, context: AttackContext, options: RollDamageOptions): RolledDamage {
   const mastery = context.mastery;
-  const crit = cleanHit && canCrit && (guaranteedCrit || prng.chance(clampChance(critChance)));
-  if (!crit) return { damage, crit: false };
+  const crit =
+    options.cleanHit &&
+    options.canCrit &&
+    (options.guaranteedCrit === true || prng.chance(clampChance(options.critChance)));
+  if (!crit) return { damage: options.damage, crit: false, multiplier: 1 };
 
   let multiplier =
-    critDamage +
-    (executioner && mastery?.executioner ? MASTERY_BALANCE.executioner.bonusCritDamage : 0);
-  if (mastery?.overcritical && prng.chance(clampChance(critChance))) {
-    multiplier += critDamage;
+    options.critDamage +
+    (options.executioner === true && mastery?.executioner
+      ? MASTERY_BALANCE.executioner.bonusCritDamage
+      : 0);
+  if (mastery?.overcritical && prng.chance(clampChance(options.critChance))) {
+    multiplier += options.critDamage;
   }
-  return { damage: damage * multiplier, crit: true };
+  return { damage: options.damage * multiplier, crit: true, multiplier };
 }
 
 function projectedState(state: CombatState, hits: readonly Hit[]): CombatState {
@@ -159,6 +173,127 @@ function zeroingRange(
     range: { min: context.damageRange.min + bonus, max: context.damageRange.max + bonus },
     forceMax: mastery.patientHunter && stacks >= MASTERY_BALANCE.patientHunter.maxRngFromStack,
   };
+}
+
+/** Splash-Welle samt Epicenter, Focused Blast und Aftershock (WEAPON-MASTERY §4.3). */
+function splashHits(
+  state: CombatState,
+  prng: Prng,
+  context: AttackContext,
+  input: {
+    primary: EnemyTarget;
+    targets: readonly EnemyTarget[];
+    splashBase: number;
+    cleanHit: boolean;
+    critChance: number;
+    critDamage: number;
+    splashRadius: number;
+  },
+): Hit[] {
+  const { primary, targets, splashBase, cleanHit, critChance, critDamage, splashRadius } = input;
+  const mastery = context.mastery;
+  const hits: Hit[] = [];
+
+  for (const target of targets) {
+    const rolled = rollDamage(prng, context, {
+      damage: splashBase,
+      cleanHit,
+      canCrit: context.critNodes.splash,
+      critChance,
+      critDamage,
+    });
+    hits.push(buildHit('splash', state, target, rolled.damage, rolled.crit));
+  }
+
+  if (mastery?.epicenter) {
+    hits.push(
+      buildHit(
+        'epicenter',
+        state,
+        primary,
+        splashBase * MASTERY_BALANCE.epicenter.damageFactor,
+        false,
+      ),
+    );
+  }
+  if (mastery?.focusedBlast) {
+    const unused = Math.max(Math.trunc(splashRadius) - targets.length, 0);
+    if (unused > 0) {
+      hits.push(
+        buildHit(
+          'focusedBlast',
+          state,
+          primary,
+          splashBase *
+            Math.min(
+              unused * MASTERY_BALANCE.focusedBlast.damagePerUnusedRadius,
+              MASTERY_BALANCE.focusedBlast.damageFactorCap,
+            ),
+          false,
+        ),
+      );
+    }
+  }
+  if (mastery?.aftershock) {
+    for (const target of targets) {
+      const rolled = rollDamage(prng, context, {
+        damage: splashBase * MASTERY_BALANCE.aftershock.damageFactor,
+        cleanHit,
+        canCrit: context.critNodes.splash,
+        critChance,
+        critDamage,
+      });
+      hits.push(buildHit('aftershock', state, target, rolled.damage, rolled.crit));
+    }
+  }
+
+  return hits;
+}
+
+/** Clean-Hit-Follow-ups des Waffenbaums: Echoed Strike und Second Wind (WEAPON-MASTERY §5). */
+function followUpHits(
+  state: CombatState,
+  prng: Prng,
+  context: AttackContext,
+  input: {
+    primary: EnemyTarget;
+    base: RolledDamage;
+    attack: number;
+    firstRoll: number;
+    secondRoll: number | undefined;
+    cleanHit: boolean;
+    critChance: number;
+    critDamage: number;
+  },
+): Hit[] {
+  const { primary, base, attack, firstRoll, secondRoll, cleanHit, critChance, critDamage } = input;
+  const mastery = context.mastery;
+  const hits: Hit[] = [];
+
+  if (cleanHit && mastery?.echoedStrike) {
+    hits.push(
+      buildHit(
+        'echo',
+        state,
+        primary,
+        base.damage * MASTERY_BALANCE.echoedStrike.damageFactor,
+        base.crit,
+      ),
+    );
+  }
+  if (cleanHit && mastery?.secondWind && secondRoll !== undefined) {
+    const lower = Math.min(firstRoll, secondRoll);
+    const rolled = rollDamage(prng, context, {
+      damage: attack * lower * MASTERY_BALANCE.secondWind.damageFactor,
+      cleanHit: true,
+      canCrit: true,
+      critChance,
+      critDamage,
+    });
+    hits.push(buildHit('secondWind', state, primary, rolled.damage, rolled.crit));
+  }
+
+  return hits;
 }
 
 /** Resolves the finite character hit tree. Generator children never call this function again. */
@@ -200,20 +335,18 @@ export function resolveCharacterAttack(
   const hits: Hit[] = [];
   const executioner =
     primary.enemy.health / primary.enemy.maxHealth < MASTERY_BALANCE.executioner.healthThreshold;
-  let base = rollDamage(
-    prng,
-    baseDamage,
+  let base = rollDamage(prng, context, {
+    damage: baseDamage,
     cleanHit,
-    true,
-    offensive.critChance,
-    offensive.critDamage,
-    context,
+    canCrit: true,
+    critChance: offensive.critChance,
+    critDamage: offensive.critDamage,
     executioner,
-    mastery?.surestrike === true,
-  );
+    guaranteedCrit: mastery?.surestrike === true,
+  });
   if (base.crit && mastery?.perfectExploit) {
-    const maxRaw = derived.attack * rangeEffect.range.max;
-    base = { ...base, damage: (base.damage / baseDamage) * maxRaw };
+    // Über den Crit-Multiplikator statt einer Division — auch bei Grundschaden 0 kein NaN.
+    base = { ...base, damage: derived.attack * rangeEffect.range.max * base.multiplier };
   }
   hits.push(buildHit('base', state, primary, base.damage, base.crit));
 
@@ -224,18 +357,18 @@ export function resolveCharacterAttack(
   let decay = 1;
   let bonusHits = 0;
   const resolveChain = (chainIndex: number, original: boolean): void => {
-    const turnState = projectedState(state, hits);
-    const target = mastery?.relentlessPursuit ? selectPrimaryTarget(turnState, attacker) : primary;
+    // Nur Relentless Pursuit braucht den projizierten Zwischenstand für das Retargeting.
+    const target = mastery?.relentlessPursuit
+      ? selectPrimaryTarget(projectedState(state, hits), attacker)
+      : primary;
     if (!target) return;
-    const rolled = rollDamage(
-      prng,
-      baseDamage * offensive.multiHitDamage * decay,
+    const rolled = rollDamage(prng, context, {
+      damage: baseDamage * offensive.multiHitDamage * decay,
       cleanHit,
-      context.critNodes.multiHit,
-      offensive.critChance,
-      offensive.critDamage,
-      context,
-    );
+      canCrit: context.critNodes.multiHit,
+      critChance: offensive.critChance,
+      critDamage: offensive.critDamage,
+    });
     hits.push(buildHit('multiHit', state, target, rolled.damage, rolled.crit, chainIndex));
     if (
       mastery?.stormSurge &&
@@ -253,88 +386,33 @@ export function resolveCharacterAttack(
   for (let index = 1; index <= bonusHits; index += 1) resolveChain(chainLength + index, false);
 
   const splashTriggered = prng.chance(clampChance(offensive.splashChance));
-  const splashTargets = splashTriggered
-    ? selectSplashTargets(state, primary, utility.splashRadius)
-    : [];
-  const splashBase = baseDamage * offensive.splashDamage;
-  for (const target of splashTargets) {
-    const rolled = rollDamage(
-      prng,
-      splashBase,
-      cleanHit,
-      context.critNodes.splash,
-      offensive.critChance,
-      offensive.critDamage,
-      context,
-    );
-    hits.push(buildHit('splash', state, target, rolled.damage, rolled.crit));
-  }
   if (splashTriggered) {
-    if (mastery?.epicenter)
-      hits.push(
-        buildHit(
-          'epicenter',
-          state,
-          primary,
-          splashBase * MASTERY_BALANCE.epicenter.damageFactor,
-          false,
-        ),
-      );
-    if (mastery?.focusedBlast) {
-      const unused = Math.max(Math.trunc(utility.splashRadius) - splashTargets.length, 0);
-      if (unused > 0)
-        hits.push(
-          buildHit(
-            'focusedBlast',
-            state,
-            primary,
-            splashBase *
-              Math.min(
-                unused * MASTERY_BALANCE.focusedBlast.damagePerUnusedRadius,
-                MASTERY_BALANCE.focusedBlast.damageFactorCap,
-              ),
-            false,
-          ),
-        );
-    }
-    if (mastery?.aftershock) {
-      for (const target of splashTargets) {
-        const rolled = rollDamage(
-          prng,
-          splashBase * MASTERY_BALANCE.aftershock.damageFactor,
-          cleanHit,
-          context.critNodes.splash,
-          offensive.critChance,
-          offensive.critDamage,
-          context,
-        );
-        hits.push(buildHit('aftershock', state, target, rolled.damage, rolled.crit));
-      }
-    }
-  }
-  if (cleanHit && mastery?.echoedStrike)
     hits.push(
-      buildHit(
-        'echo',
-        state,
+      ...splashHits(state, prng, context, {
         primary,
-        base.damage * MASTERY_BALANCE.echoedStrike.damageFactor,
-        base.crit,
-      ),
+        targets: selectSplashTargets(state, primary, utility.splashRadius),
+        splashBase: baseDamage * offensive.splashDamage,
+        cleanHit,
+        critChance: offensive.critChance,
+        critDamage: offensive.critDamage,
+        splashRadius: utility.splashRadius,
+      }),
     );
-  if (cleanHit && mastery?.secondWind && secondRoll !== undefined) {
-    const lower = Math.min(firstRoll, secondRoll);
-    const rolled = rollDamage(
-      prng,
-      derived.attack * lower * MASTERY_BALANCE.secondWind.damageFactor,
-      true,
-      true,
-      offensive.critChance,
-      offensive.critDamage,
-      context,
-    );
-    hits.push(buildHit('secondWind', state, primary, rolled.damage, rolled.crit));
   }
+
+  hits.push(
+    ...followUpHits(state, prng, context, {
+      primary,
+      base,
+      attack: derived.attack,
+      firstRoll,
+      secondRoll,
+      cleanHit,
+      critChance: offensive.critChance,
+      critDamage: offensive.critDamage,
+    }),
+  );
+
   const maxStacks = mastery?.patientHunter
     ? MASTERY_BALANCE.patientHunter.maxStacks
     : MASTERY_BALANCE.zeroingIn.maxStacks;

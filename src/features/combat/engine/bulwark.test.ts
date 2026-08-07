@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { Role } from '@/game/types';
-import { applyBulwark, bulwarkDamageFactor, bulwarkMalus } from './bulwark';
+import { applyBulwark, bulwarkDamageFactor } from './bulwark';
 import type { CombatEnemy } from './combatState';
 import { enemyFixture } from './testFixtures';
+
+/** Malus als Gegenstück zum Faktor — die Lesart des Spec-Vektors (COMBAT §2.4). */
+function bulwarkMalus(enemies: readonly CombatEnemy[], target: Pick<CombatEnemy, 'lane'>): number {
+  return 1 - bulwarkDamageFactor(enemies, target);
+}
 
 /**
  * Eigene Eingangswerte statt Platzhalter-Content: geprüft wird die **multiplikative Stapelung**,

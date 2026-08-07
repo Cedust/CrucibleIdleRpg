@@ -46,14 +46,6 @@ export function bulwarkDamageFactor(
   );
 }
 
-/** Der Malus als Gegenstück zum Faktor — die Größe, die die UI und Kampf-Events nennen. */
-export function bulwarkMalus(
-  enemies: readonly CombatEnemy[],
-  target: Pick<CombatEnemy, 'lane'>,
-): number {
-  return 1 - bulwarkDamageFactor(enemies, target);
-}
-
 /** Wendet die Deckung des Ziels auf einen einzelnen Treffer an (COMBAT §2.1, letzter Schritt). */
 export function applyBulwark(
   damage: number,

@@ -312,11 +312,16 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     // Der Strom steht am Anfang; jeder Takt schreibt seine Position zurück (combatEngine.ts).
     combatPrngState: combatStreamPrng(setup.floorSeed).state(),
     characters,
-    effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 },
+    effectiveDamage: initialEffectiveDamage(),
     enemies,
     round: 0,
     pending: [],
   };
+}
+
+/** Null-Zähler je Team-Mitglied, aufgebaut über `TEAM_ORDER` statt aufgezählter IDs. */
+function initialEffectiveDamage(): Readonly<Record<CharacterId, number>> {
+  return Object.fromEntries(TEAM_ORDER.map((id) => [id, 0])) as Record<CharacterId, number>;
 }
 
 /* ------------------------------------------------------------------ Rundenbeginn */
@@ -324,14 +329,6 @@ export function buildCombatState(setup: CombatSetup): CombatState {
 /** Besiegte Akteure fallen aus Reihenfolge und Verteilung heraus (CHARACTERS §1). */
 export function isAlive(actor: { health: number }): boolean {
   return actor.health > 0;
-}
-
-/** Löst einen Akteur-Verweis auf; `undefined`, wenn der Index ins Leere zeigt (AGENTS.md). */
-export function actorAt(
-  state: CombatState,
-  ref: ActorRef,
-): CombatCharacter | CombatEnemy | undefined {
-  return ref.side === 'character' ? state.characters[ref.index] : state.enemies[ref.index];
 }
 
 /**

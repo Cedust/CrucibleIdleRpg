@@ -587,7 +587,15 @@ const WEAPON_PP_STATS: ReadonlySet<MasteryNode['stat']> = new Set([
   'blockChance',
 ]);
 
+/** Katalog-Cache: Der Content ist statisch, der Aufbau läuft einmal je Charakter. */
+const NODES_BY_CHARACTER = new Map<CharacterId, readonly MasteryNode[]>();
+
 export function nodesFor(characterId: CharacterId): readonly MasteryNode[] {
+  const cached = NODES_BY_CHARACTER.get(characterId);
+  if (cached !== undefined) {
+    return cached;
+  }
+
   const weaponNodes = weaponLayout[characterId].map(
     ([id, label, rank, effect, target, prerequisites]) =>
       stat(
@@ -601,13 +609,15 @@ export function nodesFor(characterId: CharacterId): readonly MasteryNode[] {
         effect,
       ),
   );
-  return [
+  const nodes = [
     ...shared,
     ...weaponNodes,
     ...weaponBehaviors[characterId].map(([id, rank, label, prerequisites, effect, exclusiveWith]) =>
       behavior(id, rank, label, prerequisites, effect, exclusiveWith ? { exclusiveWith } : {}),
     ),
   ];
+  NODES_BY_CHARACTER.set(characterId, nodes);
+  return nodes;
 }
 
 export function nodeById(characterId: CharacterId, nodeId: string): MasteryNode | undefined {

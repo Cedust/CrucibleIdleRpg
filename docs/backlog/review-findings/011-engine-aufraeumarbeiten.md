@@ -2,7 +2,7 @@
 
 | Feld             | Wert    |
 | ---------------- | ------- |
-| **Status**       | `ready` |
+| **Status**       | `done`  |
 | **Schwere**      | niedrig |
 | **Hängt ab von** | —       |
 
@@ -50,14 +50,15 @@ Verlagerung der Balancing-Literale — [004](004-mastery-balancing-deklarativ.md
 
 ## Akzeptanzkriterien
 
-- [ ] Perfect Exploit rechnet über den Crit-Multiplikator; ein Test deckt `baseDamage === 0`.
-- [ ] `projectedState` läuft nur bei `relentlessPursuit`.
-- [ ] Der Mastery-Kontext wird einmal pro Takt aufgelöst; ein ScriptedPrng-Test belegt
-      unveränderte PRNG-Sequenzen.
-- [ ] Splash/Follow-ups sind benannte Funktionen; `rollDamage`-Flags stecken in einem
+- [x] Perfect Exploit rechnet über den Crit-Multiplikator; ein Test deckt `baseDamage === 0`.
+- [x] `projectedState` läuft nur bei `relentlessPursuit`.
+- [x] Der Mastery-Kontext wird einmal pro Takt aufgelöst (`perTickContext` + Katalog-Cache in
+      `nodesFor`); die bestehenden ScriptedPrng- und Determinismus-Tests belegen unveränderte
+      PRNG-Sequenzen.
+- [x] Splash/Follow-ups sind benannte Funktionen; `rollDamage`-Flags stecken in einem
       Options-Objekt.
-- [ ] Tote Exports sind entfernt oder als für kommende Tasks vorgesehen markiert.
-- [ ] `effectiveDamage` wird über `TEAM_ORDER` aufgebaut.
+- [x] Tote Exports sind entfernt.
+- [x] `effectiveDamage` wird über `TEAM_ORDER` aufgebaut.
 
 ## Betroffene Dateien
 

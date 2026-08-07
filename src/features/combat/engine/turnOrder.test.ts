@@ -5,8 +5,6 @@ import {
   buildPendingQueue,
   compareTurnOrder,
   pruneDefeated,
-  queueIndexOf,
-  removeFromQueue,
   takeNextActor,
   turnOrderEntries,
 } from './turnOrder';
@@ -180,18 +178,6 @@ describe('Pending-Queue — Entnahme und Todesfall', () => {
 
   it('liefert am Rundenende keinen Akteur mehr', () => {
     expect(takeNextActor([]).actor).toBeUndefined();
-  });
-
-  it('entfernt einen Todesfall aus der offenen Queue — seine Aktion entfällt', () => {
-    const queue = buildPendingQueue(gestellt);
-    const opfer: ActorRef = { side: 'enemy', index: 1 };
-
-    expect(queueIndexOf(queue, opfer)).toBeGreaterThanOrEqual(0);
-
-    const danach = removeFromQueue(queue, opfer);
-
-    expect(queueIndexOf(danach, opfer)).toBe(-1);
-    expect(danach).toHaveLength(queue.length - 1);
   });
 
   it('räumt besiegte Akteure aus einer bereits laufenden Runde', () => {

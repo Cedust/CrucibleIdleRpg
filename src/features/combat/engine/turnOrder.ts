@@ -83,11 +83,6 @@ export function sameActor(a: ActorRef, b: ActorRef): boolean {
   return a.side === b.side && a.index === b.index;
 }
 
-/** Position eines Akteurs in der Queue, `-1` wenn er nicht (mehr) offen ist. */
-export function queueIndexOf(queue: readonly ActorRef[], ref: ActorRef): number {
-  return queue.findIndex((entry) => sameActor(entry, ref));
-}
-
 /**
  * Ein Zug entnimmt das vorderste Element (COMBAT §1.1). `actor` ist `undefined`, wenn die
  * Runde abgearbeitet ist.
@@ -97,11 +92,6 @@ export function takeNextActor(queue: readonly ActorRef[]): {
   remaining: ActorRef[];
 } {
   return { actor: queue[0], remaining: queue.slice(1) };
-}
-
-/** Entfernt einen Akteur aus der offenen Queue — seine Aktion entfällt (COMBAT §1.1). */
-export function removeFromQueue(queue: readonly ActorRef[], ref: ActorRef): ActorRef[] {
-  return queue.filter((entry) => !sameActor(entry, ref));
 }
 
 /**

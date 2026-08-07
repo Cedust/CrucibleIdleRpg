@@ -475,3 +475,19 @@ describe('Mastery Combat Arts', () => {
     expect(result.nextZeroing).toEqual({ target: 0, stacks: 5 });
   });
 });
+
+describe('Perfect Exploit', () => {
+  it('rechnet über den Crit-Multiplikator — Grundschaden 0 bleibt 0 statt NaN', () => {
+    const attacker = characterFixture({ id: 'rhaya', slotIndex: 1, attack: 0 });
+    const prng = scriptedPrng([0.5, 0.9, 0.9]);
+
+    const result = resolveCharacterAttack(state([enemy(0, 5)]), attacker, prng, {
+      damageRange: DAMAGE_RANGE,
+      critNodes: NO_CRIT_NODES,
+      mastery: mastery({ surestrike: true, perfectExploit: true }),
+    });
+
+    expect(result.hits[0]?.crit).toBe(true);
+    expect(result.hits[0]?.damage).toBe(0);
+  });
+});

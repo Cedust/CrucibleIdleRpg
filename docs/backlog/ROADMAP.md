@@ -91,8 +91,8 @@ auf. Der vollständige Politur-Pass über alle Screens bleibt in [M6](#m6--endga
 
 | Reihenfolge | Task                                                                              | Status  | Hängt ab von |
 | ----------- | --------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md) | ready   | 016          |
-| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)     | blocked | 017          |
+| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md) | done    | 016          |
+| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)     | ready   | 017          |
 | 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)       | blocked | 018          |
 | 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)       | blocked | 018          |
 

@@ -1,10 +1,10 @@
 # 018 — UI-Primitives & App-Rahmen
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M2.5      |
-| **Hängt ab von** | 017       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M2.5    |
+| **Hängt ab von** | 017     |
 
 ## Ziel
 

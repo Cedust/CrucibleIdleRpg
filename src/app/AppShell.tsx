@@ -57,9 +57,9 @@ export function AppShell() {
         <div className="flex items-center gap-3">
           <div
             aria-hidden="true"
-            className="flex size-9 items-center justify-center rounded-lg border-2 border-accent font-serif text-sm font-bold text-accent"
+            className="flex size-9 items-center justify-center rounded-lg border-2 border-accent"
           >
-            C
+            <span className="size-6 bg-accent mask-[url(/assets/icons/melting-metal.svg)] mask-center mask-contain mask-no-repeat" />
           </div>
           <div>
             <h1

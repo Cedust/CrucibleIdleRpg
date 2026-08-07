@@ -1,10 +1,10 @@
 # 017 — Art-Direction & Theme-Tokens
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M2.5    |
-| **Hängt ab von** | 016     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2.5   |
+| **Hängt ab von** | 016    |
 
 ## Ziel
 

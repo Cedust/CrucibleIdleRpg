@@ -1,25 +1,58 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/cinzel';
+@import '@fontsource-variable/inter';
 
 /*
  * Tailwind v4 CSS-first-Konfiguration.
  * Nur Dark Mode (fest) — keine Light-/System-Variante.
- * Design-Tokens werden hier als Theme-Variablen definiert und stehen als
- * Utility-Klassen zur Verfügung (z. B. bg-surface, text-accent).
+ * Design-Tokens des „Gilded Ruins“-Design-Systems (DESIGN.md §5): dunkler
+ * Blau-Slate-Stein, Gold als Strukturfarbe, Glut- und Arkan-Akzente.
+ * Visuelle Referenz: concept/ui-draft/assets/.
+ * Tokens stehen als Utility-Klassen zur Verfügung (z. B. bg-surface,
+ * text-accent, border-ornament, font-display).
  */
 @theme {
-  /* Hintergründe / Flächen */
+  /* Schriften: Display für Titel und Überschriften, Body für Fließtext */
+  --font-display: 'Cinzel Variable', 'Times New Roman', serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+
+  /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking */
+  --text-display-sm: 0.875rem;
+  --text-display-sm--line-height: 1.25;
+  --text-display-sm--letter-spacing: 0.12em;
+  --text-display-sm--font-weight: 600;
+  --text-display: 1.25rem;
+  --text-display--line-height: 1.3;
+  --text-display--letter-spacing: 0.08em;
+  --text-display--font-weight: 600;
+  --text-display-lg: 1.75rem;
+  --text-display-lg--line-height: 1.2;
+  --text-display-lg--letter-spacing: 0.06em;
+  --text-display-lg--font-weight: 700;
+
+  /* Hintergründe / Flächen (Stein-Töne) */
   --color-background: #0f172a;
   --color-surface: #1e293b;
   --color-surface-raised: #334155;
   --color-border: #334155;
 
+  /* Ornamentrahmen: Messing-Linien um Panels und Buttons */
+  --color-ornament: #8a6d3b;
+
   /* Text */
   --color-text: #e2e8f0;
   --color-text-muted: #94a3b8;
 
-  /* Akzent (Fantasy-Glut/Crucible-Thema) */
+  /* Akzent (Gold-Töne) */
   --color-accent: #f59e0b;
   --color-accent-strong: #fbbf24;
+
+  /* Glut-Töne (Crucible, Feuer, Molten Cast) */
+  --color-ember: #e25822;
+  --color-ember-bright: #ff8a4d;
+
+  /* Arkan (XP, Magie, Schatten-Gegner) */
+  --color-arcane: #8b5cf6;
 
   /* Statusfarben (Kampf) */
   --color-danger: #ef4444;
@@ -37,11 +70,6 @@ body {
   min-height: 100vh;
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }

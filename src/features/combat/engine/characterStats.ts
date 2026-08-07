@@ -114,15 +114,16 @@ export function deriveCharacterStats(
     const bonus = node.perRank * rank;
     if (node.stat === 'attack' || node.stat === 'defense') {
       stats.derived[node.stat] += bonus;
+    } else if (node.stat === 'precision' || node.stat === 'minRng' || node.stat === 'maxRng') {
+      // Waffen-Kontextwerte — sie wirken im Kampf-Kontext (masteryCombat.ts), nicht hier.
     } else if (node.stat in stats.offensive) {
-      const key = node.stat as keyof CharacterStats['offensive'];
-      stats.offensive[key] += bonus;
+      stats.offensive[node.stat as keyof CharacterStats['offensive']] += bonus;
     } else if (node.stat in stats.defensive) {
-      const key = node.stat as keyof CharacterStats['defensive'];
-      stats.defensive[key] += bonus;
-    } else if (node.stat !== 'precision' && node.stat !== 'minRng' && node.stat !== 'maxRng') {
-      const key = node.stat as keyof CharacterStats['utility'];
-      stats.utility[key] += bonus;
+      stats.defensive[node.stat as keyof CharacterStats['defensive']] += bonus;
+    } else if (node.stat in stats.utility) {
+      stats.utility[node.stat as keyof CharacterStats['utility']] += bonus;
+    } else {
+      throw new Error(`Unkategorisierter Mastery-Stat: ${node.stat}`);
     }
   }
 

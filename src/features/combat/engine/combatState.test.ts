@@ -34,9 +34,10 @@ const SAVE_SEED = 4242;
 /**
  * Lückenhafte Testformation: Frontline-Slots 0 und 2, Backline-Slots 3 und 5. Die Lücken machen
  * sichtbar, dass der Formations-Index leere Slots mitzählt (docs/spec/COMBAT-RUN.md#13-gegnerformation).
+ * Die `id` ist in diesen Fixtures nominal — der Aufbau liest ausschließlich die Slots.
  */
 const FORMATION: FormationDefinition = {
-  id: 'test-lueckenhaft',
+  id: 'rampBothLanes',
   slots: {
     frontline: ['slagBulwark', null, 'ashenGhoul'],
     backline: ['cinderWretch', null, 'cinderWretch'],
@@ -52,7 +53,7 @@ const FORMATION_ORDER: readonly EnemyId[] = [
 ];
 
 function definitionOf(id: EnemyId): EnemyDefinition {
-  return ENEMIES[id] as EnemyDefinition;
+  return ENEMIES[id];
 }
 
 function team(overrides: Partial<Record<CharacterId, number>> = {}): TeamMemberSetup[] {
@@ -119,14 +120,14 @@ describe('occupiedSlots — Formations-Index', () => {
 
   it('deckelt bei sechs Gegnern und liefert bei leerer Formation nichts', () => {
     const voll: FormationDefinition = {
-      id: 'voll',
+      id: 'rampBothLanesCrowded',
       slots: {
         frontline: ['ashenGhoul', 'ashenGhoul', 'ashenGhoul'],
         backline: ['cinderWretch', 'cinderWretch', 'cinderWretch'],
       },
     };
     const leer: FormationDefinition = {
-      id: 'leer',
+      id: 'rampSingleLanePair',
       slots: { frontline: [null, null, null], backline: [null, null, null] },
     };
 
@@ -221,7 +222,7 @@ describe('buildCombatState — Gegner', () => {
       setup({
         floorIndex: ENEMY_ACCURACY_BONUS.length - 1,
         formation: {
-          id: 'nur-emberHound',
+          id: 'rampSingleLanePair',
           slots: { frontline: ['emberHound', null, null], backline: [null, null, null] },
         },
       }),
@@ -229,19 +230,6 @@ describe('buildCombatState — Gegner', () => {
 
     // 0.75 + 0.25 läge über dem Deckel.
     expect(tief.enemies[0]?.accuracy).toBe(ACCURACY_CAP);
-  });
-
-  it('meldet eine unbekannte Gegner-Kennung, statt still einen Slot zu verschlucken', () => {
-    expect(() =>
-      buildCombatState(
-        setup({
-          formation: {
-            id: 'kaputt',
-            slots: { frontline: ['gibtEsNicht', null, null], backline: [null, null, null] },
-          },
-        }),
-      ),
-    ).toThrow(/gibtEsNicht/);
   });
 });
 

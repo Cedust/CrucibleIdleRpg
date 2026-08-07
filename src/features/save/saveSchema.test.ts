@@ -108,6 +108,21 @@ describe('saveSchema', () => {
     ).toBe(false);
   });
 
+  it('validiert Format und Eindeutigkeit von Erstsiegen und Freischaltungen', () => {
+    const save = createDefaultSave(123);
+
+    expect(
+      saveSchema.safeParse({ ...save, firstVictories: ['A1-D1-01', 'A1-D1-02'] }).success,
+    ).toBe(true);
+    expect(saveSchema.safeParse({ ...save, firstVictories: ['kein-floor'] }).success).toBe(false);
+    expect(
+      saveSchema.safeParse({ ...save, firstVictories: ['A1-D1-01', 'A1-D1-01'] }).success,
+    ).toBe(false);
+    expect(saveSchema.safeParse({ ...save, unlockedDungeonIds: ['A1-D1', 'A1-D1'] }).success).toBe(
+      false,
+    );
+  });
+
   it('rejects mastery saves with unknown nodes or missing prerequisites', () => {
     const save = createDefaultSave(123);
     const invalid = {

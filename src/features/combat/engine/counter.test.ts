@@ -103,7 +103,7 @@ function enemy(formationIndex: number, bulwarkContribution = 0, health = 5000): 
   const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
 
   return {
-    definitionId: `enemy-${formationIndex}`,
+    definitionId: 'ashenGhoul',
     name: `Enemy ${formationIndex}`,
     role: lane === 'frontline' ? 'melee' : 'ranged',
     lane,

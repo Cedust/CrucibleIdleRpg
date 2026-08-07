@@ -3,18 +3,14 @@ import { CHARACTERS } from '@/game/characters/characters';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
 import { ENEMY_ATTACK_MULTIPLIER, ENEMY_HEALTH_MULTIPLIER } from '@/game/curves/enemyCurves';
 import { ENEMIES } from '@/game/enemies/enemies';
-import type { EnemyDefinition, FloorId, FormationDefinition } from '@/game/types';
+import type { EnemyDefinition, EnemyId, FloorId, FormationDefinition } from '@/game/types';
 import { FLOOR_FORMATIONS, FORMATIONS } from './formations';
 
 /** Alle besetzten Slots einer Vorlage als Gegner-Definitionen, in Formations-Index-Reihenfolge. */
 function besetzung(formation: FormationDefinition): EnemyDefinition[] {
   return [...formation.slots.frontline, ...formation.slots.backline]
-    .filter((id): id is string => id !== null)
-    .map((id) => {
-      const enemy = ENEMIES[id];
-      if (enemy === undefined) throw new Error(`Unbekannter Gegner: ${id}`);
-      return enemy;
-    });
+    .filter((id): id is EnemyId => id !== null)
+    .map((id) => ENEMIES[id]);
 }
 
 describe('FORMATIONS', () => {
@@ -73,8 +69,8 @@ describe('FLOOR_FORMATIONS', () => {
     for (let i = 1; i <= 20; i++) {
       const floorId = `A1-D1-${String(i).padStart(2, '0')}` as FloorId;
       const formationId = FLOOR_FORMATIONS[floorId];
-      expect(formationId, floorId).toBeDefined();
-      expect(FORMATIONS[formationId as string]).toBeDefined();
+      if (formationId === undefined) throw new Error(`Formation fehlt für ${floorId}`);
+      expect(FORMATIONS[formationId]).toBeDefined();
     }
   });
 
@@ -99,7 +95,9 @@ describe('FLOOR_FORMATIONS', () => {
  */
 describe('Plausibilität A1-D1-01', () => {
   const FLOOR_INDEX = 0;
-  const formation = FORMATIONS[FLOOR_FORMATIONS['A1-D1-01'] as string] as FormationDefinition;
+  const startFormationId = FLOOR_FORMATIONS['A1-D1-01'];
+  if (startFormationId === undefined) throw new Error('Formation fehlt für A1-D1-01');
+  const formation = FORMATIONS[startFormationId];
   const gegner = besetzung(formation);
   const healthMultiplier = ENEMY_HEALTH_MULTIPLIER[FLOOR_INDEX] as number;
   const attackMultiplier = ENEMY_ATTACK_MULTIPLIER[FLOOR_INDEX] as number;

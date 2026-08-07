@@ -7,8 +7,23 @@
  */
 
 export type CharacterId = 'korvin' | 'rhaya' | 'quinn';
-export type EnemyId = string;
-export type FormationId = string;
+
+/** Alle Gegner-Kennungen; `ENEMIES` (enemies.ts) muss genau diese Keys tragen. */
+export const ENEMY_IDS = ['ashenGhoul', 'emberHound', 'cinderWretch', 'slagBulwark'] as const;
+export type EnemyId = (typeof ENEMY_IDS)[number];
+
+/** Alle Formations-Kennungen; `FORMATIONS` (formations.ts) muss genau diese Keys tragen. */
+export const FORMATION_IDS = [
+  'rampSingleLanePair',
+  'rampBothLanes',
+  'rampBothLanesCrowded',
+  'rampWithTank',
+  'dungeonSkirmish',
+  'dungeonPursuit',
+  'dungeonStronghold',
+] as const;
+export type FormationId = (typeof FORMATION_IDS)[number];
+
 export type DungeonId = `A${number}-D${number}`;
 
 /** Floor-Kennung in der Notation `A<Akt>-D<Dungeon>-<Floor>`, Floor zweistellig (SPEC §4.1). */

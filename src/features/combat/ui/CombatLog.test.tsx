@@ -14,9 +14,7 @@ import {
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { CombatLog } from './CombatLog';
 
-function combat(
-  formation: FormationDefinition = FORMATIONS.rampBothLanesCrowded as FormationDefinition,
-): CombatState {
+function combat(formation: FormationDefinition = FORMATIONS.rampBothLanesCrowded): CombatState {
   return buildCombatState({
     floorId: 'A1-D1-11',
     floorIndex: 10,

@@ -2,7 +2,6 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
-import type { FormationDefinition } from '@/game/types';
 import { neutralProgression } from '@/features/combat/engine/characterStats';
 import { DEFAULT_COMBAT_CONTEXT, nextTick, runCombat } from '@/features/combat/engine/combatEngine';
 import {
@@ -99,7 +98,7 @@ function combat(): CombatState {
     floorId: 'A1-D1-11',
     floorIndex: 10,
     floorSeed: deriveFloorSeed(deriveRunSeed(4242, 'A1-D1', 1), 10),
-    formation: FORMATIONS.rampBothLanesCrowded as FormationDefinition,
+    formation: FORMATIONS.rampBothLanesCrowded,
     team: TEAM_ORDER.map((id) => ({ id, progression: neutralProgression(20) })),
   });
 }

@@ -17,17 +17,21 @@ export interface SavePort {
 
 const STORAGE_KEY = 'crucible-idle-rpg:save';
 
-/** localStorage-Implementierung des SavePort. */
+/**
+ * localStorage-Implementierung des SavePort. Der Umweg über `.then(...)` verlegt die
+ * synchronen `localStorage`-Zugriffe in die Promise-Kette: Ein synchroner Fehler
+ * (z. B. volle Quota) wird zur Rejection statt zum Throw und hält den Port-Kontrakt.
+ */
 export function createLocalStorageSavePort(key: string = STORAGE_KEY): SavePort {
   return {
-    load: () => Promise.resolve(localStorage.getItem(key)),
-    save: (raw) => {
-      localStorage.setItem(key, raw);
-      return Promise.resolve();
-    },
-    clear: () => {
-      localStorage.removeItem(key);
-      return Promise.resolve();
-    },
+    load: () => Promise.resolve().then(() => localStorage.getItem(key)),
+    save: (raw) =>
+      Promise.resolve().then(() => {
+        localStorage.setItem(key, raw);
+      }),
+    clear: () =>
+      Promise.resolve().then(() => {
+        localStorage.removeItem(key);
+      }),
   };
 }

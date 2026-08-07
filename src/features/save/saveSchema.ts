@@ -34,7 +34,7 @@ const characterProgressionSchema = progressionSchema
     freeAttributePoints: z.number().int().nonnegative(),
     attributePoints: attributePointsSchema,
     freeMasteryPoints: z.number().int().nonnegative(),
-    masteryRanks: z.record(z.string(), z.number().int().min(1).max(5)),
+    masteryRanks: z.record(z.string(), z.number().int().min(1).max(5)).readonly(),
   })
   .superRefine((character, context) => {
     const spentAttributes = Object.values(character.attributePoints).reduce(
@@ -82,8 +82,14 @@ export const saveSchema = z
         crystals: z.number().int().nonnegative(),
       })
       .strict(),
-    firstVictories: z.array(z.string()).readonly(),
-    unlockedDungeonIds: z.array(z.enum(ACT_1_DUNGEON_IDS)).readonly(),
+    firstVictories: z
+      .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
+      .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
+      .readonly(),
+    unlockedDungeonIds: z
+      .array(z.enum(ACT_1_DUNGEON_IDS))
+      .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Dungeon-Freischaltungen.')
+      .readonly(),
     completedDungeons: completedDungeonsSchema,
   })
   .strict()
@@ -123,9 +129,22 @@ export const saveSchema = z
     }
   });
 
-export type SaveData = Omit<z.infer<typeof saveSchema>, 'characters'> & {
-  characters: Record<'korvin' | 'rhaya' | 'quinn', CharacterProgressionState>;
-};
+export type SaveData = z.infer<typeof saveSchema>;
+
+/** Kompiliert nur, wenn `A` `B` erfüllt — Baustein der Schema-Typ-Abgleiche darunter. */
+type AssertExtends<A extends B, B> = A;
+type SchemaCharacterProgression = z.infer<typeof characterProgressionSchema>;
+
+/** Das Schema produziert vollständige `CharacterProgressionState`-Werte … */
+export type CharacterProgressionSchemaProducesState = AssertExtends<
+  SchemaCharacterProgression,
+  CharacterProgressionState
+>;
+/** … und jedes Feld des Typs ist schema-validiert — ein neues Feld fiele hier auf. */
+export type CharacterProgressionStateMatchesSchema = AssertExtends<
+  CharacterProgressionState,
+  SchemaCharacterProgression
+>;
 
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {

@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
-import type { FormationDefinition } from '@/game/types';
 import { useNavigationStore } from '@/app/navigationStore';
 import { neutralProgression } from '@/features/combat/engine/characterStats';
 import { DEFAULT_COMBAT_CONTEXT, nextTick } from '@/features/combat/engine/combatEngine';
@@ -19,7 +18,7 @@ function combat(): CombatState {
     floorId: 'A1-D1-11',
     floorIndex: 10,
     floorSeed: deriveFloorSeed(deriveRunSeed(4242, 'A1-D1', 1), 10),
-    formation: FORMATIONS.rampBothLanesCrowded as FormationDefinition,
+    formation: FORMATIONS.rampBothLanesCrowded,
     team: TEAM_ORDER.map((id) => ({ id, progression: neutralProgression(20) })),
   });
 }

@@ -6,7 +6,6 @@ import type {
   CharacterId,
   DamageRange,
   DefensiveStats,
-  FormationDefinition,
   Lane,
   OffensiveStats,
   Role,
@@ -120,7 +119,7 @@ function enemy(setup: EnemySetup): CombatEnemy {
   const health = setup.health ?? 100_000;
 
   return {
-    definitionId: `enemy-${setup.formationIndex}`,
+    definitionId: 'ashenGhoul',
     name: `Enemy ${setup.formationIndex}`,
     role: lane === 'frontline' ? 'melee' : 'ranged',
     lane,
@@ -157,7 +156,7 @@ function gestellt(characters: CombatCharacter[], enemies: CombatEnemy[]): Combat
 const SAVE_SEED = 4242;
 
 function floorSetup(overrides: Partial<CombatSetup> = {}): CombatSetup {
-  const formation = FORMATIONS.rampBothLanesCrowded as FormationDefinition;
+  const formation = FORMATIONS.rampBothLanesCrowded;
 
   return {
     floorId: 'A1-D1-11',

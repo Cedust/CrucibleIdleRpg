@@ -58,7 +58,7 @@ function enemy(formationIndex: number, initiative: number, health = 50): CombatE
   const lane: Lane = formationIndex < 3 ? 'frontline' : 'backline';
 
   return {
-    definitionId: `enemy-${formationIndex}`,
+    definitionId: 'ashenGhoul',
     name: `Enemy ${formationIndex}`,
     role: lane === 'frontline' ? 'melee' : 'ranged',
     lane,

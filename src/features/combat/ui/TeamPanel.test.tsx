@@ -21,9 +21,7 @@ import { TeamPanel } from './TeamPanel';
  * Kampfseite committet (AGENTS.md § Architecture).
  */
 
-function combat(
-  formation: FormationDefinition = FORMATIONS.rampBothLanesCrowded as FormationDefinition,
-): CombatState {
+function combat(formation: FormationDefinition = FORMATIONS.rampBothLanesCrowded): CombatState {
   return buildCombatState({
     floorId: 'A1-D1-11',
     floorIndex: 10,

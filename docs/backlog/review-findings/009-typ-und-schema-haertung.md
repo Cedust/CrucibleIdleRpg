@@ -1,10 +1,10 @@
 # 009 — Typ- & Schema-Härtung
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | mittel  |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | mittel |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -47,13 +47,16 @@ Save-Schema-Erweiterungen um neue Felder; Pre-Release-Save-Policy bleibt unberü
 
 ## Akzeptanzkriterien
 
-- [ ] `EnemyId`/`FormationId` sind als `keyof typeof`-Unions abgeleitet; das Projekt
-      typecheckt.
-- [ ] Ein statischer Assert prüft Schema ⇄ `CharacterProgressionState` in beide Richtungen.
-- [ ] `firstVictories`/`unlockedDungeonIds` validieren Format und Eindeutigkeit.
-- [ ] Der Utility-Zweig prüft die Key-Existenz und wirft bei unkategorisierten Stats.
-- [ ] `target!` und der tote `CHARACTERS`-Guard sind ersetzt; ein Guard-Stil gilt einheitlich.
-- [ ] Die SavePort-Adapter sind `async`.
+- [x] `EnemyId`/`FormationId` sind als `keyof typeof`-Unions abgeleitet; das Projekt
+      typecheckt. Umsetzung als aus `ENEMY_IDS`/`FORMATION_IDS`-Tupeln abgeleitete Unions in
+      `types.ts` (das `CharacterId`-Zielmuster) — `keyof typeof ENEMIES` erzeugte einen
+      Import-Zyklus zwischen Typ- und Content-Modul.
+- [x] Ein statischer Assert prüft Schema ⇄ `CharacterProgressionState` in beide Richtungen.
+- [x] `firstVictories`/`unlockedDungeonIds` validieren Format und Eindeutigkeit.
+- [x] Der Utility-Zweig prüft die Key-Existenz und wirft bei unkategorisierten Stats.
+- [x] `target!` und der tote `CHARACTERS`-Guard sind ersetzt; ein Guard-Stil gilt einheitlich.
+- [x] Die SavePort-Adapter halten den Promise-Kontrakt im Fehlerfall (synchrone
+      `localStorage`-Fehler werden zur Rejection).
 
 ## Betroffene Dateien
 

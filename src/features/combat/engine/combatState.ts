@@ -255,12 +255,8 @@ function buildEnemy(
 }
 
 function buildCharacter(setup: TeamMemberSetup, slotIndex: number): CombatCharacter {
+  // `CHARACTERS` ist ein totales Record über `CharacterId` — der Zugriff ist typsicher.
   const definition = CHARACTERS[setup.id];
-
-  if (definition === undefined) {
-    throw new Error(`Unbekannter Charakter im Team: ${setup.id}`);
-  }
-
   const stats = deriveCharacterStats(definition, setup.progression);
   const maxHealth = stats.derived.health;
   const carried = setup.carriedHealth;
@@ -302,12 +298,8 @@ export function buildCombatState(setup: CombatSetup): CombatState {
 
   const init = initStreamPrng(setup.floorSeed);
   const enemies = occupiedSlots(setup.formation).map((slot) => {
+    // `ENEMIES` ist ein totales Record über `EnemyId` — der Zugriff ist typsicher.
     const definition = ENEMIES[slot.enemyId];
-
-    if (definition === undefined) {
-      throw new Error(`Unbekannter Gegner in der Formation: ${slot.enemyId}`);
-    }
-
     const initiative = init.nextInt(definition.initiativeRange.min, definition.initiativeRange.max);
 
     return buildEnemy(definition, slot, setup.floorIndex, initiative);

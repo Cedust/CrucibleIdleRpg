@@ -81,7 +81,8 @@ Daraus folgen zwei verbindliche Regeln:
    eines **eigens gewürfelten** Grundschadens, eigener Crit-Wurf). Details unten.
 
 Auf **jeden** so erzeugten Treffer wird anschließend der **Bulwark-Malus seines eigenen Ziels**
-angewandt ([§1.4](#14-bulwark-deckung-der-backline)).
+angewandt ([§1.4](#14-bulwark-deckung-der-backline)). Als letzter Schritt greift in Runde 1
+**Ambush** ([Ambush](SIGNATURES.md#21-ambush-nach-sunder)) auf den finalen Wert.
 
 **PRNG-Zugreihenfolge (verbindlich, [§1.5](#15-feststehende-regeln)):** `Precision` →
 `Damage-Range` → bei Clean `Crit (Grundtreffer)` → `Multi Hit Chance` → bei Clean und
@@ -160,12 +161,14 @@ Heilung: [§1.6](#16-heilung--grenzen-und-auslösung).
   ([§1.3](#13-eingehender-schaden-schadenspipeline), Schritt 2):
 
   ```
-  Trefferchance = Accuracy × (1 − Evasion)
+  Trefferchance = Accuracy × (1 − Menace) × (1 − Evasion)
   ```
 
   _Accuracy_ steigt mit der Floor-Tiefe
   ([BALANCE §1](BALANCE.md#1-wachstum-und-zahlenraum)); _Evasion_ wirkt als Faktor und
-  behält damit auf jeder Tiefe ihren relativen Wert.
+  behält damit auf jeder Tiefe ihren relativen Wert. **Menace**
+  ([Menace](SIGNATURES.md#22-menace-nach-mitigation)) senkt die Accuracy relativ **vor** Evasion,
+  solange Korvin bei Angriffsbeginn lebt; ohne den Node ist der Faktor `1`.
 
 ### 1.3 Eingehender Schaden (Schadenspipeline)
 

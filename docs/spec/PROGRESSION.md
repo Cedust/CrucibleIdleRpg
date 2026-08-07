@@ -37,7 +37,7 @@ Verfügbar zum **Ausgeben** werden sie erst nach dem Run
    entfernte gegnerische Health nach Mitigation; Overkill zählt nicht und der Beitrag eines
    später besiegten Charakters bleibt erhalten. Ganzzahlige Reste werden per größtem Rest
    vergeben; Gleichstände rotieren anhand des globalen Floor-Index deterministisch.
-2. **Gold** — globale Währung (Attribut-, Weapon-Mastery- und Crucible-Respecs,
+2. **Gold** — globale Währung (Attribut- und Weapon-Mastery-Respecs,
    Blacksmith/Jeweler).
 3. **Crystals** — globale Währung für den Crucible ([§3](#3-crucible-globaler-skilltree)).
    **Nur beim allerersten Sieg** eines Floors:
@@ -55,23 +55,107 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 ## 3. Crucible (globaler Skilltree)
 
 - Der **Crucible** ist ein weitgehend **globaler, charakterübergreifender** Skilltree. Der
-  Spieler „schmilzt" Crystals ein, um **permanente** Verbesserungen freizuschalten.
-- Zusätzlich beherbergt der Crucible die **charaktergebundenen Signatur-Skills**
-  ([Signatur-Skills](CHARACTERS.md#7-signatur-skills)) —
-  spielverändernde, an je einen Charakter gebundene Unlocks. Sie folgen dem Standard-Node-Modell
-  (Level 1–5), sind aber dem jeweiligen Charakter zugeordnet statt global wirksam.
-- Vier Trees (Schmiede-Wortfeld):
+  Spieler „schmilzt" Crystals ein, um permanente Zugänge oder flexible Verbesserungen
+  freizuschalten.
+- Die **charaktergebundenen Signatur-Skills** ([Signatur-Skills](CHARACTERS.md#7-signatur-skills))
+  liegen im Tree **Molten Cast** ([§3.3](#33-molten-cast)). Sie folgen dem Standard-Node-Modell mit
+  Rang 1–5 und wirken auf je einen Charakter statt global.
+- Vier Trees tragen vier getrennte Aufgaben:
 
-  | Tree                | Fokus                                                                          |
-  | ------------------- | ------------------------------------------------------------------------------ |
-  | **Anvil Sparks**    | Freischalten von Inhalten (Blacksmith, Jeweler, Ausrüstungsslots, Checkpoints) |
-  | **Smelting Flames** | Stat-Boosts der Charaktere                                                     |
-  | **Molten Cast**     | Economy-Boosts (Gold-Drop, XP-Gewinn, Rabatte bei Blacksmith/Jeweler)          |
-  | **Masterwork**      | Endgame-Systeme (**Runen**, [Runen](RUNES.md))                                 |
+  | Tree                | Fokus                                                          | Respec                    |
+  | ------------------- | -------------------------------------------------------------- | ------------------------- |
+  | **Anvil Sparks**    | permanente Zugänge, Checkpoints und Systemfreischaltungen      | keiner                    |
+  | **Smelting Flames** | quantitative, globale Charakterwerte                           | vollständig und kostenlos |
+  | **Molten Cast**     | qualitative Kampfregeln und charaktergebundene Signatur-Skills | vollständig und kostenlos |
+  | **Masterwork**      | Endgame-Systeme (**Runen**, [Runen](RUNES.md))                 | Entscheidung folgt in M5  |
 
-- Manche Nodes sind **stufbar** (max. **5 Level**), Kosten **linear steigend** (Level `n` = `n`
-  Crystals; 1+2+3+4+5 = 15 Crystals für einen voll gestuften Node).
-- **Respec gegen Gold.**
+- Ein neuer Rang kostet genau so viele Crystals wie seine Rangnummer. Fünf Ränge kosten damit
+  `1 + 2 + 3 + 4 + 5 = 15` Crystals, vier Ränge `10` und drei Ränge `6`.
+- Ein Respec ist nur außerhalb eines Dungeon-Runs möglich. Er entfernt atomar alle Ränge des
+  gewählten flexiblen Trees und erstattet exakt die darin investierten Crystals. Smelting und
+  Molten werden unabhängig voneinander respecct; es gibt keine tree-übergreifenden
+  Voraussetzungen.
+- Der Crucible wirkt ausschließlich auf Zugänge, Charakterwerte und Kampfregeln. Gold-Drops,
+  XP-Gewinn und Handwerkspreise bleiben unberührt; es gibt damit keinen verpflichtenden frühen
+  Ertragspfad.
+
+### 3.1 Anvil Sparks
+
+| ID                 | Ränge | Wirkung                                        | Voraussetzung                | Verfügbarkeit |
+| ------------------ | ----: | ---------------------------------------------- | ---------------------------- | ------------- |
+| `anvil.waystones`  |     4 | A1-D2 / A1-D3 / A1-D4 / A1-D5                  | vorheriger Dungeon vollendet | M2            |
+| `anvil.armory`     |     4 | Head / Chest / Legs / Feet für alle Charaktere | —                            | gesperrt, M3  |
+| `anvil.blacksmith` |     1 | Blacksmith-System                              | Armory Rang 1                | gesperrt, M4  |
+| `anvil.jeweler`    |     1 | Jeweler-System                                 | Armory Rang 1                | gesperrt, M4  |
+
+`anvil.waystones` Rang `n` schaltet den Einstieg `A1-D<n+1>` frei. Der Kauf verlangt den
+vollständigen Abschluss von `A1-D<n>`; der vorherige Waystone-Rang folgt bereits aus der
+Rangfolge desselben Nodes. Ein neuer Einstieg entsteht ausschließlich über diesen Kauf: der
+Dungeon-Abschluss ist die Voraussetzung, der Rang die Freischaltung. Alle Anvil-Käufe sind
+dauerhaft und bleiben von jedem Respec unberührt.
+
+### 3.2 Smelting Flames
+
+Alle vier Nodes sind unabhängige Startnodes mit fünf Rängen:
+
+| ID                    | Name       | Wirkung je Rang |
+| --------------------- | ---------- | --------------- |
+| `smelting.overpower`  | Overpower  | `+3 %` Attack   |
+| `smelting.iron-skin`  | Iron Skin  | `+3 %` Defense  |
+| `smelting.unyielding` | Unyielding | `+3 %` Health   |
+| `smelting.quick-step` | Quick Step | `+1` Initiative |
+
+Die Prozentwerte sind innerhalb der Crucible-Ebene additiv. Diese Ebene bleibt nach der
+Derived-Stat-Formel multiplikativ zu den Basis- und Attributebenen
+([Stats](CHARACTERS.md#2-stats)). Quick Step addiert seinen Rang auf die Initiative jedes
+Charakters.
+
+### 3.3 Molten Cast
+
+Die vier Basisnodes sind unabhängige Startnodes mit fünf Rängen. Ihre vollständigen
+Kampfwirkungen und Testvektoren stehen bei den
+[Signatur- und Molten-Skills](SIGNATURES.md).
+
+| ID                   | Name        | Rangwerte                                      | Verfügbarkeit |
+| -------------------- | ----------- | ---------------------------------------------- | ------------- |
+| `molten.mitigation`  | Mitigation  | `10/15/20/25/30 %` Umleitung                   | M2            |
+| `molten.sunder`      | Sunder      | `2/4/6/8/10 pp` je Angriff, Cap `4/8/12/16/20` | M2            |
+| `molten.suppression` | Suppression | `1/2/3/4/5` Queue-Plätze                       | M2            |
+| `molten.rally`       | Rally       | `10/15/20/25/30 %` Max-Health                  | M2            |
+| `molten.ambush`      | Ambush      | `5/10/15/20/25 %` Schaden in Runde 1           | M2, Folgetask |
+| `molten.menace`      | Menace      | `2/4/6/8/10 %` weniger gegnerische Accuracy    | M2, Folgetask |
+| `molten.momentum`    | Momentum    | Cap `1/2/3/4/5` Initiative                     | M2, Folgetask |
+| `molten.second-wind` | Second Wind | `10/15/20/25/30 %` Max-Health                  | M2, Folgetask |
+
+Mitigation, Sunder und Suppression sind die drei charaktergebundenen **Signatur-Skills**
+([Signatur-Skills](CHARACTERS.md#7-signatur-skills)); Rally und die Vertiefungen wirken teamweit.
+
+Die vier Vertiefungen benötigen jeweils mindestens Rang 1 ihres Basisnodes: Sunder → Ambush,
+Mitigation → Menace, Suppression → Momentum und Rally → Second Wind. Sie sind bis zum
+Molten-Folgetask sichtbar, aber nicht kaufbar.
+
+### 3.4 Masterwork
+
+Der Masterwork-Katalog bleibt bis M5 vollständig gesperrt. `Rune Grimoire` ist der Einstieg;
+Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman Rang `n`.
+
+| ID                         | Ränge | Gesamtkosten | Wirkung                          |
+| -------------------------- | ----: | -----------: | -------------------------------- |
+| `masterwork.rune-grimoire` |     1 |            1 | Rune-System und Rune-Level-Cap 1 |
+| `masterwork.talisman`      |     3 |            6 | Rite für Charakter 1 / 2 / 3     |
+| `masterwork.runic-focus`   |     3 |            6 | Modifier für Charakter 1 / 2 / 3 |
+| `masterwork.rune-mastery`  |     4 |           10 | Rune-Level-Cap 2 / 3 / 4 / 5     |
+
+### 3.5 Kapazität und Save-Migration
+
+- Task 015 stellt `130` aktive Crystal-Kosten bereit: `10` Anvil, `60` Smelting und `60`
+  Molten-Basis. Mit den vier Molten-Vertiefungen steigt die aktive Kapazität auf `190`.
+- Akt 1 vergibt insgesamt `117` Crystals. Selbst nach einem Respec kann deshalb nicht alles
+  gleichzeitig maximiert werden.
+- Die erste Crucible-Save-Migration erhält Vollendet-Flags, Erstsiege, Währungen und
+  Charakterfortschritt, setzt die zugänglichen Dungeon-Einstiege aber auf `A1-D1` zurück.
+  Bereits erfüllte Dungeon-Abschlüsse erlauben anschließend den sofortigen regulären Nachkauf
+  mehrerer Waystone-Ränge.
 
 ## 4. Checkpoints, Wipe & Abbruch
 
@@ -80,10 +164,15 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
   <!-- Bewusste Entscheidung; nach Playtesting revidierbar. -->
 - **Tod gilt für den restlichen Run.** Ein besiegter Charakter bleibt besiegt und ist nicht
   heilbar ([Heilung](DAMAGE-SYSTEM.md#16-heilung--grenzen-und-auslösung)).
-  - **Rally** (Crucible-Node, Level 1–5) ist die einzige Ausnahme: Ein gefallener Charakter steht
-    beim **Betreten des nächsten Floors** mit einem Anteil seiner Max-Health wieder auf (Wert =
-    Balancing, noch offen: [OPEN_ISSUES](../backlog/OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)). Vor der Freischaltung existiert der
-    Effekt nicht.
+  - **Rally** (`molten.rally`, [§3.3](#33-molten-cast)) ist die erste Ausnahme: Nach einem
+    gewonnenen Floor stehen beim Betreten des Folgefloors **alle** Gefallenen mit
+    `10/15/20/25/30 %` ihrer Max-Health gemäß Node-Rang auf. Rally kann nach einem erneuten Tod
+    am nächsten erfolgreichen Floor-Übergang wieder wirken, aber nie nach Wipe, Verlassen oder am
+    Dungeon-Ende. **Test-Vektor:** Rang 3 setzt einen Gefallenen mit `200` Max-Health auf `40`
+    Health.
+  - **Second Wind** (`molten.second-wind`) ist die zweite Ausnahme und folgt im
+    Molten-Folgetask. Die Regel steht bei
+    [Second Wind](SIGNATURES.md#24-second-wind-nach-rally).
 - **Health- und Tod-Zustand gelten nur innerhalb einer Run-Kette.** Ein Dungeon-Neustart beginnt
   mit **vollem Team und voller Health**.
 - **Auto-Progression:** Innerhalb eines aktiven Dungeon-Runs startet nach einem gespeicherten
@@ -112,8 +201,8 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 - **Checkpoint = Menge freigeschalteter Dungeon-Einstiege** (Dungeon-Granularität, jeweils
   Floor 1). Beim Wiederbetreten **wählt** der Spieler frei einen freigeschalteten Dungeon.
   - **Default pro Akt:** Dungeon 1, Floor 1 (`A<Akt>-1-01`).
-  - **Anvil-Sparks-Nodes** schalten spätere Dungeon-Einstiege frei (sobald ein Dungeon einmal
-    komplett war) → kein Rückfall an den Aktanfang.
+  - **Anvil-Sparks-Waystones** schalten spätere Dungeon-Einstiege frei, nachdem der jeweils
+    vorherige Dungeon vollständig abgeschlossen wurde → kein Rückfall an den Aktanfang.
 
 ## 5. Prestige
 

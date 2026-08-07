@@ -46,8 +46,10 @@ Health  = (Start-Health + Vitality) × Vigor-Ebene × Crucible-Ebene
 
 Waffenprofile und Mastery-Defense stehen in
 [Weapon Mastery](WEAPON-MASTERY.md#2-waffenprofile-und-derived-stats). Attribut- und
-Crucible-Ebene sind Prozent-Multiplikatoren; konkrete Kurven liegen im Balancing-Content unter
-`src/game/`.
+Crucible-Ebene sind Prozent-Multiplikatoren. Die Crucible-Ebene entsteht aus den
+**Smelting-Flames**-Nodes und ist innerhalb dieser Ebene additiv
+([Smelting Flames](PROGRESSION.md#32-smelting-flames)); die Attribut-Kurven liegen im
+Balancing-Content unter `src/game/`.
 
 Jeder Charakter hat Stats in folgenden Kategorien:
 
@@ -165,8 +167,9 @@ Archetyp-Spezifisches ([§1](#1-team),
 - **Die Kampfwirkung der drei Skills steht in
   [Signatur-Skills (Kampfwirkung)](SIGNATURES.md#1-signatur-skills-kampfwirkung)** — Formeln,
   Caps, Test-Vektoren.
-- Alle drei sind **charaktergebundene Crucible-Knoten**
-  ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)) mit **Level 1–5**; der
-  Node-Maxlevel wirkt als **natürlicher Cap** (kein künstlicher Cap nötig). Vor Freischaltung
-  existiert der Effekt nicht.
+- Alle drei sind **charaktergebundene Crucible-Knoten** im Tree **Molten Cast** — `molten.mitigation`,
+  `molten.sunder` und `molten.suppression` ([Molten Cast](PROGRESSION.md#33-molten-cast)) — mit
+  **Level 1–5**; der Node-Maxlevel wirkt als **natürlicher Cap** (kein künstlicher Cap nötig). Vor
+  Freischaltung existiert der Effekt nicht. Sie fallen unter den kostenlosen Molten-Respec
+  ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)).
 - Design-Absicht: [DESIGN §3.1](../DESIGN.md#3-player-experience--der-kern-loop).

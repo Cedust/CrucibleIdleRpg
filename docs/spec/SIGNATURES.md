@@ -1,6 +1,7 @@
-# SPEC — Signatur-Skills
+# SPEC — Signatur-Skills & Molten Cast
 
-> Verbindlich: die Kampfwirkung von Mitigation, Sunder und Suppression.
+> Verbindlich: die Kampfwirkung von Mitigation, Sunder, Suppression und den
+> Molten-Cast-Vertiefungen.
 > Verwandt: [Kampfablauf](COMBAT-RUN.md) · [Schadenssystem](DAMAGE-SYSTEM.md) · [Team & Charaktere](CHARACTERS.md)
 
 ---
@@ -24,19 +25,28 @@ Design-Absicht in
 ### 1.1 Mitigation (Korvin, Tank)
 
 - Leitet einen Anteil `m` des DD-Ticks auf den Tank um — Formel und Summen-Erhaltung in
-  [§2.3](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline), Schritt 1.
-- `m` steigt mit dem Node-Level (1–5); konkrete Werte = Balancing (`src/game/`).
+  [§1.3](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline), Schritt 1.
+- `m` beträgt auf Node-Rang 1–5 genau `10/15/20/25/30 %`.
+- **Test-Vektor:** Bei einem Team-Tick von `300` und drei lebenden Charakteren entstehen vor
+  jeder persönlichen Minderung auf Rang 1 die Ticks Tank/DD/DD `120/90/90`, auf Rang 5
+  `160/70/70`. Beide Verteilungen erhalten die Summe `300`.
 
 ### 1.2 Sunder (Rhaya, Melee)
 
-- Rhayas Treffer auf einen **Frontline-Gegner** reduzieren dessen **Bulwark-Beitrag** `bᵢ`
+- Jeder **Angriff** Rhayas reduziert den **Bulwark-Beitrag** `bᵢ` jedes dabei mindestens einmal
+  getroffenen Frontline-Gegners
   ([Bulwark](DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)).
-- Der Abbau ist **kumulativ pro Ziel** und gilt **nur für die Dauer des laufenden Kampfes** —
-  es gibt **keinen Übertrag** zwischen Floors (Formationen stehen pro Floor neu).
-- **Node-Skalierung (Level 1–5):** steigender Bulwark-Abbau pro Treffer und/oder höheres
-  Abbau-Cap pro Ziel. Konkrete Werte = Balancing (`src/game/`, BALANCING).
-
-<!-- TODO (Balancing): Sunder — Abbau-Betrag pro Treffer & Cap pro Ziel. -->
+- Pro Angriff und Ziel wird Sunder genau einmal angewandt. Multi Hit und wiederholte Treffer
+  desselben Angriffs stapeln es nicht zusätzlich; verschiedene getroffene Frontline-Ziele
+  erhalten jeweils eine Anwendung. Ein Counter ist ein eigenständiger Angriff.
+- Der Abbau je Angriff beträgt auf Node-Rang 1–5 `2/4/6/8/10` Prozentpunkte. Das kumulative
+  Abbau-Cap je Ziel und Kampf beträgt `4/8/12/16/20` Prozentpunkte. `bᵢ` fällt nie unter `0`.
+- Der Abbau gilt nur für die Dauer des laufenden Kampfes; es gibt keinen Übertrag zwischen
+  Floors. Die Treffer eines bereits begonnenen Angriffs verwenden den Bulwark-Stand zu
+  Angriffsbeginn, Sunder beeinflusst erst nachfolgende Angriffe.
+- **Test-Vektor:** Auf Rang 5 sinkt `bᵢ = 0,30` nach zwei getrennten Angriffen auf `0,10` und
+  stoppt am Cap. Fünf Treffer derselben Multi-Hit-Kette senken nur einmal auf `0,20`. Trifft
+  derselbe Angriff zwei Frontline-Ziele, sinkt der Beitrag beider Ziele jeweils einmal um `0,10`.
 
 ### 1.3 Suppression (Quinn, Ranged)
 
@@ -90,3 +100,55 @@ Design-Absicht in
   ([Bulwark](DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)) mindert die Verschiebung nicht.
 - **Turn Skip** entsteht ausschließlich über den **Kill**: stirbt das Ziel vor seinem
   verschobenen Slot, ist seine Aktion endgültig verloren.
+
+## 2. Molten-Cast-Vertiefungen
+
+Der Tree **Molten Cast** ([§3.3](PROGRESSION.md#33-molten-cast)) trägt vier Basisnodes: die drei
+Signatur-Skills aus [§1](#1-signatur-skills-kampfwirkung) und **Rally**, dessen Regel an seinem
+Hebel — der Floor-Grenze — in [Checkpoints, Wipe & Abbruch](PROGRESSION.md#4-checkpoints-wipe--abbruch)
+steht.
+
+Die Vertiefungen sind keine weiteren Signatur-Skills. Sie bauen jeweils auf mindestens Rang 1
+eines Molten-Basisnodes auf, verändern einen vorhandenen Kampfhebel ohne Zusatz-RNG und werden
+erst im Molten-Folgetask kaufbar. Die Rangwerte stehen zusätzlich als Katalog in
+[§3.3](PROGRESSION.md#33-molten-cast).
+
+### 2.1 Ambush (nach Sunder)
+
+- In Runde 1 verursachen alle von Charakteren erzeugten Treffer
+  `5/10/15/20/25 %` mehr finalen ausgehenden Schaden gemäß Node-Rang.
+- Der Bonus wird nach allen bestehenden Schadensmodifikatoren einschließlich Bulwark angewandt.
+  Er gilt für Grundtreffer, Multi Hit, Splash, zusätzliche Mastery-Treffer und Counter.
+- Ab Runde 2 ist der Multiplikator neutral. Ambush verbraucht keinen PRNG-Zug.
+
+### 2.2 Menace (nach Mitigation)
+
+- Solange Korvin zu Beginn eines Gegnerangriffs lebt, wird die Accuracy dieses Angriffs relativ
+  um `2/4/6/8/10 %` gemäß Node-Rang reduziert.
+- Die Reihenfolge ist `Accuracy × (1 − Menace) × (1 − Evasion)`
+  ([Treffermodell](DAMAGE-SYSTEM.md#12-treffermodell)); das Ergebnis bleibt auf `[0, 1]` geklemmt.
+  Stirbt Korvin während eines teamweiten Angriffs, gilt Menace noch für
+  dessen vollständige, zu Angriffsbeginn festgelegte Auflösung, aber nicht für spätere Angriffe.
+- **Test-Vektor:** Accuracy `0,80` wird auf Rang 5 vor Evasion zu `0,72`.
+
+### 2.3 Momentum (nach Suppression)
+
+- Bei der Pending-Queue-Erzeugung einer Runde `r` erhalten alle lebenden Charaktere temporär
+  `min(r − 1, Node-Rang)` Initiative. Der Bonus verändert keine persistierten Stats.
+- Runde 1 beginnt ohne Bonus. Rang 5 erreicht ab Runde 6 sein Maximum von `+5`; der Bonus wächst
+  niemals unbegrenzt und verbraucht keinen PRNG-Zug.
+- **Test-Vektor:** Rang 3 liefert in den Runden 1–7 `0/1/2/3/3/3/3` Initiative.
+
+### 2.4 Second Wind (nach Rally)
+
+- Einmal pro Dungeon verhindert Second Wind den ersten tödlichen Treffer gegen das Team. Der
+  betroffene Charakter bleibt mit `10/15/20/25/30 %` seiner Max-Health gemäß Node-Rang am Leben.
+- Der Verbrauch gilt für den gesamten Dungeon-Run und wird erst beim Start eines neuen Runs
+  zurückgesetzt. Wipe, Verlassen und Reload beenden den Run ohnehin; es gibt keinen übertragbaren
+  Restverbrauch.
+- Treffen durch denselben teamweiten Angriff mehrere tödliche Ergebnisse ein, verbraucht der
+  erste betroffene Charakter in der festen Team-Reihenfolge Korvin, Rhaya, Quinn
+  ([Team](CHARACTERS.md#1-team)) die Auslösung; die weiteren Ergebnisse bleiben tödlich. Die
+  Reihenfolge ist bewusst nicht die Initiative-Ordnung, damit der Verbrauch seedunabhängig ist.
+- **Test-Vektor:** Auf Rang 3 bleibt der zuerst tödlich getroffene Charakter mit `200`
+  Max-Health einmalig bei `40` Health.

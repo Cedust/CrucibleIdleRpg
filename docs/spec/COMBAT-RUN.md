@@ -45,13 +45,15 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt jeder lebende Akteur
 **Zugreihenfolge als Pending-Queue:**
 
 - Zu Rundenbeginn wird aus allen **lebenden** Akteuren eine nach obiger Ordnung sortierte
-  Liste gebildet. Sie ist Teil des Kampfzustands.
+  Liste gebildet. Sie ist Teil des Kampfzustands. **Momentum**
+  ([Momentum](SIGNATURES.md#23-momentum-nach-suppression)) wirkt genau hier: Es erhöht die
+  Initiative der lebenden Charaktere für diese Sortierung temporär, ohne einen Stat zu verändern.
 - Ein Zug entnimmt das vorderste Element. Die Queue enthält damit stets nur noch
   **offene** Aktionen.
 - Stirbt ein Akteur, wird er aus der Queue entfernt — seine Aktion entfällt.
 - **Suppression** ([Suppression](SIGNATURES.md#13-suppression-quinn-ranged)) ist die einzige Operation, die die
-  Queue umsortiert: Sie verschiebt die noch offene Aktion eines Gegners **innerhalb der
-  laufenden Runde** nach hinten.
+  **bereits gebildete** Queue umsortiert: Sie verschiebt die noch offene Aktion eines Gegners
+  **innerhalb der laufenden Runde** nach hinten.
 
 **Ablauf einer Runde:**
 

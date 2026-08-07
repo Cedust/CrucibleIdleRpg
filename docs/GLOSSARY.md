@@ -107,22 +107,24 @@
 
 ## Welt & Fortschritt
 
-| Begriff                      | EN / Code    | Abgrenzung                                                                                                             |
-| ---------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| **Akt / Dungeon / Floor**    | —            | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                          |
-| **Elite-Floor / Boss-Floor** | —            | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                      |
-| **Ramp-Up**                  | —            | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                 |
-| **Run**                      | —            | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                     |
-| **Wipe**                     | —            | Alle Charaktere besiegt                                                                                                |
-| **Attrition**                | —            | Der über einen **Run** mitgeschleppte Health-Verlust                                                                   |
-| **Rally**                    | _Rally_      | Crucible-Node, der einen gefallenen Charakter aufstehen lässt                                                          |
-| **Checkpoint**               | —            | Menge freigeschalteter **Dungeon-Einstiege**                                                                           |
-| **Belohnung**                | _Reward_     | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                         |
-| **XP**                       | _Experience_ | Belohnung → **Charakterlevel**                                                                                         |
-| **Gold**                     | _Gold_       | Laufende globale Währung. Abzugrenzen von **Crystal**, **Cinder**, **Runedust**                                        |
-| **Crystal**                  | _Crystal_    | Währung für den **Crucible**. Abzugrenzen von **Cinder** und **Runedust**                                              |
-| **Crucible**                 | _Crucible_   | Der **globale** Skilltree (Anvil Sparks, Smelting Flames, Molten Cast, Masterwork). Abzugrenzen von **Weapon Mastery** |
-| **Prestige**                 | —            | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                     |
+| Begriff                      | EN / Code    | Abgrenzung                                                                                                                                                                                        |
+| ---------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Akt / Dungeon / Floor**    | —            | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                                                                                                     |
+| **Elite-Floor / Boss-Floor** | —            | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                                                                                                 |
+| **Ramp-Up**                  | —            | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                                                                                            |
+| **Run**                      | —            | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                                                                                                |
+| **Wipe**                     | —            | Alle Charaktere besiegt                                                                                                                                                                           |
+| **Attrition**                | —            | Der über einen **Run** mitgeschleppte Health-Verlust                                                                                                                                              |
+| **Rally**                    | _Rally_      | Molten-Cast-Node, der alle Gefallenen am erfolgreichen Floor-Übergang aufstehen lässt                                                                                                             |
+| **Checkpoint**               | —            | Menge freigeschalteter **Dungeon-Einstiege**; folgt aus den **Waystones**                                                                                                                         |
+| **Waystone**                 | _Waystone_   | Anvil-Sparks-Node, der einen späteren Dungeon-Einstieg dauerhaft freischaltet                                                                                                                     |
+| **Belohnung**                | _Reward_     | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                                                                                                    |
+| **XP**                       | _Experience_ | Belohnung → **Charakterlevel**                                                                                                                                                                    |
+| **Gold**                     | _Gold_       | Laufende globale Währung. Abzugrenzen von **Crystal**, **Cinder**, **Runedust**                                                                                                                   |
+| **Crystal**                  | _Crystal_    | Währung für den **Crucible**. Abzugrenzen von **Cinder** und **Runedust**                                                                                                                         |
+| **Crucible**                 | _Crucible_   | Der **globale** Skilltree: **Anvil Sparks** (permanente Zugänge), **Smelting Flames** (Charakterwerte), **Molten Cast** (Kampfregeln), **Masterwork** (Runen). Abzugrenzen von **Weapon Mastery** |
+| **Respec**                   | _Respec_     | Vollständiger Rücksetzer eines flexiblen Crucible-Trees gegen volle Crystal-Erstattung; Anvil ist permanent                                                                                       |
+| **Prestige**                 | —            | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                                                                                                |
 
 ---
 

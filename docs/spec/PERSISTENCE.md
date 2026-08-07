@@ -30,14 +30,21 @@
   gesockelte Gems inkl. Level/Value + gebrandetes Sigil). Es existieren ausschließlich die vier
   Armor-Slots Head, Chest, Legs und Feet
   ([Slots, Basen & Innate-Affixe](ITEMS.md#1-slots-basen--innate-affixe)).
-- Crucible-Node-Stände; Gold, Cinder, Gem-Bestände (Amber/Ruby/Sapphire/Emerald/Diamond).
+- **Crucible-Node-Ränge** je Node-ID über alle vier Trees hinweg, einschließlich der
+  charaktergebundenen Signatur-Skills ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)).
+  Die Ränge sind die alleinige Wahrheit: freigeschaltete Dungeon-Einstiege, Ausrüstungsslots und
+  Systeme werden aus `anvil.*` abgeleitet, nicht getrennt gespeichert. Ein Respec ändert nur diese
+  Ränge und den Crystal-Bestand.
+- Gold, Cinder, Gem-Bestände (Amber/Ruby/Sapphire/Emerald/Diamond).
 - **Sigil Codex** (bekannte Sigils mit Level).
 - Runedust, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
   dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, [Runen](RUNES.md)).
-- Freigeschaltete Checkpoints, **pro Dungeon ein Vollendet-Flag** (schaltet 2× frei,
+- **Pro Dungeon ein Vollendet-Flag** (schaltet 2× frei und ist Kaufvoraussetzung der Waystones,
   [Checkpoints, Wipe & Abbruch](PROGRESSION.md#4-checkpoints-wipe--abbruch)), höchster
   erreichter Floor, **Erstsieg-Flags** je Floor (Crystals,
-  [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)).
+  [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)). Die Menge der
+  freigeschalteten Checkpoints selbst ist abgeleitet: `A1-D1` plus ein Einstieg je Rang von
+  `anvil.waystones`.
 - Kein Feld für einen aktiven Run oder Pending-Currency: Der laufende Run ist ausschließlich
   Laufzeit-Zustand. Ein Reload verwirft ihn, lädt die normale Auswahl und erhält alle davor
   committeten Belohnungen.
@@ -71,3 +78,20 @@ Das aktuelle Pre-Release-Schema enthält freie Punkte und die drei verteilten At
 Weapon Mastery werden die bisherigen Skillpunkt-Summen direkt durch `freeMasteryPoints` und
 Node-Ränge ersetzt. Für diese Änderung wird keine Migration geschrieben: Vor Release bestehen
 keine zu erhaltenden Spielstände; Basissave, Schema und Tests wechseln atomar auf das neue Modell.
+
+### 2.3 Crucible-Save-Version
+
+Die Crucible-Version ergänzt das Schema um die Node-Ränge und entfernt das gespeicherte
+Checkpoint-Feld, weil die Einstiege nun aus `anvil.waystones` folgen
+([Anvil Sparks](PROGRESSION.md#31-anvil-sparks)). Sie erhält ausdrücklich eine Migration:
+
+- **Erhalten:** Vollendet-Flags, Erstsieg-Flags, höchster erreichter Floor, Währungen,
+  Charakterlevel, XP, Attribut- und Mastery-Stände.
+- **Zurückgesetzt:** die zugänglichen Dungeon-Einstiege auf ausschließlich `A1-D1`. Die
+  Node-Ränge starten leer.
+- **Folge:** Wer einen Dungeon bereits vollendet hat, erfüllt die Kaufvoraussetzung des
+  zugehörigen Waystone-Rangs sofort und kann mehrere Ränge unmittelbar regulär nachkaufen.
+
+Die Migration validiert die Node-Ränge gegen den Katalog aus
+[Crucible](PROGRESSION.md#3-crucible-globaler-skilltree): unbekannte IDs, Ränge über dem Maximum
+und verletzte Voraussetzungen sind ungültige Speicherstände.

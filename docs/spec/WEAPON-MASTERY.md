@@ -255,9 +255,13 @@ Vollausbau vor der Master-Wahl: Damage 33, Range 90–130 %, Precision 90 % und 
   −5 pp Precision.
 - **Blade Poise (Master):** +3 Damage, +10 pp MIN RNG, −5 pp MAX RNG,
   +5 pp Precision.
-- **Second Wind (Grandmaster):** Bei Clean Hit erzeugt der niedrigere Twin-Measure-Wurf einen
+- **Twin Echo (Grandmaster):** Bei Clean Hit erzeugt der niedrigere Twin-Measure-Wurf einen
   separaten Treffer mit 25 % seines Rohschadens. Er besitzt einen eigenen Crit-Wurf, aber keine
   Multi-, Splash- oder sonstigen Generator-Procs.
+  - Der Node hieß bis zum Molten-Folgetask **Second Wind** und trägt den Namen des
+    Molten-Cast-Nodes [Second Wind](SIGNATURES.md#24-second-wind-nach-rally) nicht länger. Der
+    persistierte Identifier bleibt `weapon.second-wind`; die Umbenennung betrifft nur den
+    angezeigten Namen und erfordert keine Save-Migration.
 
 ### 5.3 LONGBOW — Quinn
 
@@ -326,7 +330,7 @@ ansonsten von der niedrigeren zur höheren römischen Nummer.
 | TWIN BLADES | Adept       | DMG II, MIN RNG I, INIT                            | DMG I; PRC I \| MAX RNG I; PRC I                   |
 | TWIN BLADES | Expert      | DMG III, PRC II, Twin Measure                      | DMG II; MIN RNG I; Twin Measure: MIN RNG I \| INIT |
 | TWIN BLADES | Master      | MIN RNG II, MAX RNG II, Razor’s Edge, Blade Poise  | Stat: PRC II; Verhalten: Twin Measure              |
-| TWIN BLADES | Grandmaster | Second Wind                                        | Razor’s Edge \| Blade Poise                        |
+| TWIN BLADES | Grandmaster | Twin Echo                                          | Razor’s Edge \| Blade Poise                        |
 | LONGBOW     | Initiate    | DMG I, PRC I, MIN RNG I                            | —                                                  |
 | LONGBOW     | Adept       | DMG II, MIN RNG II, INIT                           | DMG I; MIN RNG I; PRC I                            |
 | LONGBOW     | Expert      | DMG III, MIN RNG III, Zeroing In                   | DMG II; MIN RNG II; Zeroing: MIN RNG II \| INIT    |

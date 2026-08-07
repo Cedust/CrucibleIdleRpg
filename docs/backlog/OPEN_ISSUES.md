@@ -7,7 +7,7 @@
 
 ### Charaktere und Gegner
 
-- [ ] Core-Stat- und Crucible-Kurven für die Derived Stats. → [Stats](../spec/CHARACTERS.md#2-stats)
+- [ ] Core-Stat- und Attribut-Kurven für die Derived Stats. → [Stats](../spec/CHARACTERS.md#2-stats)
 - [ ] Gegnerkurven für Health, Attack und Accuracy je Akt/Dungeon/Floor. → [BALANCE](../spec/BALANCE.md#1-wachstum-und-zahlenraum)
 - [ ] Gegner-Basiswerte und Initiative-Ranges je Typ. → [Formation](../spec/COMBAT-RUN.md#13-gegnerformation)
 - [ ] Formationsbesetzung je Floor und Ramp-up je Akt; jeder Pflicht-Encounter hat mindestens **zwei** Gegneraktionen pro Runde. → [BALANCE](../spec/BALANCE.md#2-spielbare-korridore)
@@ -15,10 +15,8 @@
 
 ### Kampf
 
-- [ ] Bulwark-Beiträge und Mitigation `m` je Node-Stufe. → [Bulwark](../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline), [Mitigation](../spec/SIGNATURES.md#11-mitigation-korvin-tank)
-- [ ] Sunder-Abbau und -Cap je Node-Stufe. → [Sunder](../spec/SIGNATURES.md#12-sunder-rhaya-melee)
+- [ ] Bulwark-Beiträge `bᵢ` je Gegnertyp. → [Bulwark](../spec/DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)
 - [ ] Defense-Konstante `K` und Block-Reduktion. → [Eingehender Schaden](../spec/DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline)
-- [ ] Rally-Anteil je Node-Stufe. → [Checkpoints](../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch)
 - [ ] Grundtakt und 2×-Geschwindigkeit. → [Playback](../spec/SIMULATION.md#2-playback--takt-und-geschwindigkeit)
 
 ### Ökonomie und Endgame
@@ -26,9 +24,9 @@
 - [ ] **Weapon Mastery:** Discipline-Respec-Grundpreis und Punktpreis festlegen. Aktuell nutzt
       `src/game/weaponMastery/mastery.ts` die expliziten Platzhalter `100 Gold + 25 Gold ×
 erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Mastery](../spec/WEAPON-MASTERY.md#31-discipline-respec)
-- [ ] Gold-Drops sowie Attribut-/Crucible-Respec-Kosten und Grund-/Punktpreis des
-      Discipline-Respecs. → [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg),
-      [Weapon Mastery](../spec/WEAPON-MASTERY.md#31-discipline-respec)
+- [ ] Gold-Drops je Floor sowie die Kosten des Attribut-Respecs. →
+      [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg),
+      [Attribute](../spec/CHARACTERS.md#3-attribute-level-up-progression)
 - [ ] Item-Level-Kurve, Seltenheits-Caps und Sockel-Meilensteine. → [Items](../spec/ITEMS.md#3-seltenheit-sockel--level-cap)
 - [ ] Cinder-, Blacksmith- und Jeweler-Kosten. → [Handwerk](../spec/ITEMS.md#7-blacksmith--temper-refine--brand)
 - [ ] Gem-Werte, Targeting, Drops und Aufleveln-Kosten. → [Jeweler](../spec/ITEMS.md#8-jeweler--inlay-attune--recut)

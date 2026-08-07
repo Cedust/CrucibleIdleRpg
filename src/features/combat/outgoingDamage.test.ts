@@ -18,6 +18,7 @@ import {
   type AttackContext,
   type CritNodes,
   type Hit,
+  type MasteryEffects,
 } from './outgoingDamage';
 
 /**
@@ -148,6 +149,34 @@ const ALL_CRIT_NODES: CritNodes = { multiHit: true, splash: true, counter: true 
 
 function context(critNodes: CritNodes, damageRange: DamageRange = DAMAGE_RANGE): AttackContext {
   return { damageRange, critNodes };
+}
+
+function mastery(overrides: Partial<MasteryEffects>): MasteryEffects {
+  return {
+    executioner: false,
+    perfectExploit: false,
+    surestrike: false,
+    overcritical: false,
+    relentlessPursuit: false,
+    echoedStrike: false,
+    stormSurge: false,
+    perfectCadence: false,
+    epicenter: false,
+    focusedBlast: false,
+    aftershock: false,
+    perfectRiposte: false,
+    guardedReprisal: false,
+    escalatingRetaliation: false,
+    committedImpact: false,
+    immovableGuard: false,
+    twinMeasure: false,
+    secondWind: false,
+    zeroingIn: false,
+    patientHunter: false,
+    guarded: false,
+    counterStacks: 0,
+    ...overrides,
+  };
 }
 
 /**
@@ -433,5 +462,94 @@ describe('Kein Ziel — kein Angriff', () => {
     expect(result.primaryTarget).toBeUndefined();
     expect(result.hits).toEqual([]);
     expect(prng.draws).toEqual([]);
+  });
+});
+
+describe('Mastery Combat Arts', () => {
+  it('applies Finesse once, including Surestrike and the non-recursive Overcritical bonus', () => {
+    const prng = scriptedPrng([0.5, 0.1, 0.1, 0.9, 0.9]);
+    const result = resolveCharacterAttack(
+      state([enemy(0, 14, 0, 100)]),
+      character('melee', { critChance: 1 }),
+      prng,
+      {
+        ...context(NO_CRIT_NODES),
+        mastery: mastery({ executioner: true, surestrike: true, overcritical: true }),
+      },
+    );
+
+    expect(result.hits[0]?.damage).toBeCloseTo(450, 10);
+    expect(result.hits[0]?.crit).toBe(true);
+  });
+
+  it('retargets sequential chain hits and continues their index for Storm Surge', () => {
+    const prng = scriptedPrng([0.5, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9]);
+    const result = resolveCharacterAttack(
+      state([enemy(0, 14, 0, 120), enemy(1, 9)]),
+      character('melee', { critChance: 0.8, multiHitChance: 1 }, { multiHitChain: 2 }),
+      prng,
+      {
+        ...context({ ...ALL_CRIT_NODES, splash: false }),
+        mastery: mastery({ relentlessPursuit: true, stormSurge: true, perfectCadence: true }),
+      },
+    );
+
+    const chain = result.hits.filter((hit) => hit.kind === 'multiHit');
+    expect(chain.map((hit) => hit.chainIndex)).toEqual([1, 2, 3, 4]);
+    expect(chain.map((hit) => hit.target.index)).toEqual([0, 1, 1, 1]);
+  });
+
+  it('creates exactly the non-recursive Dominance follow-up hits after a successful splash', () => {
+    const prng = scriptedPrng([0.5, 0.9, 0.9, 0.1, 0.9]);
+    const result = resolveCharacterAttack(
+      state([enemy(0, 14), enemy(1, 9)]),
+      character('melee', { splashChance: 1 }, { splashRadius: 2 }),
+      prng,
+      { ...context(NO_CRIT_NODES), mastery: mastery({ epicenter: true, aftershock: true }) },
+    );
+
+    expect(result.hits.map((hit) => hit.kind)).toEqual([
+      'base',
+      'splash',
+      'epicenter',
+      'aftershock',
+    ]);
+  });
+
+  it('keeps Glancing generator draws but suppresses every crit path', () => {
+    const prng = scriptedPrng([0.9, 0.5, 0.1, 0.1]);
+    const result = resolveCharacterAttack(
+      state([enemy(0, 14), enemy(1, 9)]),
+      character('melee', { critChance: 1, multiHitChance: 1, splashChance: 1 }),
+      prng,
+      {
+        ...context(ALL_CRIT_NODES),
+        precision: 0.5,
+        mastery: mastery({ surestrike: true, overcritical: true }),
+      },
+    );
+
+    expect(result.cleanHit).toBe(false);
+    expect(result.hits.every((hit) => !hit.crit)).toBe(true);
+    expect(prng.draws).toEqual(['chance:0.5', 'damageRange', 'chance:1', 'chance:1']);
+  });
+
+  it('uses weapon-only follow-ups without letting them generate further hits', () => {
+    const prng = scriptedPrng([0.1, 0.9, 0.9, 0.9, 0.9, 0.9]);
+    const result = resolveCharacterAttack(state([enemy(0, 14), enemy(1, 9)]), character(), prng, {
+      ...context(NO_CRIT_NODES),
+      mastery: mastery({
+        echoedStrike: true,
+        twinMeasure: true,
+        secondWind: true,
+        zeroingIn: true,
+        patientHunter: true,
+        zeroing: { target: 0, stacks: 4 },
+      }),
+    });
+
+    expect(result.damageRangeRoll).toBeCloseTo(1.3, 10);
+    expect(result.hits.map((hit) => hit.kind)).toEqual(['base', 'echo', 'secondWind']);
+    expect(result.nextZeroing).toEqual({ target: 0, stacks: 5 });
   });
 });

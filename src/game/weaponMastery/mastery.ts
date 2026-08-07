@@ -21,7 +21,10 @@ export interface MasteryNode {
     | keyof CharacterStats['defensive']
     | keyof CharacterStats['utility']
     | 'attack'
-    | 'defense';
+    | 'defense'
+    | 'precision'
+    | 'minRng'
+    | 'maxRng';
   perRank?: number;
 }
 
@@ -311,38 +314,38 @@ const weaponLayout: Record<
   korvin: [
     ['DMG I', 'initiate', '+1 Damage', 'attack', []],
     ['DEF I', 'initiate', '+1 Mastery Defense', 'defense', []],
-    ['PRC I', 'initiate', '+1 pp Precision', undefined, []],
+    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
     ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
     ['DEF II', 'adept', '+1 Mastery Defense', 'defense', ['weapon.def-i']],
-    ['PRC II', 'adept', '+1 pp Precision', undefined, ['weapon.prc-i']],
+    ['PRC II', 'adept', '+1 pp Precision', 'precision', ['weapon.prc-i']],
     ['BLK', 'expert', '+1 pp Block Chance', 'blockChance', ['weapon.def-ii']],
-    ['MAX RNG I', 'expert', '+1 pp MAX RNG', undefined, ['weapon.prc-ii']],
-    ['MIN RNG', 'master', '+1 pp MIN RNG', undefined, ['weapon.max-rng-i']],
-    ['MAX RNG II', 'master', '+1 pp MAX RNG', undefined, ['weapon.max-rng-i']],
+    ['MAX RNG I', 'expert', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
+    ['MIN RNG', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.max-rng-i']],
+    ['MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.max-rng-i']],
   ],
   rhaya: [
     ['DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['PRC I', 'initiate', '+1 pp Precision', undefined, []],
-    ['MAX RNG I', 'initiate', '+1 pp MAX RNG', undefined, []],
+    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
+    ['MAX RNG I', 'initiate', '+1 pp MAX RNG', 'maxRng', []],
     ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['MIN RNG I', 'adept', '+1 pp MIN RNG', undefined, ['weapon.prc-i', 'weapon.max-rng-i']],
+    ['MIN RNG I', 'adept', '+1 pp MIN RNG', 'minRng', ['weapon.prc-i', 'weapon.max-rng-i']],
     ['INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
     ['DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
-    ['PRC II', 'expert', '+1 pp Precision', undefined, ['weapon.min-rng-i']],
-    ['MIN RNG II', 'master', '+1 pp MIN RNG', undefined, ['weapon.prc-ii']],
-    ['MAX RNG II', 'master', '+1 pp MAX RNG', undefined, ['weapon.prc-ii']],
+    ['PRC II', 'expert', '+1 pp Precision', 'precision', ['weapon.min-rng-i']],
+    ['MIN RNG II', 'master', '+1 pp MIN RNG', 'minRng', ['weapon.prc-ii']],
+    ['MAX RNG II', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],
   ],
   quinn: [
     ['DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['PRC I', 'initiate', '+1 pp Precision', undefined, []],
-    ['MIN RNG I', 'initiate', '+1 pp MIN RNG', undefined, []],
+    ['PRC I', 'initiate', '+1 pp Precision', 'precision', []],
+    ['MIN RNG I', 'initiate', '+1 pp MIN RNG', 'minRng', []],
     ['DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['MIN RNG II', 'adept', '+1 pp MIN RNG', undefined, ['weapon.min-rng-i']],
+    ['MIN RNG II', 'adept', '+1 pp MIN RNG', 'minRng', ['weapon.min-rng-i']],
     ['INIT', 'adept', '+1 Initiative', 'initiative', ['weapon.prc-i']],
     ['DMG III', 'expert', '+1 Damage', 'attack', ['weapon.dmg-ii']],
-    ['MIN RNG III', 'expert', '+1 pp MIN RNG', undefined, ['weapon.min-rng-ii']],
-    ['PRC II', 'master', '+1 pp Precision', undefined, ['weapon.min-rng-iii']],
-    ['MAX RNG I', 'master', '+1 pp MAX RNG', undefined, ['weapon.min-rng-iii']],
+    ['MIN RNG III', 'expert', '+1 pp MIN RNG', 'minRng', ['weapon.min-rng-ii']],
+    ['PRC II', 'master', '+1 pp Precision', 'precision', ['weapon.min-rng-iii']],
+    ['MAX RNG I', 'master', '+1 pp MAX RNG', 'maxRng', ['weapon.min-rng-iii']],
   ],
 };
 

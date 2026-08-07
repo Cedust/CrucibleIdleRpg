@@ -69,6 +69,14 @@ export interface CombatCharacter {
   maxHealth: number;
   /** Wird zu Rundenbeginn neu gesetzt und stackt nicht (COMBAT §1.1). */
   barrier: number;
+  /** Gekaufte Nodes; nur die daraus abgeleiteten Kampfeffekte sind fluechtig. */
+  masteryRanks?: Readonly<Record<string, number>>;
+  /** Immovable Guard: der naechste regulaere Angriff wird Clean. */
+  guarded?: boolean;
+  /** Zeroing In bleibt nur bis zum Zielwechsel oder Encounter-Ende erhalten. */
+  zeroing?: { target: number; stacks: number };
+  /** Escalating Retaliation, zu Rundenbeginn zurueckgesetzt. */
+  counterStacks?: number;
 }
 
 /** Ein Gegner im Kampf: auf den Floor skalierte Stats plus die gewürfelte Initiative. */
@@ -267,6 +275,9 @@ function buildCharacter(setup: TeamMemberSetup, slotIndex: number): CombatCharac
     maxHealth,
     // Die Barrier setzt erst der Rundenbeginn (COMBAT §1.1, Schritt 1).
     barrier: 0,
+    masteryRanks: setup.progression.masteryRanks,
+    guarded: false,
+    counterStacks: 0,
   };
 }
 
@@ -342,6 +353,7 @@ export function beginRound(state: CombatState): CombatState {
   const characters = state.characters.map((character) => ({
     ...character,
     barrier: isAlive(character) ? character.stats.defensive.barrier : 0,
+    counterStacks: 0,
   }));
 
   const next: CombatState = {

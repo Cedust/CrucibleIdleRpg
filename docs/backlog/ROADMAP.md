@@ -68,17 +68,17 @@ konstant `0` ([Mitigation](../spec/SIGNATURES.md#11-mitigation-korvin-tank)).
 **Fertig, wenn:** Akt 1 ist als Dungeon-Kette spielbar; der Spieler gewinnt XP und Punkte,
 entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons automatisiert farmen.
 
-| Reihenfolge | Task                                                                                      | Status  | Hängt ab von |
-| ----------- | ----------------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [010 — Akt-1-Content & Dungeon-Auswahl](tasks/010-akt-1-content-und-dungeon-auswahl.md)   | done    | 009          |
-| 2           | [011a — Dungeon-Auswahl & Run-Isolation](tasks/011a-dungeon-auswahl-und-run-isolation.md) | done    | 010          |
-| 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | done    | 010, 011a    |
-| 4           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)       | done    | 011          |
-| 5           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)              | done    | 011          |
-| 6           | [014a — Weapon Foundation](tasks/014a-weapon-foundation.md)                               | done    | 013          |
-| 7           | [014b — Weapon Mastery](tasks/014b-weapon-mastery.md)                                     | done    | 014a         |
-| 8           | [014c — Mastery Combat Arts](tasks/014c-mastery-combat-arts.md)                           | ready   | 014b         |
-| 9           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | blocked | 012, 014c    |
+| Reihenfolge | Task                                                                                      | Status | Hängt ab von |
+| ----------- | ----------------------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [010 — Akt-1-Content & Dungeon-Auswahl](tasks/010-akt-1-content-und-dungeon-auswahl.md)   | done   | 009          |
+| 2           | [011a — Dungeon-Auswahl & Run-Isolation](tasks/011a-dungeon-auswahl-und-run-isolation.md) | done   | 010          |
+| 3           | [011 — Dungeon-Run & Attrition](tasks/011-dungeon-run-und-attrition.md)                   | done   | 010, 011a    |
+| 4           | [012 — Auto-Progression & Run-Sperre](tasks/012-auto-progression-und-run-sperre.md)       | done   | 011          |
+| 5           | [013 — XP, Level & Attributpunkte](tasks/013-xp-level-und-attributpunkte.md)              | done   | 011          |
+| 6           | [014a — Weapon Foundation](tasks/014a-weapon-foundation.md)                               | done   | 013          |
+| 7           | [014b — Weapon Mastery](tasks/014b-weapon-mastery.md)                                     | done   | 014a         |
+| 8           | [014c — Mastery Combat Arts](tasks/014c-mastery-combat-arts.md)                           | done   | 014b         |
+| 9           | [015 — Crucible & Signatur-Skills](tasks/015-crucible-und-signatur-skills.md)             | ready  | 012, 014c    |
 
 **014b–015** warten auf ihre Vorgänger; 014b zusätzlich auf die beiden Respec-Kostenwerte, die im
 Task verlinkt sind. Sie werden erst `ready`, wenn Abhängigkeiten und offene Werte erfüllt sind.

@@ -2,7 +2,7 @@
 
 | Feld             | Wert      |
 | ---------------- | --------- |
-| **Status**       | `blocked` |
+| **Status**       | `ready`   |
 | **Meilenstein**  | M2        |
 | **Hängt ab von** | 012, 014c |
 

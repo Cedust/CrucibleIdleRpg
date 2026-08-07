@@ -1,4 +1,3 @@
-import { CHARACTERS } from '@/game/characters/characters';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
 import {
   beginRound,
@@ -11,12 +10,8 @@ import {
 import type { CombatEvent } from './combatEvents';
 import { resolveCounters } from './counter';
 import { NO_MITIGATION, resolveEnemyAttack } from './damagePipeline';
-import {
-  NO_CRIT_NODES,
-  resolveCharacterAttack,
-  type AttackContext,
-  type Hit,
-} from './outgoingDamage';
+import { masteryContextFor } from './masteryCombat';
+import { resolveCharacterAttack, type AttackContext, type Hit } from './outgoingDamage';
 import { resolveRegeneration } from './regeneration';
 import { pruneDefeated, takeNextActor } from './turnOrder';
 
@@ -67,9 +62,7 @@ export interface CombatContext {
  */
 export const M1_COMBAT_CONTEXT: CombatContext = {
   contextFor: (character) => ({
-    damageRange: CHARACTERS[character.id].weapon.damageRange,
-    precision: CHARACTERS[character.id].weapon.precision,
-    critNodes: NO_CRIT_NODES,
+    ...masteryContextFor(character),
   }),
   mitigation: NO_MITIGATION,
 };
@@ -312,6 +305,12 @@ function resolveCharacterTurn(
 
   const attack = resolveCharacterAttack(state, character, prng, context.contextFor(character));
 
+  const changed = draft.characters[actor.index];
+  if (changed !== undefined) {
+    if (attack.consumeGuarded) changed.guarded = false;
+    if (attack.nextZeroing !== undefined) changed.zeroing = attack.nextZeroing;
+  }
+
   if (attack.primaryTarget !== undefined) {
     draft.events.push({ type: 'attack', source: actor, target: attack.primaryTarget });
   }
@@ -388,11 +387,22 @@ function resolveEnemyTurn(
     if (result.defeated) {
       draft.events.push({ type: 'defeat', actor: result.ref });
     }
+
+    if (result.blocked && context.contextFor(character).mastery?.immovableGuard) {
+      character.guarded = true;
+    }
   }
 
   for (const counter of counters) {
     if (counter.hit !== undefined) {
       damageEnemy(draft, counter.source, counter.hit);
+      const countering = draft.characters[counter.source.index];
+      if (
+        countering !== undefined &&
+        context.contextFor(countering).mastery?.escalatingRetaliation
+      ) {
+        countering.counterStacks = Math.min((countering.counterStacks ?? 0) + 1, 3);
+      }
     }
   }
 }

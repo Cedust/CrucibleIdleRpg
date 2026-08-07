@@ -1,10 +1,10 @@
 # 014c — Mastery Combat Arts
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M2      |
-| **Hängt ab von** | 014b    |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M2     |
+| **Hängt ab von** | 014b   |
 
 ## Ziel
 

@@ -76,15 +76,16 @@ export function resolveCounter(
   state: CombatState,
   source: ActorRef,
   character: CombatCharacter,
-  target: { ref: ActorRef; enemy: CombatEnemy },
+  target: { ref: ActorRef; enemy: CombatEnemy; blocked?: boolean },
   prng: Prng,
   context: AttackContext,
 ): CounterResult {
   const { offensive } = character.stats;
   const { damageRange, critNodes } = context;
 
-  // 1. Counter Chance — der einzige Wurf, der immer stattfindet.
-  if (!prng.chance(clampChance(offensive.counterChance))) {
+  const mastery = context.mastery;
+  const guaranteed = mastery?.guardedReprisal === true && target.blocked === true;
+  if (!guaranteed && !prng.chance(clampChance(offensive.counterChance))) {
     return { source, hit: undefined, cleanHit: false, damageRangeRoll: 0, baseDamage: 0 };
   }
 
@@ -96,9 +97,11 @@ export function resolveCounter(
 
   // 3. Counter Crit — nur bei Clean und freigeschaltetem Valor-Knoten.
   const crit = cleanHit && critNodes.counter && prng.chance(clampChance(offensive.critChance));
+  const counterDamage =
+    offensive.counterDamage + (mastery?.escalatingRetaliation ? mastery.counterStacks * 0.25 : 0);
   const rawDamage = crit
-    ? baseDamage * offensive.counterDamage * offensive.critDamage
-    : baseDamage * offensive.counterDamage;
+    ? baseDamage * counterDamage * offensive.critDamage
+    : baseDamage * counterDamage;
 
   return {
     source,
@@ -151,10 +154,6 @@ export function resolveCounters(
 
   // Die Pipeline-Ergebnisse stehen bereits in Slot-Reihenfolge (damagePipeline.ts).
   for (const result of results) {
-    if (!result.hit) {
-      continue;
-    }
-
     const character = state.characters[result.ref.index];
 
     // Health aus dem Pipeline-Ergebnis, nicht aus dem Zustand: Das Anwenden liegt im
@@ -163,8 +162,20 @@ export function resolveCounters(
       continue;
     }
 
+    const context = contextFor(character);
+    if (!result.hit && !context.mastery?.perfectRiposte) {
+      continue;
+    }
+
     counters.push(
-      resolveCounter(state, result.ref, character, target, prng, contextFor(character)),
+      resolveCounter(
+        state,
+        result.ref,
+        character,
+        { ...target, blocked: result.blocked },
+        prng,
+        context,
+      ),
     );
   }
 

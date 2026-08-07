@@ -16,6 +16,11 @@ const HIT_LABEL: Record<HitKind, string> = {
   base: 'Hit',
   multiHit: 'Multi Hit',
   splash: 'Splash',
+  echo: 'Echo',
+  epicenter: 'Epicenter',
+  focusedBlast: 'Focused Blast',
+  aftershock: 'Aftershock',
+  secondWind: 'Second Wind',
   counter: 'Counter',
 };
 

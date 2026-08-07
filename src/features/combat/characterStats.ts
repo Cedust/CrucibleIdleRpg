@@ -114,10 +114,26 @@ export function deriveCharacterStats(
     } else if (node.stat in stats.defensive) {
       const key = node.stat as keyof CharacterStats['defensive'];
       stats.defensive[key] += bonus;
-    } else {
+    } else if (node.stat !== 'precision' && node.stat !== 'minRng' && node.stat !== 'maxRng') {
       const key = node.stat as keyof CharacterStats['utility'];
       stats.utility[key] += bonus;
     }
+  }
+
+  const ranks = progression.masteryRanks ?? {};
+  const has = (id: string): boolean => (ranks[id] ?? 0) > 0;
+
+  if (has("weapon.titan's-arc") || has('weapon.shielded-advance')) {
+    stats.derived.attack += 5;
+  }
+  if (has("weapon.razor's-edge") || has('weapon.blade-poise')) {
+    stats.derived.attack += 3;
+  }
+  if (has('weapon.overdraw') || has('weapon.steady-draw')) {
+    stats.derived.attack += 3;
+  }
+  if (has('weapon.immovable-guard')) {
+    stats.defensive.blockChance += 0.15;
   }
 
   for (const key of ['critChance', 'multiHitChance', 'splashChance', 'counterChance'] as const) {

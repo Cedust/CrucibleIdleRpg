@@ -5,115 +5,86 @@ import { applyBulwark, bulwarkDamageFactor } from './bulwark';
 import type { ActorRef, CombatCharacter, CombatState } from './combatState';
 import { selectPrimaryTarget, selectSplashTargets, type EnemyTarget } from './targeting';
 
-/**
- * Ausgehender Schaden eines Charakter-Zuges
- * (docs/spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden).
- *
- * Ein Zug erzeugt eine **Trefferliste**: Grundtreffer, Multi-Hit-Kette, Splash. Charakter →
- * Gegner trifft immer und voll (COMBAT §2.2), die Liste ist damit vollständig und braucht keine
- * Treffer-/Miss-Prüfung.
- *
- * **Modifikator vs. Generator.** Crit multipliziert einen Treffer, Multi Hit und Splash erzeugen
- * welche. Daraus die zwei tragenden Regeln:
- *
- * - **Generatoren lösen einander nie aus** — ein Multi-Hit-Treffer splasht nicht, ein
- *   Splash-Treffer kettet nicht. Der Baum hat feste Tiefe, dieses Modul ruft sich nicht selbst.
- * - **Jeder Treffer bemisst sich am rohen Grundschaden** (vor Crit) und würfelt seinen **eigenen**
- *   Crit, sofern der Knoten des Generators freigeschaltet ist
- *   (docs/spec/CHARACTERS.md#4-charakter-skilltree). Es gibt keine Vererbung von Multiplikatoren.
- *
- * Der **Counter** ist rein reaktiv und kein Teil des eigenen Zuges — er hängt am Gegner-Zug
- * (COMBAT §2.1, docs/backlog/tasks/005-eingehender-schaden.md).
- *
- * Reine Funktion: kein Timer, kein DOM, kein Store, kein `Date.now()` (AGENTS.md). Der
- * Kampfzustand wird **gelesen**, nicht verändert — das Anwenden der Trefferliste liegt im
- * Schrittwerk (Task 006).
- */
+export type HitKind =
+  | 'base'
+  | 'multiHit'
+  | 'splash'
+  | 'echo'
+  | 'epicenter'
+  | 'focusedBlast'
+  | 'aftershock'
+  | 'secondWind'
+  | 'counter';
 
-/** Welcher Erzeuger einen Treffer erzeugt hat — Grundlage der Kampf-Events (COMBAT §2.5). */
-export type HitKind = 'base' | 'multiHit' | 'splash' | 'counter';
-
-/** Ein einzelner Treffer der Trefferliste. */
 export interface Hit {
   kind: HitKind;
-  /** Verweis auf den getroffenen Gegner in `CombatState.enemies`. */
   target: ActorRef;
-  /** Schaden vor der Deckung des Ziels — inklusive Crit. */
   rawDamage: number;
-  /** Ob dieser Treffer seinen eigenen Crit-Wurf gewonnen hat. */
   crit: boolean;
-  /** Anteil, der die Deckung des Ziels passiert (COMBAT §2.4). */
   bulwarkFactor: number;
-  /** Endschaden am Ziel: `rawDamage × bulwarkFactor`. */
   damage: number;
-  /** Nur bei `multiHit`: Kettenstufe `k` ab `1`. */
   chainIndex?: number;
 }
 
-/**
- * Welche Trefferklassen critten dürfen. Standardmäßig crittet **nur der Grundtreffer**; je ein
- * Knoten im Zweig des Generators erweitert den Wurf
- * (docs/spec/CHARACTERS.md#4-charakter-skilltree). Der Skilltree kommt in M2
- * (docs/backlog/ROADMAP.md) — bis dahin steht hier die Struktur.
- */
 export interface CritNodes {
-  /** Tempest-Knoten: Multi-Hit-Treffer können critten. */
   multiHit: boolean;
-  /** Dominance-Knoten: Splash-Treffer können critten. */
   splash: boolean;
-  /** Valor-Knoten: Counter-Treffer können critten (Task 005). */
   counter: boolean;
 }
 
-/** Kein Generator-Knoten freigeschaltet — der Stand in M1. */
 export const NO_CRIT_NODES: CritNodes = { multiHit: false, splash: false, counter: false };
 
-/** Was ein Angriff außerhalb der Charakter-Stats braucht. */
+export interface MasteryEffects {
+  executioner: boolean;
+  perfectExploit: boolean;
+  surestrike: boolean;
+  overcritical: boolean;
+  relentlessPursuit: boolean;
+  echoedStrike: boolean;
+  stormSurge: boolean;
+  perfectCadence: boolean;
+  epicenter: boolean;
+  focusedBlast: boolean;
+  aftershock: boolean;
+  perfectRiposte: boolean;
+  guardedReprisal: boolean;
+  escalatingRetaliation: boolean;
+  committedImpact: boolean;
+  immovableGuard: boolean;
+  twinMeasure: boolean;
+  secondWind: boolean;
+  zeroingIn: boolean;
+  patientHunter: boolean;
+  guarded: boolean;
+  zeroing?: { target: number; stacks: number };
+  counterStacks: number;
+}
+
 export interface AttackContext {
-  /**
-   * Damage-Range der Waffe — Faktor auf den Grundschaden, **einmal pro Angriff** gewürfelt.
-   * Sie stammt aus dem festen Weapon Profile des Charakters.
-   */
   damageRange: DamageRange;
-  /** Trefferchance der festen Signaturwaffe; wird vor Range auf 100 % gedeckelt. */
   precision?: number;
   critNodes: CritNodes;
+  mastery?: MasteryEffects;
 }
 
-/** Das Ergebnis eines Charakter-Zuges. */
 export interface AttackResult {
-  /** `undefined`, wenn kein Gegner mehr lebt — dann findet kein Angriff statt. */
   primaryTarget: ActorRef | undefined;
-  /** `false`, wenn der Angriff als Glancing Blow aufgelöst wurde. */
   cleanHit: boolean;
-  /** Der gewürfelte Faktor im Waffenintervall. */
   damageRangeRoll: number;
-  /** Roher Grundschaden `Attack × Damage-Range`, Bezugsgröße **jedes** Treffers dieses Zuges. */
   baseDamage: number;
-  /** Grundtreffer, dann Multi-Hit-Kette, dann Splash — in Erzeugungsreihenfolge. */
   hits: readonly Hit[];
+  consumeGuarded: boolean;
+  nextZeroing?: { target: number; stacks: number };
 }
 
-/**
- * Ein Crit-Wurf, der nur bei freigeschaltetem Knoten stattfindet. Die Kurzschluss-Auswertung
- * ist Teil der Spezifikation: Ohne Knoten wird **kein** PRNG-Zug verbraucht, sonst verschöbe
- * ein gesperrter Knoten die ganze Folgesequenz (COMBAT §2.1).
- */
-function rollCrit(prng: Prng, critChance: number, enabled: boolean): boolean {
-  return enabled && prng.chance(critChance);
-}
-
-/** Der Abklingfaktor ist echt kleiner als 1 und wird auf die Obergrenze geklemmt (COMBAT §2.1). */
 export function clampChainFactor(chainFactor: number): number {
   return Math.min(Math.max(chainFactor, 0), MULTI_HIT_CHAIN_FACTOR_CAP);
 }
 
-/** Chancen sind auf das geschlossene Intervall 0–100 % begrenzt. */
 export function clampChance(chance: number): number {
   return Math.min(Math.max(chance, 0), 1);
 }
 
-/** Baut einen Treffer und wendet dabei die Deckung **seines** Ziels an (COMBAT §2.4). */
 function buildHit(
   kind: HitKind,
   state: CombatState,
@@ -123,7 +94,6 @@ function buildHit(
   chainIndex?: number,
 ): Hit {
   const bulwarkFactor = bulwarkDamageFactor(state.enemies, target.enemy);
-
   return {
     kind,
     target: target.ref,
@@ -135,21 +105,57 @@ function buildHit(
   };
 }
 
-/**
- * Löst einen Charakter-Zug auf und liefert seine Trefferliste.
- *
- * **PRNG-Zugreihenfolge (verbindlich, COMBAT §2.1/§2.5):**
- *
- * ```
- * Precision → Damage-Range → bei Clean Crit (Grundtreffer) → Multi Hit Chance → bei Clean je
- * Kettentreffer Crit (Multi Hit) → Splash Chance → bei Clean je Nebenziel Crit (Splash)
- * ```
- *
- * `Multi Hit Chance` und `Splash Chance` werden **immer** gewürfelt, auch bei Chance `0` — die
- * Sequenz hängt nicht an den Stat-Werten. Die Kettenlänge steht mit dem **einen**
- * `Multi Hit Chance`-Wurf fest; weitere Chance-Würfe gibt es nicht. Lebt kein Gegner mehr,
- * findet kein Angriff statt und **kein** Zug wird verbraucht.
- */
+function rollDamage(
+  prng: Prng,
+  damage: number,
+  cleanHit: boolean,
+  canCrit: boolean,
+  critChance: number,
+  critDamage: number,
+  context: AttackContext,
+  executioner = false,
+  guaranteedCrit = false,
+): { damage: number; crit: boolean } {
+  const mastery = context.mastery;
+  const crit = cleanHit && canCrit && (guaranteedCrit || prng.chance(clampChance(critChance)));
+  if (!crit) return { damage, crit: false };
+
+  let multiplier = critDamage + (executioner && mastery?.executioner ? 0.5 : 0);
+  if (mastery?.overcritical && prng.chance(clampChance(critChance))) {
+    multiplier += critDamage;
+  }
+  return { damage: damage * multiplier, crit: true };
+}
+
+function projectedState(state: CombatState, hits: readonly Hit[]): CombatState {
+  const health = state.enemies.map((enemy) => enemy.health);
+  for (const hit of hits) {
+    const current = health[hit.target.index];
+    if (current !== undefined) health[hit.target.index] = Math.max(current - hit.damage, 0);
+  }
+  return {
+    ...state,
+    enemies: state.enemies.map((enemy, index) => ({ ...enemy, health: health[index] ?? 0 })),
+  };
+}
+
+function zeroingRange(
+  context: AttackContext,
+  primary: EnemyTarget,
+): { range: DamageRange; forceMax: boolean } {
+  const mastery = context.mastery;
+  if (!mastery?.zeroingIn || mastery.zeroing?.target !== primary.ref.index) {
+    return { range: context.damageRange, forceMax: false };
+  }
+  const stacks = mastery.zeroing.stacks;
+  const bonus = Math.min(stacks, mastery.patientHunter ? 5 : 3) * 0.05;
+  return {
+    range: { min: context.damageRange.min + bonus, max: context.damageRange.max + bonus },
+    forceMax: mastery.patientHunter && stacks >= 4,
+  };
+}
+
+/** Resolves the finite character hit tree. Generator children never call this function again. */
 export function resolveCharacterAttack(
   state: CombatState,
   attacker: CombatCharacter,
@@ -157,81 +163,152 @@ export function resolveCharacterAttack(
   context: AttackContext,
 ): AttackResult {
   const primary = selectPrimaryTarget(state, attacker);
-
-  if (primary === undefined) {
+  if (!primary) {
     return {
       primaryTarget: undefined,
       cleanHit: false,
       damageRangeRoll: 0,
       baseDamage: 0,
       hits: [],
+      consumeGuarded: false,
     };
   }
 
   const { offensive, utility, derived } = attacker.stats;
-  const { damageRange, precision, critNodes } = context;
-
-  // 1. Precision vor Range; der Range-Wurf bleibt auch beim Glancing für stabile PRNG-Züge.
-  const cleanHit = precision === undefined || prng.chance(clampChance(precision));
-  const damageRangeRoll = damageRange.min + prng.next() * (damageRange.max - damageRange.min);
-  const baseDamage = derived.attack * (cleanHit ? damageRangeRoll : damageRange.min);
-
+  const mastery = context.mastery;
+  const rangeEffect = zeroingRange(context, primary);
+  const precisionRoll =
+    context.precision === undefined || prng.chance(clampChance(context.precision));
+  const cleanHit = mastery?.guarded ? true : precisionRoll;
+  const firstRoll =
+    rangeEffect.range.min + prng.next() * (rangeEffect.range.max - rangeEffect.range.min);
+  const secondRoll =
+    cleanHit && mastery?.twinMeasure
+      ? rangeEffect.range.min + prng.next() * (rangeEffect.range.max - rangeEffect.range.min)
+      : undefined;
+  let damageRangeRoll = secondRoll === undefined ? firstRoll : Math.max(firstRoll, secondRoll);
+  if (cleanHit && mastery?.committedImpact) damageRangeRoll = Math.max(damageRangeRoll, 1);
+  if (rangeEffect.forceMax) damageRangeRoll = rangeEffect.range.max;
+  const baseDamage = derived.attack * (cleanHit ? damageRangeRoll : rangeEffect.range.min);
   const hits: Hit[] = [];
-
-  // 2. Grundtreffer — crittet immer ohne Knoten (COMBAT §2.1, CHARACTERS §4).
-  const baseCrit = rollCrit(prng, offensive.critChance, cleanHit);
-  hits.push(
-    buildHit(
-      'base',
-      state,
-      primary,
-      baseCrit ? baseDamage * offensive.critDamage : baseDamage,
-      baseCrit,
-    ),
+  const executioner = primary.enemy.health / primary.enemy.maxHealth < 0.25;
+  let base = rollDamage(
+    prng,
+    baseDamage,
+    cleanHit,
+    true,
+    offensive.critChance,
+    offensive.critDamage,
+    context,
+    executioner,
+    mastery?.surestrike === true,
   );
+  if (base.crit && mastery?.perfectExploit) {
+    const maxRaw = derived.attack * rangeEffect.range.max;
+    base = { ...base, damage: (base.damage / baseDamage) * maxRaw };
+  }
+  hits.push(buildHit('base', state, primary, base.damage, base.crit));
 
-  // 3. Multi Hit — ein Chance-Wurf, danach steht die Kette in voller Länge fest.
   const chainLength = prng.chance(clampChance(offensive.multiHitChance))
     ? Math.max(Math.trunc(utility.multiHitChain), 0)
     : 0;
   const chainFactor = clampChainFactor(utility.multiHitChainFactor);
-
-  // `chainFactor^(k−1)` als fortlaufendes Produkt statt als Potenz: `Math.pow` ist zwischen
-  // JS-Engines nicht bit-identisch garantiert und würde den Determinismus aufweichen
-  // (AGENTS.md).
   let decay = 1;
-
-  for (let k = 1; k <= chainLength; k += 1) {
-    const chained = baseDamage * offensive.multiHitDamage * decay;
-    const crit = rollCrit(prng, offensive.critChance, cleanHit && critNodes.multiHit);
-
-    hits.push(
-      buildHit(
-        'multiHit',
-        state,
-        primary,
-        crit ? chained * offensive.critDamage : chained,
-        crit,
-        k,
-      ),
+  let bonusHits = 0;
+  const resolveChain = (chainIndex: number, original: boolean): void => {
+    const turnState = projectedState(state, hits);
+    const target = mastery?.relentlessPursuit ? selectPrimaryTarget(turnState, attacker) : primary;
+    if (!target) return;
+    const rolled = rollDamage(
+      prng,
+      baseDamage * offensive.multiHitDamage * decay,
+      cleanHit,
+      context.critNodes.multiHit,
+      offensive.critChance,
+      offensive.critDamage,
+      context,
     );
+    hits.push(buildHit('multiHit', state, target, rolled.damage, rolled.crit, chainIndex));
+    if (mastery?.stormSurge && original && rolled.crit && bonusHits < 2) bonusHits += 1;
+    decay = mastery?.perfectCadence && rolled.crit ? 1 : decay * chainFactor;
+  };
+  for (let index = 1; index <= chainLength; index += 1) resolveChain(index, true);
+  for (let index = 1; index <= bonusHits; index += 1) resolveChain(chainLength + index, false);
 
-    decay *= chainFactor;
-  }
-
-  // 4. Splash — der Chance-Wurf findet unabhängig davon statt, ob Nebenziele existieren.
-  const splashTargets = prng.chance(clampChance(offensive.splashChance))
+  const splashTriggered = prng.chance(clampChance(offensive.splashChance));
+  const splashTargets = splashTriggered
     ? selectSplashTargets(state, primary, utility.splashRadius)
     : [];
-
+  const splashBase = baseDamage * offensive.splashDamage;
   for (const target of splashTargets) {
-    const splashed = baseDamage * offensive.splashDamage;
-    const crit = rollCrit(prng, offensive.critChance, cleanHit && critNodes.splash);
-
-    hits.push(
-      buildHit('splash', state, target, crit ? splashed * offensive.critDamage : splashed, crit),
+    const rolled = rollDamage(
+      prng,
+      splashBase,
+      cleanHit,
+      context.critNodes.splash,
+      offensive.critChance,
+      offensive.critDamage,
+      context,
     );
+    hits.push(buildHit('splash', state, target, rolled.damage, rolled.crit));
   }
-
-  return { primaryTarget: primary.ref, cleanHit, damageRangeRoll, baseDamage, hits };
+  if (splashTriggered) {
+    if (mastery?.epicenter)
+      hits.push(buildHit('epicenter', state, primary, splashBase * 0.5, false));
+    if (mastery?.focusedBlast) {
+      const unused = Math.max(Math.trunc(utility.splashRadius) - splashTargets.length, 0);
+      if (unused > 0)
+        hits.push(
+          buildHit('focusedBlast', state, primary, splashBase * Math.min(unused * 0.25, 1), false),
+        );
+    }
+    if (mastery?.aftershock) {
+      for (const target of splashTargets) {
+        const rolled = rollDamage(
+          prng,
+          splashBase * 0.5,
+          cleanHit,
+          context.critNodes.splash,
+          offensive.critChance,
+          offensive.critDamage,
+          context,
+        );
+        hits.push(buildHit('aftershock', state, target, rolled.damage, rolled.crit));
+      }
+    }
+  }
+  if (cleanHit && mastery?.echoedStrike)
+    hits.push(buildHit('echo', state, primary, base.damage * 0.5, base.crit));
+  if (cleanHit && mastery?.secondWind && secondRoll !== undefined) {
+    const lower = Math.min(firstRoll, secondRoll);
+    const rolled = rollDamage(
+      prng,
+      derived.attack * lower * 0.25,
+      true,
+      true,
+      offensive.critChance,
+      offensive.critDamage,
+      context,
+    );
+    hits.push(buildHit('secondWind', state, primary, rolled.damage, rolled.crit));
+  }
+  const maxStacks = mastery?.patientHunter ? 5 : 3;
+  const nextZeroing = mastery?.zeroingIn
+    ? {
+        target: primary.ref.index,
+        stacks: Math.min(
+          mastery.zeroing?.target === primary.ref.index ? mastery.zeroing.stacks + 1 : 1,
+          maxStacks,
+        ),
+      }
+    : undefined;
+  return {
+    primaryTarget: primary.ref,
+    cleanHit,
+    damageRangeRoll,
+    baseDamage,
+    hits,
+    consumeGuarded: mastery?.guarded === true,
+    ...(nextZeroing ? { nextZeroing } : {}),
+  };
 }

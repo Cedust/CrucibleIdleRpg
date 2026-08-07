@@ -45,6 +45,22 @@ describe('weapon mastery node ids', () => {
   });
 });
 
+describe('weapon mastery stat node units (WEAPON-MASTERY §5)', () => {
+  it('gibt DMG, DEF und INIT +1 Punkt je Rang', () => {
+    expect(nodeById('korvin', 'weapon.dmg-i')?.perRank).toBe(1);
+    expect(nodeById('korvin', 'weapon.def-i')?.perRank).toBe(1);
+    expect(nodeById('rhaya', 'weapon.init')?.perRank).toBe(1);
+  });
+
+  it('gibt PRC, MIN RNG, MAX RNG und BLK +1 Prozentpunkt je Rang', () => {
+    expect(nodeById('korvin', 'weapon.prc-i')?.perRank).toBe(0.01);
+    expect(nodeById('korvin', 'weapon.blk')?.perRank).toBe(0.01);
+    expect(nodeById('korvin', 'weapon.min-rng')?.perRank).toBe(0.01);
+    expect(nodeById('rhaya', 'weapon.max-rng-i')?.perRank).toBe(0.01);
+    expect(nodeById('quinn', 'weapon.min-rng-iii')?.perRank).toBe(0.01);
+  });
+});
+
 describe('weapon mastery rules', () => {
   it('contains all five disciplines and preserves the 229-rank capacity', () => {
     const nodes = nodesFor('korvin');

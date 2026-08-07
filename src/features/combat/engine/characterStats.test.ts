@@ -70,6 +70,23 @@ describe('deriveCharacterStats', () => {
     }
   });
 
+  it('reaches the spec full build: damage 24, defense 15, block chance 15 % (WEAPON-MASTERY §5.1)', () => {
+    const stats = deriveCharacterStats(CHARACTERS.korvin, {
+      ...neutralProgression(80),
+      masteryRanks: {
+        'weapon.dmg-i': 5,
+        'weapon.dmg-ii': 5,
+        'weapon.def-i': 5,
+        'weapon.def-ii': 5,
+        'weapon.blk': 5,
+      },
+    });
+
+    expect(stats.derived.attack).toBe(24);
+    expect(stats.derived.defense).toBe(15);
+    expect(stats.defensive.blockChance).toBeCloseTo(0.15, 10);
+  });
+
   it('applies defensive mastery nodes through the defensive branch', () => {
     const ohne = deriveCharacterStats(CHARACTERS.korvin, neutralProgression(80));
     const mit = deriveCharacterStats(CHARACTERS.korvin, {

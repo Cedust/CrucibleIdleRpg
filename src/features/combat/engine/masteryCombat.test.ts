@@ -149,6 +149,22 @@ describe('masteryContextFor — Weapon-Boni', () => {
     expect(kontext.damageRange.max).toBeCloseTo(waffe.damageRange.max + (maxI?.perRank ?? 0), 10);
   });
 
+  it('erreicht den Spec-Vollausbau: Range 75–140 %, Precision 80 % (WEAPON-MASTERY §5.1)', () => {
+    const kontext = masteryContextFor(
+      character('korvin', {
+        'weapon.prc-i': 5,
+        'weapon.prc-ii': 5,
+        'weapon.min-rng': 5,
+        'weapon.max-rng-i': 5,
+        'weapon.max-rng-ii': 5,
+      }),
+    );
+
+    expect(kontext.precision).toBeCloseTo(0.8, 10);
+    expect(kontext.damageRange.min).toBeCloseTo(0.75, 10);
+    expect(kontext.damageRange.max).toBeCloseTo(1.4, 10);
+  });
+
   it('ignoriert Node-IDs, die im Baum dieses Charakters nicht existieren', () => {
     // `weapon.min-rng-iii` gehört zu Quinn — in Korvins Baum löst die ID nicht auf.
     const kontext = masteryContextFor(character('korvin', { 'weapon.min-rng-iii': 5 }));

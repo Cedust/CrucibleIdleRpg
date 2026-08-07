@@ -516,10 +516,27 @@ const weaponBehaviors: Record<
   ],
 };
 
+/** `PRC`, `MIN RNG`, `MAX RNG` und `BLK` geben +1 Prozentpunkt je Rang (WEAPON-MASTERY §5). */
+const WEAPON_PP_STATS: ReadonlySet<MasteryNode['stat']> = new Set([
+  'precision',
+  'minRng',
+  'maxRng',
+  'blockChance',
+]);
+
 export function nodesFor(characterId: CharacterId): readonly MasteryNode[] {
   const weaponNodes = weaponLayout[characterId].map(
     ([id, label, rank, effect, target, prerequisites]) =>
-      stat(id, rank, label, label, prerequisites, target, 1, effect),
+      stat(
+        id,
+        rank,
+        label,
+        label,
+        prerequisites,
+        target,
+        WEAPON_PP_STATS.has(target) ? 0.01 : 1,
+        effect,
+      ),
   );
   return [
     ...shared,

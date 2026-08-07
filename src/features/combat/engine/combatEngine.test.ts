@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
+import { MASTERY_IDS } from '@/game/weaponMastery/mastery';
 import type {
   CharacterId,
   DamageRange,
@@ -60,6 +61,10 @@ interface CharacterSetup {
   offensive?: Partial<OffensiveStats>;
   defensive?: Partial<DefensiveStats>;
   utility?: Partial<UtilityStats>;
+  masteryRanks?: Readonly<Record<string, number>>;
+  guarded?: boolean;
+  zeroing?: { target: number; stacks: number };
+  counterStacks?: number;
 }
 
 function character(setup: CharacterSetup): CombatCharacter {
@@ -96,6 +101,10 @@ function character(setup: CharacterSetup): CombatCharacter {
     health: setup.health ?? maxHealth,
     maxHealth,
     barrier: 0,
+    masteryRanks: setup.masteryRanks,
+    guarded: setup.guarded ?? false,
+    zeroing: setup.zeroing,
+    counterStacks: setup.counterStacks ?? 0,
   };
 }
 
@@ -443,6 +452,119 @@ describe('Zug-Block eines Gegners (COMBAT §1.1, §2.3)', () => {
 
     // Ohne Block, Defense und Barrier kommt der ganze Schwung an.
     expect(verloren).toBeCloseTo(30, 10);
+  });
+});
+
+describe('Mastery-Integration im Schrittwerk (M2)', () => {
+  it('verbraucht Guarded im eigenen Zug', () => {
+    const state = gestellt(
+      [character({ id: 'korvin', role: 'tank', slotIndex: 0, guarded: true })],
+      [enemy({ formationIndex: 0 })],
+    );
+
+    const { state: nachher } = nextTick(state, DEFAULT_COMBAT_CONTEXT);
+
+    expect(state.characters[0]?.guarded).toBe(true);
+    expect(nachher.characters[0]?.guarded).toBe(false);
+  });
+
+  it('setzt Guarded nach einem Block nur mit Immovable Guard', () => {
+    // Block sicher (Chance 1), Evasion 0 — der Pfad hängt nicht am Wurf.
+    const mitKnoten = gestellt(
+      [
+        character({
+          id: 'korvin',
+          role: 'tank',
+          slotIndex: 0,
+          defensive: { blockChance: 1 },
+          masteryRanks: { [MASTERY_IDS.immovableGuard]: 1 },
+        }),
+      ],
+      [enemy({ formationIndex: 0, initiative: 99 })],
+    );
+
+    expect(nextTick(mitKnoten, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.guarded).toBe(true);
+
+    const ohneKnoten = gestellt(
+      [character({ id: 'korvin', role: 'tank', slotIndex: 0, defensive: { blockChance: 1 } })],
+      [enemy({ formationIndex: 0, initiative: 99 })],
+    );
+
+    expect(nextTick(ohneKnoten, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.guarded).toBe(false);
+  });
+
+  it('zählt Counter-Stacks mit Escalating Retaliation hoch und deckelt bei 3', () => {
+    const basis = gestellt(
+      [
+        character({
+          id: 'korvin',
+          role: 'tank',
+          slotIndex: 0,
+          offensive: { counterChance: 1 },
+          masteryRanks: { [MASTERY_IDS.escalatingRetaliation]: 1 },
+        }),
+      ],
+      [enemy({ formationIndex: 0 })],
+    );
+    // Laufende Runde: Der Gegner ist am Zug, ohne dass `beginRound` die Stacks zurücksetzt.
+    const gegnerAmZug: CombatState = {
+      ...basis,
+      round: 1,
+      pending: [{ side: 'enemy', index: 0 }],
+    };
+
+    expect(nextTick(gegnerAmZug, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.counterStacks).toBe(
+      1,
+    );
+
+    const gedeckelt: CombatState = {
+      ...gegnerAmZug,
+      characters: gegnerAmZug.characters.map((entry) => ({ ...entry, counterStacks: 3 })),
+    };
+
+    expect(nextTick(gedeckelt, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.counterStacks).toBe(3);
+  });
+
+  it('schreibt Zeroing In zurück, stackt je Angriff auf dasselbe Ziel und deckelt bei 3', () => {
+    const start = gestellt(
+      [
+        character({
+          id: 'quinn',
+          role: 'ranged',
+          slotIndex: 2,
+          masteryRanks: { [MASTERY_IDS.zeroingIn]: 1 },
+        }),
+      ],
+      [enemy({ formationIndex: 0 })],
+    );
+
+    const erster = nextTick(start, DEFAULT_COMBAT_CONTEXT);
+
+    expect(erster.state.characters[0]?.zeroing).toEqual({ target: 0, stacks: 1 });
+
+    const wieder: CombatState = {
+      ...erster.state,
+      pending: [{ side: 'character', index: 0 }],
+    };
+
+    expect(nextTick(wieder, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.zeroing).toEqual({
+      target: 0,
+      stacks: 2,
+    });
+
+    const voll: CombatState = {
+      ...erster.state,
+      characters: erster.state.characters.map((entry) => ({
+        ...entry,
+        zeroing: { target: 0, stacks: 3 },
+      })),
+      pending: [{ side: 'character', index: 0 }],
+    };
+
+    expect(nextTick(voll, DEFAULT_COMBAT_CONTEXT).state.characters[0]?.zeroing).toEqual({
+      target: 0,
+      stacks: 3,
+    });
   });
 });
 

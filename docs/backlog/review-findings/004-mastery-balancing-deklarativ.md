@@ -2,7 +2,7 @@
 
 | Feld             | Wert                                                                                   |
 | ---------------- | -------------------------------------------------------------------------------------- |
-| **Status**       | `blocked`                                                                              |
+| **Status**       | `ready`                                                                                |
 | **Schwere**      | hoch                                                                                   |
 | **Hängt ab von** | [001](001-mastery-node-ids-explizit.md), [002](002-mastery-kampfintegration-testen.md) |
 

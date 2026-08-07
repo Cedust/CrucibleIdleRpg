@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CHARACTERS } from '@/game/characters/characters';
 import type {
   CharacterId,
   DamageRange,
@@ -7,10 +8,12 @@ import type {
   OffensiveStats,
   Role,
 } from '@/game/types';
+import { MASTERY_IDS } from '@/game/weaponMastery/mastery';
 import type { Prng } from '@/shared/utils/prng';
 import type { CombatCharacter, CombatEnemy, CombatState } from './combatState';
 import { resolveCounter, resolveCounters } from './counter';
 import { NO_MITIGATION, resolveEnemyAttack } from './damagePipeline';
+import { masteryContextFor } from './masteryCombat';
 import { NO_CRIT_NODES, type AttackContext, type CritNodes } from './outgoingDamage';
 
 /**
@@ -61,6 +64,8 @@ interface CharacterSetup {
   health?: number;
   offensive?: Partial<OffensiveStats>;
   defensive?: Partial<DefensiveStats>;
+  masteryRanks?: Readonly<Record<string, number>>;
+  counterStacks?: number;
 }
 
 function character(setup: CharacterSetup): CombatCharacter {
@@ -89,6 +94,8 @@ function character(setup: CharacterSetup): CombatCharacter {
     health: setup.health ?? 1000,
     maxHealth: 1000,
     barrier: 0,
+    masteryRanks: setup.masteryRanks,
+    counterStacks: setup.counterStacks ?? 0,
   };
 }
 
@@ -425,6 +432,126 @@ describe('Counter — kein Generator kettet weiter', () => {
     // Jeder Counter-Treffer richtet sich gegen einen **Gegner**; es gibt keinen Weg zurück.
     expect(counters.every((counter) => counter.hit?.target.side === 'enemy')).toBe(true);
     expect(prng.draws).toHaveLength(9);
+  });
+});
+
+describe('Counter — Mastery-Pfade mit echten masteryRanks (M2)', () => {
+  const gestellt = state(TEAM, [enemy(0)]);
+  const target = { ref: ANGREIFER, enemy: gestellt.enemies[0] as CombatEnemy };
+  const WAFFE = CHARACTERS.korvin.weapon;
+
+  it('überspringt mit Guarded Reprisal nach einem Block den Chance-Wurf — die Sequenz beginnt bei Precision', () => {
+    const korvin = character({
+      id: 'korvin',
+      role: 'tank',
+      slotIndex: 0,
+      masteryRanks: { [MASTERY_IDS.guardedReprisal]: 1 },
+    });
+    const prng = scriptedPrng([0.5, 0.75]);
+
+    const result = resolveCounter(
+      gestellt,
+      { side: 'character', index: 0 },
+      korvin,
+      { ...target, blocked: true },
+      prng,
+      masteryContextFor(korvin),
+    );
+
+    // Kein `chance:0.2` am Anfang: Der garantierte Counter zieht die Chance nicht.
+    expect(prng.draws).toEqual([`chance:${WAFFE.precision}`, 'damageRange']);
+    expect(result.hit).toBeDefined();
+  });
+
+  it('würfelt mit Guarded Reprisal ohne Block die normale Counter Chance', () => {
+    const korvin = character({
+      id: 'korvin',
+      role: 'tank',
+      slotIndex: 0,
+      masteryRanks: { [MASTERY_IDS.guardedReprisal]: 1 },
+    });
+    const prng = scriptedPrng([0.9]);
+
+    const result = resolveCounter(
+      gestellt,
+      { side: 'character', index: 0 },
+      korvin,
+      { ...target, blocked: false },
+      prng,
+      masteryContextFor(korvin),
+    );
+
+    expect(prng.draws).toEqual(['chance:0.2']);
+    expect(result.hit).toBeUndefined();
+  });
+
+  it('erhöht Escalating Retaliation den Counter Damage um 25 pp je Stack', () => {
+    const korvin = character({
+      id: 'korvin',
+      role: 'tank',
+      slotIndex: 0,
+      masteryRanks: { [MASTERY_IDS.escalatingRetaliation]: 1 },
+      counterStacks: 2,
+    });
+    const prng = scriptedPrng([0.1, 0.5, 0.5]);
+
+    const result = resolveCounter(
+      gestellt,
+      { side: 'character', index: 0 },
+      korvin,
+      target,
+      prng,
+      masteryContextFor(korvin),
+    );
+
+    // Range-Wurf 0.5 im Korvin-Intervall 0.7–1.3 ⇒ Faktor 1.0, Grundschaden 100.
+    expect(prng.draws).toEqual(['chance:0.2', `chance:${WAFFE.precision}`, 'damageRange']);
+    expect(result.baseDamage).toBeCloseTo(100, 10);
+    expect(result.hit?.damage).toBeCloseTo(100 * (0.6 + 2 * 0.25), 10);
+  });
+
+  it('lässt Perfect Riposte nach einer Evasion countern; ohne Knoten entfällt der Wurf', () => {
+    const ausgewichen = {
+      ref: { side: 'character', index: 0 } as const,
+      tick: 100,
+      hitChance: 1,
+      evaded: true,
+      blocked: false,
+      afterBlock: 0,
+      afterDefense: 0,
+      barrierAbsorbed: 0,
+      barrier: 0,
+      healthLost: 0,
+      health: 1000,
+      defeated: false,
+      hit: false,
+    };
+
+    const mitKnoten = state(
+      [
+        character({
+          id: 'korvin',
+          role: 'tank',
+          slotIndex: 0,
+          masteryRanks: { [MASTERY_IDS.perfectRiposte]: 1 },
+        }),
+      ],
+      [enemy(0)],
+    );
+    const prng = scriptedPrng([0.1, 0.5, 0.5]);
+    const counters = resolveCounters(mitKnoten, ANGREIFER, [ausgewichen], prng, masteryContextFor);
+
+    expect(counters).toHaveLength(1);
+    expect(counters[0]?.hit).toBeDefined();
+    expect(prng.draws[0]).toBe('chance:0.2');
+
+    const ohneKnoten = state([character({ id: 'korvin', role: 'tank', slotIndex: 0 })], [enemy(0)]);
+    const leer = scriptedPrng([]);
+
+    expect(resolveCounters(ohneKnoten, ANGREIFER, [ausgewichen], leer, masteryContextFor)).toEqual(
+      [],
+    );
+    expect(leer.draws).toEqual([]);
   });
 });
 

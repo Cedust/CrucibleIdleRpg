@@ -1,10 +1,10 @@
 # 002 — Mastery-Kampfintegration testen
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | hoch    |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | hoch   |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -42,11 +42,11 @@ Verlagerung der Balancing-Zahlen in die Node-Definitionen —
 
 ## Akzeptanzkriterien
 
-- [ ] `masteryCombat.test.ts` deckt Mapping, Akkumulation, Weapon-Mode-Präzedenz und Clamp.
-- [ ] ScriptedPrng-Tests (mit Draw-Protokoll) belegen die `guaranteed`-Pfade in
+- [x] `masteryCombat.test.ts` deckt Mapping, Akkumulation, Weapon-Mode-Präzedenz und Clamp.
+- [x] ScriptedPrng-Tests (mit Draw-Protokoll) belegen die `guaranteed`-Pfade in
       `combatEngine`/`counter` inklusive PRNG-Zug-Anzahl.
-- [ ] `characterStats.test.ts` belegt Defensive-Zweig, Utility-Fallback und Caps.
-- [ ] Tests bauen Kontexte über `masteryContextFor` mit echten `masteryRanks` auf, statt
+- [x] `characterStats.test.ts` belegt Defensive-Zweig, Utility-Fallback und Caps.
+- [x] Tests bauen Kontexte über `masteryContextFor` mit echten `masteryRanks` auf, statt
       `MasteryEffects` von Hand zu setzen.
 
 ## Betroffene Dateien

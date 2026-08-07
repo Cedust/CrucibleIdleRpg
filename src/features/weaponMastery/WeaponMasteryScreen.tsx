@@ -3,7 +3,6 @@ import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
 import {
   DISCIPLINES,
   investedPoints,
-  minimumLevel,
   nodeById,
   nodesFor,
   purchaseFailure,
@@ -13,6 +12,8 @@ import {
 import type { CharacterId } from '@/game/types';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
+import { NodeInspector } from './NodeInspector';
+import { RespecDialog } from './RespecDialog';
 
 const DISCIPLINE_LABEL: Record<DisciplineId, string> = {
   finesse: 'FINESSE',
@@ -90,13 +91,12 @@ export function WeaponMasteryScreen() {
             </Button>
           </div>
         </header>
-        <div role="tablist" aria-label="Disciplines" className="mb-4 flex flex-wrap gap-2">
+        <div role="group" aria-label="Disciplines" className="mb-4 flex flex-wrap gap-2">
           {DISCIPLINES.map((id) => (
             <button
               key={id}
               type="button"
-              role="tab"
-              aria-selected={id === discipline}
+              aria-pressed={id === discipline}
               onClick={() => {
                 setDiscipline(id);
                 setSelectedId(null);
@@ -110,107 +110,57 @@ export function WeaponMasteryScreen() {
             </button>
           ))}
         </div>
-        <div className="grid min-w-[850px] grid-cols-[minmax(0,1fr)_17rem] gap-4">
-          <div
-            className="grid grid-cols-5 gap-3"
-            aria-label={`${DISCIPLINE_LABEL[discipline]} mastery tree`}
-          >
-            {RANKS.map((rank) => (
-              <div key={rank} className="space-y-2">
-                <h3 className="text-center text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  {rank}
-                </h3>
-                {nodes
-                  .filter((node) => node.rank === rank)
-                  .map((node) => (
-                    <button
-                      key={node.id}
-                      type="button"
-                      onClick={() => setSelectedId(node.id)}
-                      className={`w-full rounded-md border p-2 text-left text-xs ${selected?.id === node.id ? 'border-accent bg-accent/10' : 'border-border bg-surface'}`}
-                    >
-                      <span className="block font-semibold">{node.label}</span>
-                      <span className="text-text-muted">
-                        {progression.masteryRanks[node.id] ?? 0}/{node.maxRank}
-                      </span>
-                    </button>
-                  ))}
-              </div>
-            ))}
-          </div>
-          <aside
-            className="rounded-md border border-border bg-surface p-4"
-            aria-label="Mastery node inspector"
-          >
+        <div className="overflow-x-auto pb-2">
+          <div className="grid min-w-[850px] grid-cols-[minmax(0,1fr)_17rem] gap-4">
+            <div
+              className="grid grid-cols-5 gap-3"
+              aria-label={`${DISCIPLINE_LABEL[discipline]} mastery tree`}
+            >
+              {RANKS.map((rank) => (
+                <div key={rank} className="space-y-2">
+                  <h3 className="text-center text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    {rank}
+                  </h3>
+                  {nodes
+                    .filter((node) => node.rank === rank)
+                    .map((node) => (
+                      <button
+                        key={node.id}
+                        type="button"
+                        onClick={() => setSelectedId(node.id)}
+                        className={`w-full rounded-md border p-2 text-left text-xs ${selected?.id === node.id ? 'border-accent bg-accent/10' : 'border-border bg-surface'}`}
+                      >
+                        <span className="block font-semibold">{node.label}</span>
+                        <span className="text-text-muted">
+                          {progression.masteryRanks[node.id] ?? 0}/{node.maxRank}
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              ))}
+            </div>
             {selected && (
-              <>
-                <h3 className="font-semibold">{selected.name}</h3>
-                <p className="mt-2 text-sm text-text-muted">{selected.effect}</p>
-                <dl className="mt-4 space-y-2 text-sm">
-                  <div>
-                    <dt className="inline text-text-muted">Rank: </dt>
-                    <dd className="inline">
-                      {progression.masteryRanks[selected.id] ?? 0}/{selected.maxRank}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="inline text-text-muted">Requires: </dt>
-                    <dd className="inline">
-                      Level {minimumLevel(selected)}
-                      {selected.prerequisites.length
-                        ? `; ${selected.prerequisites.join(' or ')}`
-                        : ''}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="inline text-text-muted">Cost: </dt>
-                    <dd className="inline">1 Mastery Point</dd>
-                  </div>
-                </dl>
-                {lockReason && (
-                  <p role="alert" className="mt-3 text-sm text-warning">
-                    {lockReason}
-                  </p>
-                )}
-                <Button
-                  className="mt-4 w-full"
-                  disabled={lockReason !== null}
-                  onClick={() => void buy(characterId, selected.id)}
-                >
-                  Invest
-                </Button>
-              </>
+              <NodeInspector
+                node={selected}
+                rank={progression.masteryRanks[selected.id] ?? 0}
+                lockReason={lockReason}
+                onInvest={() => void buy(characterId, selected.id)}
+              />
             )}
-          </aside>
+          </div>
         </div>
       </div>
       {confirmRespec && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Confirm Discipline Respec"
-          className="fixed inset-0 grid place-items-center bg-black/60 p-4"
-        >
-          <div className="w-full max-w-sm rounded-md border border-border bg-background p-5">
-            <h3 className="font-semibold">Respec {DISCIPLINE_LABEL[discipline]}?</h3>
-            <p className="mt-2 text-sm text-text-muted">
-              Refund {refunded} Mastery Points for {cost} Gold.
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setConfirmRespec(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  void respec(characterId, discipline);
-                  setConfirmRespec(false);
-                }}
-              >
-                Confirm Respec
-              </Button>
-            </div>
-          </div>
-        </div>
+        <RespecDialog
+          disciplineLabel={DISCIPLINE_LABEL[discipline]}
+          refundedPoints={refunded}
+          cost={cost}
+          onCancel={() => setConfirmRespec(false)}
+          onConfirm={() => {
+            void respec(characterId, discipline);
+            setConfirmRespec(false);
+          }}
+        />
       )}
     </section>
   );

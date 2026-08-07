@@ -18,7 +18,7 @@ alle Quality-Gates waren zum Review-Zeitpunkt grün (Lint, Typecheck, 274 Unit-T
 | 5           | [005 — Save-Store konsolidieren](005-save-store-konsolidieren.md)                              | mittel  | `done`  | —            |
 | 6           | [006 — Dungeon-Run-Lifecycle konsolidieren](006-dungeon-run-lifecycle-konsolidieren.md)        | mittel  | `done`  | 003          |
 | 7           | [007 — UI-Subscriptions & Render-Hygiene](007-ui-subscriptions-und-render-hygiene.md)          | mittel  | `done`  | 003          |
-| 8           | [008 — WeaponMasteryScreen: A11y & Zerlegung](008-weapon-mastery-screen-a11y-und-zerlegung.md) | mittel  | `ready` | —            |
+| 8           | [008 — WeaponMasteryScreen: A11y & Zerlegung](008-weapon-mastery-screen-a11y-und-zerlegung.md) | mittel  | `done`  | —            |
 | 9           | [009 — Typ- & Schema-Härtung](009-typ-und-schema-haertung.md)                                  | mittel  | `ready` | —            |
 | 10          | [010 — Testqualität: Invarianten statt Zahlen-Pins](010-testqualitaet-invarianten.md)          | mittel  | `ready` | —            |
 | 11          | [011 — Engine-Aufräumarbeiten](011-engine-aufraeumarbeiten.md)                                 | niedrig | `ready` | —            |

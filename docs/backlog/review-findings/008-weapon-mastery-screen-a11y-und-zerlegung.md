@@ -1,10 +1,10 @@
 # 008 — WeaponMasteryScreen: A11y & Zerlegung
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Schwere**      | mittel  |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Schwere**      | mittel |
+| **Hängt ab von** | —      |
 
 ## Ziel
 
@@ -42,14 +42,14 @@ Alle Fundstellen in
 
 ## Akzeptanzkriterien
 
-- [ ] Der Respec-Dialog nutzt natives `<dialog>` mit `showModal()` (oder Fokus-Trap +
+- [x] Der Respec-Dialog nutzt natives `<dialog>` mit `showModal()` (oder Fokus-Trap +
       Escape); Fokus wandert hinein und zurück.
-- [ ] Tabs erfüllen das ARIA-Tab-Pattern vollständig oder verwenden `aria-pressed`-Buttons
+- [x] Tabs erfüllen das ARIA-Tab-Pattern vollständig oder verwenden `aria-pressed`-Buttons
       ohne Tab-Rollen.
-- [ ] Der Lock-Hinweis verwendet `aria-live="polite"` oder keine Live-Region.
-- [ ] Das Node-Grid liegt in einem Scroll-Container oder skaliert responsiv.
-- [ ] `RespecDialog` und `NodeInspector` sind eigene Komponenten.
-- [ ] Komponententests decken Invest-Button-Zustände, Dialog-Flow (öffnen/bestätigen/
+- [x] Der Lock-Hinweis verwendet `aria-live="polite"` oder keine Live-Region.
+- [x] Das Node-Grid liegt in einem Scroll-Container oder skaliert responsiv.
+- [x] `RespecDialog` und `NodeInspector` sind eigene Komponenten.
+- [x] Komponententests decken Invest-Button-Zustände, Dialog-Flow (öffnen/bestätigen/
       abbrechen) und Charakterwechsel-Reset.
 
 ## Betroffene Dateien

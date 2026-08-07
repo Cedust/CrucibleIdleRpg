@@ -55,7 +55,7 @@ describe('AppShell', () => {
 
     expect(screen.getByRole('heading', { name: 'Weapon Mastery' })).toBeInTheDocument();
     expect(screen.getByText(/1 Mastery Points available/)).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'FINESSE' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('button', { name: 'FINESSE' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('isolates a run from navigation and only exits after confirmed leave', async () => {

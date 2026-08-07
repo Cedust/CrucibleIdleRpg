@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { RewardSummary } from '@/features/dungeon/rewards';
 import {
   combatOutcome,
-  M1_COMBAT_CONTEXT,
+  DEFAULT_COMBAT_CONTEXT,
   nextTick,
   type CombatContext,
   type CombatOutcome,
@@ -47,7 +47,7 @@ export const COMBAT_LOG_LIMIT = 100;
 
 const INITIAL_PLAYBACK_STATE = {
   combat: null,
-  context: M1_COMBAT_CONTEXT,
+  context: DEFAULT_COMBAT_CONTEXT,
   outcome: null,
   lastTick: null,
   tickLog: [] as readonly TickResult[],
@@ -66,7 +66,7 @@ const INITIAL_PLAYBACK_STATE = {
 export const useCombatStore = create<CombatStoreState>((set, get) => ({
   ...INITIAL_PLAYBACK_STATE,
 
-  startCombat: (combat, context = M1_COMBAT_CONTEXT, victoryCommit) =>
+  startCombat: (combat, context = DEFAULT_COMBAT_CONTEXT, victoryCommit) =>
     set({
       combat,
       context,

@@ -24,7 +24,7 @@ import {
 } from './combatState';
 import {
   combatOutcome,
-  M1_COMBAT_CONTEXT,
+  DEFAULT_COMBAT_CONTEXT,
   nextTick,
   runCombat,
   type CombatContext,
@@ -174,14 +174,14 @@ describe('nextTick — Reinheit (AGENTS.md)', () => {
   it('lässt den Eingangszustand unangetastet', () => {
     const kopie = structuredClone(state);
 
-    nextTick(state, M1_COMBAT_CONTEXT);
+    nextTick(state, DEFAULT_COMBAT_CONTEXT);
 
     expect(state).toEqual(kopie);
   });
 
   it('liefert für denselben Eingangszustand zweimal denselben Takt', () => {
-    const erster = nextTick(state, M1_COMBAT_CONTEXT);
-    const zweiter = nextTick(state, M1_COMBAT_CONTEXT);
+    const erster = nextTick(state, DEFAULT_COMBAT_CONTEXT);
+    const zweiter = nextTick(state, DEFAULT_COMBAT_CONTEXT);
 
     // Der PRNG-Fortschritt liegt im Zustand, nicht in einer mitgeschleppten Instanz — ein Takt
     // hängt damit ausschließlich an seinem Eingang.
@@ -190,7 +190,7 @@ describe('nextTick — Reinheit (AGENTS.md)', () => {
   });
 
   it('rückt die Position im combat-Strom mit dem Zug vor', () => {
-    const { state: nachher } = nextTick(state, M1_COMBAT_CONTEXT);
+    const { state: nachher } = nextTick(state, DEFAULT_COMBAT_CONTEXT);
 
     expect(nachher.combatPrngState).not.toBe(state.combatPrngState);
   });
@@ -198,8 +198,8 @@ describe('nextTick — Reinheit (AGENTS.md)', () => {
 
 describe('Determinismus — gleicher Seed, gleicher Verlauf', () => {
   it('rechnet einen ganzen Kampf bit-identisch reproduzierbar', () => {
-    const erster = runCombat(buildCombatState(floorSetup()), M1_COMBAT_CONTEXT);
-    const zweiter = runCombat(buildCombatState(floorSetup()), M1_COMBAT_CONTEXT);
+    const erster = runCombat(buildCombatState(floorSetup()), DEFAULT_COMBAT_CONTEXT);
+    const zweiter = runCombat(buildCombatState(floorSetup()), DEFAULT_COMBAT_CONTEXT);
 
     expect(zweiter.outcome).toBe(erster.outcome);
     expect(zweiter.ticks).toBe(erster.ticks);
@@ -211,11 +211,11 @@ describe('Determinismus — gleicher Seed, gleicher Verlauf', () => {
     const runSeed = deriveRunSeed(SAVE_SEED, 'A1-D1', 1);
     const a = runCombat(
       buildCombatState(floorSetup({ floorSeed: deriveFloorSeed(runSeed, 10) })),
-      M1_COMBAT_CONTEXT,
+      DEFAULT_COMBAT_CONTEXT,
     );
     const b = runCombat(
       buildCombatState(floorSetup({ floorSeed: deriveFloorSeed(runSeed, 11) })),
-      M1_COMBAT_CONTEXT,
+      DEFAULT_COMBAT_CONTEXT,
     );
 
     expect(b.events).not.toEqual(a.events);
@@ -223,7 +223,7 @@ describe('Determinismus — gleicher Seed, gleicher Verlauf', () => {
 
   it('liefert einzeln abgerufene Takte und die Schleife am Stück identisch', () => {
     const start = buildCombatState(floorSetup());
-    const amStueck = runCombat(start, M1_COMBAT_CONTEXT);
+    const amStueck = runCombat(start, DEFAULT_COMBAT_CONTEXT);
 
     // Dasselbe Schrittwerk, nur von Hand getrieben — es gibt keine zweite Code-Bahn
     // (docs/spec/SIMULATION.md#1-grundmodell-verbindlich).
@@ -232,7 +232,7 @@ describe('Determinismus — gleicher Seed, gleicher Verlauf', () => {
     let ticks = 0;
 
     for (;;) {
-      const tick = nextTick(einzeln, M1_COMBAT_CONTEXT);
+      const tick = nextTick(einzeln, DEFAULT_COMBAT_CONTEXT);
 
       if (tick.actor === undefined) {
         break;
@@ -256,7 +256,7 @@ describe('Monotonie der Gegner-Health (SPEC § Invarianten, Punkt 7)', () => {
     let ticks = 0;
 
     while (combatOutcome(current) === 'ongoing') {
-      const tick = nextTick(current, M1_COMBAT_CONTEXT);
+      const tick = nextTick(current, DEFAULT_COMBAT_CONTEXT);
 
       current = tick.state;
       ticks += 1;
@@ -289,7 +289,7 @@ describe('Ein Takt = ein Zug-Block (SIMULATION §2)', () => {
     let current = buildCombatState(floorSetup());
 
     while (combatOutcome(current) === 'ongoing') {
-      const tick = nextTick(current, M1_COMBAT_CONTEXT);
+      const tick = nextTick(current, DEFAULT_COMBAT_CONTEXT);
 
       expect(types(tick.events).filter((type) => type === 'turnStart')).toHaveLength(1);
       current = tick.state;
@@ -298,7 +298,7 @@ describe('Ein Takt = ein Zug-Block (SIMULATION §2)', () => {
 
   it('führt den Rundenbeginn im ersten Takt der Runde mit, statt einen leeren Takt zu rechnen', () => {
     const state = buildCombatState(floorSetup());
-    const erster = nextTick(state, M1_COMBAT_CONTEXT);
+    const erster = nextTick(state, DEFAULT_COMBAT_CONTEXT);
 
     expect(erster.actor).toBeDefined();
     expect(types(erster.events).slice(0, 2)).toEqual(['roundStart', 'turnStart']);
@@ -312,7 +312,7 @@ describe('Ein Takt = ein Zug-Block (SIMULATION §2)', () => {
     // Erste vollständige Runde abfahren: Sie endet mit `roundEnd`, die nächste beginnt mit
     // `roundStart` (COMBAT §1.1).
     for (;;) {
-      const tick = nextTick(current, M1_COMBAT_CONTEXT);
+      const tick = nextTick(current, DEFAULT_COMBAT_CONTEXT);
 
       current = tick.state;
       runde += 1;
@@ -325,7 +325,7 @@ describe('Ein Takt = ein Zug-Block (SIMULATION §2)', () => {
       expect(runde).toBeLessThan(20);
     }
 
-    expect(types(nextTick(current, M1_COMBAT_CONTEXT).events)[0]).toBe('roundStart');
+    expect(types(nextTick(current, DEFAULT_COMBAT_CONTEXT).events)[0]).toBe('roundStart');
   });
 });
 
@@ -565,7 +565,7 @@ describe('Sieg und Wipe (COMBAT §1.1)', () => {
 
 describe('runCombat — dieselbe Bahn wie das Playback', () => {
   it('endet mit Sieg oder Wipe und meldet die Zahl der Zug-Blöcke', () => {
-    const ergebnis = runCombat(buildCombatState(floorSetup()), M1_COMBAT_CONTEXT);
+    const ergebnis = runCombat(buildCombatState(floorSetup()), DEFAULT_COMBAT_CONTEXT);
 
     expect(['victory', 'wipe']).toContain(ergebnis.outcome);
     expect(ergebnis.ticks).toBe(

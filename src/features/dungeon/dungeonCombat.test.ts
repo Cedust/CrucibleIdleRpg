@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultSave } from '@/features/save/saveSchema';
+import { DEFAULT_COMBAT_CONTEXT, runCombat } from '@/features/combat/engine/combatEngine';
 import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat, createNextDungeonCombat } from './dungeonCombat';
 
@@ -11,6 +12,21 @@ describe('createDungeonEntryCombat', () => {
     expect(combat.floorId).toBe('A1-D3-01');
     expect(combat.floorIndex).toBe(40);
     expect(combat.enemies).toHaveLength(5);
+  });
+
+  it('liefert für zwei Runs verschiedene, je Save-Stand aber exakt reproduzierbare Verläufe', () => {
+    const runForCounter = (runCounter: number) =>
+      runCombat(
+        createDungeonEntryCombat({ ...createDefaultSave(4242), runCounter }, 'A1-D1'),
+        DEFAULT_COMBAT_CONTEXT,
+      );
+    const first = runForCounter(1);
+    const second = runForCounter(2);
+    const reloadedSecond = runForCounter(2);
+
+    expect(first.outcome).toBe('victory');
+    expect(second.events).not.toEqual(first.events);
+    expect(reloadedSecond).toEqual(second);
   });
 
   it('chains floors with carried health and deterministic seeds from one run', () => {

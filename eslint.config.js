@@ -36,6 +36,56 @@ export default tseslint.config(
       globals: { ...globals.browser, ...globals.node },
     },
   },
+  // Engine-Reinheit (AGENTS.md): pure Simulation — Zufall kommt aus dem geseedeten PRNG
+  {
+    files: ['src/features/*/engine/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'react',
+                'react-*',
+                'zustand',
+                'zustand/*',
+                '@/features/*/state/*',
+                '@/features/*/ui/*',
+              ],
+              message:
+                'Engine-Module sind pure Simulation: importierbar sind Engine-Nachbarn, @/game und @/shared (AGENTS.md).',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'setTimeout',
+          message: 'Die Engine kennt keine Zeit; Playback taktet im Store (AGENTS.md).',
+        },
+        {
+          name: 'setInterval',
+          message: 'Die Engine kennt keine Zeit; Playback taktet im Store (AGENTS.md).',
+        },
+        { name: 'requestAnimationFrame', message: 'Die Engine kennt kein DOM (AGENTS.md).' },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'Date',
+          property: 'now',
+          message: 'Die Engine kennt keine Zeit; Seeds kommen aus dem Save (AGENTS.md).',
+        },
+        {
+          object: 'Math',
+          property: 'random',
+          message: 'Zufall kommt aus dem geseedeten PRNG (@/shared/utils/prng, AGENTS.md).',
+        },
+      ],
+    },
+  },
   // Prettier zuletzt: deaktiviert formatierungsbezogene Regeln
   prettier,
 );

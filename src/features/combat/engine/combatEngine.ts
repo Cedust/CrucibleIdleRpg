@@ -60,7 +60,7 @@ export interface CombatContext {
  * Die Weapon Foundation: feste Signaturwaffe je Charakter, kein Generator-Crit-Knoten und keine
  * Mitigation. Mastery ergänzt später nur die Knoten, ohne dass das Schrittwerk davon erfährt.
  */
-export const M1_COMBAT_CONTEXT: CombatContext = {
+export const DEFAULT_COMBAT_CONTEXT: CombatContext = {
   contextFor: (character) => ({
     ...masteryContextFor(character),
   }),

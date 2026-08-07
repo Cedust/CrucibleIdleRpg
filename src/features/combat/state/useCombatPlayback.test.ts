@@ -4,7 +4,7 @@ import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
 import { neutralProgression } from '@/features/combat/engine/characterStats';
-import { M1_COMBAT_CONTEXT, nextTick, runCombat } from '@/features/combat/engine/combatEngine';
+import { DEFAULT_COMBAT_CONTEXT, nextTick, runCombat } from '@/features/combat/engine/combatEngine';
 import {
   buildCombatState,
   deriveFloorSeed,
@@ -192,7 +192,7 @@ describe('Combat-Playback', () => {
     'liefert bei $speed× und Batch-Größe $batchSize denselben Verlauf wie der Referenzlauf',
     ({ speed, batchSize }) => {
       const start = combat();
-      const reference = runCombat(start, M1_COMBAT_CONTEXT);
+      const reference = runCombat(start, DEFAULT_COMBAT_CONTEXT);
 
       const playback = runViaPlayback(start, speed, batchSize);
 
@@ -221,7 +221,7 @@ describe('Combat-Playback', () => {
 
     let expected = start;
     for (let tick = 0; tick < 3; tick += 1) {
-      expected = nextTick(expected, M1_COMBAT_CONTEXT).state;
+      expected = nextTick(expected, DEFAULT_COMBAT_CONTEXT).state;
     }
 
     expect(useCombatStore.getState().combat).toEqual(expected);

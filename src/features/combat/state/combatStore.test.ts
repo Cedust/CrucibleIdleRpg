@@ -4,7 +4,7 @@ import { FORMATIONS } from '@/game/encounters/formations';
 import type { FormationDefinition } from '@/game/types';
 import { useNavigationStore } from '@/app/navigationStore';
 import { neutralProgression } from '@/features/combat/engine/characterStats';
-import { M1_COMBAT_CONTEXT, nextTick } from '@/features/combat/engine/combatEngine';
+import { DEFAULT_COMBAT_CONTEXT, nextTick } from '@/features/combat/engine/combatEngine';
 import {
   buildCombatState,
   deriveFloorSeed,
@@ -47,7 +47,7 @@ describe('useCombatStore', () => {
 
   it('rechnet über die Store-Aktion exakt denselben nächsten Takt wie die reine Engine', () => {
     const start = combat();
-    const expected = nextTick(start, M1_COMBAT_CONTEXT);
+    const expected = nextTick(start, DEFAULT_COMBAT_CONTEXT);
     useCombatStore.getState().startCombat(start);
 
     const actual = useCombatStore.getState().advanceTick();
@@ -109,7 +109,7 @@ describe('useCombatStore', () => {
       .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
       .mockResolvedValue({ gold: 10, xp: 15, crystals: 1 });
 
-    useCombatStore.getState().startCombat(winning, M1_COMBAT_CONTEXT, commitVictory);
+    useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
     useCombatStore.getState().advanceTick();
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
@@ -131,7 +131,7 @@ describe('useCombatStore', () => {
       .mockRejectedValueOnce(new Error('Speichern fehlgeschlagen'))
       .mockResolvedValueOnce({ gold: 10, xp: 15, crystals: 1 });
 
-    useCombatStore.getState().startCombat(winning, M1_COMBAT_CONTEXT, commitVictory);
+    useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
     useCombatStore.getState().advanceTick();
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('failed'));

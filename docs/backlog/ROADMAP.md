@@ -89,12 +89,12 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 Hintergründe und Ornamentrahmen, und die M3+-Screens bauen auf denselben Tokens und Primitives
 auf. Der vollständige Politur-Pass über alle Screens bleibt in [M6](#m6--endgame--politur).
 
-| Reihenfolge | Task                                                                              | Status  | Hängt ab von |
-| ----------- | --------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md) | done    | 016          |
-| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)     | ready   | 017          |
-| 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)       | blocked | 018          |
-| 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)       | blocked | 018          |
+| Reihenfolge | Task                                                                              | Status | Hängt ab von |
+| ----------- | --------------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md) | done   | 016          |
+| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)     | done   | 017          |
+| 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)       | ready  | 018          |
+| 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)       | ready  | 018          |
 
 **019 und 020** hängen beide nur an 018 und berühren getrennte Screens — sie sind parallel
 bearbeitbar. Der Meilenstein ist reine View-Arbeit: Simulation, Stores und Save-Schema bleiben

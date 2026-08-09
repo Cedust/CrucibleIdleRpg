@@ -22,8 +22,8 @@ export function DungeonSelector({
         return (
           <label
             key={dungeonId}
-            className={`flex items-center gap-2 rounded-md border border-border bg-surface-raised px-3 py-2 text-sm text-text has-checked:border-accent has-checked:text-accent ${
-              unlocked ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'
+            className={`flex items-center gap-2 rounded-md border border-border bg-surface-raised px-3 py-2 text-sm text-text transition-colors has-checked:border-ornament has-checked:bg-accent/10 has-checked:text-accent has-checked:shadow-glow-accent ${
+              unlocked ? 'cursor-pointer hover:border-ornament' : 'cursor-not-allowed opacity-60'
             }`}
           >
             <input

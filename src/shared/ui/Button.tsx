@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'ghost';
+type ButtonVariant = 'primary' | 'ghost' | 'danger';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -8,11 +8,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-background hover:bg-accent-strong',
-  ghost: 'bg-transparent text-text hover:bg-surface-raised',
+  primary:
+    'border border-ornament bg-linear-to-b from-accent-strong to-accent text-background hover:to-accent-strong',
+  ghost:
+    'border border-border bg-transparent text-text hover:border-ornament hover:bg-surface-raised',
+  danger: 'border border-danger/50 bg-danger/10 text-danger hover:bg-danger/20',
 };
 
-/** Basis-Button-Primitive (Plain Tailwind, siehe AGENTS.md). */
+/** Basis-Button-Primitive in „Gilded Ruins“-Optik (Plain Tailwind, siehe AGENTS.md). */
 export function Button({ variant = 'primary', className = '', ...props }: ButtonProps) {
   return (
     <button

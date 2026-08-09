@@ -35,10 +35,10 @@ export function ProgressBar({ label, value, max, barrier }: ProgressBarProps) {
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={healthValue}
-        className="h-2.5 overflow-hidden rounded-full bg-background"
+        className="h-2.5 overflow-hidden rounded-full bg-background ring-1 ring-inset ring-border/60"
       >
         <div
-          className="h-full rounded-full bg-success transition-[width]"
+          className="h-full rounded-full bg-linear-to-r from-success/80 to-success transition-[width]"
           style={{ width: `${percentage(healthValue, max)}%` }}
         />
       </div>
@@ -55,10 +55,10 @@ export function ProgressBar({ label, value, max, barrier }: ProgressBarProps) {
             aria-valuemin={0}
             aria-valuemax={max}
             aria-valuenow={barrierValue}
-            className="h-1.5 overflow-hidden rounded-full bg-background"
+            className="h-1.5 overflow-hidden rounded-full bg-background ring-1 ring-inset ring-border/60"
           >
             <div
-              className="h-full rounded-full bg-warning transition-[width]"
+              className="h-full rounded-full bg-linear-to-r from-warning/80 to-warning transition-[width]"
               style={{ width: `${percentage(barrierValue, max)}%` }}
             />
           </div>

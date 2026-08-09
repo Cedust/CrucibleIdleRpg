@@ -16,6 +16,12 @@
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
 | [backgrounds/dungeon-ashen-depths.png](backgrounds/dungeon-ashen-depths.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §1](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
 
+## Rahmen
+
+| Datei                                              | Quelle                                                                  | Autor       | Lizenz        | Bearbeitung                                                           |
+| -------------------------------------------------- | ----------------------------------------------------------------------- | ----------- | ------------- | --------------------------------------------------------------------- |
+| [frames/panel-ornate.png](frames/panel-ornate.png) | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis) |
+
 ## Portraits
 
 | Datei                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |

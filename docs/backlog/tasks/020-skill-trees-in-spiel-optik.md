@@ -1,10 +1,10 @@
 # 020 — Skill-Trees in Spiel-Optik
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M2.5      |
-| **Hängt ab von** | 018       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M2.5    |
+| **Hängt ab von** | 018     |
 
 ## Ziel
 

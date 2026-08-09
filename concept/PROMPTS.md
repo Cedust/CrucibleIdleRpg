@@ -78,6 +78,27 @@ painterly colors, sharp focus on the face, centered head-and-shoulders compositi
 square 1:1, plain dark background suitable for a circular UI crop, no text, no watermark.
 ```
 
+## 5. Panel-Ornamentrahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/panel-ornate.png`
+- **Format:** quadratisch, mindestens 768×768, transparenter Hintergrund
+- **Technik:** Der Rahmen wird per CSS `border-image` in neun Kacheln zerlegt
+  (Slice-Inset ein Sechstel der Kantenlänge, bei 768 px also 128 px). Ornament darf
+  ausschließlich in diesem äußeren Ring liegen; das Zentrum bleibt vollständig transparent,
+  die Fläche dahinter kommt aus den Theme-Tokens. Ecken müssen in sich abgeschlossen sein,
+  Kantenmitten nahtlos wiederholbar (CSS `border-image-repeat: round`).
+
+```text
+Ornamental picture-frame border for a dark fantasy game UI panel, square 1:1, fully
+transparent background and fully transparent empty center. A thin elegant frame of
+tarnished brass and warm gold filigree (#8a6d3b to #fbbf24), heavy stone-carved imperial
+style, gilded ruins mood. Ornate corner flourishes contained within the outer sixth of
+the image; along the edges only a slim, perfectly straight, seamlessly repeatable gold
+line pattern. Strict four-fold symmetry: all four corners identical, all four edges
+identical. Crisp clean vector-like edges, subtle worn-metal texture, no background, no
+inner panel fill, no text, no watermark.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

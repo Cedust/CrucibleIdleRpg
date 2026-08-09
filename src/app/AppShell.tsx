@@ -8,6 +8,8 @@ import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionSc
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { formatNumber } from '@/shared/utils/formatNumber';
+import { Icon } from '@/shared/ui/Icon';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { CrucibleScreen } from '@/features/crucible/CrucibleScreen';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
 
@@ -59,18 +61,18 @@ export function AppShell() {
             aria-hidden="true"
             className="flex size-9 items-center justify-center rounded-lg border-2 border-accent"
           >
-            <span className="size-6 bg-accent mask-[url(/assets/icons/melting-metal.svg)] mask-center mask-contain mask-no-repeat" />
+            <Icon name="melting-metal" />
           </div>
           <div>
             <h1
               aria-label="Crucible Idle RPG"
-              className="text-sm font-bold leading-none tracking-[0.15em] text-text"
+              className="font-display text-display-sm leading-none text-accent-strong"
             >
               CRUCIBLE
             </h1>
             <p
               aria-hidden="true"
-              className="mt-1 text-[0.6rem] leading-none tracking-[0.25em] text-text-muted"
+              className="mt-1 font-display text-[0.6rem] leading-none tracking-[0.25em] text-text-muted"
             >
               IDLE RPG
             </p>
@@ -97,7 +99,7 @@ export function AppShell() {
             className="flex w-52 shrink-0 flex-col gap-1 border-r border-border bg-background/60 px-2 py-3"
           >
             {VIEWS.map((view) => {
-              const { label, icon: Icon } = VIEW_META[view];
+              const { label, icon: NavIcon } = VIEW_META[view];
               const isActive = view === activeView;
               return (
                 <button
@@ -105,9 +107,9 @@ export function AppShell() {
                   type="button"
                   onClick={() => setActiveView(view)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`flex items-center gap-3 rounded-r-md border-l-2 px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                  className={`flex items-center gap-3 rounded-r-md border-l-2 px-3 py-2 text-left font-display text-display-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                     isActive
-                      ? 'border-accent bg-accent/10 text-text'
+                      ? 'border-accent bg-accent/10 text-accent'
                       : 'border-transparent text-text-muted hover:bg-surface hover:text-text'
                   }`}
                 >
@@ -117,7 +119,7 @@ export function AppShell() {
                       isActive ? 'text-accent' : 'text-text-muted'
                     }`}
                   >
-                    <Icon className="size-4" />
+                    <NavIcon className="size-4" />
                   </span>
                   {label}
                 </button>
@@ -125,15 +127,20 @@ export function AppShell() {
             })}
           </nav>
 
-          <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6">
+          <main className="min-w-0 flex-1 overflow-auto">
             {activeView === 'dungeons' ? (
               <DungeonSelectionScreen />
-            ) : activeView === 'crucible' ? (
-              <CrucibleScreen />
-            ) : activeView === 'weapon-mastery' ? (
-              <WeaponMasteryScreen />
             ) : (
-              <PlaceholderView label={VIEW_META[activeView].label} />
+              // Screens ohne eigenes ScreenLayout (019/020) behalten das bisherige Padding.
+              <div className="p-4 sm:p-6">
+                {activeView === 'crucible' ? (
+                  <CrucibleScreen />
+                ) : activeView === 'weapon-mastery' ? (
+                  <WeaponMasteryScreen />
+                ) : (
+                  <PlaceholderView label={VIEW_META[activeView].label} />
+                )}
+              </div>
             )}
           </main>
         </div>
@@ -143,7 +150,7 @@ export function AppShell() {
 }
 
 function ResourceChip({
-  icon: Icon,
+  icon: ChipIcon,
   label,
   value,
   tone = 'accent',
@@ -156,12 +163,21 @@ function ResourceChip({
   const displayValue = value === undefined ? '—' : formatNumber(value);
 
   return (
-    <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
+    <div className="rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
       <dt className="sr-only">{label}</dt>
-      <Icon aria-hidden="true" className={`size-4 ${RESOURCE_TONE_CLASS[tone]}`} />
-      <dd aria-label={`${label} amount`} className="font-semibold text-text">
-        {displayValue}
-      </dd>
+      <Tooltip content={label}>
+        {(trigger) => (
+          <span
+            {...trigger}
+            className="flex items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            <ChipIcon aria-hidden="true" className={`size-4 ${RESOURCE_TONE_CLASS[tone]}`} />
+            <dd aria-label={`${label} amount`} className="font-semibold text-text">
+              {displayValue}
+            </dd>
+          </span>
+        )}
+      </Tooltip>
     </div>
   );
 }

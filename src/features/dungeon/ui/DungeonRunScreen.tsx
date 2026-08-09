@@ -3,6 +3,8 @@ import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
+import { Panel } from '@/shared/ui/Panel';
+import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { CombatLog } from '@/features/combat/ui/CombatLog';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
@@ -31,26 +33,32 @@ export function DungeonRunScreen() {
 
   if (floorId === null) {
     return (
-      <main className="min-h-0 flex-1 bg-background p-6 text-text">Preparing dungeon run...</main>
+      <ScreenLayout as="main" className="min-h-0 flex-1 text-text">
+        Preparing dungeon run...
+      </ScreenLayout>
     );
   }
 
   const isFinalFloor = isFinalAct1Floor(resolveAct1Encounter(floorId));
 
   return (
-    <main className="min-h-0 flex-1 overflow-auto bg-background p-4 text-text sm:p-6">
+    <ScreenLayout
+      as="main"
+      background="ashen-depths"
+      className="min-h-0 flex-1 overflow-auto text-text"
+    >
       <section className="mx-auto max-w-7xl space-y-4">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ornament/60 pb-4">
           <div>
             <p className="text-sm text-text-muted">Dungeon run</p>
-            <h1 className="text-2xl font-bold">{floorId}</h1>
+            <h1 className="font-display text-display-lg text-accent-strong">{floorId}</h1>
           </div>
           {outcome === 'ongoing' && (
             <div className="flex flex-wrap items-center gap-3">
               <Button variant={isPaused ? 'primary' : 'ghost'} onClick={() => setPaused(!isPaused)}>
                 {isPaused ? 'Resume Combat' : 'Pause Combat'}
               </Button>
-              <div className="flex items-center gap-1" aria-label="Playback speed">
+              <div role="group" className="flex items-center gap-1" aria-label="Playback speed">
                 <Button
                   aria-pressed={playbackSpeed === 1}
                   variant={playbackSpeed === 1 ? 'primary' : 'ghost'}
@@ -77,10 +85,12 @@ export function DungeonRunScreen() {
                   <Button variant="ghost" onClick={() => setConfirmingLeave(false)}>
                     Keep Fighting
                   </Button>
-                  <Button onClick={leaveRun}>Confirm Leave Dungeon</Button>
+                  <Button variant="danger" onClick={leaveRun}>
+                    Confirm Leave Dungeon
+                  </Button>
                 </>
               ) : (
-                <Button variant="ghost" onClick={() => setConfirmingLeave(true)}>
+                <Button variant="danger" onClick={() => setConfirmingLeave(true)}>
                   Leave Dungeon
                 </Button>
               )}
@@ -89,8 +99,8 @@ export function DungeonRunScreen() {
         </header>
 
         {outcome === 'victory' && (
-          <section aria-live="polite" className="rounded-md border border-border bg-surface p-4">
-            <h2 className="font-semibold text-success">Floor complete</h2>
+          <Panel as="section" aria-live="polite">
+            <h2 className="font-display text-display text-success">Floor complete</h2>
             {completionStatus === 'saving' && (
               <p className="text-sm text-text-muted">Saving reward...</p>
             )}
@@ -118,7 +128,7 @@ export function DungeonRunScreen() {
                 </Button>
               </>
             )}
-          </section>
+          </Panel>
         )}
 
         <TurnOrderBar />
@@ -128,6 +138,6 @@ export function DungeonRunScreen() {
         </div>
         <CombatLog />
       </section>
-    </main>
+    </ScreenLayout>
   );
 }

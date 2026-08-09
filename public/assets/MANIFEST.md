@@ -16,6 +16,8 @@
 | Datei                                                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |
 | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
 | [backgrounds/dungeon-ashen-depths.png](backgrounds/dungeon-ashen-depths.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §1](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
+| `backgrounds/dungeon-ember-foundry.png` _(Asset ausstehend)_                 | KI-generiert, Prompt: [concept/PROMPTS.md §12](../../concept/PROMPTS.md)          | Timo Sudeck | projektintern | —           |
+| `backgrounds/dungeon-forgotten-citadel.png` _(Asset ausstehend)_             | KI-generiert, Prompt: [concept/PROMPTS.md §13](../../concept/PROMPTS.md)          | Timo Sudeck | projektintern | —           |
 
 ## Rahmen
 

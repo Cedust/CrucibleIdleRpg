@@ -99,6 +99,30 @@ identical. Crisp clean vector-like edges, subtle worn-metal texture, no backgrou
 inner panel fill, no text, no watermark.
 ```
 
+### Edit-Prompt: Linie verstärken
+
+- **Eingabe:** das bestehende `public/assets/frames/panel-ornate.png` mit hochladen
+- **Zieldatei:** ersetzt `public/assets/frames/panel-ornate.png` (gleiche Maße beibehalten,
+  aktuell 1137×987 nach Bounding-Box-Zuschnitt)
+- **Zweck:** Die durchgehende Goldlinie ist im aktuellen Asset ~13 px dick und wird in der
+  UI auf ~1,3 CSS-Pixel skaliert (Faktor 31/310) — auf manchen Zoomstufen rastert der
+  Browser sie blass. Ziel sind ~30–35 px im Asset, also etwa das Zweieinhalbfache. Die
+  Ornamentmuster entlang der Kanten und die Eckverzierungen bleiben unverändert; Slice-,
+  Breiten- und Outset-Werte in `src/app/index.css` werden nach dem Tausch neu vermessen.
+
+```text
+Edit this ornamental frame image. Keep everything exactly as it is — the composition,
+the ornate corner flourishes, the repeating ornament pattern along the edges, the
+tarnished brass and warm gold colors (#8a6d3b to #fbbf24), the fully transparent
+background and fully transparent empty center, the symmetry and the crisp vector-like
+edges. Only change the thin continuous gold line that runs along the four edges and
+connects the ornaments: make it about two and a half times thicker (bolder stroke
+weight), so it reads clearly when the image is scaled down to a UI panel frame. The
+line must stay perfectly straight, seamlessly repeatable along each edge, and connect
+cleanly into the corner flourishes and edge ornaments. Do not add any new ornaments,
+medallions, text or watermark.
+```
+
 ## 6. Divider-Ornament
 
 - **Zieldatei:** `public/assets/ornaments/divider-ornate.png`
@@ -139,6 +163,27 @@ along the edges nothing but the slim, perfectly straight, seamlessly repeatable 
 gold line, no medallions. Strict four-fold symmetry: all four corners identical, all
 four edges identical. Crisp clean vector-like edges, subtle worn-metal texture, no
 background, no inner panel fill, no text, no watermark.
+```
+
+### Edit-Prompt: Linie verstärken
+
+- **Eingabe:** das bestehende `public/assets/frames/panel-thin.png` mit hochladen
+- **Zieldatei:** ersetzt `public/assets/frames/panel-thin.png` (gleiche Maße beibehalten)
+- **Zweck:** Die Goldlinie ist im aktuellen Asset ~14 px dick (bei 1254 px Kantenlänge) und
+  wird in der UI auf gut einen CSS-Pixel herunterskaliert — auf manchen Zoomstufen rastert
+  der Browser sie fast unsichtbar. Ziel sind ~30–40 px im Asset, also etwa das
+  Zweieinhalbfache. Slice- und Breiten-Werte in `src/app/index.css` bleiben unverändert.
+
+```text
+Edit this ornamental frame image. Keep everything exactly as it is — the composition,
+the corner ornaments with their pointed star tips and gold dots, the tarnished brass
+and warm gold colors (#8a6d3b to #fbbf24), the fully transparent background and fully
+transparent empty center, the strict four-fold symmetry and the crisp vector-like
+edges. Only change the thin double gold line running along the four edges: make it
+about two and a half times thicker (bolder stroke weight), so it reads clearly when
+the image is scaled down to a small UI card frame. The line must stay perfectly
+straight, seamlessly repeatable along each edge, and connect cleanly into the corner
+ornaments. Do not add any new ornaments, medallions, text or watermark.
 ```
 
 ## 8. Nav-Selection-Ornament
@@ -216,6 +261,63 @@ contained within the outer sixth of the image; along the edges only the thin,
 perfectly straight, seamlessly repeatable gold line. Strict four-fold symmetry: all
 four corners identical, all four edges identical. Crisp clean vector-like edges,
 subtle worn-metal texture, no background, no inner fill, no text, no watermark.
+```
+
+## 12. Dungeon-Hintergrund — The Ember Foundry
+
+- **Zieldatei:** `public/assets/backgrounds/dungeon-ember-foundry.png` (oder `.webp`)
+- **Format:** 16:9, mindestens 1920×1080
+- **Verwendung:** Akt-Panel der Dungeon-Auswahl (Crop ca. 280×150), später auch als
+  Screen-Hintergrund von Akt 2.
+
+```text
+Dark fantasy dungeon interior, "The Ember Foundry": colossal ruined forge-halls of a
+once-golden empire, giant cold furnaces and channels of faintly glowing molten metal,
+heavy stone architecture, cracked pillars with tarnished gold inlays, drifting sparks
+and smoke, ember glow (#e25822) casting warm orange light against cool deep blue-slate
+shadows (#0f172a), gilded ruins mood — noble and mysterious, never hopeless. Painterly
+digital art, muted colors, high readability, soft atmospheric depth, no characters, no
+text, no UI. Wide 16:9 environment shot with one strong focal point at the horizontal
+center and mid-height of the frame, so the image stays readable when cropped to a small
+wide card.
+```
+
+## 13. Dungeon-Hintergrund — The Forgotten Citadel
+
+- **Zieldatei:** `public/assets/backgrounds/dungeon-forgotten-citadel.png` (oder `.webp`)
+- **Format:** 16:9, mindestens 1920×1080
+- **Verwendung:** Akt-Panel der Dungeon-Auswahl (Crop ca. 280×150), später auch als
+  Screen-Hintergrund von Akt 3.
+
+```text
+Dark fantasy dungeon interior, "The Forgotten Citadel": the buried throne halls of a
+lost imperial citadel, towering vaulted architecture, colossal cracked pillars, faded
+banners and tarnished gold filigree on dark stone, pale arcane light (#8b5cf6) mixing
+with a faint warm ember glow (#e25822) against cool deep blue-slate shadows (#0f172a),
+drifting ash, gilded ruins mood — noble and mysterious, never hopeless. Painterly
+digital art, muted colors, high readability, soft atmospheric depth, no characters, no
+text, no UI. Wide 16:9 environment shot with one strong focal point at the horizontal
+center and mid-height of the frame, so the image stays readable when cropped to a small
+wide card.
+```
+
+## 14. Dungeon-Hintergrund — The Ashen Depths (Neufassung)
+
+- **Zieldatei:** `public/assets/backgrounds/dungeon-ashen-depths_1.png`
+- **Format:** 16:9, mindestens 1920×1080
+- **Verwendung:** Akt-Panel der Dungeon-Auswahl (Crop ca. 280×150) und Screen-Hintergrund
+  von Akt 1 — im Stil-Duktus von §12/§13.
+
+```text
+Dark fantasy dungeon interior, "The Ashen Depths": vast ruined underground hall of a
+once-golden empire, heavy stone architecture, cracked pillars with tarnished gold inlays,
+drifting ash and faint embers in the air, a low fire glow from below casting warm orange
+light (#e25822) against cool deep blue-slate shadows (#0f172a), gilded ruins mood — noble
+and mysterious, never hopeless. Painterly digital art, muted colors, high readability,
+soft atmospheric depth, no characters, no text, no UI. Wide 16:9 environment shot with
+one strong focal point at the horizontal center and mid-height of the frame, so the
+image stays readable when cropped to a small wide card; the center-bottom area stays
+calm so UI panels and characters can sit on top.
 ```
 
 ## Hinweise zur Ablage

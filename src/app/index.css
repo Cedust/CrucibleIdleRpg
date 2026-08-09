@@ -61,7 +61,7 @@
   --color-info: #06b6d4;
 
   /* Flächen-Tiefe und Gold-Glow für Panels und aktive Elemente */
-  --shadow-panel: inset 0 1px 0 0 rgb(255 255 255 / 0.04), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+  --shadow-panel: 0 12px 32px -16px rgb(0 0 0 / 0.7);
   --shadow-glow-accent: 0 0 16px 0 rgb(245 158 11 / 0.25);
 }
 
@@ -70,14 +70,31 @@
  * border-image-Utilities; das Asset stammt aus concept/PROMPTS.md §5.
  * Solange das Bild nicht lädt, greift die border-color der Panel-Klassen.
  * Das Outset schiebt den Rahmen so weit nach außen, dass die Goldlinie
- * (je Seite ~85–98 px vom Asset-Rand, Skalierung 31/310) auf der Kante der
- * Hintergrundfläche liegt; nur die Ornamentspitzen ragen über das Panel.
+ * (Bandmitte oben/rechts/unten/links ~122/136/161/136 px vom Asset-Rand,
+ * Skalierung 40/400) auf der Kante der Hintergrundfläche liegt; nur die
+ * Ornamentspitzen ragen über das Panel.
  */
 @utility border-image-ornate {
   border-style: solid;
-  border-width: 31px;
-  border-image: url('/assets/frames/panel-ornate.png') 310 / 31px round;
-  border-image-outset: 8.5px 9.5px 9px 10px;
+  border-width: 40px;
+  border-image: url('/assets/frames/panel-ornate.png') 400 / 40px round;
+  border-image-outset: 12px 13.5px 16px 13.5px;
+}
+
+/*
+ * Schlanker 9-Slice-Rahmen für kleine Panels und Karten (Asset aus
+ * concept/PROMPTS.md §7, 1254×1254, Ornamentring im äußeren Sechstel = 209 px).
+ * Das Outset legt die Goldlinie (Bandmitte je Seite ~59–67 px vom Asset-Rand,
+ * Skalierung 18/209) auf die Kante der Elementfläche; nur die Stern-Ecken
+ * ragen leicht hinaus. Umgebende Elemente dürfen daher kein overflow-hidden
+ * clippen. Die 18 px halten die skalierte Linie über einem CSS-Pixel, sonst
+ * rastert der Browser sie auf manchen Zoomstufen fast unsichtbar.
+ */
+@utility border-image-thin {
+  border-style: solid;
+  border-width: 20px;
+  border-image: url('/assets/frames/panel-thin.png') 209 / 20px round;
+  border-image-outset: 6px 5.5px 6.5px 6px;
 }
 
 html {

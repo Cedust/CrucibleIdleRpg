@@ -32,4 +32,19 @@ describe('DungeonSelector', () => {
     await user.click(radios[2] as HTMLInputElement);
     expect(onSelect).toHaveBeenCalledWith('A1-D3');
   });
+
+  it('names each card with its display label, name and open/locked status', () => {
+    render(
+      <DungeonSelector
+        unlockedDungeonIds={['A1-D1']}
+        selectedDungeonId="A1-D1"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('radio', { name: /DUNGEON I\b.*Cinder Gate.*Open/ })).toBeChecked();
+    expect(
+      screen.getByRole('radio', { name: /DUNGEON II\b.*The Charred Vaults.*Locked/ }),
+    ).toBeDisabled();
+  });
 });

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { type Act1DungeonId } from '@/game/encounters/act1';
+import { ACT_1_DISPLAY_META, ACT_DISPLAY_META } from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { Panel } from '@/shared/ui/Panel';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
+import { ActPanel } from './ActPanel';
 import { DungeonSelector } from './DungeonSelector';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
@@ -24,10 +26,10 @@ export function DungeonSelectionScreen() {
 
   return (
     <ScreenLayout background="ashen-depths" className="min-h-full">
-      <section className="mx-auto max-w-5xl space-y-6">
+      <section className="mx-auto max-w-7xl space-y-6">
         <header>
           <h2 className="font-display text-display-lg text-accent-strong">Dungeons</h2>
-          <p className="mt-1 text-sm text-text-muted">Choose an unlocked dungeon entrance.</p>
+          <p className="mt-1 text-sm text-text-muted">Choose a dungeon entrance.</p>
         </header>
 
         {unlockedDungeonIds === null ? (
@@ -35,30 +37,43 @@ export function DungeonSelectionScreen() {
             {saveStatus === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress...'}
           </p>
         ) : (
-          <Panel as="section" aria-labelledby="act-1-heading" className="space-y-4">
-            <div>
-              <h3 id="act-1-heading" className="font-display text-display">
-                Act 1
-              </h3>
-              <p className="text-sm text-text-muted">Choose a dungeon checkpoint.</p>
-            </div>
-            <DungeonSelector
-              unlockedDungeonIds={unlockedDungeonIds}
-              selectedDungeonId={selectedDungeonId}
-              onSelect={setRequestedDungeonId}
-            />
-            {startError !== null && (
-              <p role="alert" className="text-sm text-danger">
-                {startError}
-              </p>
-            )}
-            <Button
-              disabled={mode === 'starting' || saveStatus !== 'ready'}
-              onClick={() => void startRun(selectedDungeonId)}
+          <div className="flex flex-col gap-6 lg:flex-row">
+            <ul
+              aria-label="Acts"
+              className="flex w-full flex-col gap-3 lg:w-64 lg:shrink-0 lg:justify-center"
             >
-              {mode === 'starting' ? 'Entering Dungeon...' : 'Enter Dungeon'}
-            </Button>
-          </Panel>
+              {ACT_DISPLAY_META.map((act) => (
+                <ActPanel key={act.id} act={act} />
+              ))}
+            </ul>
+            <Panel
+              as="section"
+              aria-label={`${ACT_1_DISPLAY_META.label} dungeons`}
+              className="min-w-0 flex-1 space-y-5"
+            >
+              <p className="text-center font-display text-display-sm tracking-widest text-accent">
+                {ACT_1_DISPLAY_META.label} - {ACT_1_DISPLAY_META.name.toUpperCase()}
+              </p>
+              <DungeonSelector
+                unlockedDungeonIds={unlockedDungeonIds}
+                selectedDungeonId={selectedDungeonId}
+                onSelect={setRequestedDungeonId}
+              />
+              {startError !== null && (
+                <p role="alert" className="text-sm text-danger">
+                  {startError}
+                </p>
+              )}
+              <div className="flex justify-center">
+                <Button
+                  disabled={mode === 'starting' || saveStatus !== 'ready'}
+                  onClick={() => void startRun(selectedDungeonId)}
+                >
+                  {mode === 'starting' ? 'Entering Dungeon...' : 'Enter Dungeon'}
+                </Button>
+              </div>
+            </Panel>
+          </div>
         )}
       </section>
     </ScreenLayout>

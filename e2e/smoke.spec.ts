@@ -10,7 +10,7 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   );
   await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Enter Dungeon' })).toBeEnabled();
-  await expect(page.getByRole('radio', { name: /Dungeon 2/ })).toBeDisabled();
+  await expect(page.getByRole('radio', { name: /DUNGEON II\b/ })).toBeDisabled();
 });
 
 test('isolates a dungeon run without hiding the read-only top bar', async ({ page }) => {

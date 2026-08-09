@@ -6,9 +6,10 @@
 
 ## Icons
 
-| Datei                                              | Quelle                                                                     | Autor                                | Lizenz                                                    | Bearbeitung                                                                 |
-| -------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------- |
-| [icons/melting-metal.svg](icons/melting-metal.svg) | [game-icons.net](https://game-icons.net/1x1/delapouite/melting-metal.html) | [Delapouite](https://delapouite.com) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | Hintergrund-Rechteck entfernt, `fill` auf `currentColor` für CSS-Einfärbung |
+| Datei                                                  | Quelle                                                                             | Autor                                | Lizenz                                                    | Bearbeitung                                                                 |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [icons/melting-metal.svg](icons/melting-metal.svg)     | [game-icons.net](https://game-icons.net/1x1/delapouite/melting-metal.html)         | [Delapouite](https://delapouite.com) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | Hintergrund-Rechteck entfernt, `fill` auf `currentColor` für CSS-Einfärbung |
+| [icons/crucible-emblem.png](icons/crucible-emblem.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §10](../../concept/PROMPTS.md) | Timo Sudeck                          | projektintern                                             | —                                                                           |
 
 ## Hintergründe
 
@@ -18,9 +19,19 @@
 
 ## Rahmen
 
-| Datei                                              | Quelle                                                                  | Autor       | Lizenz        | Bearbeitung                                                           |
-| -------------------------------------------------- | ----------------------------------------------------------------------- | ----------- | ------------- | --------------------------------------------------------------------- |
-| [frames/panel-ornate.png](frames/panel-ornate.png) | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis) |
+| Datei                                                | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                           |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | --------------------------------------------------------------------- |
+| [frames/panel-ornate.png](frames/panel-ornate.png)   | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md)            | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis) |
+| [frames/panel-thin.png](frames/panel-thin.png)       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §7](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
+| [frames/button-ornate.png](frames/button-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §9](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
+| [frames/slot-ornate.png](frames/slot-ornate.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §11](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —                                                                     |
+
+## Ornamente
+
+| Datei                                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
+| [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
+| [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
 
 ## Portraits
 

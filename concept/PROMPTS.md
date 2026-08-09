@@ -99,6 +99,125 @@ identical. Crisp clean vector-like edges, subtle worn-metal texture, no backgrou
 inner panel fill, no text, no watermark.
 ```
 
+## 6. Divider-Ornament
+
+- **Zieldatei:** `public/assets/ornaments/divider-ornate.png`
+- **Format:** Querformat ca. 8:1, mindestens 2048×256, transparenter Hintergrund
+- **Technik:** Wird als einzelnes Bild über die Höhe skaliert und zentriert über oder
+  unter Inhalten platziert (`<img>` bzw. CSS-Background). Strikte horizontale
+  Spiegelsymmetrie und spitz auslaufende Enden lassen den Divider in jeder Breite
+  freistehend wirken.
+
+```text
+Horizontal ornamental divider for a dark fantasy game UI, wide 8:1 landscape format,
+fully transparent background. A single thin elegant line of tarnished brass and warm
+gold (#8a6d3b to #fbbf24) running the full width, swelling toward the center into a
+small filigree diamond medallion with a tiny gold gem, tapering to fine sharp points
+at both ends. Heavy stone-carved imperial style, gilded ruins mood. Strict left-right
+mirror symmetry, perfectly straight horizontal axis, crisp clean vector-like edges,
+subtle worn-metal texture, no background, no text, no watermark.
+```
+
+## 7. Dünner Panel-Rahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/panel-thin.png`
+- **Format:** quadratisch, mindestens 768×768, transparenter Hintergrund
+- **Technik:** Wie §5 — der Rahmen wird per CSS `border-image` in neun Kacheln zerlegt
+  (Slice-Inset ein Sechstel der Kantenlänge, bei 768 px also 128 px). Ornament darf
+  ausschließlich in diesem äußeren Ring liegen; das Zentrum bleibt vollständig
+  transparent. Ecken müssen in sich abgeschlossen sein, Kantenmitten nahtlos
+  wiederholbar (CSS `border-image-repeat: round`). Für Karten und Sekundär-Panels,
+  daher deutlich schlanker als §5.
+
+```text
+Slim ornamental picture-frame border for a dark fantasy game UI card, square 1:1,
+fully transparent background and fully transparent empty center. A very thin, delicate
+double line of tarnished brass and warm gold (#8a6d3b to #fbbf24), heavy stone-carved
+imperial style, gilded ruins mood. Corners marked only by small restrained accents —
+short pointed tips and tiny gold dots contained within the outer sixth of the image;
+along the edges nothing but the slim, perfectly straight, seamlessly repeatable double
+gold line, no medallions. Strict four-fold symmetry: all four corners identical, all
+four edges identical. Crisp clean vector-like edges, subtle worn-metal texture, no
+background, no inner panel fill, no text, no watermark.
+```
+
+## 8. Nav-Selection-Ornament
+
+- **Zieldatei:** `public/assets/ornaments/nav-selection.png`
+- **Format:** hochkant ca. 1:2, mindestens 256×512, transparenter Hintergrund
+- **Technik:** Sitzt als absolut positioniertes Bild an der linken Kante des aktiven
+  Navigations-Eintrags, vertikal zentriert, Höhe etwa gleich der Eintragshöhe. Die
+  zentrale Spitze zeigt nach rechts in den Eintrag hinein.
+
+```text
+Vertical ornamental selection marker for a dark fantasy game UI navigation menu,
+portrait 1:2 format, fully transparent background. A slender vertical bracket of
+tarnished brass and warm gold (#8a6d3b to #fbbf24): a thin vertical line with a
+central spearhead point aiming to the right, small filigree flourishes curling at the
+top and bottom ends. Heavy stone-carved imperial style, gilded ruins mood. Strict
+top-bottom mirror symmetry, the ornament hugging the left side of the canvas with the
+point reaching right. Crisp clean vector-like edges, subtle worn-metal texture, no
+background, no text, no watermark.
+```
+
+## 9. Button-Ornamentrahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/button-ornate.png`
+- **Format:** quadratisch, mindestens 768×768, transparenter Hintergrund
+- **Technik:** Wie §7 (9-Slice, Slice-Inset ein Sechstel, transparentes Zentrum,
+  `border-image-repeat: round`). Neutrales Gold, damit derselbe Rahmen über dem
+  Gold-Gradient des Primär-Buttons und der Rot-Fläche des Danger-Buttons funktioniert.
+
+```text
+Very slim ornamental button border frame for a dark fantasy game UI, square 1:1,
+fully transparent background and fully transparent empty center. A narrow double line
+of tarnished brass and warm gold (#8a6d3b to #fbbf24), heavy stone-carved imperial
+style, gilded ruins mood. Corners accented with short diagonal gold ticks and a tiny
+dot, all ornament contained within the outer sixth of the image; along the edges only
+the slim, perfectly straight, seamlessly repeatable double gold line. Strict four-fold
+symmetry: all four corners identical, all four edges identical. Crisp clean
+vector-like edges, subtle worn-metal texture, no background, no inner fill, no text,
+no watermark.
+```
+
+## 10. Crucible-Logo-Emblem
+
+- **Zieldatei:** `public/assets/icons/crucible-emblem.png`
+- **Format:** 1:1, mindestens 1024×1024, transparenter Hintergrund
+- **Technik:** Freistehendes Emblem für die Sidebar-Kopfzeile; der Schriftzug
+  „CRUCIBLE" bleibt Live-Text in Cinzel und ist nicht Teil des Assets.
+
+```text
+Heraldic golden emblem for a dark fantasy game logo, square 1:1, fully transparent
+background. A stylized crucible — a heavy ornate chalice-like vessel of tarnished
+brass and warm gold (#8a6d3b to #fbbf24) — with a single rising ember flame glowing
+warm orange (#e25822) at its heart, flanked by symmetric filigree wings and radiating
+gold rays. Heavy stone-carved imperial style, gilded ruins mood — noble and
+mysterious. Strict left-right mirror symmetry, centered composition, standalone
+emblem suitable for small UI display. Crisp clean vector-like edges, subtle
+worn-metal texture, no background, no lettering, no text, no watermark.
+```
+
+## 11. Item-Slot-Rahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/slot-ornate.png`
+- **Format:** quadratisch, mindestens 512×512, transparenter Hintergrund
+- **Technik:** Wie §7 (9-Slice, Slice-Inset ein Sechstel, transparentes Zentrum,
+  `border-image-repeat: round`); bei festen Slot-Größen auch als komplettes
+  quadratisches Overlay einsetzbar. Für Icon-Kacheln in Inventar und
+  Belohnungsanzeigen.
+
+```text
+Compact square ornamental slot frame for dark fantasy game UI item icons, square 1:1,
+fully transparent background and fully transparent empty center. A thin single line of
+tarnished brass and warm gold (#8a6d3b to #fbbf24), heavy stone-carved imperial style,
+gilded ruins mood. Four small identical corner accents — tiny pointed gold flourishes
+contained within the outer sixth of the image; along the edges only the thin,
+perfectly straight, seamlessly repeatable gold line. Strict four-fold symmetry: all
+four corners identical, all four edges identical. Crisp clean vector-like edges,
+subtle worn-metal texture, no background, no inner fill, no text, no watermark.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

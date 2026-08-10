@@ -192,7 +192,9 @@ ornaments. Do not add any new ornaments, medallions, text or watermark.
 - **Format:** hochkant ca. 1:2, mindestens 256×512, transparenter Hintergrund
 - **Technik:** Sitzt als absolut positioniertes Bild an der linken Kante des aktiven
   Navigations-Eintrags, vertikal zentriert, Höhe etwa gleich der Eintragshöhe. Die
-  zentrale Spitze zeigt nach rechts in den Eintrag hinein.
+  zentrale Spitze zeigt nach rechts in den Eintrag hinein. Die obere und untere,
+  nach rechts auslaufende Goldlinie der Selektion wird separat per CSS-Gradient auf
+  Pseudoelementen des aktiven Eintrags umgesetzt; sie gehört nicht in dieses Asset.
 
 ```text
 Vertical ornamental selection marker for a dark fantasy game UI navigation menu,
@@ -203,6 +205,29 @@ top and bottom ends. Heavy stone-carved imperial style, gilded ruins mood. Stric
 top-bottom mirror symmetry, the ornament hugging the left side of the canvas with the
 point reaching right. Crisp clean vector-like edges, subtle worn-metal texture, no
 background, no text, no watermark.
+```
+
+### Edit-Prompt: Selektionsmarker verbreitern und verstärken
+
+- **Eingabe:** das bestehende `public/assets/ornaments/nav-selection.png` mit hochladen
+- **Zieldatei:** ersetzt `public/assets/ornaments/nav-selection.png`
+- **Zweck:** Der aktuelle Marker nutzt zu wenig von der horizontalen Bildfläche und wirkt
+  nach dem Herunterskalieren wie eine schmale Linie. Die zentrale Spitze und die Filigranformen
+  sollen deutlich weiter in den Menüeintrag hineinragen und auch bei etwa 40–48 px Eintragshöhe
+  klar lesbar bleiben.
+
+```text
+Edit this existing vertical navigation selection ornament for a dark fantasy game UI.
+Keep the transparent background, tarnished brass and warm gold palette (#8a6d3b to
+#fbbf24), worn-metal texture, strict top-bottom mirror symmetry, and the overall
+gilded ruins style. Make the marker substantially broader and visually stronger,
+thicken the main vertical gold bar, enlarge the top and bottom finials,
+and extend the central angular spearhead much farther to the right. The central point
+should be bold and immediately readable when the asset is scaled to a 40–48 px tall
+navigation row. Reduce unused transparent space on the right so the ornament occupies
+roughly three quarters of the canvas width, while keeping a small transparent safety
+margin around every visible edge. Preserve crisp vector-like contours and restrained
+imperial filigree; do not turn it into a complete rectangular frame. No background, text, icons, glow haze, or watermark.
 ```
 
 ## 9. Button-Ornamentrahmen (9-Slice)
@@ -318,6 +343,44 @@ soft atmospheric depth, no characters, no text, no UI. Wide 16:9 environment sho
 one strong focal point at the horizontal center and mid-height of the frame, so the
 image stays readable when cropped to a small wide card; the center-bottom area stays
 calm so UI panels and characters can sit on top.
+```
+
+## 15. Sidebar-Ornamentrahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/sidebar-ornate.png`
+- **Format:** quadratisch, mindestens 1024×1024, transparenter Hintergrund und vollständig
+  transparentes Zentrum
+- **Technik:** 9-Slice-Rahmen für eine schmale, viewport-hohe Sidebar. Der Slice-Inset liegt bei
+  einem Sechstel der Kantenlänge; sämtliche Ornamente bleiben innerhalb dieses äußeren Rings.
+  Die geraden Kantenstücke müssen nahtlos wiederholbar sein (`border-image-repeat: round`),
+  damit der Rahmen ohne Verzerrung auf unterschiedliche Menübreiten und Viewport-Höhen skaliert.
+  Die Eckornamente zeigen jeweils in den transparenten Innenraum: oben links nach rechts unten,
+  oben rechts nach links unten, unten links nach rechts oben und unten rechts nach links oben.
+
+```text
+Ornamental four-sided frame for a full-height dark fantasy game UI sidebar, designed
+as a square 1:1 nine-slice border asset with a fully transparent background and a
+fully transparent empty center. A very thin double outline of tarnished brass and
+restrained warm gold (#8a6d3b to #fbbf24) forms a tall, narrow rectangular boundary
+around a vertical navigation column. Each corner carries a small elegant imperial
+ornament that grows from the border and points diagonally inward into the empty center:
+the top-left corner points down and right, the top-right corner down and left, the
+bottom-left corner up and right, and the bottom-right corner up and left. Each corner
+combines a short angular spear tip, a tiny diamond-shaped joint, and one restrained
+curl of stone-carved filigree. The result should feel like a delicate architectural
+frame around an ancient palace menu: noble, precise, slightly weathered, and clearly
+visible against a deep blue-black background, but much lighter and narrower than an
+ornate content-panel frame.
+
+Strict four-fold symmetry: all corner ornaments are mirrored versions of one design,
+and all four edge lines share the same slim weight. Keep every ornament entirely
+inside the outer sixth of the canvas. Between the corners, use only perfectly straight,
+seamlessly repeatable thin double lines so CSS border-image slicing can extend the
+frame to a narrow sidebar of any height without stretching the decorations. Preserve
+clear transparent safety space between the ornament tips and the empty center. Crisp
+vector-like contours, subtle worn-metal texture, minimal warm highlights, no glow
+haze, no dark panel fill, no background, no text, no icons, no medallions, no complete
+screen frame, and no watermark.
 ```
 
 ## Hinweise zur Ablage

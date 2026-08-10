@@ -18,6 +18,9 @@ interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
  * Screen-Primitive mit Hintergrund-Layer und Kontrast-Overlay (DESIGN.md §5).
  * Die Layer leben in einem mitwachsenden inneren Wrapper, damit sie auch dann
  * die volle Inhaltshöhe abdecken, wenn das Root-Element selbst scrollt.
+ * Die Rand-Vignette auf dem Kontrast-Overlay lässt das Bild zur Kante hin in
+ * den Grundton auslaufen; der Screen schließt dadurch nahtlos an das Gutter
+ * des App-Rahmens an.
  */
 export function ScreenLayout({
   as: Tag = 'div',
@@ -37,7 +40,7 @@ export function ScreenLayout({
             />
             <div
               aria-hidden="true"
-              className="absolute inset-0 -z-10 bg-linear-to-t from-background/90 via-background/70 to-background/45"
+              className="absolute inset-0 -z-10 bg-linear-to-t from-background/90 via-background/70 to-background/45 shadow-[inset_0_0_32px_12px_var(--color-background)]"
             />
           </>
         )}

@@ -66,6 +66,32 @@
 }
 
 /*
+ * Aktive Navigation: Die Fläche beginnt erst an den Spitzen des linken
+ * Selektionsornaments. Die 3 px entsprechen dessen sichtbarer Position nach
+ * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx.
+ */
+@utility nav-selection-surface {
+  background-image: linear-gradient(
+    to right,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-surface) 70%, transparent) 3px
+  );
+}
+
+.nav-selection-surface::before,
+.nav-selection-surface::after {
+  clip-path: inset(-12px -12px -12px 0);
+}
+
+.nav-selection-surface::before {
+  filter: drop-shadow(0 -4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+.nav-selection-surface::after {
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+/*
  * 9-Slice-Ornamentrahmen für Panels (DESIGN.md §5). Tailwind hat keine
  * border-image-Utilities; das Asset stammt aus concept/PROMPTS.md §5.
  * Solange das Bild nicht lädt, greift die border-color der Panel-Klassen.
@@ -95,6 +121,44 @@
   border-width: 20px;
   border-image: url('/assets/frames/panel-thin.png') 209 / 20px round;
   border-image-outset: 6px 5.5px 6.5px 6px;
+}
+
+/*
+ * Vollhöhen-Rahmen für Sidebar und Main-Area. Die generierten Assets sind
+ * 1024×1536; 160 px halten die vier Eckornamente vollständig in den
+ * Corner-Slices. Das Pseudoelement vermeidet, dass die 32 px Border den
+ * Inhalt verengt. Der Rahmen bleibt ohne Outset vollständig innerhalb der
+ * jeweiligen Fläche, damit an der Naht zwischen Sidebar und Main-Area beide
+ * Goldlinien sichtbar bleiben. Das Padding hält Flächenhintergründe, Screens
+ * und Scrollbalken innerhalb der Goldlinie: Die 12 px entsprechen der
+ * Band-Innenkante (~59 px vom Asset-Rand, Skalierung 32/160).
+ */
+@utility border-image-sidebar {
+  position: relative;
+  padding: 12px;
+}
+
+@utility border-image-mainview {
+  position: relative;
+  padding: 12px;
+}
+
+.border-image-sidebar::before,
+.border-image-mainview::before {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  border-style: solid;
+  border-width: 32px;
+  border-image: url('/assets/frames/sidebar-ornate.png') 160 / 32px round;
+  border-image-outset: 0;
+  opacity: 0.7;
+  pointer-events: none;
+  content: '';
+}
+
+.border-image-mainview::before {
+  border-image-source: url('/assets/frames/mainview-ornate.png');
 }
 
 html {

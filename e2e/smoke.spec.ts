@@ -4,6 +4,7 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeVisible();
+  await expect(page.getByLabel('Resources')).toBeVisible();
   await expect(page.getByRole('button', { name: 'DUNGEONS', exact: true })).toHaveAttribute(
     'aria-current',
     'page',
@@ -13,12 +14,13 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   await expect(page.getByRole('radio', { name: /DUNGEON II\b/ })).toBeDisabled();
 });
 
-test('isolates a dungeon run without hiding the read-only top bar', async ({ page }) => {
+test('isolates a dungeon run without sidebar branding or resources', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Enter Dungeon' }).click();
 
   await expect(page.getByRole('heading', { name: 'A1-D1-01' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toHaveCount(0);
+  await expect(page.getByLabel('Resources')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'CRUCIBLE', exact: true })).toHaveCount(0);
 
@@ -27,6 +29,7 @@ test('isolates a dungeon run without hiding the read-only top bar', async ({ pag
 
   await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
+  await expect(page.getByLabel('Resources')).toBeVisible();
 });
 
 test('reload during a run returns to the selection', async ({ page }) => {

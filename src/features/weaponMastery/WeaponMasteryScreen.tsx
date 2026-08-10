@@ -72,7 +72,7 @@ export function WeaponMasteryScreen() {
         ))}
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <header className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:pr-80">
           <div>
             <h2 className="text-xl font-semibold">Weapon Mastery</h2>
             <p className="text-sm text-text-muted">

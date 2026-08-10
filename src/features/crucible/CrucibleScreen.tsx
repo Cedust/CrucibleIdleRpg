@@ -49,7 +49,7 @@ export function CrucibleScreen() {
 
   return (
     <section className="min-w-0" aria-label="Crucible">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:pr-80">
         <div>
           <h2 className="text-xl font-semibold">Crucible</h2>
           <p className="text-sm text-text-muted">

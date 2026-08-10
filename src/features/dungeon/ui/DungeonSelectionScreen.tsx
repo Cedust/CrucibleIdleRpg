@@ -26,7 +26,7 @@ export function DungeonSelectionScreen() {
 
   return (
     <ScreenLayout background="ashen-depths" className="min-h-full">
-      <section className="mx-auto max-w-7xl space-y-6">
+      <section className="max-w-7xl space-y-6">
         <header>
           <h2 className="font-display text-display-lg text-accent-strong">Dungeons</h2>
           <p className="mt-1 text-sm text-text-muted">Choose a dungeon entrance.</p>

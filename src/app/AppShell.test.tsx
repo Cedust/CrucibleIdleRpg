@@ -16,10 +16,22 @@ describe('AppShell', () => {
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
-  it('shows branding, resources, and accessible primary navigation outside a run', () => {
-    render(<AppShell />);
+  it('shows sidebar branding, floating resources, and accessible primary navigation outside a run', () => {
+    const { container } = render(<AppShell />);
 
     expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
+    expect(screen.getByRole('complementary')).toHaveClass('border-image-sidebar');
+    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
+    expect(screen.getByText('IDLE RPG')).toBeInTheDocument();
+    expect(
+      container.querySelector('img[src="/assets/icons/crucible-emblem.png"]'),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('img[src="/assets/ornaments/divider-ornate.png"]'),
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector('img[src="/assets/ornaments/nav-selection.png"]'),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Gold amount')).toHaveTextContent('0');
     expect(screen.getByLabelText('Crystals amount')).toHaveTextContent('0');
     expect(screen.getByLabelText('Cinder amount')).toHaveTextContent('—');
@@ -66,7 +78,8 @@ describe('AppShell', () => {
     await user.click(screen.getByRole('button', { name: 'Enter Dungeon' }));
 
     expect(await screen.findByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Crucible Idle RPG' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Resources')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('navigation', { name: 'Primary navigation' }),
     ).not.toBeInTheDocument();

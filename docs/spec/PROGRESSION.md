@@ -185,11 +185,10 @@ Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman 
   mit dem Ende des Runs verfügbar. Die Sperre schließt insbesondere aus, dass ein Level-Up mitten
   im Dungeon die Attrition über einen Vigor-Zuwachs aushebelt (Design-Absicht:
   [DESIGN §3](../DESIGN.md#3-player-experience--der-kern-loop)).
-- **Präsentationsgrenze:** Ein laufender Run belegt den Bereich der normalen Dungeon-View ohne
-  Primärnavigation oder Ausgabefunktionen. Die Kopfzeile mit Ressourcen bleibt rein lesend
-  sichtbar. Bereits pro Floor committete XP, Gold und Crystals dürfen dort sichtbar sein, sind
-  aber erst nach Wipe, manuellem Verlassen oder dem Dungeon-Abschluss ausgebbar. Diese Grenze
-  modelliert keinen separaten Pending-Bestand.
+- **Präsentationsgrenze:** Ein laufender Run belegt den gesamten Viewport ohne Primärnavigation,
+  Branding, Ressourcenanzeige oder Ausgabefunktionen. Bereits pro Floor committete XP, Gold und
+  Crystals bleiben gespeichert, sind aber erst nach Wipe, manuellem Verlassen oder dem
+  Dungeon-Abschluss ausgebbar. Diese Grenze modelliert keinen separaten Pending-Bestand.
 - **Wipe oder manuelles Verlassen:** Man verlässt den **kompletten** Dungeon. Bereits
   erhaltene Belohnungen bleiben erhalten (keine Penalty außer entgangenem Floor-Reward).
 - **Fortschritt innerhalb eines Dungeons wird nicht gespeichert** — ein Dungeon startet

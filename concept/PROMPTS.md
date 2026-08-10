@@ -383,6 +383,46 @@ haze, no dark panel fill, no background, no text, no icons, no medallions, no co
 screen frame, and no watermark.
 ```
 
+## 16. Frame-Ornament nach Eck-Referenz (9-Slice)
+
+- **Eingabe:** das Referenzbild (Eck-Ausschnitt aus den Concept-Screens) mit hochladen
+- **Zieldatei:** `public/assets/frames/mainview-ornate.png`
+- **Format:** quadratisch, mindestens 1024×1024, transparenter Hintergrund und vollständig
+  transparentes Zentrum
+- **Technik:** Wie §15 — 9-Slice-Rahmen, Slice-Inset ein Sechstel der Kantenlänge, Ornamente
+  ausschließlich im äußeren Ring, Kantenmitten nahtlos wiederholbar
+  (`border-image-repeat: round`). Die Referenz liefert nur Aufbau und Formensprache der Ecke;
+  die Farben kommen aus der Projekt-Palette. Der Rahmen wird in der UI auf etwa ein Fünftel
+  skaliert (Slice ein Sechstel von 1024 ≈ 170 px, gerendert als 32 px Border); jede Einzellinie
+  braucht im Asset daher ~12–16 px Stärke, damit sie über einem CSS-Pixel bleibt und beim
+  Browser-Zoom nicht wegrastert (vgl. die Edit-Prompts zu §5/§7). Nach dem Tausch werden
+  Slice-, Breiten- und Padding-Werte in `src/app/index.css` neu vermessen.
+
+```text
+Ornamental four-sided frame for a dark fantasy game UI, square 1:1, designed as a
+nine-slice border asset with a fully transparent background and a fully transparent
+empty center. Recreate the corner design from the attached reference image: a slim
+double gold line meeting in a clean right angle, crowned at the corner by a small
+pointed diamond finial and a single elegant stone-carved filigree flourish that curls
+diagonally inward into the empty center. Use the reference only for shape, proportions
+and composition; render all colors in the project palette of tarnished brass and warm
+gold (#8a6d3b to #fbbf24) with restrained warm amber highlights (#f59e0b), heavy
+stone-carved imperial style, gilded ruins mood — noble, precise, slightly weathered.
+
+Strict four-fold symmetry: all four corners are identical mirrored versions of the
+reference corner, each flourish pointing diagonally inward into the empty center.
+Keep every ornament entirely inside the outer sixth of the canvas. Between the
+corners, use only the perfectly straight, seamlessly repeatable double gold line so
+CSS border-image slicing can stretch the frame to any panel size without distorting
+the decorations. Give every line a bold, confident stroke weight — on a 1024 px
+canvas each of the two gold lines must be at least 12 to 16 pixels thick, never
+hairline-thin — so the frame still reads clearly after being scaled down to about
+one fifth of its size in the UI. Preserve clear transparent safety space between the
+flourish tips and the empty center. Crisp clean vector-like contours, subtle
+worn-metal texture, minimal warm highlights, no glow haze, no dark panel fill, no
+background, no text, no icons, no medallions, no watermark.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

@@ -36,7 +36,7 @@ export function ScreenLayout({
           <>
             <div
               aria-hidden="true"
-              className={`absolute inset-0 -z-10 bg-cover bg-[position:center_bottom] ${BACKGROUND_CLASSES[background]}`}
+              className={`absolute inset-0 -z-10 bg-cover bg-position-[center_bottom] ${BACKGROUND_CLASSES[background]}`}
             />
             <div
               aria-hidden="true"

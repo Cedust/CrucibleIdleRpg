@@ -1,28 +1,48 @@
 import { useState } from 'react';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
-import { type Act1DungeonId } from '@/game/encounters/act1';
-import { ACT_1_DISPLAY_META, ACT_DISPLAY_META } from '@/game/encounters/actMeta';
+import { ACT_1_ENCOUNTERS, type Act1DungeonId } from '@/game/encounters/act1';
+import {
+  ACT_1_DISPLAY_META,
+  ACT_1_DUNGEON_DISPLAY_META,
+  ACT_DISPLAY_META,
+} from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
-import { Button } from '@/shared/ui/Button';
-import { Panel } from '@/shared/ui/Panel';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { ActPanel } from './ActPanel';
 import { DungeonSelector } from './DungeonSelector';
+import { SelectedDungeonPanel } from './SelectedDungeonPanel';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
-/** Normal shell view for selecting an unlocked dungeon entrance. */
+function dungeonProgress(dungeonId: Act1DungeonId, firstVictories: readonly string[]) {
+  const masteredFloors = new Set(firstVictories);
+  let masteredFloorCount = 0;
+  let totalFloorCount = 0;
+
+  for (const encounter of ACT_1_ENCOUNTERS) {
+    if (encounter.dungeonId !== dungeonId) continue;
+    totalFloorCount += 1;
+    if (masteredFloors.has(encounter.id)) masteredFloorCount += 1;
+  }
+
+  return { masteredFloorCount, totalFloorCount };
+}
+
+/** Normal shell view for inspecting dungeons and starting an unlocked entrance. */
 export function DungeonSelectionScreen() {
   // Die Einstiege folgen aus den Waystone-Rängen; gespeichert sind nur die Node-Ränge.
   const crucible = useSaveStore((state) => state.data?.crucible ?? null);
   const unlockedDungeonIds = crucible === null ? null : deriveUnlockedDungeonIds(crucible);
+  const firstVictories = useSaveStore((state) => state.data?.firstVictories ?? null);
+  const completedDungeons = useSaveStore((state) => state.data?.completedDungeons ?? null);
   const saveStatus = useSaveStore((state) => state.status);
   const mode = useDungeonRunStore((state) => state.mode);
   const startError = useDungeonRunStore((state) => state.startError);
   const startRun = useDungeonRunStore((state) => state.startRun);
   const [requestedDungeonId, setRequestedDungeonId] = useState<Act1DungeonId>('A1-D1');
-  const selectedDungeonId = unlockedDungeonIds?.includes(requestedDungeonId)
-    ? requestedDungeonId
-    : (unlockedDungeonIds?.[0] ?? 'A1-D1');
+  const selectedDungeonId = requestedDungeonId;
+  const selectedDungeonUnlocked = unlockedDungeonIds?.includes(selectedDungeonId) ?? false;
+  const selectedProgress =
+    firstVictories === null ? null : dungeonProgress(selectedDungeonId, firstVictories);
 
   return (
     <ScreenLayout background="ashen-depths" className="min-h-full">
@@ -32,7 +52,7 @@ export function DungeonSelectionScreen() {
           <p className="mt-1 text-sm text-text-muted">Choose a dungeon entrance.</p>
         </header>
 
-        {unlockedDungeonIds === null ? (
+        {unlockedDungeonIds === null || completedDungeons === null || selectedProgress === null ? (
           <p aria-live="polite" className="text-text-muted">
             {saveStatus === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress...'}
           </p>
@@ -46,33 +66,30 @@ export function DungeonSelectionScreen() {
                 <ActPanel key={act.id} act={act} />
               ))}
             </ul>
-            <Panel
-              as="section"
-              aria-label={`${ACT_1_DISPLAY_META.label} dungeons`}
-              className="min-w-0 flex-1 space-y-5"
-            >
-              <p className="text-center font-display text-display-sm tracking-widest text-accent">
-                {ACT_1_DISPLAY_META.label} - {ACT_1_DISPLAY_META.name.toUpperCase()}
-              </p>
-              <DungeonSelector
-                unlockedDungeonIds={unlockedDungeonIds}
-                selectedDungeonId={selectedDungeonId}
-                onSelect={setRequestedDungeonId}
-              />
-              {startError !== null && (
-                <p role="alert" className="text-sm text-danger">
-                  {startError}
-                </p>
-              )}
-              <div className="flex justify-center">
-                <Button
-                  disabled={mode === 'starting' || saveStatus !== 'ready'}
-                  onClick={() => void startRun(selectedDungeonId)}
-                >
-                  {mode === 'starting' ? 'Entering Dungeon...' : 'Enter Dungeon'}
-                </Button>
+            <section aria-label={`${ACT_1_DISPLAY_META.label} dungeons`} className="min-w-0 flex-1">
+              <div className="w-220 max-w-full space-y-5">
+                <DungeonSelector
+                  unlockedDungeonIds={unlockedDungeonIds}
+                  completedDungeons={completedDungeons}
+                  selectedDungeonId={selectedDungeonId}
+                  onSelect={setRequestedDungeonId}
+                />
+                <SelectedDungeonPanel
+                  actLabel={ACT_1_DISPLAY_META.label}
+                  actName={ACT_1_DISPLAY_META.name}
+                  dungeonLabel={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].label}
+                  dungeonName={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].name}
+                  masteredFloorCount={selectedProgress.masteredFloorCount}
+                  totalFloorCount={selectedProgress.totalFloorCount}
+                  disabled={
+                    !selectedDungeonUnlocked || mode === 'starting' || saveStatus !== 'ready'
+                  }
+                  isStarting={mode === 'starting'}
+                  startError={startError}
+                  onEnter={() => void startRun(selectedDungeonId)}
+                />
               </div>
-            </Panel>
+            </section>
           </div>
         )}
       </section>

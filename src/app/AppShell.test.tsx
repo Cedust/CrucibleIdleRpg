@@ -47,7 +47,7 @@ describe('AppShell', () => {
       'page',
     );
     expect(screen.getByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Enter Dungeon' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();
   });
 
   it('switches views through primary navigation', async () => {
@@ -75,7 +75,7 @@ describe('AppShell', () => {
     const user = userEvent.setup();
     render(<AppShell />);
 
-    await user.click(screen.getByRole('button', { name: 'Enter Dungeon' }));
+    await user.click(screen.getByRole('button', { name: 'ENTER DUNGEON' }));
 
     expect(await screen.findByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Crucible Idle RPG' })).not.toBeInTheDocument();

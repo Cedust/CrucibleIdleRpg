@@ -154,7 +154,7 @@ function Sidebar({
                     alt=""
                     aria-hidden="true"
                     src="/assets/ornaments/nav-selection.png"
-                    className="pointer-events-none absolute inset-y-0 left-0 h-full w-7 -translate-x-[8.5%] object-cover object-left"
+                    className="pointer-events-none absolute inset-y-0 left-0 h-full w-7 translate-x-[-8.5%] object-cover object-left"
                   />
                 )}
                 <span

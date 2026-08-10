@@ -22,7 +22,7 @@ export function ActPanel({ act }: ActPanelProps) {
       <div
         aria-hidden="true"
         className={`pointer-events-none absolute inset-0 border-image-thin ${
-          act.hasContent ? '' : 'opacity-40'
+          act.hasContent ? 'shadow-glow-accent' : 'opacity-20'
         }`}
       />
       <div
@@ -34,23 +34,25 @@ export function ActPanel({ act }: ActPanelProps) {
       <div
         aria-hidden="true"
         className={`absolute inset-0 -z-10 rounded-md bg-linear-to-t ${
-          act.hasContent
-            ? 'from-background/70 to-background/15'
-            : 'from-background/90 to-background/35'
+          act.hasContent ? '' : 'from-background/90 to-background/35'
         }`}
       />
       <div className="flex h-full flex-col justify-end gap-1">
         {/* Whitespace-Textknoten trennen Label, Name und Status im Textinhalt des Panels. */}
-        <p className={`font-display text-display ${act.hasContent ? 'text-accent' : 'text-text'}`}>
-          {act.label}
-        </p>{' '}
-        <p className="text-sm tracking-wide text-text-muted">{act.name}</p>{' '}
-        {!act.hasContent && (
-          <p className="flex items-center gap-1.5 text-xs text-text-muted">
-            <Lock aria-hidden="true" className="size-3.5" />
-            Locked
+        <div className="flex items-center justify-between gap-3">
+          <p
+            className={`font-display text-display ${act.hasContent ? 'text-accent-strong' : 'text-text'}`}
+          >
+            {act.label}
           </p>
-        )}
+          {!act.hasContent && (
+            <span className="text-text-muted">
+              <Lock aria-hidden="true" className="size-4" />
+              <span className="sr-only">Locked</span>
+            </span>
+          )}
+        </div>{' '}
+        <p className="text-sm tracking-wide text-text-muted">{act.name}</p>{' '}
       </div>
     </li>
   );

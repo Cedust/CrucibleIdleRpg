@@ -345,12 +345,12 @@ image stays readable when cropped to a small wide card; the center-bottom area s
 calm so UI panels and characters can sit on top.
 ```
 
-## 15. Sidebar-Ornamentrahmen (9-Slice)
+## 15. Alternativer Panel-Ornamentrahmen (9-Slice)
 
-- **Zieldatei:** `public/assets/frames/sidebar-ornate.png`
+- **Zieldatei:** `public/assets/frames/panel-ornate-alt.png`
 - **Format:** quadratisch, mindestens 1024×1024, transparenter Hintergrund und vollständig
   transparentes Zentrum
-- **Technik:** 9-Slice-Rahmen für eine schmale, viewport-hohe Sidebar. Der Slice-Inset liegt bei
+- **Technik:** 9-Slice-Rahmen für eine schmale, viewport-hohe Fläche. Der Slice-Inset liegt bei
   einem Sechstel der Kantenlänge; sämtliche Ornamente bleiben innerhalb dieses äußeren Rings.
   Die geraden Kantenstücke müssen nahtlos wiederholbar sein (`border-image-repeat: round`),
   damit der Rahmen ohne Verzerrung auf unterschiedliche Menübreiten und Viewport-Höhen skaliert.
@@ -358,17 +358,17 @@ calm so UI panels and characters can sit on top.
   oben rechts nach links unten, unten links nach rechts oben und unten rechts nach links oben.
 
 ```text
-Ornamental four-sided frame for a full-height dark fantasy game UI sidebar, designed
+Ornamental four-sided frame for a full-height dark fantasy game UI panel, designed
 as a square 1:1 nine-slice border asset with a fully transparent background and a
 fully transparent empty center. A very thin double outline of tarnished brass and
 restrained warm gold (#8a6d3b to #fbbf24) forms a tall, narrow rectangular boundary
-around a vertical navigation column. Each corner carries a small elegant imperial
+around a vertical content column. Each corner carries a small elegant imperial
 ornament that grows from the border and points diagonally inward into the empty center:
 the top-left corner points down and right, the top-right corner down and left, the
 bottom-left corner up and right, and the bottom-right corner up and left. Each corner
 combines a short angular spear tip, a tiny diamond-shaped joint, and one restrained
 curl of stone-carved filigree. The result should feel like a delicate architectural
-frame around an ancient palace menu: noble, precise, slightly weathered, and clearly
+frame around an ancient palace panel: noble, precise, slightly weathered, and clearly
 visible against a deep blue-black background, but much lighter and narrower than an
 ornate content-panel frame.
 
@@ -376,7 +376,7 @@ Strict four-fold symmetry: all corner ornaments are mirrored versions of one des
 and all four edge lines share the same slim weight. Keep every ornament entirely
 inside the outer sixth of the canvas. Between the corners, use only perfectly straight,
 seamlessly repeatable thin double lines so CSS border-image slicing can extend the
-frame to a narrow sidebar of any height without stretching the decorations. Preserve
+frame to a tall, narrow panel of any height without stretching the decorations. Preserve
 clear transparent safety space between the ornament tips and the empty center. Crisp
 vector-like contours, subtle worn-metal texture, minimal warm highlights, no glow
 haze, no dark panel fill, no background, no text, no icons, no medallions, no complete

@@ -18,7 +18,7 @@ export function ResourceDock() {
   return (
     <dl
       aria-label="Resources"
-      className="absolute right-4 top-4 z-10 flex flex-wrap justify-end gap-2 lg:right-6 lg:top-6"
+      className="absolute right-10 top-10 z-10 flex flex-wrap justify-end gap-2"
     >
       <ResourceChip icon={Coins} label="Gold" value={currencies?.gold} />
       <ResourceChip icon={Gem} label="Crystals" value={currencies?.crystals} tone="info" />

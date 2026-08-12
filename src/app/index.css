@@ -125,13 +125,11 @@
 
 /*
  * Vollhöhen-Rahmen für Sidebar und Main-Area. Die generierten Assets sind
- * 1024×1536; 160 px halten die vier Eckornamente vollständig in den
- * Corner-Slices. Das Pseudoelement vermeidet, dass die 32 px Border den
- * Inhalt verengt. Der Rahmen bleibt ohne Outset vollständig innerhalb der
- * jeweiligen Fläche, damit an der Naht zwischen Sidebar und Main-Area beide
- * Goldlinien sichtbar bleiben. Das Padding hält Flächenhintergründe, Screens
- * und Scrollbalken innerhalb der Goldlinie: Die 12 px entsprechen der
- * Band-Innenkante (~59 px vom Asset-Rand, Skalierung 32/160).
+ * 1024×1536; 275 px enthalten die nach innen reichenden Eckornamente
+ * vollständig. Das Pseudoelement vermeidet, dass die 40 px Border den Inhalt
+ * verengt. Das Outset lässt den Rahmen oben und unten 4 px sowie links und
+ * rechts 3 px über die jeweilige Fläche ragen. Das 12-px-Padding hält
+ * Flächenhintergründe und Scrollbalken innerhalb der durchgehenden Goldlinie.
  */
 @utility border-image-sidebar {
   position: relative;
@@ -149,16 +147,12 @@
   z-index: 20;
   inset: 0;
   border-style: solid;
-  border-width: 32px;
-  border-image: url('/assets/frames/sidebar-ornate.png') 160 / 32px round;
-  border-image-outset: 0;
-  opacity: 0.7;
+  border-width: 40px;
+  border-image: url('/assets/frames/mainview-ornate.png') 275 / 40px round;
+  border-image-outset: 4px 3px;
+  opacity: 0.8;
   pointer-events: none;
   content: '';
-}
-
-.border-image-mainview::before {
-  border-image-source: url('/assets/frames/mainview-ornate.png');
 }
 
 html {

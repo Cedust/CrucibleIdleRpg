@@ -1,55 +1,133 @@
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { Crosshair, Shield, Swords, type LucideIcon } from 'lucide-react';
 import { TEAM_ORDER } from '@/game/characters/characters';
+import { xpRequiredForNextLevel } from '@/game/rewards/xpRewards';
+import type { Role } from '@/game/types';
 import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useSaveStore } from '@/features/save/saveStore';
+import { Panel } from '@/shared/ui/Panel';
+import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { formatNumber } from '@/shared/utils/formatNumber';
+import { useShallow } from 'zustand/react/shallow';
+import { CombatPortrait } from './CombatPortrait';
 
-const ROLE_LABEL = {
+const ROLE_LABEL: Record<Role, string> = {
   tank: 'Tank',
   melee: 'Melee',
   ranged: 'Ranged',
-} as const;
+};
+
+const ROLE_ICON: Record<Role, LucideIcon> = {
+  tank: Shield,
+  melee: Swords,
+  ranged: Crosshair,
+};
+
+interface TeamPanelProps {
+  className?: string;
+}
 
 function CharacterCard({ index }: { index: number }) {
-  const name = useCombatStore((state) => state.combat?.characters[index]?.name ?? null);
-  const role = useCombatStore((state) => state.combat?.characters[index]?.role ?? null);
-  const health = useCombatStore((state) => state.combat?.characters[index]?.health ?? 0);
-  const maxHealth = useCombatStore((state) => state.combat?.characters[index]?.maxHealth ?? 0);
-  const barrier = useCombatStore((state) => state.combat?.characters[index]?.barrier ?? 0);
+  const character = useCombatStore(
+    useShallow((state) => {
+      const participant = state.combat?.characters[index];
+      if (participant === undefined) return null;
 
-  if (name === null || role === null) {
+      return {
+        id: participant.id,
+        name: participant.name,
+        role: participant.role,
+        health: participant.health,
+        maxHealth: participant.maxHealth,
+        barrier: participant.barrier,
+        maxBarrier: participant.stats.defensive.barrier,
+      };
+    }),
+  );
+  const progression = useSaveStore((state) => {
+    if (character === null || state.data === null) return null;
+    return state.data.characters[character.id];
+  });
+
+  if (character === null || progression === null) {
     return null;
   }
 
+  const RoleIcon = ROLE_ICON[character.role];
+  const isDefeated = character.health <= 0;
+  const xpRequired = xpRequiredForNextLevel(progression.level);
+
   return (
-    <article className="rounded-lg border border-border bg-surface-raised p-3">
-      <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h4 className="font-semibold">{name}</h4>
-        <span className="text-xs uppercase tracking-wide text-text-muted">{ROLE_LABEL[role]}</span>
+    <Panel
+      as="article"
+      variant="thin"
+      className={`flex min-w-0 items-center gap-3 p-3 ${isDefeated ? 'opacity-55' : ''}`}
+    >
+      <CombatPortrait
+        characterId={character.id}
+        size="xl"
+        isDefeated={isDefeated}
+        label={`${character.name} portrait`}
+      />
+      <div data-testid={`${character.id}-details`} className="min-w-0 flex-1 space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-display text-display text-text">{character.name}</h3>
+          <div className="flex items-center gap-2">
+            {isDefeated && (
+              <span className="text-xs font-semibold uppercase text-danger">Fallen</span>
+            )}
+            <span role="img" aria-label={`${ROLE_LABEL[character.role]} role`}>
+              <RoleIcon aria-hidden="true" className="size-4 text-accent" />
+            </span>
+          </div>
+        </div>
+
+        <ProgressBar
+          label="Health"
+          ariaLabel={`${character.name} health`}
+          value={character.health}
+          max={character.maxHealth}
+          tone="health"
+          size="sm"
+        />
+        <ProgressBar
+          label="Barrier"
+          ariaLabel={`${character.name} barrier`}
+          value={character.barrier}
+          max={Math.max(character.maxBarrier, 1)}
+          valueText={formatNumber(character.barrier)}
+          tone="barrier"
+          size="sm"
+        />
+        <ProgressBar
+          label={`Level ${progression.level}`}
+          ariaLabel={`${character.name} experience`}
+          value={progression.xp}
+          max={xpRequired}
+          valueText={
+            xpRequired === 0
+              ? 'MAX'
+              : `${formatNumber(progression.xp)}/${formatNumber(xpRequired)} XP`
+          }
+          endLabel={xpRequired === 0 ? 'MAX' : formatNumber(progression.level + 1)}
+          tone="xp"
+          size="sm"
+        />
       </div>
-      <ProgressBar label={name} value={health} max={maxHealth} barrier={barrier} />
-    </article>
+    </Panel>
   );
 }
 
-/** Team-Anzeige mit eigener Subscription auf den Charakterzustand. */
-export function TeamPanel() {
+/** Team-Anzeige mit je einer selektiven Subscription pro Charakterkarte. */
+export function TeamPanel({ className = '' }: TeamPanelProps) {
   const hasCombat = useCombatStore((state) => state.combat !== null);
 
   return (
-    <section
-      aria-labelledby="team-heading"
-      className="rounded-xl border border-border bg-surface p-4"
-    >
-      <h3
-        id="team-heading"
-        className="text-sm font-semibold uppercase tracking-wider text-text-muted"
-      >
-        Team
-      </h3>
-
+    <section aria-label="Party" className={`min-w-0 ${className}`}>
+      <h2 className="mb-3 text-center font-display text-display-sm text-accent-strong">Heroes</h2>
       {!hasCombat ? (
-        <p className="mt-4 text-sm text-text-muted">Start a combat to see your team.</p>
+        <p className="text-sm text-text-muted">Start a combat to see your party.</p>
       ) : (
-        <div className="mt-3 space-y-3">
+        <div className="space-y-3">
           {TEAM_ORDER.map((id, index) => (
             <CharacterCard key={id} index={index} />
           ))}

@@ -1,28 +1,44 @@
 import type { ActorRef } from '@/features/combat/engine/combatState';
-import { useCombatStore } from '@/features/combat/state/combatStore';
 import { sameActor } from '@/features/combat/engine/turnOrder';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useShallow } from 'zustand/react/shallow';
+import { CombatPortrait } from './CombatPortrait';
 
-/** Ein Eintrag löst seinen Namen reaktiv über die eigene Subscription auf. */
 function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean }) {
-  const name = useCombatStore((state) => {
-    const participant =
-      actor.side === 'character'
-        ? state.combat?.characters[actor.index]
-        : state.combat?.enemies[actor.index];
-    return participant?.name ?? 'Unknown actor';
-  });
+  const participant = useCombatStore(
+    useShallow((state) => {
+      const value =
+        actor.side === 'character'
+          ? state.combat?.characters[actor.index]
+          : state.combat?.enemies[actor.index];
+      if (value === undefined) return null;
+
+      return {
+        id: actor.side === 'character' ? state.combat?.characters[actor.index]?.id : undefined,
+        name: value.name,
+        isDefeated: value.health <= 0,
+      };
+    }),
+  );
+
+  if (participant === null) {
+    return null;
+  }
 
   return (
     <li
       aria-current={isActive ? 'step' : undefined}
-      className={
-        isActive
-          ? 'rounded-full border border-accent bg-accent/15 px-3 py-1.5 text-sm font-semibold text-accent'
-          : 'rounded-full border border-border bg-surface-raised px-3 py-1.5 text-sm text-text-muted'
-      }
+      aria-label={`${participant.name}${isActive ? ', active' : ''}`}
+      className={`relative flex shrink-0 items-center rounded-lg p-1 transition-colors after:absolute after:left-full after:top-1/2 after:h-px after:w-3 after:bg-border last:after:hidden ${
+        isActive ? 'bg-accent/15 ring-1 ring-accent shadow-glow-accent' : ''
+      }`}
     >
-      {isActive && <span className="sr-only">Active: </span>}
-      {name}
+      <CombatPortrait
+        characterId={participant.id}
+        size="sm"
+        isDefeated={participant.isDefeated}
+        label={`${participant.name} portrait`}
+      />
     </li>
   );
 }
@@ -49,20 +65,14 @@ export function TurnOrderBar() {
   });
 
   return (
-    <section
-      aria-labelledby="turn-order-heading"
-      className="rounded-xl border border-border bg-surface p-4"
-    >
-      <h3
-        id="turn-order-heading"
-        className="text-sm font-semibold uppercase tracking-wider text-text-muted"
-      >
-        Turn Order
-      </h3>
+    <section aria-label="Turn order" className="text-center">
       {turnOrder.length === 0 ? (
-        <p className="mt-3 text-sm text-text-muted">No turn order yet.</p>
+        <p className="text-sm text-text-muted">No turn order yet.</p>
       ) : (
-        <ol aria-label="Combat turn order" className="mt-3 flex flex-wrap gap-2">
+        <ol
+          aria-label="Combat turn order"
+          className="mx-auto flex max-w-full justify-center gap-3 overflow-x-auto p-1"
+        >
           {turnOrder.map((actor) => (
             <TurnOrderItem
               key={`${actor.side}-${actor.index}`}

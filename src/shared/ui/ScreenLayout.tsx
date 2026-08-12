@@ -1,16 +1,18 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
-type ScreenBackground = 'ashen-depths';
-
-const BACKGROUND_CLASSES: Record<ScreenBackground, string> = {
+const BACKGROUND_CLASSES: Record<DungeonBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
+  'ember-foundry': 'bg-[url(/assets/backgrounds/dungeon-ember-foundry.png)]',
+  'forgotten-citadel': 'bg-[url(/assets/backgrounds/dungeon-forgotten-citadel.png)]',
 };
 
 interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
   as?: ScreenLayoutElement;
   /** Ohne Angabe rendert der Screen auf der reinen Hintergrundfarbe. */
-  background?: ScreenBackground;
+  background?: DungeonBackgroundId;
+  contentClassName?: string;
   children: ReactNode;
 }
 
@@ -26,12 +28,13 @@ export function ScreenLayout({
   as: Tag = 'div',
   background,
   className = '',
+  contentClassName = '',
   children,
   ...props
 }: ScreenLayoutProps) {
   return (
     <Tag className={`relative isolate flex flex-col bg-background ${className}`} {...props}>
-      <div className="relative flex-1">
+      <div className="relative min-h-0 flex-1">
         {background !== undefined && (
           <>
             <div
@@ -44,7 +47,7 @@ export function ScreenLayout({
             />
           </>
         )}
-        <div className="relative p-4 sm:p-6">{children}</div>
+        <div className={`relative p-4 sm:p-6 ${contentClassName}`}>{children}</div>
       </div>
     </Tag>
   );

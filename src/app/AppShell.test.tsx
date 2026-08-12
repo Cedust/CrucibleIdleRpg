@@ -77,7 +77,10 @@ describe('AppShell', () => {
 
     await user.click(screen.getByRole('button', { name: 'ENTER DUNGEON' }));
 
-    expect(await screen.findByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'The Ashen Depths — Cinder Gate' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
     expect(screen.queryByRole('heading', { name: 'Crucible Idle RPG' })).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Resources')).not.toBeInTheDocument();
     expect(
@@ -88,10 +91,12 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'BLACKSMITH' })).not.toBeInTheDocument();
 
     act(() => useNavigationStore.getState().setActiveView('crucible'));
-    expect(screen.getByRole('heading', { name: 'A1-D1-01' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'The Ashen Depths — Cinder Gate' }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'CRUCIBLE' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Leave Dungeon' }));
+    await user.click(screen.getByRole('button', { name: 'LEAVE DUNGEON' }));
     expect(screen.getByRole('button', { name: 'Confirm Leave Dungeon' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Confirm Leave Dungeon' }));
 

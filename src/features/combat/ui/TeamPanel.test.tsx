@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { Profiler } from 'react';
-import { act, render } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { FORMATIONS } from '@/game/encounters/formations';
@@ -14,6 +14,8 @@ import {
   type CombatState,
 } from '@/features/combat/engine/combatState';
 import { useCombatStore } from '@/features/combat/state/combatStore';
+import { createDefaultSave } from '@/features/save/saveSchema';
+import { saveStore } from '@/features/save/saveStore';
 import { EnemyFormation } from './EnemyFormation';
 import { TeamPanel } from './TeamPanel';
 
@@ -66,6 +68,48 @@ function positionNextActorWithVisibleChange(side: 'character' | 'enemy'): void {
 describe('TeamPanel & EnemyFormation — selektive Subscriptions', () => {
   beforeEach(() => {
     useCombatStore.getState().clearCombat();
+    saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
+  });
+
+  it('shows portraits, fixed roles and the three-part level progression for the party', () => {
+    const save = createDefaultSave(42);
+    saveStore.setState({
+      data: {
+        ...save,
+        characters: {
+          ...save.characters,
+          korvin: { ...save.characters.korvin, xp: 18 },
+        },
+      },
+      status: 'ready',
+    });
+    useCombatStore.getState().startCombat(combat());
+    render(<TeamPanel />);
+
+    expect(screen.getByRole('region', { name: 'Party' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Party' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Heroes' })).toHaveClass('text-accent-strong');
+    expect(screen.getByTestId('character-portrait-korvin')).toBeInTheDocument();
+    expect(screen.getByTestId('character-portrait-rhaya')).toBeInTheDocument();
+    expect(screen.getByTestId('character-portrait-quinn')).toBeInTheDocument();
+    expect(screen.queryByText('Tank')).not.toBeInTheDocument();
+    expect(screen.queryByText('Melee')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ranged')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Tank role' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Melee role' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Ranged role' })).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Korvin health' })).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Korvin barrier' })).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Korvin experience' })).toBeInTheDocument();
+    const korvinCard = screen.getByTestId('character-portrait-korvin').closest('article');
+    if (korvinCard === null) throw new Error('Korvin card missing');
+    expect(screen.getByTestId('character-portrait-korvin')).toHaveClass('size-36');
+    expect(screen.getByTestId('korvin-details')).toHaveClass('flex-1');
+    expect(screen.getByTestId('korvin-details')).not.toHaveClass('w-36');
+    expect(within(korvinCard).getByText('Level 1')).toBeInTheDocument();
+    expect(within(korvinCard).getByText('18/75 XP')).toBeInTheDocument();
+    expect(within(korvinCard).getByText('2')).toBeInTheDocument();
+    expect(screen.queryByText(/ATK|DEF/)).not.toBeInTheDocument();
   });
 
   it('aktualisiert nur das Panel der fachlich veränderten Kampfseite', () => {

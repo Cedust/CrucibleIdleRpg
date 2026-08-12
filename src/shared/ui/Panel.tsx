@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-type PanelElement = 'div' | 'section' | 'article' | 'aside';
+type PanelElement = 'div' | 'section' | 'article' | 'aside' | 'footer';
 type PanelVariant = 'ornate' | 'thin' | 'plain';
 type PanelPadding = 'none' | 'md';
 

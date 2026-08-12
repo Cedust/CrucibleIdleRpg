@@ -13,7 +13,9 @@ export function AppShell() {
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-text">
       {runMode === 'run' ? (
-        <DungeonRunScreen />
+        <div className="border-image-mainview relative flex min-w-0 flex-1 overflow-hidden">
+          <DungeonRunScreen />
+        </div>
       ) : (
         <>
           <AppSidebar />

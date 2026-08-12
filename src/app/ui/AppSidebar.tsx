@@ -34,7 +34,7 @@ export function AppSidebar() {
   const setActiveView = useNavigationStore((state) => state.setActiveView);
 
   return (
-    <aside className="border-image-sidebar flex h-dvh w-72 shrink-0 flex-col">
+    <aside className="border-image-sidebar flex h-dvh w-72 shrink-0 flex-col px-4 py-4">
       {/* Endet an der sichtbaren Außenkante des Rahmens; vor den Nav-Buttons im DOM, damit deren positionierte Elemente darüber liegen. */}
       <img
         alt=""

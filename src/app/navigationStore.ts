@@ -6,7 +6,7 @@ import { create } from 'zustand';
  */
 export const VIEWS = [
   'dungeons',
-  'team',
+  'heroes',
   'crucible',
   'weapon-mastery',
   'blacksmith',
@@ -14,6 +14,16 @@ export const VIEWS = [
   'runes',
 ] as const;
 export type View = (typeof VIEWS)[number];
+
+export const VIEW_LABELS: Record<View, string> = {
+  dungeons: 'DUNGEONS',
+  heroes: 'HEROES',
+  crucible: 'CRUCIBLE',
+  'weapon-mastery': 'WEAPON MASTERY',
+  blacksmith: 'BLACKSMITH',
+  jeweler: 'JEWELER',
+  runes: 'RUNES',
+};
 
 interface NavigationState {
   activeView: View;

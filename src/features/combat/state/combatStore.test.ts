@@ -64,7 +64,7 @@ describe('useCombatStore', () => {
     useCombatStore.getState().advanceTick();
     const beforeNavigation = useCombatStore.getState();
 
-    useNavigationStore.getState().setActiveView('team');
+    useNavigationStore.getState().setActiveView('heroes');
 
     const afterNavigation = useCombatStore.getState();
     expect(afterNavigation.combat).toBe(beforeNavigation.combat);

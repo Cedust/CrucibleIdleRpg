@@ -14,7 +14,7 @@ import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScree
 
 const VIEW_META: Record<View, { label: string; icon: ComponentType<{ className?: string }> }> = {
   dungeons: { label: 'DUNGEONS', icon: Map },
-  team: { label: 'TEAM', icon: Users },
+  team: { label: 'HEROES', icon: Users },
   crucible: { label: 'CRUCIBLE', icon: Flame },
   'weapon-mastery': { label: 'WEAPON MASTERY', icon: Swords },
   blacksmith: { label: 'BLACKSMITH', icon: Hammer },

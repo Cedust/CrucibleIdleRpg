@@ -84,7 +84,7 @@ describe('AppShell', () => {
       screen.queryByRole('navigation', { name: 'Primary navigation' }),
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'CRUCIBLE' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'TEAM' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'HEROES' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'BLACKSMITH' })).not.toBeInTheDocument();
 
     act(() => useNavigationStore.getState().setActiveView('crucible'));

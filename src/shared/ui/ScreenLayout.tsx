@@ -40,7 +40,7 @@ export function ScreenLayout({
             />
             <div
               aria-hidden="true"
-              className="absolute inset-0 -z-10 bg-linear-to-t from-background/90 via-background/70 to-background/45 shadow-[inset_0_0_32px_12px_var(--color-background)]"
+              className="absolute inset-0 -z-10 bg-linear-to-t from-background/82 via-background/58 to-background/32 shadow-[inset_0_0_32px_12px_var(--color-background)]"
             />
           </>
         )}

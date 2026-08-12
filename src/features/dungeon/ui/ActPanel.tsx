@@ -34,7 +34,7 @@ export function ActPanel({ act }: ActPanelProps) {
       <div
         aria-hidden="true"
         className={`absolute inset-0 -z-10 rounded-md bg-linear-to-t ${
-          act.hasContent ? '' : 'from-background/90 to-background/35'
+          act.hasContent ? '' : 'from-background/82 to-background/32'
         }`}
       />
       <div className="flex h-full flex-col justify-end gap-1">

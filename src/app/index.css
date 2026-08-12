@@ -31,10 +31,10 @@
   --text-display-lg--font-weight: 700;
 
   /* Hintergründe / Flächen (Stein-Töne) */
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-raised: #334155;
-  --color-border: #334155;
+  --color-background: #02070d;
+  --color-surface: #0a141f;
+  --color-surface-raised: #152536;
+  --color-border: #314457;
 
   /* Ornamentrahmen: Messing-Linien um Panels und Buttons */
   --color-ornament: #8a6d3b;

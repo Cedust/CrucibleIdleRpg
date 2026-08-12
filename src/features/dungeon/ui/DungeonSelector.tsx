@@ -47,7 +47,7 @@ export function DungeonSelector({
             <div
               aria-hidden="true"
               className={`absolute inset-0 -z-10 rounded-md bg-linear-to-t ${
-                selected ? '' : 'from-background/90 to-background/45'
+                selected ? '' : 'from-background/82 to-background/32'
               }`}
             />
             {/* Selektion = Frame in voller Stärke, alle anderen gedimmt. */}

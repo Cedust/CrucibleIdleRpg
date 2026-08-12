@@ -39,7 +39,7 @@ export function RespecDialog({
       ref={dialog}
       aria-label="Confirm Discipline Respec"
       onClose={handleClose}
-      className="m-auto w-full max-w-sm rounded-md border border-border bg-background p-5 text-text backdrop:bg-black/60"
+      className="m-auto w-full max-w-sm rounded-md border border-border bg-surface-raised p-5 text-text backdrop:bg-black/60"
     >
       <h3 className="font-semibold">Respec {disciplineLabel}?</h3>
       <p className="mt-2 text-sm text-text-muted">

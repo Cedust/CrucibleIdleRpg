@@ -423,6 +423,35 @@ worn-metal texture, minimal warm highlights, no glow haze, no dark panel fill, n
 background, no text, no icons, no medallions, no watermark.
 ```
 
+## 17. Glutlicht (Ember-Glow-Overlay)
+
+- **Zieldatei:** `public/assets/effects/ember-glow.png`
+- **Format:** quadratisch, mindestens 1024×1024, transparenter Hintergrund
+- **Technik:** Liegt als absolut positioniertes Bild am unteren Rand der Sidebar
+  (volle Breite, `pointer-events: none`), unterhalb des Rahmen-`::before`
+  (`z-index` < 20) und hinter den Navigationseinträgen. Das Leuchten bleibt in der
+  unteren Bildhälfte und läuft nach oben und zu den Seiten vollständig transparent
+  aus, damit das Asset an der schmalen Sidebar-Spalte (288 px) ohne sichtbare
+  Kanten sitzt. Durch die horizontale Symmetrie ist es auch unten rechts im
+  Main-Bereich wiederverwendbar (versetzt positioniert oder gespiegelt).
+
+```text
+Atmospheric ember-glow overlay for a dark fantasy game UI, square 1:1, fully
+transparent background. Soft, diffuse firelight rising from the bottom edge of
+the canvas, as if a crucible of glowing coals burns just out of view below:
+warm ember orange (#e25822) blending into amber highlights (#f59e0b, #fbbf24),
+brightest in a gentle arc along the center of the bottom edge, fading smoothly
+and evenly into full transparency toward the sides and upward. The upper half
+of the canvas stays completely empty and transparent. A sparse scatter of tiny
+drifting embers and sparks — small glowing dots and very short streaks — floats
+upward out of the glow, growing fainter and rarer with height. Pure light and
+embers only: no flames with hard silhouettes, no objects, no smoke clouds, no
+logo. Soft painterly gradients with generous semi-transparency so dark UI
+panels and gold ornaments stay fully readable on top. Gilded ruins mood —
+noble and mysterious. Roughly left-right mirror symmetry, no background, no
+text, no watermark.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

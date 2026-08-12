@@ -37,6 +37,12 @@
 | [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
 | [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
 
+## Effekte
+
+| Datei                                            | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung           |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- | ------------- | --------------------- |
+| [effects/ember-glow.png](effects/ember-glow.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §17](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536, Hochformat |
+
 ## Portraits
 
 | Datei                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |

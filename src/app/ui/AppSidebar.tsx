@@ -35,8 +35,15 @@ export function AppSidebar() {
 
   return (
     <aside className="border-image-sidebar flex h-dvh w-72 shrink-0 flex-col">
+      {/* Endet an der sichtbaren Außenkante des Rahmens; vor den Nav-Buttons im DOM, damit deren positionierte Elemente darüber liegen. */}
+      <img
+        alt=""
+        aria-hidden="true"
+        src="/assets/effects/ember-glow.png"
+        className="pointer-events-none absolute bottom-1.25 left-1.25 w-[calc(100%-0.5rem)] opacity-80"
+      />
       {/* Der Wrapper trägt die Fläche, damit sie an der Goldlinie endet (Utility-Padding). */}
-      <div className="flex min-h-0 flex-1 flex-col bg-background px-2 py-3">
+      <div className="flex min-h-0 flex-1 flex-col bg-background">
         <div className="px-2 text-center">
           <div className="mx-auto h-24 w-40 overflow-hidden">
             <img

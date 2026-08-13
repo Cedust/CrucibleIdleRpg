@@ -67,6 +67,19 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
       'true',
     );
     await expect(page.getByRole('heading', { name: 'Weapon Mastery' })).toBeVisible();
+    const masteryBackground = page.locator('[data-screen-background="weapon-mastery"]');
+    await expect(masteryBackground).toHaveCSS('background-image', /weapon-mastery-view\.png/);
+    await expect(page.locator('[id^="mastery-tree-panel-"]')).toHaveCSS('overflow', 'visible');
+
+    const [backgroundBox, mainViewBox] = await Promise.all([
+      masteryBackground.boundingBox(),
+      page.getByRole('main').boundingBox(),
+    ]);
+    if (backgroundBox === null || mainViewBox === null) {
+      throw new Error('Weapon Mastery background and main view must be visible');
+    }
+    expect(Math.abs(backgroundBox.x - mainViewBox.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(backgroundBox.width - mainViewBox.width)).toBeLessThanOrEqual(1);
 
     const dimensions = await page.locator('html').evaluate((element) => {
       const htmlElement = element as unknown as { clientWidth: number; scrollWidth: number };
@@ -74,6 +87,40 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
     });
     expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
   }
+});
+
+test('keeps mastery tab focus ornaments visible and scrolls tall trees within their panel', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1920, height: 700 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'WEAPON MASTERY', exact: true }).click();
+
+  const dominance = page.getByRole('tab', { name: 'DOMINANCE', exact: true });
+  await dominance.click();
+  await dominance.press('Shift+Tab');
+  await page.getByRole('tab', { name: 'TEMPEST', exact: true }).press('Tab');
+  await expect(dominance).toHaveCSS('outline-style', 'solid');
+
+  const [mainMetrics, treeMetrics] = await Promise.all([
+    page.getByRole('main').evaluate((element) => {
+      const scrollContainer = element as unknown as { clientHeight: number; scrollHeight: number };
+      return {
+        clientHeight: scrollContainer.clientHeight,
+        scrollHeight: scrollContainer.scrollHeight,
+      };
+    }),
+    page.locator('#mastery-tree-panel-dominance > div.overflow-auto').evaluate((element) => {
+      const scrollContainer = element as unknown as { clientHeight: number; scrollHeight: number };
+      return {
+        clientHeight: scrollContainer.clientHeight,
+        scrollHeight: scrollContainer.scrollHeight,
+      };
+    }),
+  ]);
+
+  expect(mainMetrics.scrollHeight).toBeLessThanOrEqual(mainMetrics.clientHeight);
+  expect(treeMetrics.scrollHeight).toBeGreaterThan(treeMetrics.clientHeight);
 });
 
 test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({

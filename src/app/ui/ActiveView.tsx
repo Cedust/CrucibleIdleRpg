@@ -13,11 +13,7 @@ export function ActiveView() {
     case 'crucible':
       return <CrucibleScreen />;
     case 'weapon-mastery':
-      return (
-        <div className="p-4 sm:p-6">
-          <WeaponMasteryScreen />
-        </div>
-      );
+      return <WeaponMasteryScreen />;
     default:
       return (
         <div className="p-4 sm:p-6">

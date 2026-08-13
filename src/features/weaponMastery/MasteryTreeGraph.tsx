@@ -127,9 +127,9 @@ export function MasteryTreeGraph({
       id={`mastery-tree-panel-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-labelledby={`mastery-tab-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-label={`${label} mastery tree`}
-      className="min-w-0 overflow-hidden"
+      className="flex min-w-0 flex-col @min-[1280px]:h-full @min-[1280px]:min-h-0"
     >
-      <div className="overflow-x-auto p-4 pb-5">
+      <div className="min-h-0 flex-1 overflow-auto p-4 pb-5">
         <div ref={ref} className="relative min-w-225">
           <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 size-full">
             {connections.map((connection) => (

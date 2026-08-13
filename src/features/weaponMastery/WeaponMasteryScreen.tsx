@@ -85,9 +85,16 @@ export function WeaponMasteryScreen() {
     : 'Select a node.';
 
   return (
-    <ScreenLayout background="weapon-mastery" className="min-h-full">
-      <section className="@container min-w-0 max-w-384" aria-label="Weapon Mastery">
-        <div className="min-w-0">
+    <ScreenLayout
+      background="weapon-mastery"
+      className="h-full min-h-0"
+      contentClassName="flex min-h-0 flex-1 flex-col"
+    >
+      <section
+        className="@container flex min-h-0 min-w-0 max-w-384 flex-1 flex-col"
+        aria-label="Weapon Mastery"
+      >
+        <div className="flex min-h-0 flex-1 flex-col">
           <header className="mb-5 flex flex-wrap items-start justify-between gap-3 @min-[1280px]:pr-80">
             <div>
               <h2 className="font-display text-display-lg text-accent-strong">Weapon Mastery</h2>
@@ -111,7 +118,7 @@ export function WeaponMasteryScreen() {
             role="tablist"
             aria-label="Disciplines"
             aria-orientation="horizontal"
-            className="mb-5 flex overflow-x-auto border-b border-border/70 pb-2"
+            className="mb-5 flex overflow-x-auto border-b border-border/70 px-1 py-1 pb-3"
           >
             {MASTERY_TAB_ORDER.map((id, index) => {
               const active = id === discipline;
@@ -141,7 +148,7 @@ export function WeaponMasteryScreen() {
               );
             })}
           </div>
-          <div className="grid min-w-0 gap-5 @min-[1280px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1280px]:items-start">
+          <div className="grid min-w-0 gap-5 @min-[1280px]:min-h-0 @min-[1280px]:flex-1 @min-[1280px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1280px]:grid-rows-[minmax(0,1fr)]">
             <MasteryTreeGraph
               nodes={nodes}
               ranks={progression.masteryRanks}
@@ -159,7 +166,7 @@ export function WeaponMasteryScreen() {
               onSelect={setSelectedId}
             />
             {selected ? (
-              <div className="min-w-0 @min-[1280px]:sticky @min-[1280px]:top-5">
+              <div className="min-w-0 @min-[1280px]:sticky @min-[1280px]:top-5 @min-[1280px]:self-start">
                 <NodeInspector
                   characterId={characterId}
                   node={selected}

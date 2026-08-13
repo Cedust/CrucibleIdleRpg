@@ -48,6 +48,34 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();
 });
 
+test('keeps the shared character switcher inside the sidebar at target desktop sizes', async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 2048, height: 785 },
+    { width: 1920, height: 1080 },
+    { width: 1280, height: 720 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'WEAPON MASTERY', exact: true }).click();
+
+    const switcher = page.getByRole('radiogroup', { name: 'Active character' });
+    await expect(switcher).toBeVisible();
+    await expect(switcher.getByRole('radio', { name: 'Korvin' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    await expect(page.getByRole('heading', { name: 'Weapon Mastery' })).toBeVisible();
+
+    const dimensions = await page.locator('html').evaluate((element) => {
+      const htmlElement = element as unknown as { clientWidth: number; scrollWidth: number };
+      return { clientWidth: htmlElement.clientWidth, scrollWidth: htmlElement.scrollWidth };
+    });
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+  }
+});
+
 test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({
   page,
 }) => {

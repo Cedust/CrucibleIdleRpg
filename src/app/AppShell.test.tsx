@@ -11,7 +11,7 @@ import { useNavigationStore } from './navigationStore';
 describe('AppShell', () => {
   beforeEach(() => {
     localStorage.clear();
-    useNavigationStore.setState({ activeView: 'dungeons' });
+    useNavigationStore.setState({ activeView: 'dungeons', activeCharacterId: 'korvin' });
     useDungeonRunStore.setState({ mode: 'selection', activeDungeonId: null, startError: null });
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
@@ -72,6 +72,23 @@ describe('AppShell', () => {
     expect(screen.getByRole('tab', { name: 'WARHAMMER' })).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('shows one shared character switcher only for character-scoped views', async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'HEROES' }));
+    await user.click(screen.getByRole('radio', { name: 'Rhaya' }));
+    expect(useNavigationStore.getState().activeCharacterId).toBe('rhaya');
+
+    await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
+    expect(screen.getAllByRole('radiogroup', { name: 'Active character' })).toHaveLength(1);
+    expect(screen.getByRole('radio', { name: 'Rhaya' })).toHaveAttribute('aria-checked', 'true');
+
+    await user.click(screen.getByRole('button', { name: 'CRUCIBLE' }));
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
+  });
+
   it('isolates a run from navigation and only exits after confirmed leave', async () => {
     const user = userEvent.setup();
     render(<AppShell />);
@@ -90,6 +107,7 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'CRUCIBLE' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'HEROES' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'BLACKSMITH' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
 
     act(() => useNavigationStore.getState().setActiveView('crucible'));
     expect(

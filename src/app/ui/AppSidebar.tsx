@@ -8,7 +8,14 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { useNavigationStore, VIEW_LABELS, VIEWS, type View } from '../navigationStore';
+import {
+  isCharacterScopedView,
+  useNavigationStore,
+  VIEW_LABELS,
+  VIEWS,
+  type View,
+} from '../navigationStore';
+import { CharacterSwitcher } from './CharacterSwitcher';
 
 const VIEW_ICONS: Record<View, LucideIcon> = {
   dungeons: Castle,
@@ -31,7 +38,9 @@ const ACTIVE_NAV_ITEM_CLASS = [
 /** Sidebar containing the app brand and primary view navigation. */
 export function AppSidebar() {
   const activeView = useNavigationStore((state) => state.activeView);
+  const activeCharacterId = useNavigationStore((state) => state.activeCharacterId);
   const setActiveView = useNavigationStore((state) => state.setActiveView);
+  const setActiveCharacterId = useNavigationStore((state) => state.setActiveCharacterId);
 
   return (
     <aside className="border-image-sidebar flex h-dvh w-72 shrink-0 flex-col px-4 py-4">
@@ -75,15 +84,24 @@ export function AppSidebar() {
           />
         </div>
 
-        <nav aria-label="Primary navigation" className="flex min-h-0 flex-1 flex-col gap-1">
-          {VIEWS.map((view) => (
-            <SidebarNavItem
-              key={view}
-              view={view}
-              isActive={view === activeView}
-              onSelect={setActiveView}
-            />
-          ))}
+        <nav
+          aria-label="Primary navigation"
+          className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto"
+        >
+          {VIEWS.map((view) => {
+            const isActive = view === activeView;
+            return (
+              <div key={view}>
+                <SidebarNavItem view={view} isActive={isActive} onSelect={setActiveView} />
+                {isActive && isCharacterScopedView(view) ? (
+                  <CharacterSwitcher
+                    activeCharacterId={activeCharacterId}
+                    onSelect={setActiveCharacterId}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
         </nav>
       </div>
     </aside>

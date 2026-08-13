@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
+import { useNavigationStore } from '@/app/navigationStore';
 import { WeaponMasteryScreen } from './WeaponMasteryScreen';
 
 function saveWithInvestment(): SaveData {
@@ -28,6 +29,7 @@ describe('WeaponMasteryScreen', () => {
   beforeEach(() => {
     localStorage.clear();
     saveStore.setState({ data: createDefaultSave(4242), status: 'ready' });
+    useNavigationStore.setState({ activeCharacterId: 'korvin' });
   });
 
   it('starts on the personal Weapon tree and invests only through the inspector', async () => {
@@ -53,8 +55,24 @@ describe('WeaponMasteryScreen', () => {
     await user.click(screen.getByRole('button', { name: /^CHC II,/ }));
     const inspector = () => screen.getByRole('complementary', { name: 'Mastery node inspector' });
     expect(within(inspector()).getByRole('heading', { name: 'CHC II' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Rhaya' }));
+    act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
     expect(within(inspector()).getByRole('heading', { name: 'CHC I' })).toBeInTheDocument();
+  });
+
+  it('closes an open respec dialog on character change', async () => {
+    saveStore.setState({ data: saveWithInvestment(), status: 'ready' });
+    const user = userEvent.setup();
+    render(<WeaponMasteryScreen />);
+
+    await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
+    await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
+    expect(screen.getByRole('dialog', { name: 'Confirm Discipline Respec' })).toBeInTheDocument();
+
+    act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
+
+    expect(
+      screen.queryByRole('dialog', { name: 'Confirm Discipline Respec' }),
+    ).not.toBeInTheDocument();
   });
 
   it('respecs the active Discipline through the modal dialog', async () => {

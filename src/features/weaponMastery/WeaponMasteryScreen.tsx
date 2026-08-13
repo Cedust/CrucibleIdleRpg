@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
 import {
-  DISCIPLINES,
   investedPoints,
   nodeById,
   nodesFor,
@@ -12,34 +11,94 @@ import {
 import type { CharacterId } from '@/game/types';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
+import { ScreenLayout } from '@/shared/ui/ScreenLayout';
+import { MasteryTreeGraph } from './MasteryTreeGraph';
+import { disciplineLabel, MASTERY_TAB_ORDER } from './masteryPresentation';
 import { NodeInspector } from './NodeInspector';
 import { RespecDialog } from './RespecDialog';
 
-const DISCIPLINE_LABEL: Record<DisciplineId, string> = {
-  finesse: 'FINESSE',
-  tempest: 'TEMPEST',
-  dominance: 'DOMINANCE',
-  valor: 'VALOR',
-  weapon: 'WEAPON',
-};
-const RANKS = ['initiate', 'adept', 'expert', 'master', 'grandmaster'] as const;
+function CharacterRail({
+  active,
+  onSelect,
+}: {
+  active: CharacterId;
+  onSelect: (id: CharacterId) => void;
+}) {
+  return (
+    <aside
+      aria-label="Characters"
+      className="flex shrink-0 gap-2 overflow-x-auto border-b border-border pb-3 @min-[760px]:w-24 @min-[760px]:flex-col @min-[760px]:overflow-visible @min-[760px]:border-b-0 @min-[760px]:border-r @min-[760px]:pr-3 @min-[760px]:pb-0"
+    >
+      {TEAM_ORDER.map((id) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onSelect(id)}
+          aria-current={id === active ? 'true' : undefined}
+          className={`flex min-w-18 items-center gap-2 rounded-md border p-1.5 text-left text-xs font-semibold @min-[760px]:min-w-0 @min-[760px]:flex-col @min-[760px]:text-center ${id === active ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-muted'}`}
+        >
+          <img
+            src={`/assets/portraits/${id}.png`}
+            alt=""
+            className="size-8 rounded object-cover @min-[760px]:size-12"
+          />
+          {CHARACTERS[id].name}
+        </button>
+      ))}
+    </aside>
+  );
+}
 
-/** Browser-facing Mastery tree. Buying is explicit; clicking a node only selects it. */
+function handleTabKey(
+  event: KeyboardEvent<HTMLButtonElement>,
+  discipline: DisciplineId,
+  select: (id: DisciplineId) => void,
+) {
+  const index = MASTERY_TAB_ORDER.indexOf(discipline);
+  const next =
+    event.key === 'ArrowRight'
+      ? (index + 1) % MASTERY_TAB_ORDER.length
+      : event.key === 'ArrowLeft'
+        ? (index - 1 + MASTERY_TAB_ORDER.length) % MASTERY_TAB_ORDER.length
+        : event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? MASTERY_TAB_ORDER.length - 1
+            : null;
+  if (next === null) return;
+  event.preventDefault();
+  const target = MASTERY_TAB_ORDER[next];
+  if (target === undefined) return;
+  select(target);
+  document.getElementById(`mastery-tab-${target}`)?.focus();
+}
+
+/** Browser-facing Mastery tree. Purchases remain explicit inspector actions. */
 export function WeaponMasteryScreen() {
   const save = useSaveStore((state) => state.data);
   const buy = useSaveStore((state) => state.buyMasteryNode);
   const respec = useSaveStore((state) => state.respecDiscipline);
   const [characterId, setCharacterId] = useState<CharacterId>('korvin');
-  const [discipline, setDiscipline] = useState<DisciplineId>('finesse');
+  const [discipline, setDiscipline] = useState<DisciplineId>('weapon');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [confirmRespec, setConfirmRespec] = useState(false);
+  if (save === null)
+    return (
+      <ScreenLayout background="weapon-mastery">
+        <p className="text-text-muted">Loading mastery…</p>
+      </ScreenLayout>
+    );
 
-  if (save === null) return <p className="text-text-muted">Loading mastery…</p>;
   const progression = save.characters[characterId];
   const nodes = nodesFor(characterId).filter((node) => node.discipline === discipline);
   const selected = nodeById(characterId, selectedId ?? '') ?? nodes[0];
   const refunded = investedPoints(progression.masteryRanks, discipline);
   const cost = respecCost(refunded);
+  const label = disciplineLabel(discipline, characterId);
+  const selectDiscipline = (id: DisciplineId) => {
+    setDiscipline(id);
+    setSelectedId(null);
+  };
   const lockReason = selected
     ? purchaseFailure(
         characterId,
@@ -51,117 +110,114 @@ export function WeaponMasteryScreen() {
     : 'Select a node.';
 
   return (
-    <section className="flex min-h-[calc(100vh-10rem)] min-w-0 gap-4" aria-label="Weapon Mastery">
-      <aside
-        aria-label="Characters"
-        className="flex w-20 shrink-0 flex-col gap-2 border-r border-border pr-3"
-      >
-        {TEAM_ORDER.map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => {
+    <ScreenLayout background="weapon-mastery" className="min-h-full">
+      <section className="@container min-w-0 max-w-384" aria-label="Weapon Mastery">
+        <div className="flex min-w-0 flex-col gap-4 @min-[760px]:flex-row">
+          <CharacterRail
+            active={characterId}
+            onSelect={(id) => {
               setCharacterId(id);
               setSelectedId(null);
             }}
-            aria-current={id === characterId ? 'true' : undefined}
-            className={`rounded-md border px-2 py-3 text-xs font-semibold ${id === characterId ? 'border-accent bg-accent/10 text-accent' : 'border-border text-text-muted'}`}
-          >
-            {CHARACTERS[id].name}
-          </button>
-        ))}
-      </aside>
-      <div className="min-w-0 flex-1">
-        <header className="mb-4 flex flex-wrap items-center justify-between gap-3 lg:pr-80">
-          <div>
-            <h2 className="text-xl font-semibold">Weapon Mastery</h2>
-            <p className="text-sm text-text-muted">
-              {CHARACTERS[characterId].name}: {progression.freeMasteryPoints} Mastery Points
-              available
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-text-muted">Level {progression.level}</span>
-            <Button
-              variant="ghost"
-              disabled={refunded === 0 || save.currencies.gold < cost}
-              onClick={() => setConfirmRespec(true)}
-            >
-              Respec {cost} Gold
-            </Button>
-          </div>
-        </header>
-        <div role="group" aria-label="Disciplines" className="mb-4 flex flex-wrap gap-2">
-          {DISCIPLINES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              aria-pressed={id === discipline}
-              onClick={() => {
-                setDiscipline(id);
-                setSelectedId(null);
-              }}
-              className={`rounded-md px-3 py-2 text-sm ${id === discipline ? 'bg-accent/15 text-accent' : 'bg-surface text-text-muted'}`}
-            >
-              {DISCIPLINE_LABEL[id]}
-              {investedPoints(progression.masteryRanks, id) > 0
-                ? ` [${investedPoints(progression.masteryRanks, id)}]`
-                : ''}
-            </button>
-          ))}
-        </div>
-        <div className="overflow-x-auto pb-2">
-          <div className="grid min-w-212.5 grid-cols-[minmax(0,1fr)_17rem] gap-4">
+          />
+          <div className="min-w-0 flex-1">
+            <header className="mb-5 flex flex-wrap items-start justify-between gap-3 @min-[1280px]:pr-80">
+              <div>
+                <h2 className="font-display text-display-lg text-accent-strong">Weapon Mastery</h2>
+                <p className="mt-1 text-sm text-text-muted">
+                  {CHARACTERS[characterId].name}: {progression.freeMasteryPoints} Mastery Points
+                  available
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-text-muted">Level {progression.level}</span>
+                <Button
+                  variant="ghost"
+                  disabled={refunded === 0 || save.currencies.gold < cost}
+                  onClick={() => setConfirmRespec(true)}
+                >
+                  Respec {cost} Gold
+                </Button>
+              </div>
+            </header>
             <div
-              className="grid grid-cols-5 gap-3"
-              aria-label={`${DISCIPLINE_LABEL[discipline]} mastery tree`}
+              role="tablist"
+              aria-label="Disciplines"
+              aria-orientation="horizontal"
+              className="mb-5 flex overflow-x-auto border-b border-border/70 pb-2"
             >
-              {RANKS.map((rank) => (
-                <div key={rank} className="space-y-2">
-                  <h3 className="text-center text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    {rank}
-                  </h3>
-                  {nodes
-                    .filter((node) => node.rank === rank)
-                    .map((node) => (
-                      <button
-                        key={node.id}
-                        type="button"
-                        onClick={() => setSelectedId(node.id)}
-                        className={`w-full rounded-md border p-2 text-left text-xs ${selected?.id === node.id ? 'border-accent bg-accent/10' : 'border-border bg-surface'}`}
-                      >
-                        <span className="block font-semibold">{node.label}</span>
-                        <span className="text-text-muted">
-                          {progression.masteryRanks[node.id] ?? 0}/{node.maxRank}
-                        </span>
-                      </button>
-                    ))}
-                </div>
-              ))}
+              {MASTERY_TAB_ORDER.map((id, index) => {
+                const active = id === discipline;
+                const weapon = id === 'weapon';
+                return (
+                  <div
+                    key={id}
+                    className={`flex shrink-0 ${index === 1 ? 'ml-3 border-l border-ornament/60 pl-3' : ''}`}
+                  >
+                    <button
+                      id={`mastery-tab-${id}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      aria-controls={`mastery-tree-panel-${id}`}
+                      tabIndex={active ? 0 : -1}
+                      onClick={() => selectDiscipline(id)}
+                      onKeyDown={(event) => handleTabKey(event, id, selectDiscipline)}
+                      className={`rounded-md px-3 py-2 text-xs font-semibold tracking-wide transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${weapon ? 'border border-ornament bg-ember/10 text-accent-strong shadow-glow-accent' : active ? 'bg-accent/15 text-accent-strong' : 'text-text-muted hover:text-text'}`}
+                    >
+                      {disciplineLabel(id, characterId)}
+                      {investedPoints(progression.masteryRanks, id) > 0
+                        ? ` [${investedPoints(progression.masteryRanks, id)}]`
+                        : ''}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-            {selected && (
-              <NodeInspector
-                node={selected}
-                rank={progression.masteryRanks[selected.id] ?? 0}
-                lockReason={lockReason}
-                onInvest={() => void buy(characterId, selected.id)}
+            <div className="grid min-w-0 gap-5 @min-[1280px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1280px]:items-start">
+              <MasteryTreeGraph
+                nodes={nodes}
+                ranks={progression.masteryRanks}
+                selectedId={selected?.id ?? null}
+                label={label}
+                purchaseFailure={(node) =>
+                  purchaseFailure(
+                    characterId,
+                    progression.level,
+                    progression.masteryRanks,
+                    progression.freeMasteryPoints,
+                    node.id,
+                  )
+                }
+                onSelect={setSelectedId}
               />
-            )}
+              {selected ? (
+                <div className="min-w-0 @min-[1280px]:sticky @min-[1280px]:top-5">
+                  <NodeInspector
+                    characterId={characterId}
+                    node={selected}
+                    rank={progression.masteryRanks[selected.id] ?? 0}
+                    lockReason={lockReason}
+                    onInvest={() => void buy(characterId, selected.id)}
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
-      {confirmRespec && (
-        <RespecDialog
-          disciplineLabel={DISCIPLINE_LABEL[discipline]}
-          refundedPoints={refunded}
-          cost={cost}
-          onCancel={() => setConfirmRespec(false)}
-          onConfirm={() => {
-            void respec(characterId, discipline);
-            setConfirmRespec(false);
-          }}
-        />
-      )}
-    </section>
+        {confirmRespec ? (
+          <RespecDialog
+            disciplineLabel={label}
+            refundedPoints={refunded}
+            cost={cost}
+            onCancel={() => setConfirmRespec(false)}
+            onConfirm={() => {
+              void respec(characterId, discipline);
+              setConfirmRespec(false);
+            }}
+          />
+        ) : null}
+      </section>
+    </ScreenLayout>
   );
 }

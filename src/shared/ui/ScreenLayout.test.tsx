@@ -40,4 +40,17 @@ describe('ScreenLayout', () => {
     );
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });
+
+  it('unterstützt den Weapon-Mastery-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="weapon-mastery">
+        <h1>Weapon Mastery</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="weapon-mastery"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
 });

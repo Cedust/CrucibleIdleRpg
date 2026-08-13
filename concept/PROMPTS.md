@@ -605,6 +605,59 @@ wall-to-wall flames, bright orange full-frame lighting, excessive bloom, busy fo
 modern industrial machinery, horror imagery, photorealistic photography
 ```
 
+## 22. Weapon-Mastery-View-Hintergrund — Halle der Meisterschaft
+
+- **Zieldatei:** `public/assets/backgrounds/weapon-mastery-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Weapon-Mastery-Ansicht hinter
+  Charakterleiste, Überschrift, Discipline-Tabs, Rank-Baum und Inspector. Das Bild wird per
+  `background-size: cover` eingesetzt. Die Mitte und die UI-Randbereiche bleiben dunkel und
+  kontrastarm; die Signaturwaffen erscheinen nur als untergeordnete Motive der Architektur.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial hall of arms dedicated to lifelong weapon mastery,
+expressing disciplined progression from Initiate to Grandmaster without depicting a literal
+skill tree, interface, or combat scene
+Scene/backdrop: a vast vaulted armory-sanctum beneath a ruined golden empire, with a long worn
+stone training floor, massive shadowed pillars, weathered gold-inlaid weapon racks, faded
+martial reliefs, and five distant architectural bays that subtly rise in grandeur from left
+to right; peripheral wall niches contain a heavy warhammer, crossed twin blades, and a tall
+longbow as restrained silhouettes, honoring the three permanent signature weapons
+Subject: the hall itself is the subject, ancient, functional, solemn, and still cared for;
+the five bays suggest ascending ranks through scale and increasingly refined gold detail, but
+no single weapon or object dominates the composition
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong architectural silhouettes, matching the project's heavy stone-carved
+imperial style and gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; use a
+mostly symmetrical frontal view with subtle depth into the hall; preserve a broad, dark,
+low-detail field across the central and upper-middle area for five horizontal Rank columns,
+nodes, connectors, and Discipline tabs; keep the upper-left area especially calm for the live
+"Weapon Mastery" heading, the far-left strip quiet behind the character portrait rail, and
+the right third dark and uncluttered behind the inspector; place weapon racks, reliefs, floor
+inlays, and other visual interest toward the lower edge and far outer sides; crop-safe from
+wide desktop down to roughly 4:5 mobile without relying on any one weapon remaining visible
+Lighting/mood: cool ambient darkness with restrained warm light from a few low shielded
+braziers and thin gold inlays, suggesting focus, patience, and earned expertise rather than
+spectacle; sparse dust and ash catch the light with soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened steel,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), with only sparse ember-orange accents
+(#e25822) and restrained amber highlights (#f59e0b)
+Materials/textures: cracked imperial stone, worn training-floor grooves, forged black iron,
+aged leather weapon grips, dulled steel, weathered gold inlays, fine dust and faint ash haze
+Constraints: prioritize UI readability; keep most of the image dark, low-contrast, and
+low-detail; make the three signature weapons recognizable only as secondary peripheral
+silhouettes; retain generous negative space for large opaque or translucent panels; no border
+or frame; no text, letters, readable runes, icons, characters, enemies, logos, interface
+elements, or watermark
+Avoid: one large centered weapon, weapons floating in empty space, a literal branching tree,
+a museum display, crowded weapon racks, active fighting or training characters, bright
+full-frame fire, excessive bloom, busy micro-detail, modern equipment, horror imagery,
+photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

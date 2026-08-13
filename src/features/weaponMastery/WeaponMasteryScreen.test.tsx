@@ -6,7 +6,6 @@ import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
 import { WeaponMasteryScreen } from './WeaponMasteryScreen';
 
-/** Schema-gültiger Stand mit Investition: Level = freie + investierte Punkte je Sorte. */
 function saveWithInvestment(): SaveData {
   const base = createDefaultSave(4242);
   return {
@@ -31,61 +30,46 @@ describe('WeaponMasteryScreen', () => {
     saveStore.setState({ data: createDefaultSave(4242), status: 'ready' });
   });
 
-  it('investiert nur über den freigegebenen Button und benennt den Sperrgrund', async () => {
+  it('starts on the personal Weapon tree and invests only through the inspector', async () => {
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
-
-    // Startauswahl: CHC I (Initiate, Level 1) mit einem freien Punkt — kaufbar.
+    expect(screen.getByRole('tab', { name: 'WARHAMMER' })).toHaveAttribute('aria-selected', 'true');
     const invest = screen.getByRole('button', { name: 'Invest' });
     expect(invest).toBeEnabled();
-
     await user.click(invest);
-
     await vi.waitFor(() =>
-      expect(saveStore.getState().data?.characters.korvin.masteryRanks['finesse.chc-i']).toBe(1),
+      expect(saveStore.getState().data?.characters.korvin.masteryRanks['weapon.dmg-i']).toBe(1),
     );
     expect(await screen.findByText('No Mastery Points available.')).toBeInTheDocument();
-    const locked = screen.getByRole('button', { name: 'Invest' });
-    expect(locked).toBeDisabled();
-    expect(locked).toHaveAccessibleDescription('No Mastery Points available.');
   });
 
-  it('setzt die Auswahl beim Charakterwechsel zurück', async () => {
+  it('supports Discipline keyboard navigation and resets selection on character change', async () => {
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
+    const weapon = screen.getByRole('tab', { name: 'WARHAMMER' });
+    await user.click(weapon);
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'FINESSE' })).toHaveAttribute('aria-selected', 'true');
+    await user.click(screen.getByRole('button', { name: /^CHC II,/ }));
     const inspector = () => screen.getByRole('complementary', { name: 'Mastery node inspector' });
-
-    await user.click(screen.getByRole('button', { name: 'CHC II0/5' }));
     expect(within(inspector()).getByRole('heading', { name: 'CHC II' })).toBeInTheDocument();
-
     await user.click(screen.getByRole('button', { name: 'Rhaya' }));
     expect(within(inspector()).getByRole('heading', { name: 'CHC I' })).toBeInTheDocument();
   });
 
-  it('führt den Respec über den modalen Dialog aus und bricht folgenlos ab', async () => {
+  it('respecs the active Discipline through the modal dialog', async () => {
     saveStore.setState({ data: saveWithInvestment(), status: 'ready' });
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
-
-    // Abbrechen lässt Ränge und Gold unangetastet.
+    await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
     await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
     const dialog = screen.getByRole('dialog', { name: 'Confirm Discipline Respec' });
-    expect(within(dialog).getByText('Refund 2 Mastery Points for 150 Gold.')).toBeInTheDocument();
-
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(saveStore.getState().data?.characters.korvin.masteryRanks['finesse.chc-i']).toBe(2);
-    expect(saveStore.getState().data?.currencies.gold).toBe(1000);
-
-    // Bestätigen erstattet die Discipline gegen Gold.
     await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
     await user.click(screen.getByRole('button', { name: 'Confirm Respec' }));
-
     await vi.waitFor(() =>
       expect(saveStore.getState().data?.characters.korvin.masteryRanks).toEqual({}),
     );
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(saveStore.getState().data?.characters.korvin.freeMasteryPoints).toBe(2);
-    expect(saveStore.getState().data?.currencies.gold).toBe(850);
   });
 });

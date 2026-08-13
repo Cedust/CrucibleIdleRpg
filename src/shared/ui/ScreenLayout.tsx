@@ -2,13 +2,14 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
-type ScreenBackgroundId = DungeonBackgroundId | 'crucible';
+type ScreenBackgroundId = DungeonBackgroundId | 'crucible' | 'weapon-mastery';
 
 const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
   'ember-foundry': 'bg-[url(/assets/backgrounds/dungeon-ember-foundry.png)]',
   'forgotten-citadel': 'bg-[url(/assets/backgrounds/dungeon-forgotten-citadel.png)]',
   crucible: 'bg-[url(/assets/backgrounds/crucible-view.png)]',
+  'weapon-mastery': 'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
 };
 
 const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
@@ -16,6 +17,7 @@ const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
   'ember-foundry': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
   'forgotten-citadel': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
   crucible: 'bg-background/28',
+  'weapon-mastery': 'bg-background/28',
 };
 
 interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {

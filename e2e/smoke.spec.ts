@@ -58,28 +58,51 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
   ]) {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: 'WEAPON MASTERY', exact: true }).click();
+    const activeNavItem = page.getByRole('button', { name: 'WEAPON MASTERY', exact: true });
+    await activeNavItem.click();
+
+    const navWidths = await activeNavItem.evaluate((element) => {
+      const navElement = element as unknown as {
+        clientWidth: number;
+        parentElement: { clientWidth: number };
+      };
+      return { item: navElement.clientWidth, row: navElement.parentElement.clientWidth };
+    });
+    expect(navWidths.item).toBe(navWidths.row);
 
     const switcher = page.getByRole('radiogroup', { name: 'Active character' });
     await expect(switcher).toBeVisible();
-    await expect(switcher.getByRole('radio', { name: 'Korvin' })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    );
+    const korvin = switcher.getByRole('radio', { name: 'Korvin' });
+    await expect(korvin).toHaveAttribute('aria-checked', 'true');
+    await expect(korvin.locator('[data-character-part="portrait"]')).toBeVisible();
+    await expect(korvin.locator('[data-character-part="frame"]')).toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(korvin).toBeFocused();
+    await expect(korvin).toHaveCSS('outline-style', 'solid');
     await expect(page.getByRole('heading', { name: 'Weapon Mastery' })).toBeVisible();
     const masteryBackground = page.locator('[data-screen-background="weapon-mastery"]');
     await expect(masteryBackground).toHaveCSS('background-image', /weapon-mastery-view\.png/);
     await expect(page.locator('[id^="mastery-tree-panel-"]')).toHaveCSS('overflow', 'visible');
 
-    const [backgroundBox, mainViewBox] = await Promise.all([
+    const [backgroundBox, mainViewBox, switcherBox, sidebarBox] = await Promise.all([
       masteryBackground.boundingBox(),
       page.getByRole('main').boundingBox(),
+      switcher.boundingBox(),
+      page.locator('aside.border-image-sidebar').boundingBox(),
     ]);
-    if (backgroundBox === null || mainViewBox === null) {
-      throw new Error('Weapon Mastery background and main view must be visible');
+    if (
+      backgroundBox === null ||
+      mainViewBox === null ||
+      switcherBox === null ||
+      sidebarBox === null
+    ) {
+      throw new Error('Weapon Mastery layout must be visible');
     }
     expect(Math.abs(backgroundBox.x - mainViewBox.x)).toBeLessThanOrEqual(1);
     expect(Math.abs(backgroundBox.width - mainViewBox.width)).toBeLessThanOrEqual(1);
+    expect(switcherBox.height).toBeLessThanOrEqual(124);
+    expect(switcherBox.x).toBeGreaterThanOrEqual(sidebarBox.x);
+    expect(switcherBox.x + switcherBox.width).toBeLessThanOrEqual(sidebarBox.x + sidebarBox.width);
 
     const dimensions = await page.locator('html').evaluate((element) => {
       const htmlElement = element as unknown as { clientWidth: number; scrollWidth: number };

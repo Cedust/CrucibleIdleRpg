@@ -658,6 +658,56 @@ full-frame fire, excessive bloom, busy micro-detail, modern equipment, horror im
 photorealistic photography
 ```
 
+## 23. Charakter-Portrait-Rahmen
+
+- **Zieldatei:** `public/assets/frames/character-portrait-frame.png`
+- **Format:** Hochformat 7:10, mindestens 896×1280; nach Freistellung optional auf etwa
+  448×640 verkleinern
+- **Verwendung:** Ein gemeinsames dekoratives Overlay für die drei Portraitkarten im
+  Charakter-Switcher. Das Asset wird bei ungefähr 80×114 CSS-Pixeln angezeigt. Portrait,
+  Rollenicon, Charaktername, Aktivmarker und Glühen werden separat als Live-UI gerendert.
+- **Technik:** Vollständig transparenter Außenbereich, transparente Portraitöffnung,
+  transparenter Wappenhalter und transparentes Namensschild. Das Bild wird als komplettes
+  Overlay skaliert, nicht als 9-Slice verwendet. Alle sichtbaren Formen benötigen einen
+  transparenten Sicherheitsabstand zum Bildrand; keine Schatten oder Glows außerhalb der
+  Leinwand.
+- **Referenzen:** Für Aufbau und Proportionen
+  `concept/ui-draft-2/ui-menu-character-switcher-v1.png`; für Metall, Farbe und Ornamentstil
+  `public/assets/frames/panel-ornate.png` und `public/assets/frames/mainview-ornate.png`.
+
+```text
+Use case: stylized-concept
+Asset type: reusable ornamental overlay frame for a dark fantasy game UI character portrait
+Primary request: one strong, compact imperial portrait-card frame that can be placed over
+different character paintings and remains clearly readable at only about 80 by 114 CSS pixels
+Canvas and transparency: exact 7:10 portrait aspect ratio, at least 896 by 1280 pixels; fully
+transparent background outside the ornament and fully transparent openings everywhere inside
+the portrait window, crest holder, and nameplate; preserve a transparent safety margin around
+every visible outer edge
+Structure: a tall arched portrait opening occupies most of the card; above the arch is one
+small centered empty heraldic crest holder for a separately rendered live role icon; below the
+portrait is one broad empty rectangular nameplate with slightly clipped or pointed corners for
+separately rendered live text; the lower edge ends in a restrained centered diamond point
+Frame style: heavy stone-carved imperial metalwork from a fallen golden empire, dark aged
+brass and blackened iron with warm gold highlights (#8a6d3b to #fbbf24), subtle worn edges,
+small ember-orange reflections (#e25822), noble and mysterious rather than luxurious
+Composition and readability: strict left-right symmetry; bold silhouette; thick continuous
+metal rails around the portrait; large calm shapes and only a few restrained leaf or spear
+motifs around the arch shoulders and base; every important stroke must survive strong
+downscaling; keep the portrait opening as large as possible and do not cover the face area
+Lighting: canonical active-state metal with controlled warm highlights, crisp separation from
+dark portraits, no baked glow halo and no cast shadow outside the frame
+Rendering style: polished game UI asset, crisp vector-like contours with painterly worn-metal
+texture, clean alpha edges, front-facing orthographic presentation, no perspective distortion
+Constraints: frame only; no character, face, body, weapon, scenery, background panel, black
+fill, role symbol, shield icon, swords icon, crosshair icon, letters, words, readable runes,
+logo, interface text, particles, lens flare, bloom haze, drop shadow, or watermark
+Avoid: micro-filigree, hair-thin lines, overly baroque decoration, asymmetric damage, a round
+medallion covering the portrait, a thick solid base that reduces portrait height, fake
+transparency shown as checkerboard, baked-in dark backdrop, separate active and inactive
+versions, multiple frames in one image, mockup presentation
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

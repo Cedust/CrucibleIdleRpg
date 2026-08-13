@@ -46,14 +46,15 @@
 
 ## Rahmen
 
-| Datei                                                      | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                           |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | --------------------------------------------------------------------- |
-| [frames/panel-ornate.png](frames/panel-ornate.png)         | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md)            | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis) |
-| [frames/panel-thin.png](frames/panel-thin.png)             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §7](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
-| [frames/button-ornate.png](frames/button-ornate.png)       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §9](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
-| [frames/slot-ornate.png](frames/slot-ornate.png)           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §11](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —                                                                     |
-| [frames/panel-ornate-alt.png](frames/panel-ornate-alt.png) | KI-generiert, Prompt-Basis: [concept/PROMPTS.md §15](../../concept/PROMPTS.md)     | Timo Sudeck | projektintern | Prompt mehrfach iteriert; 1024×1536, alternative Panel-Variante       |
-| [frames/mainview-ornate.png](frames/mainview-ornate.png)   | KI-generiert, Prompt: [concept/PROMPTS.md §16](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; gemeinsamer Rahmen für Sidebar und Main-Area               |
+| Datei                                                                      | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                           |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | --------------------------------------------------------------------- |
+| [frames/panel-ornate.png](frames/panel-ornate.png)                         | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md)            | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis) |
+| [frames/panel-thin.png](frames/panel-thin.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §7](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
+| [frames/button-ornate.png](frames/button-ornate.png)                       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §9](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                     |
+| [frames/slot-ornate.png](frames/slot-ornate.png)                           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §11](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —                                                                     |
+| [frames/panel-ornate-alt.png](frames/panel-ornate-alt.png)                 | KI-generiert, Prompt-Basis: [concept/PROMPTS.md §15](../../concept/PROMPTS.md)     | Timo Sudeck | projektintern | Prompt mehrfach iteriert; 1024×1536, alternative Panel-Variante       |
+| [frames/mainview-ornate.png](frames/mainview-ornate.png)                   | KI-generiert, Prompt: [concept/PROMPTS.md §16](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; gemeinsamer Rahmen für Sidebar und Main-Area               |
+| [frames/character-portrait-frame.png](frames/character-portrait-frame.png) | KI-generiert, Prompt: [concept/PROMPTS.md §23](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; natives 2:3-Format statt angefordertem 7:10                |
 
 ## Ornamente
 

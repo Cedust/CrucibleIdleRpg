@@ -124,7 +124,7 @@ function SidebarNavItem({
       type="button"
       onClick={() => onSelect(view)}
       aria-current={isActive ? 'page' : undefined}
-      className={`relative flex items-center gap-3 whitespace-nowrap rounded-r-md py-2 pl-7 pr-3 text-left font-display text-display-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+      className={`relative flex w-full items-center gap-3 whitespace-nowrap rounded-r-md py-2 pl-7 pr-3 text-left font-display text-display-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
         isActive
           ? ACTIVE_NAV_ITEM_CLASS
           : 'text-accent-strong/70 hover:bg-surface hover:text-accent-strong'

@@ -28,7 +28,7 @@ Klick, sondern die Frage, wie weit ein vorbereiteter Build trägt.
 
 Attrition macht einen Dungeon zum Überlebens-Run: Verluste bleiben spürbar, und ein Wipe lädt zum
 Nachbessern ein statt zum endlosen Wiederholen. Power-Spikes — neue Weapon-Mastery-Verhalten,
-Refine-Stufen, Signatur-Skills und Runen — sollen deutlich erkennbar sein, ohne die Kampfzahlen
+Masterwork-Stufen, Signatur-Skills und Runen — sollen deutlich erkennbar sein, ohne die Kampfzahlen
 unlesbar zu machen.
 
 Die drei Rollen sollen sich ergänzen: Der Tank hält das Team, Melee bricht gegnerische Deckung auf,

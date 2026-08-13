@@ -47,7 +47,7 @@ Neue Auto-Progression-Features; es geht um Verlagerung und Entdopplung bestehend
 - [x] Wipe- und Auto-Advance-Reaktionen liegen im Store/Controller und sind per Store-Test
       abgedeckt; die `useEffect`s in der View entfallen.
 - [x] `catch` umfasst nur den Save-Schritt oder protokolliert den Originalfehler.
-- [x] `crystalRewardForFirstVictory` arbeitet auf strukturierten Encounter-Daten.
+- [x] `relicShardRewardForFirstVictory` arbeitet auf strukturierten Encounter-Daten.
 
 ## Betroffene Dateien
 

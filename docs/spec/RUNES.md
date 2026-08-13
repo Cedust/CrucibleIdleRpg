@@ -1,7 +1,7 @@
-# SPEC — Runen (Endgame / Masterwork)
+# SPEC — Runen (Endgame / Anvil Sparks)
 
 > Teil der [SPEC](../spec/README.md): Rune Grimoire, Talisman, Rite, Auslösung, Rune-Level und die
-> Masterwork-Nodes.
+> Anvil-Sparks-Nodes.
 > Verwandt: [Kampf](COMBAT-RUN.md) · [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)
 
 ---
@@ -17,7 +17,7 @@ Sigils, Weapon Mastery, Attribute) sind **permanente Werte**.
   Rundenbeginn gesetzt wird, [Rundenablauf](COMBAT-RUN.md#11-rundenablauf)), Schaden, der **Bulwark ignoriert**
   ([Bulwark](DAMAGE-SYSTEM.md#14-bulwark-deckung-der-backline)), ein **temporärer**
   Buff oder eine Extra-Aktion.
-- Das gesamte System wird über den **Masterwork**-Tree des Crucible freigeschaltet
+- Das gesamte System wird über den **Anvil Sparks**-Tree des Crucible freigeschaltet
   ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree));
   vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runedust-Drop).
 
@@ -111,7 +111,7 @@ eines Rite lohnende Ziele sind:
 | **Trigger**  | einen **+% Magnitude**-Aufschlag auf den gesamten Rite (Attunement)             |
 | **Modifier** | die **Stärke der Modifikation** (Echo: Kraft der 2. Auslösung; Chain: Zielzahl) |
 
-- **Level-Cap = Stand des `Rune Mastery`-Nodes** ([§8](#8-masterwork-nodes)). Der
+- **Level-Cap = Stand des `Rune Mastery`-Nodes** ([§8](#8-anvil-sparks-nodes)). Der
   `Rune Grimoire`-Node bringt Cap **1** mit, `Rune Mastery` hebt es auf **2/3/4/5**.
 - Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
   vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
@@ -139,15 +139,15 @@ Verbindlicher Wohnort der Runedust-Drop-Regeln.
   Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
   ersten Sigil-Drop, [Items, Loot & Handwerk](ITEMS.md)).
 
-## 8. Masterwork-Nodes
+## 8. Anvil-Sparks-Nodes
 
-| Node              | Level | Wirkung                                                                           | Crystals |
-| ----------------- | ----- | --------------------------------------------------------------------------------- | -------- |
-| **Rune Grimoire** | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1        |
-| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                  | 6        |
-| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6        |
-| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10       |
-|                   |       |                                                                                   | **23**   |
+| Node              | Level | Wirkung                                                                           | Relic Shards |
+| ----------------- | ----- | --------------------------------------------------------------------------------- | ------------ |
+| **Rune Grimoire** | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1            |
+| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                  | 6            |
+| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6            |
+| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10           |
+|                   |       |                                                                                   | **23**       |
 
 `Talisman` und `Runic Focus` sind **charakterweise** gestaffelt — Stufe `n` schaltet den Slot für
 Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md#3-player-experience--der-kern-loop)).

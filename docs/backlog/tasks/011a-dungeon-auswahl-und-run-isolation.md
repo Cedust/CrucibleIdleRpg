@@ -10,7 +10,7 @@
 ## Kontext
 
 [011](011-dungeon-run-und-attrition.md) ist blockiert, weil pro Floor bereits in den Save
-committete XP, Gold und Crystals bis zum Ende eines Runs nicht ausgebbar sein dürfen. Die
+committete XP, Gold und Relic Shards bis zum Ende eines Runs nicht ausgebbar sein dürfen. Die
 Entscheidung hierfür ist eine UX- und Bildschirmgrenze: Ein aktiver Dungeon-Run wird nicht in der
 normalen Dungeon-View fortgesetzt. Er hat eine eigene, vollständige Ansicht ohne
 Primärnavigation und ohne Progressions- oder Ausgabefunktionen; die lesende Kopfzeile bleibt

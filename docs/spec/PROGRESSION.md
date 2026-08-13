@@ -39,10 +39,10 @@ Verfügbar zum **Ausgeben** werden sie erst nach dem Run
    vergeben; Gleichstände rotieren anhand des globalen Floor-Index deterministisch.
 2. **Gold** — globale Währung (Attribut- und Weapon-Mastery-Respecs,
    Blacksmith/Jeweler).
-3. **Crystals** — globale Währung für den Crucible ([§3](#3-crucible-globaler-skilltree)).
+3. **Relic Shards** — globale Währung für den Crucible ([§3](#3-crucible-globaler-skilltree)).
    **Nur beim allerersten Sieg** eines Floors:
    - Normal = 1, Elite = 3, Boss = 10.
-   - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Crystals**.
+   - Gesamt im Spiel: 285 (normal) + 36 (elite) + 30 (boss) = **351 Relic Shards**.
 4. **Loot** — jeder Sieg speist den Handwerk-Loop. Die Drop-Regeln stehen bei der Ressource,
    nicht hier:
    - **Gems, Cinder & Sigils** → [Drops: Gems, Cinder & Sigils](ITEMS.md#6-drops-gems-cinder--sigils)
@@ -55,24 +55,23 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 ## 3. Crucible (globaler Skilltree)
 
 - Der **Crucible** ist ein weitgehend **globaler, charakterübergreifender** Skilltree. Der
-  Spieler „schmilzt" Crystals ein, um permanente Zugänge oder flexible Verbesserungen
+  Spieler „schmilzt" Relic Shards ein, um permanente Zugänge oder flexible Verbesserungen
   freizuschalten.
 - Die **charaktergebundenen Signatur-Skills** ([Signatur-Skills](CHARACTERS.md#7-signatur-skills))
   liegen im Tree **Molten Cast** ([§3.3](#33-molten-cast)). Sie folgen dem Standard-Node-Modell mit
   Rang 1–5 und wirken auf je einen Charakter statt global.
-- Vier Trees tragen vier getrennte Aufgaben:
+- Drei Trees tragen drei getrennte Aufgaben:
 
   | Tree                | Fokus                                                          | Respec                    |
   | ------------------- | -------------------------------------------------------------- | ------------------------- |
-  | **Anvil Sparks**    | permanente Zugänge, Checkpoints und Systemfreischaltungen      | keiner                    |
+  | **Anvil Sparks**    | permanente Zugänge, Checkpoints und alle Systemfreischaltungen | keiner                    |
   | **Smelting Flames** | quantitative, globale Charakterwerte                           | vollständig und kostenlos |
   | **Molten Cast**     | qualitative Kampfregeln und charaktergebundene Signatur-Skills | vollständig und kostenlos |
-  | **Masterwork**      | Endgame-Systeme (**Runen**, [Runen](RUNES.md))                 | Entscheidung folgt in M5  |
 
-- Ein neuer Rang kostet genau so viele Crystals wie seine Rangnummer. Fünf Ränge kosten damit
-  `1 + 2 + 3 + 4 + 5 = 15` Crystals, vier Ränge `10` und drei Ränge `6`.
+- Ein neuer Rang kostet genau so viele Relic Shards wie seine Rangnummer. Fünf Ränge kosten damit
+  `1 + 2 + 3 + 4 + 5 = 15` Relic Shards, vier Ränge `10` und drei Ränge `6`.
 - Ein Respec ist nur außerhalb eines Dungeon-Runs möglich. Er entfernt atomar alle Ränge des
-  gewählten flexiblen Trees und erstattet exakt die darin investierten Crystals. Smelting und
+  gewählten flexiblen Trees und erstattet exakt die darin investierten Relic Shards. Smelting und
   Molten werden unabhängig voneinander respecct; es gibt keine tree-übergreifenden
   Voraussetzungen.
 - Der Crucible wirkt ausschließlich auf Zugänge, Charakterwerte und Kampfregeln. Gold-Drops,
@@ -86,13 +85,26 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 | `anvil.waystones`  |     4 | A1-D2 / A1-D3 / A1-D4 / A1-D5                  | vorheriger Dungeon vollendet | M2            |
 | `anvil.armory`     |     4 | Head / Chest / Legs / Feet für alle Charaktere | —                            | gesperrt, M3  |
 | `anvil.blacksmith` |     1 | Blacksmith-System                              | Armory Rang 1                | gesperrt, M4  |
-| `anvil.jeweler`    |     1 | Jeweler-System                                 | Armory Rang 1                | gesperrt, M4  |
+| `anvil.jeweler`    |     1 | Jeweler-System                                 | Blacksmith Rang 1            | gesperrt, M4  |
 
 `anvil.waystones` Rang `n` schaltet den Einstieg `A1-D<n+1>` frei. Der Kauf verlangt den
 vollständigen Abschluss von `A1-D<n>`; der vorherige Waystone-Rang folgt bereits aus der
 Rangfolge desselben Nodes. Ein neuer Einstieg entsteht ausschließlich über diesen Kauf: der
-Dungeon-Abschluss ist die Voraussetzung, der Rang die Freischaltung. Alle Anvil-Käufe sind
-dauerhaft und bleiben von jedem Respec unberührt.
+Dungeon-Abschluss ist die Voraussetzung, der Rang die Freischaltung.
+
+Die Runen-Freischaltungen bilden innerhalb von Anvil Sparks einen eigenen, von Armory und
+Handwerk unabhängigen Ast. Der komplette Ast bleibt bis M5 gesperrt. `Rune Grimoire` ist der
+Einstieg; Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman Rang
+`n`.
+
+| ID                    | Ränge | Gesamtkosten | Wirkung                          |
+| --------------------- | ----: | -----------: | -------------------------------- |
+| `anvil.rune-grimoire` |     1 |            1 | Rune-System und Rune-Level-Cap 1 |
+| `anvil.talisman`      |     3 |            6 | Rite für Charakter 1 / 2 / 3     |
+| `anvil.runic-focus`   |     3 |            6 | Modifier für Charakter 1 / 2 / 3 |
+| `anvil.rune-mastery`  |     4 |           10 | Rune-Level-Cap 2 / 3 / 4 / 5     |
+
+Alle Anvil-Käufe sind dauerhaft und bleiben von jedem Respec unberührt.
 
 ### 3.2 Smelting Flames
 
@@ -134,23 +146,11 @@ Die vier Vertiefungen benötigen jeweils mindestens Rang 1 ihres Basisnodes: Sun
 Mitigation → Menace, Suppression → Momentum und Rally → Second Wind. Sie sind bis zum
 Molten-Folgetask sichtbar, aber nicht kaufbar.
 
-### 3.4 Masterwork
+### 3.4 Kapazität
 
-Der Masterwork-Katalog bleibt bis M5 vollständig gesperrt. `Rune Grimoire` ist der Einstieg;
-Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman Rang `n`.
-
-| ID                         | Ränge | Gesamtkosten | Wirkung                          |
-| -------------------------- | ----: | -----------: | -------------------------------- |
-| `masterwork.rune-grimoire` |     1 |            1 | Rune-System und Rune-Level-Cap 1 |
-| `masterwork.talisman`      |     3 |            6 | Rite für Charakter 1 / 2 / 3     |
-| `masterwork.runic-focus`   |     3 |            6 | Modifier für Charakter 1 / 2 / 3 |
-| `masterwork.rune-mastery`  |     4 |           10 | Rune-Level-Cap 2 / 3 / 4 / 5     |
-
-### 3.5 Kapazität
-
-- Task 015 stellt `130` aktive Crystal-Kosten bereit: `10` Anvil, `60` Smelting und `60`
+- Task 015 stellt `130` aktive Relic-Shard-Kosten bereit: `10` Anvil, `60` Smelting und `60`
   Molten-Basis. Mit den vier Molten-Vertiefungen steigt die aktive Kapazität auf `190`.
-- Akt 1 vergibt insgesamt `117` Crystals. Selbst nach einem Respec kann deshalb nicht alles
+- Akt 1 vergibt insgesamt `117` Relic Shards. Selbst nach einem Respec kann deshalb nicht alles
   gleichzeitig maximiert werden.
 
 ## 4. Checkpoints, Wipe & Abbruch
@@ -187,7 +187,7 @@ Talisman und Rune Mastery verlangen ihn. Runic Focus Rang `n` verlangt Talisman 
   [DESIGN §3](../DESIGN.md#3-player-experience--der-kern-loop)).
 - **Präsentationsgrenze:** Ein laufender Run belegt den gesamten Viewport ohne Primärnavigation,
   Branding, Ressourcenanzeige oder Ausgabefunktionen. Bereits pro Floor committete XP, Gold und
-  Crystals bleiben gespeichert, sind aber erst nach Wipe, manuellem Verlassen oder dem
+  Relic Shards bleiben gespeichert, sind aber erst nach Wipe, manuellem Verlassen oder dem
   Dungeon-Abschluss ausgebbar. Diese Grenze modelliert keinen separaten Pending-Bestand.
 - **Wipe oder manuelles Verlassen:** Man verlässt den **kompletten** Dungeon. Bereits
   erhaltene Belohnungen bleiben erhalten (keine Penalty außer entgangenem Floor-Reward).

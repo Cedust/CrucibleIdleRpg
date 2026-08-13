@@ -70,3 +70,4 @@ AGENTS.md. ADRs sind für die **Zukunft**, nicht zum rückwirkenden Dokumentiere
 | 0007 | [Zwei geometrische Wachstumsachsen im komprimierten Zahlenraum](0007-zwei-geometrische-wachstumsachsen.md) | Akzeptiert              |
 | 0008 | [Defense als Ratio-Mitigation mit globaler Konstante](0008-defense-ratio-mitigation.md)                    | Akzeptiert              |
 | 0009 | [Charaktergebundene Waffen und Weapon Mastery](0009-charaktergebundene-waffen-und-weapon-mastery.md)       | Akzeptiert              |
+| 0010 | [Anvil Sparks bündelt alle Systemfreischaltungen](0010-anvil-sparks-systemfreischaltungen.md)              | Akzeptiert              |

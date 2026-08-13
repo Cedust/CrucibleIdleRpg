@@ -89,16 +89,16 @@ entwickelt Charaktere und Crucible weiter und kann freigeschaltete Dungeons auto
 Hintergründe und Ornamentrahmen, und die M3+-Screens bauen auf denselben Tokens und Primitives
 auf. Der vollständige Politur-Pass über alle Screens bleibt in [M6](#m6--endgame--politur).
 
-| Reihenfolge | Task                                                                                        | Status | Hängt ab von |
-| ----------- | ------------------------------------------------------------------------------------------- | ------ | ------------ |
-| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md)           | done   | 016          |
-| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)               | done   | 017          |
-| 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)                 | done   | 018          |
-| 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)                 | ready  | 018          |
-| 5           | [021 — Combat-Feedback und Schadenszahlen](tasks/021-combat-feedback-und-schadenszahlen.md) | ready  | 019          |
+| Reihenfolge | Task                                                                                        | Status      | Hängt ab von |
+| ----------- | ------------------------------------------------------------------------------------------- | ----------- | ------------ |
+| 1           | [017 — Art-Direction & Theme-Tokens](tasks/017-art-direction-und-theme-tokens.md)           | done        | 016          |
+| 2           | [018 — UI-Primitives & App-Rahmen](tasks/018-ui-primitives-und-app-rahmen.md)               | done        | 017          |
+| 3           | [019 — Combat View in Spiel-Optik](tasks/019-combat-view-in-spiel-optik.md)                 | done        | 018          |
+| 4           | [020 — Skill-Trees in Spiel-Optik](tasks/020-skill-trees-in-spiel-optik.md)                 | in progress | 018          |
+| 5           | [021 — Combat-Feedback und Schadenszahlen](tasks/021-combat-feedback-und-schadenszahlen.md) | ready       | 019          |
 
-**020** bleibt unabhängig von 019 und kann parallel zu 021 umgesetzt werden. Der Meilenstein ist
-reine View-Arbeit: Simulation, Stores und Save-Schema bleiben unverändert.
+**020** bleibt unabhängig von 019 und kann parallel zu 021 umgesetzt werden. Simulation, Stores
+und Save-Schema bleiben unverändert; die freigegebene Crucible-Konsolidierung ist Teil von 020.
 
 ## M3 — Ausrüstung
 
@@ -107,7 +107,7 @@ Vier Armor-Slots, Innate-Affixe, Item-Level, Seltenheit, Item-Drops, Equip-Ansic
 
 ## M4 — Handwerk
 
-Blacksmith (Temper, Refine, Brand), Jeweler (Inlay, Attune, Recut), Gems, Cinder-Ökonomie
+Blacksmith (Temper, Masterwork, Brand), Jeweler (Inlay, Attune, Recut), Gems, Cinder-Ökonomie
 ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
 ## M5 — Runen & Sigils

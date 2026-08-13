@@ -28,7 +28,7 @@ erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Maste
       [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg),
       [Attribute](../spec/CHARACTERS.md#3-attribute-level-up-progression)
 - [ ] Item-Level-Kurve, Seltenheits-Caps und Sockel-Meilensteine. → [Items](../spec/ITEMS.md#3-seltenheit-sockel--level-cap)
-- [ ] Cinder-, Blacksmith- und Jeweler-Kosten. → [Handwerk](../spec/ITEMS.md#7-blacksmith--temper-refine--brand)
+- [ ] Cinder-, Blacksmith- und Jeweler-Kosten. → [Handwerk](../spec/ITEMS.md#7-blacksmith--temper-masterwork--brand)
 - [ ] Gem-Werte, Targeting, Drops und Aufleveln-Kosten. → [Jeweler](../spec/ITEMS.md#8-jeweler--inlay-attune--recut)
 - [ ] Sigil-Pool, Mindesttiefen, Gewichte, Drops und Skalierung. → [Sigils](../spec/ITEMS.md#5-sigils--sigil-codex)
 - [ ] Diamond-Effekte sowie Runedust-, Rune-Katalog-, Rune-Stärke- und Trigger-Kurven. → [Runen](../spec/RUNES.md)

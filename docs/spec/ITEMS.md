@@ -13,7 +13,7 @@ Crucible ([BALANCING §3](../spec/BALANCE.md#1-wachstum-und-zahlenraum)).
 
 - Jeder Charakter trägt Armor in **vier Slots** ([Ausrüstung](CHARACTERS.md#6-ausrüstung)).
   Ein Slot wird über den Crucible (Anvil Sparks,
-  [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)) gegen Crystals freigeschaltet;
+  [Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)) gegen Relic Shards freigeschaltet;
   dabei entsteht die rollenspezifische **Basis** als `Common +1` und bleibt dem Slot für das
   ganze Spiel erhalten. **Item-Basen droppen nicht.**
 - Main Hand und Off Hand existieren nicht. Die permanenten Signaturwaffen sind keine Items und
@@ -41,19 +41,19 @@ Jedes Item trägt seine Werte auf fünf getrennten Schichten. Schicht 1 steht mi
 verbindlich beschrieben. Es gilt ein **Stamm-Modell**: das **Item-Level** ist der Stamm, an dem
 die drei übrigen Handwerks-Schichten hängen.
 
-| #   | Schicht                 | Was sie trägt                                | Rolle im Stamm-Modell  | Entsteht durch         | Kosten            | Zufall    |
-| --- | ----------------------- | -------------------------------------------- | ---------------------- | ---------------------- | ----------------- | --------- |
-| 1   | **Basis**               | Item-Typ + Slot, **Innate-Affix**            | —                      | Freischalten des Slots | Crystals          | keiner    |
-| 2   | **Item-Level** (`+n`)   | skaliert den **Innate-Value**                | **Stamm: Basis-Power** | **Blacksmith** Temper  | Gold              | keiner    |
-| 3   | **Seltenheit**          | Sockelzahl, Gem-Level-Cap, Item-Level-Cap    | **Ast: Kapazität**     | **Blacksmith** Refine  | Cinder + Gold     | keiner    |
-| 4   | **Gems in den Sockeln** | je ein gerollter Affix mit Value             | **Ast: Min-Max**       | **Jeweler**            | Gold + Gem-Fodder | seed-PRNG |
-| 5   | **Implicit**            | Affix eines **Sigils**, den kein Gem liefert | **Ast: Identität**     | **Blacksmith** Brand   | Cinder + Gold     | keiner    |
+| #   | Schicht                 | Was sie trägt                                | Rolle im Stamm-Modell  | Entsteht durch            | Kosten            | Zufall    |
+| --- | ----------------------- | -------------------------------------------- | ---------------------- | ------------------------- | ----------------- | --------- |
+| 1   | **Basis**               | Item-Typ + Slot, **Innate-Affix**            | —                      | Freischalten des Slots    | Relic Shards      | keiner    |
+| 2   | **Item-Level** (`+n`)   | skaliert den **Innate-Value**                | **Stamm: Basis-Power** | **Blacksmith** Temper     | Gold              | keiner    |
+| 3   | **Seltenheit**          | Sockelzahl, Gem-Level-Cap, Item-Level-Cap    | **Ast: Kapazität**     | **Blacksmith** Masterwork | Cinder + Gold     | keiner    |
+| 4   | **Gems in den Sockeln** | je ein gerollter Affix mit Value             | **Ast: Min-Max**       | **Jeweler**               | Gold + Gem-Fodder | seed-PRNG |
+| 5   | **Implicit**            | Affix eines **Sigils**, den kein Gem liefert | **Ast: Identität**     | **Blacksmith** Brand      | Cinder + Gold     | keiner    |
 
 - **Schicht 2 ist die geometrisch wachsende Basis-Power** und der **planbare** Träger der
   Progressions-Kurve — das persistente Item „wächst mit".
 - **Schicht 4 ist die Min-Max-Achse** und damit die eigentliche Loot-Jagd: Der Affix eines
   Gems wird beim Einsetzen gewürfelt.
-- Alle Handwerks-Aktionen kosten Gold; Refine und Brand zusätzlich Cinder. Der
+- Alle Handwerks-Aktionen kosten Gold; Masterwork und Brand zusätzlich Cinder. Der
   **einzige Zufall im Handwerk** liegt beim Jeweler — die drei Blacksmith-Aktionen sind
   vollständig planbar.
 
@@ -64,20 +64,20 @@ Die **Seltenheit** (EN: _Rarity_) ist der **Master-Regler** eines Armor-Items un
 
 Weapon Mastery Ranks sind keine Seltenheit; Waffen verwenden diese Tabelle nicht.
 
-| Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für den Refine **auf** diese Stufe |
-| ------------- | -------------- | -------------- | ----------------------------------------- |
-| **Common**    | 0              | **+20**        | — (Startzustand)                          |
-| **Magic**     | 1              | **+40**        | 1                                         |
-| **Rare**      | 2              | **+60**        | 3                                         |
-| **Epic**      | 3              | **+80**        | 6                                         |
-| **Legendary** | 4              | **+100**       | 10                                        |
+| Seltenheit    | Normale Sockel | Item-Level-Cap | Cinder für das Masterwork **auf** diese Stufe |
+| ------------- | -------------- | -------------- | --------------------------------------------- |
+| **Common**    | 0              | **+20**        | — (Startzustand)                              |
+| **Magic**     | 1              | **+40**        | 1                                             |
+| **Rare**      | 2              | **+60**        | 3                                             |
+| **Epic**      | 3              | **+80**        | 6                                             |
+| **Legendary** | 4              | **+100**       | 10                                            |
 
-- Die Seltenheit deckelt das Item-Level **nach oben**. Gehoben wird sie per **Refine**
-  (siehe Blacksmith); ein Refine ist **jederzeit** möglich, sobald Cinder vorhanden ist — es gibt
+- Die Seltenheit deckelt das Item-Level **nach oben**. Gehoben wird sie per **Masterwork**
+  (siehe Blacksmith); ein Masterwork ist **jederzeit** möglich, sobald Cinder vorhanden ist — es gibt
   **keine Mindestlevel-Regel**. Der Rhythmus entsteht allein aus der Cinder-Knappheit
   ([BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 - Ein frisch freigeschalteter Slot startet als **`Common +1` ohne Sockel**; der erste Sockel
-  entsteht mit dem ersten **Refine**.
+  entsteht mit dem ersten **Masterwork**.
 - Landmarken auf einem Item (abgeleitet aus der Tabelle oben und der Prismatic-Formel unten):
 
   ```
@@ -106,7 +106,7 @@ Weapon Mastery Ranks sind keine Seltenheit; Waffen verwenden diese Tabelle nicht
 ## 6. Drops: Gems, Cinder & Sigils
 
 Verbindlicher Wohnort der Drop-Regeln dieser drei Ressourcen. Was ein Sieg **sonst** noch
-ausschüttet (XP, Gold, Crystals), steht in
+ausschüttet (XP, Gold, Relic Shards), steht in
 [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg); **Runedust** in
 [Runedust (Drop)](RUNES.md#6-runedust-drop).
 
@@ -131,13 +131,13 @@ ausschüttet (XP, Gold, Crystals), steht in
   ([Feststehende Regeln](DAMAGE-SYSTEM.md#15-feststehende-regeln),
   [Seeds und Zufalls-Ströme](SIMULATION.md#4-seeds-und-zufalls-ströme)).
 
-## 7. Blacksmith — Temper, Refine & Brand
+## 7. Blacksmith — Temper, Masterwork & Brand
 
 Verbindlicher Wohnort der drei Blacksmith-Aktionen. Alle drei sind **RNG-frei**.
 
 - **Temper (Item-Level):** hebt das **Item-Level** um eine Stufe bis zum **Seltenheits-Cap** →
   skaliert den **Innate-Value** ([§1](#1-slots-basen--innate-affixe)). Kosten: Gold.
-- **Refine (Seltenheit):** hebt die **Seltenheit** um eine Stufe → +1 Sockel, höheres Gem-Cap,
+- **Masterwork (Seltenheit):** hebt die **Seltenheit** um eine Stufe → +1 Sockel, höheres Gem-Cap,
   höheres Item-Level-Cap. Kosten: **Cinder** nach der Seltenheits-Tabelle oben (konkrete Werte =
   Balancing) plus **Gold**.
 - **Brand (Implicit):** überträgt das Implicit eines bekannten **Sigils** auf ein **Legendary**-Item.

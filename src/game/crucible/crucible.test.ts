@@ -3,9 +3,11 @@ import {
   ambushBonus,
   CRUCIBLE_IDS,
   CRUCIBLE_NODES,
+  CRUCIBLE_TREES,
   crucibleNodeById,
   deriveUnlockedDungeonIds,
-  investedCrystals,
+  formatRelicShards,
+  investedRelicShards,
   meetsPrerequisites,
   menaceReduction,
   mitigationShare,
@@ -40,6 +42,10 @@ const ALL_DUNGEONS: CompletedDungeons = {
 };
 
 describe('crucible node catalog', () => {
+  it('contains exactly the three current trees', () => {
+    expect(CRUCIBLE_TREES).toEqual(['anvil', 'smelting', 'molten']);
+  });
+
   it('declares a unique id for every node', () => {
     const ids = CRUCIBLE_NODES.map((node) => node.id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -62,7 +68,18 @@ describe('crucible node catalog', () => {
     }
   });
 
-  it('locks armory, blacksmith, jeweler and masterwork', () => {
+  it('requires Blacksmith rank 1 before Jeweler', () => {
+    const jeweler = crucibleNodeById(CRUCIBLE_IDS.jeweler);
+    if (jeweler === undefined) throw new Error('Node fehlt im Katalog');
+
+    expect(jeweler.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.blacksmith, rank: 1 }]);
+    expect(meetsPrerequisites({ [CRUCIBLE_IDS.armory]: 1 }, ALL_DUNGEONS, jeweler, 1)).toBe(false);
+    expect(meetsPrerequisites({ [CRUCIBLE_IDS.blacksmith]: 1 }, ALL_DUNGEONS, jeweler, 1)).toBe(
+      true,
+    );
+  });
+
+  it('keeps the future equipment, crafting and rune unlocks locked', () => {
     const lockedIds = CRUCIBLE_NODES.filter((node) => node.lockedUntil !== undefined).map(
       (node) => node.id,
     );
@@ -79,7 +96,31 @@ describe('crucible node catalog', () => {
     );
   });
 
-  it('offers exactly 190 active crystal costs: 10 anvil, 60 smelting, 120 molten (PROGRESSION §3.5)', () => {
+  it('places the rune unlock branch in Anvil Sparks with stable prerequisites', () => {
+    const runeGrimoire = crucibleNodeById(CRUCIBLE_IDS.runeGrimoire);
+    const talisman = crucibleNodeById(CRUCIBLE_IDS.talisman);
+    const runicFocus = crucibleNodeById(CRUCIBLE_IDS.runicFocus);
+    const runeMastery = crucibleNodeById(CRUCIBLE_IDS.runeMastery);
+
+    expect(CRUCIBLE_IDS.runeGrimoire).toBe('anvil.rune-grimoire');
+    expect(CRUCIBLE_IDS.talisman).toBe('anvil.talisman');
+    expect(CRUCIBLE_IDS.runicFocus).toBe('anvil.runic-focus');
+    expect(CRUCIBLE_IDS.runeMastery).toBe('anvil.rune-mastery');
+    expect([runeGrimoire?.tree, talisman?.tree, runicFocus?.tree, runeMastery?.tree]).toEqual([
+      'anvil',
+      'anvil',
+      'anvil',
+      'anvil',
+    ]);
+    expect(runeGrimoire?.prerequisites).toEqual([]);
+    expect(talisman?.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }]);
+    expect(runicFocus?.prerequisites).toEqual([
+      { nodeId: CRUCIBLE_IDS.talisman, rank: 'matching' },
+    ]);
+    expect(runeMastery?.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }]);
+  });
+
+  it('offers exactly 190 active relic shard costs: 10 anvil, 60 smelting, 120 molten (PROGRESSION §3.4)', () => {
     const active = CRUCIBLE_NODES.filter((node) => node.lockedUntil === undefined);
     const costOf = (tree: string): number =>
       active
@@ -89,11 +130,16 @@ describe('crucible node catalog', () => {
     expect(costOf('anvil')).toBe(10);
     expect(costOf('smelting')).toBe(60);
     expect(costOf('molten')).toBe(120);
-    expect(costOf('masterwork')).toBe(0);
   });
 });
 
 describe('rank costs (PROGRESSION §3)', () => {
+  it('formats singular and plural Relic Shard amounts', () => {
+    expect(formatRelicShards(1)).toBe('1 Relic Shard');
+    expect(formatRelicShards(0)).toBe('0 Relic Shards');
+    expect(formatRelicShards(3)).toBe('3 Relic Shards');
+  });
+
   it('prices each rank at its rank number', () => {
     expect([1, 2, 3, 4, 5].map(rankCost)).toEqual([1, 2, 3, 4, 5]);
   });
@@ -105,33 +151,33 @@ describe('rank costs (PROGRESSION §3)', () => {
     expect(totalRankCost(0)).toBe(0);
   });
 
-  it('sums invested crystals per tree from the rank triangle', () => {
+  it('sums invested Relic Shards per tree from the rank triangle', () => {
     const ranks = {
       [CRUCIBLE_IDS.waystones]: 2,
       [CRUCIBLE_IDS.overpower]: 5,
       [CRUCIBLE_IDS.quickStep]: 1,
       [CRUCIBLE_IDS.rally]: 3,
     };
-    expect(investedCrystals(ranks, 'anvil')).toBe(3);
-    expect(investedCrystals(ranks, 'smelting')).toBe(16);
-    expect(investedCrystals(ranks, 'molten')).toBe(6);
-    expect(investedCrystals(ranks)).toBe(25);
+    expect(investedRelicShards(ranks, 'anvil')).toBe(3);
+    expect(investedRelicShards(ranks, 'smelting')).toBe(16);
+    expect(investedRelicShards(ranks, 'molten')).toBe(6);
+    expect(investedRelicShards(ranks)).toBe(25);
   });
 });
 
 describe('purchase rules', () => {
-  it('buys the next rank for its rank number in crystals', () => {
+  it('buys the next rank for its rank number in Relic Shards', () => {
     const first = purchaseCrucibleNode({}, 3, NO_DUNGEONS, CRUCIBLE_IDS.overpower);
-    expect(first).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 1 }, crystals: 2 });
+    expect(first).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 1 }, relicShards: 2 });
     if (first === null) throw new Error('Kauf abgelehnt');
 
     const second = purchaseCrucibleNode(
       first.ranks,
-      first.crystals,
+      first.relicShards,
       NO_DUNGEONS,
       CRUCIBLE_IDS.overpower,
     );
-    expect(second).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 2 }, crystals: 0 });
+    expect(second).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 2 }, relicShards: 0 });
   });
 
   it('caps every node at its maximum rank', () => {
@@ -145,7 +191,7 @@ describe('purchase rules', () => {
   it('rejects unknown nodes, unaffordable ranks and locked nodes', () => {
     expect(purchaseFailure({}, 100, NO_DUNGEONS, 'anvil.unknown')).toBe('Unknown Crucible node.');
     expect(purchaseFailure({}, 0, NO_DUNGEONS, CRUCIBLE_IDS.overpower)).toBe(
-      'Requires 1 Crystals.',
+      'Requires 1 Relic Shard.',
     );
     for (const id of [
       CRUCIBLE_IDS.armory,
@@ -204,11 +250,11 @@ describe('tree respec (PROGRESSION §3)', () => {
     [CRUCIBLE_IDS.mitigation]: 4,
   };
 
-  it('removes all ranks of the chosen tree atomically and refunds exactly the invested crystals', () => {
+  it('removes all ranks of the chosen tree atomically and refunds the invested Relic Shards', () => {
     const respec = respecCrucibleTree(ranks, 5, 'smelting');
     expect(respec).toEqual({
       ranks: { [CRUCIBLE_IDS.waystones]: 2, [CRUCIBLE_IDS.mitigation]: 4 },
-      crystals: 5 + 6 + 3,
+      relicShards: 5 + 6 + 3,
     });
   });
 
@@ -220,7 +266,7 @@ describe('tree respec (PROGRESSION §3)', () => {
         [CRUCIBLE_IDS.overpower]: 3,
         [CRUCIBLE_IDS.quickStep]: 2,
       },
-      crystals: 10,
+      relicShards: 10,
     });
   });
 
@@ -233,7 +279,7 @@ describe('tree respec (PROGRESSION §3)', () => {
 
     const respec = respecCrucibleTree(invested, 0, 'molten');
 
-    expect(respec).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 1 }, crystals: 3 + 6 });
+    expect(respec).toEqual({ ranks: { [CRUCIBLE_IDS.overpower]: 1 }, relicShards: 3 + 6 });
   });
 
   it('rejects a respec without investment', () => {

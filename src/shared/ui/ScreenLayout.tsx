@@ -2,16 +2,26 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
-const BACKGROUND_CLASSES: Record<DungeonBackgroundId, string> = {
+type ScreenBackgroundId = DungeonBackgroundId | 'crucible';
+
+const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
   'ember-foundry': 'bg-[url(/assets/backgrounds/dungeon-ember-foundry.png)]',
   'forgotten-citadel': 'bg-[url(/assets/backgrounds/dungeon-forgotten-citadel.png)]',
+  crucible: 'bg-[url(/assets/backgrounds/crucible-view.png)]',
+};
+
+const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
+  'ashen-depths': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
+  'ember-foundry': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
+  'forgotten-citadel': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
+  crucible: 'bg-background/28',
 };
 
 interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
   as?: ScreenLayoutElement;
   /** Ohne Angabe rendert der Screen auf der reinen Hintergrundfarbe. */
-  background?: DungeonBackgroundId;
+  background?: ScreenBackgroundId;
   contentClassName?: string;
   children: ReactNode;
 }
@@ -35,18 +45,19 @@ export function ScreenLayout({
   return (
     <Tag className={`relative isolate flex flex-col bg-background ${className}`} {...props}>
       <div className="relative min-h-0 flex-1">
-        {background !== undefined && (
+        {background !== undefined ? (
           <>
             <div
               aria-hidden="true"
+              data-screen-background={background}
               className={`absolute inset-0 -z-10 bg-cover bg-position-[center_bottom] ${BACKGROUND_CLASSES[background]}`}
             />
             <div
               aria-hidden="true"
-              className="absolute inset-0 -z-10 bg-linear-to-t from-background/82 via-background/58 to-background/32 shadow-[inset_0_0_32px_12px_var(--color-background)]"
+              className={`absolute inset-0 -z-10 shadow-[inset_0_0_32px_12px_var(--color-background)] ${BACKGROUND_OVERLAY_CLASSES[background]}`}
             />
           </>
-        )}
+        ) : null}
         <div className={`relative p-4 sm:p-6 ${contentClassName}`}>{children}</div>
       </div>
     </Tag>

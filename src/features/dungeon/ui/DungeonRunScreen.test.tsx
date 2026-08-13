@@ -67,7 +67,7 @@ describe('DungeonRunScreen', () => {
       combat: { ...combat, floorId: 'A1-D1-20' },
       outcome: 'victory',
       completionStatus: 'saved',
-      lastReward: { gold: 10, xp: 15, crystals: 1 },
+      lastReward: { gold: 10, xp: 15, relicShards: 1 },
     });
 
     render(<DungeonRunScreen />);
@@ -77,7 +77,7 @@ describe('DungeonRunScreen', () => {
   });
 
   it('shows the dungeon title and successfully committed rewards from this run', () => {
-    render(<DungeonRunScreen />);
+    const { container } = render(<DungeonRunScreen />);
 
     expect(
       screen.getByRole('heading', { name: 'The Ashen Depths — Cinder Gate' }),
@@ -94,9 +94,10 @@ describe('DungeonRunScreen', () => {
     const rewards = within(screen.getByLabelText('Run rewards'));
     expect(rewards.getAllByText('0')).toHaveLength(2);
     expect(rewards.getByLabelText('Gold amount')).toHaveTextContent('0');
-    expect(rewards.getByLabelText('Crystals amount')).toHaveTextContent('0');
+    expect(rewards.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
+    expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
     expect(rewards.getByText('Gold')).toHaveClass('sr-only');
-    expect(rewards.getByText('Crystals')).toHaveClass('sr-only');
+    expect(rewards.getByText('Relic Shards')).toHaveClass('sr-only');
     expect(rewards.getByText('Runedust')).toHaveClass('sr-only');
     expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
 
@@ -106,7 +107,10 @@ describe('DungeonRunScreen', () => {
       saveStore.setState({
         data: {
           ...save,
-          currencies: { gold: save.currencies.gold + 12, crystals: save.currencies.crystals + 3 },
+          currencies: {
+            gold: save.currencies.gold + 12,
+            relicShards: save.currencies.relicShards + 3,
+          },
         },
       }),
     );

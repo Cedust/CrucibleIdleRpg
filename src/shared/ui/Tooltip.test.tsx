@@ -47,4 +47,19 @@ describe('Tooltip', () => {
     await user.unhover(screen.getByRole('button'));
     expect(screen.getByRole('tooltip', { hidden: true })).toHaveClass('invisible');
   });
+
+  it('richtet Tooltips an Rand-Triggern nach innen aus', () => {
+    render(
+      <Tooltip content="Gold" align="end">
+        {(trigger) => (
+          <button type="button" {...trigger}>
+            12,450
+          </button>
+        )}
+      </Tooltip>,
+    );
+
+    expect(screen.getByRole('tooltip', { hidden: true })).toHaveClass('right-0');
+    expect(screen.getByRole('tooltip', { hidden: true })).not.toHaveClass('-translate-x-1/2');
+  });
 });

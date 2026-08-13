@@ -13,7 +13,14 @@ interface TooltipProps {
   /** Render-Prop: die Trigger-Props gehören auf das fokussierbare Element. */
   children: (trigger: TooltipTriggerProps) => ReactNode;
   className?: string;
+  align?: 'start' | 'center' | 'end';
 }
+
+const ALIGN_CLASS = {
+  start: 'left-0',
+  center: 'left-1/2 -translate-x-1/2',
+  end: 'right-0',
+} as const;
 
 /**
  * Handgerollter Tooltip nach dem WAI-ARIA-Tooltip-Pattern: öffnet bei Hover
@@ -21,7 +28,7 @@ interface TooltipProps {
  * damit aria-describedby zuverlässig auflöst; Positionierung ist rein CSS
  * (oberhalb zentriert, ohne Kollisionserkennung).
  */
-export function Tooltip({ content, children, className = '' }: TooltipProps) {
+export function Tooltip({ content, children, className = '', align = 'center' }: TooltipProps) {
   const id = useId();
   const [open, setOpen] = useState(false);
 
@@ -47,7 +54,7 @@ export function Tooltip({ content, children, className = '' }: TooltipProps) {
       <span
         role="tooltip"
         id={id}
-        className={`pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-56 -translate-x-1/2 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity ${
+        className={`pointer-events-none absolute bottom-full z-10 mb-2 w-max max-w-56 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity ${ALIGN_CLASS[align]} ${
           open ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >

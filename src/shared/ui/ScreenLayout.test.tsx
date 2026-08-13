@@ -27,4 +27,17 @@ describe('ScreenLayout', () => {
     expect(screen.getByText('Content')).toBeInTheDocument();
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
   });
+
+  it('unterstützt den Crucible-Hintergrund mit eigenem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="crucible">
+        <h1>Crucible</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="crucible"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/crucible-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
 });

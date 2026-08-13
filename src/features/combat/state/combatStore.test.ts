@@ -109,8 +109,8 @@ describe('useCombatStore', () => {
       enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
     };
     const commitVictory = vi
-      .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
-      .mockResolvedValue({ gold: 10, xp: 15, crystals: 1 });
+      .fn<() => Promise<{ gold: number; xp: number; relicShards: number }>>()
+      .mockResolvedValue({ gold: 10, xp: 15, relicShards: 1 });
 
     useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
@@ -118,7 +118,7 @@ describe('useCombatStore', () => {
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
 
     expect(commitVictory).toHaveBeenCalledOnce();
-    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, crystals: 1 });
+    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, relicShards: 1 });
     expect(useCombatStore.getState().advanceTick()).toBeUndefined();
     expect(commitVictory).toHaveBeenCalledOnce();
   });
@@ -130,9 +130,9 @@ describe('useCombatStore', () => {
       enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
     };
     const commitVictory = vi
-      .fn<() => Promise<{ gold: number; xp: number; crystals: number }>>()
+      .fn<() => Promise<{ gold: number; xp: number; relicShards: number }>>()
       .mockRejectedValueOnce(new Error('Speichern fehlgeschlagen'))
-      .mockResolvedValueOnce({ gold: 10, xp: 15, crystals: 1 });
+      .mockResolvedValueOnce({ gold: 10, xp: 15, relicShards: 1 });
 
     useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
@@ -143,6 +143,6 @@ describe('useCombatStore', () => {
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
 
     expect(commitVictory).toHaveBeenCalledTimes(2);
-    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, crystals: 1 });
+    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, relicShards: 1 });
   });
 });

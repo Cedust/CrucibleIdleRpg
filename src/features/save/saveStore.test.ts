@@ -69,7 +69,7 @@ describe('createSaveStore', () => {
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
 
-    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, crystals: 1 });
+    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, relicShards: 1 });
     expect(reloaded.getState().data?.characters.korvin.xp).toBe(5);
     expect(reloaded.getState().data).not.toHaveProperty('combat');
   });
@@ -117,7 +117,7 @@ describe('createSaveStore', () => {
     expect(deriveUnlockedDungeonIds(reloaded.getState().data?.crucible ?? {})).toEqual(['A1-D1']);
   });
 
-  it('kauft Crucible-Ränge gegen Crystals und leitet den Einstieg aus dem Waystone-Rang ab', async () => {
+  it('kauft Crucible-Ränge gegen Relic Shards und leitet den Einstieg aus dem Waystone-Rang ab', async () => {
     const port = memoryPort();
     const service = createSaveService(port, () => createDefaultSave(7));
     const store = createSaveStore(service);
@@ -134,8 +134,8 @@ describe('createSaveStore', () => {
     await store.getState().completeDungeon('A1-D1');
     await expect(store.getState().buyCrucibleNode('anvil.waystones')).resolves.toBe(true);
     await expect(store.getState().buyCrucibleNode('smelting.overpower')).resolves.toBe(true);
-    // Elite-Erstsieg = 3 Crystals; Waystone Rang 1 + Overpower Rang 1 kosten 2.
-    expect(store.getState().data?.currencies.crystals).toBe(1);
+    // Elite-Erstsieg = 3 Relic Shards; Waystone Rang 1 + Overpower Rang 1 kosten 2.
+    expect(store.getState().data?.currencies.relicShards).toBe(1);
 
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
@@ -149,7 +149,7 @@ describe('createSaveStore', () => {
     ]);
   });
 
-  it('erstattet beim Tree-Respec exakt die investierten Crystals und lässt Anvil unberührt', async () => {
+  it('erstattet beim Tree-Respec exakt die investierten Relic Shards und lässt Anvil unberührt', async () => {
     const port = memoryPort();
     const service = createSaveService(port, () => createDefaultSave(7));
     const store = createSaveStore(service);
@@ -160,7 +160,7 @@ describe('createSaveStore', () => {
     store.setState({
       data: {
         ...base,
-        currencies: { ...base.currencies, crystals: 0 },
+        currencies: { ...base.currencies, relicShards: 0 },
         crucible: {
           'anvil.waystones': 1,
           'smelting.overpower': 2,
@@ -176,7 +176,7 @@ describe('createSaveStore', () => {
       'anvil.waystones': 1,
       'molten.rally': 2,
     });
-    expect(store.getState().data?.currencies.crystals).toBe(4);
+    expect(store.getState().data?.currencies.relicShards).toBe(4);
 
     await expect(store.getState().respecCrucible('smelting')).resolves.toBe(false);
   });
@@ -192,7 +192,7 @@ describe('createSaveStore', () => {
     store.setState({
       data: {
         ...base,
-        currencies: { ...base.currencies, crystals: 10 },
+        currencies: { ...base.currencies, relicShards: 10 },
         crucible: { 'molten.rally': 1 },
       },
     });
@@ -204,7 +204,7 @@ describe('createSaveStore', () => {
     allowed = true;
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(true);
     expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 2 });
-    expect(store.getState().data?.currencies.crystals).toBe(8);
+    expect(store.getState().data?.currencies.relicShards).toBe(8);
   });
 
   it('serialisiert überlappende Actions ohne Lost Update', async () => {
@@ -311,7 +311,7 @@ describe('createSaveStore', () => {
       }),
     ).rejects.toThrow('Reward-Save fehlgeschlagen');
 
-    expect(store.getState().data?.currencies).toEqual({ gold: 0, crystals: 0 });
+    expect(store.getState().data?.currencies).toEqual({ gold: 0, relicShards: 0 });
     expect(store.getState().data?.characters.korvin.xp).toBe(0);
     expect(store.getState().status).toBe('error');
   });

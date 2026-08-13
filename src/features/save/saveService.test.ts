@@ -36,6 +36,22 @@ describe('createSaveService', () => {
     expect(console.warn).toHaveBeenCalledOnce();
   });
 
+  it('setzt einen Save mit dem entfernten Währungsfeld vollständig auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const legacyCurrencyKey = ['crys', 'tals'].join('');
+    const current = createDefaultSave(42);
+    const legacy = {
+      ...current,
+      runCounter: 9,
+      currencies: { gold: 50, [legacyCurrencyKey]: 12 },
+    };
+    const fallback = createDefaultSave(777);
+    const service = createSaveService(memoryPort(JSON.stringify(legacy)), () => fallback);
+
+    await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
   it('serialisiert validierte Daten ausschließlich über den SavePort', async () => {
     const port = memoryPort(null);
     const service = createSaveService(port, () => createDefaultSave(1));

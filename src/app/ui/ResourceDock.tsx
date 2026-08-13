@@ -1,4 +1,4 @@
-import { Coins, Flame, Gem, ScrollText, type LucideIcon } from 'lucide-react';
+import { Coins, Flame, ScrollText, Stone, type LucideIcon } from 'lucide-react';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Tooltip } from '@/shared/ui/Tooltip';
 import { formatNumber } from '@/shared/utils/formatNumber';
@@ -21,7 +21,7 @@ export function ResourceDock() {
       className="absolute right-10 top-10 z-10 flex flex-wrap justify-end gap-2"
     >
       <ResourceChip icon={Coins} label="Gold" value={currencies?.gold} />
-      <ResourceChip icon={Gem} label="Crystals" value={currencies?.crystals} tone="info" />
+      <ResourceChip icon={Stone} label="Relic Shards" value={currencies?.relicShards} tone="info" />
       <ResourceChip icon={Flame} label="Cinder" value={undefined} />
       <ResourceChip icon={ScrollText} label="Runedust" value={undefined} tone="muted" />
     </dl>

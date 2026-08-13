@@ -452,6 +452,159 @@ noble and mysterious. Roughly left-right mirror symmetry, no background, no
 text, no watermark.
 ```
 
+## 18. Crucible-Tree-Tab-Hintergrund — Anvil Sparks
+
+- **Zieldatei:** `public/assets/backgrounds/crucible-tab-anvil-sparks.png` (oder `.webp`)
+- **Format:** sehr breites Querformat 3:1, mindestens 1536×512
+- **Verwendung:** Hintergrund des Tabs „Anvil Sparks“. Das Asset wird per `background-size: cover`
+  in einen nur 64 px hohen Tab eingesetzt und muss deshalb auch bei seitlichem Crop auf schmalen
+  Viewports funktionieren. Die ruhige, dunkle Bildmitte bleibt für den darüberliegenden Live-Text
+  frei; der Tree-Name ist nicht Teil des Bildes.
+
+```text
+Use case: stylized-concept
+Asset type: dark fantasy game UI tab background
+Primary request: a restrained symbolic forge scene for "Anvil Sparks", representing
+permanent access, ancient craft, and systems awakened by the first strike of an anvil
+Scene/backdrop: a shadowed imperial forge alcove built from massive dark stone, with a
+weathered anvil, faint engraved construction lines, and a sparse shower of tiny sparks
+suggesting dormant mechanisms coming to life
+Style/medium: painterly dark fantasy concept art with crisp material definition, matching
+the project's heavy stone-carved imperial style and gilded ruins mood
+Composition/framing: very wide 3:1 landscape banner, designed for a shallow 64 px UI tab;
+balanced visual interest in the left and right thirds, no important detail at the extreme
+edges, and a calm dark low-detail area across the horizontal center for overlaid live text;
+crop-safe for aspect ratios between roughly 2:1 and 5:1
+Lighting/mood: one restrained warm spark glow around the anvil, noble and mysterious,
+subdued rather than explosive
+Color palette: deep blue-black and slate shadows (#0f172a), tarnished brass and muted gold
+(#8a6d3b to #fbbf24), sparse ember orange accents (#e25822)
+Materials/textures: worn black iron, cracked stone, aged gold inlays, fine ash in the air
+Constraints: keep the center dark enough for bright UI lettering; readable at very small
+display height; no border or frame; no text, letters, runes resembling text, icons, characters,
+logos, interface elements, or watermark
+Avoid: a large centered object behind the label, bright full-frame fire, excessive sparks,
+busy micro-detail, modern machinery, photorealistic photography
+```
+
+## 19. Crucible-Tree-Tab-Hintergrund — Smelting Flames
+
+- **Zieldatei:** `public/assets/backgrounds/crucible-tab-smelting-flames.png` (oder `.webp`)
+- **Format:** sehr breites Querformat 3:1, mindestens 1536×512
+- **Verwendung:** Hintergrund des Tabs „Smelting Flames“. Gleiche Kompositions- und Crop-Regeln
+  wie bei §18; der Tree-Name bleibt Live-Text.
+
+```text
+Use case: stylized-concept
+Asset type: dark fantasy game UI tab background
+Primary request: a restrained smelting scene for "Smelting Flames", representing raw
+physical power refined and strengthened through heat
+Scene/backdrop: the interior of an ancient imperial smelter, with dark furnace masonry,
+glowing metal channels, heat-scarred crucibles, and a controlled ribbon of molten iron
+moving through the scene
+Style/medium: painterly dark fantasy concept art with crisp material definition, matching
+the project's heavy stone-carved imperial style and gilded ruins mood
+Composition/framing: very wide 3:1 landscape banner, designed for a shallow 64 px UI tab;
+the furnace glow and molten channels create subtle movement in the left and right thirds,
+while the horizontal center remains dark, calm, and low-detail for overlaid live text; no
+important detail at the extreme edges; crop-safe for aspect ratios between roughly 2:1 and 5:1
+Lighting/mood: contained furnace heat and a steady internal glow, powerful and enduring,
+never chaotic or apocalyptic
+Color palette: deep blue-black and charcoal shadows (#0f172a), dark iron, tarnished gold
+(#8a6d3b), concentrated ember orange and amber light (#e25822, #f59e0b)
+Materials/textures: rough furnace stone, blackened iron, viscous molten metal, subtle heat
+haze, small traces of soot and ash
+Constraints: keep the center dark enough for bright UI lettering; readable at very small
+display height; no border or frame; no text, letters, runes resembling text, icons, characters,
+logos, interface elements, or watermark
+Avoid: a wall of flames, lava landscape, bright yellow center, excessive bloom, busy
+micro-detail, modern industrial equipment, photorealistic photography
+```
+
+## 20. Crucible-Tree-Tab-Hintergrund — Molten Cast
+
+- **Zieldatei:** `public/assets/backgrounds/crucible-tab-molten-cast.png` (oder `.webp`)
+- **Format:** sehr breites Querformat 3:1, mindestens 1536×512
+- **Verwendung:** Hintergrund des Tabs „Molten Cast“. Gleiche Kompositions- und Crop-Regeln
+  wie bei §18; der Tree-Name bleibt Live-Text.
+
+```text
+Use case: stylized-concept
+Asset type: dark fantasy game UI tab background
+Primary request: a restrained casting scene for "Molten Cast", representing combat rules
+being reshaped as liquid metal is committed to a decisive new form
+Scene/backdrop: an ancient imperial casting floor where a narrow stream of luminous molten
+metal pours into branching weapon and armor moulds cut into dark stone, with incomplete
+silhouettes emerging at the edges of the composition
+Style/medium: painterly dark fantasy concept art with crisp material definition, matching
+the project's heavy stone-carved imperial style and gilded ruins mood
+Composition/framing: very wide 3:1 landscape banner, designed for a shallow 64 px UI tab;
+use restrained diagonal flow and branching mould lines in the left and right thirds to imply
+choice and transformation, while preserving a calm dark low-detail band across the horizontal
+center for overlaid live text; no important detail at the extreme edges; crop-safe for aspect
+ratios between roughly 2:1 and 5:1
+Lighting/mood: focused molten light cutting through cool darkness, tactical, dangerous, and
+deliberate rather than wild
+Color palette: deep blue-slate and near-black shadows (#0f172a), aged brass and muted gold
+(#8a6d3b to #fbbf24), narrow accents of white-hot amber and ember orange (#f59e0b, #e25822)
+Materials/textures: carved stone moulds, scorched iron, liquid metal, thin smoke, sparse sparks
+Constraints: keep the center dark enough for bright UI lettering; readable at very small
+display height; no border or frame; no text, letters, runes resembling text, icons, characters,
+logos, interface elements, or watermark
+Avoid: one large centered weapon, literal combat scene, bright full-frame lava, excessive
+flames or bloom, busy micro-detail, modern foundry machinery, photorealistic photography
+```
+
+## 21. Crucible-View-Hintergrund — Der Schmelztiegel
+
+- **Zieldatei:** `public/assets/backgrounds/crucible-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Crucible-Ansicht hinter Überschrift,
+  Tree-Tabs, Node-Panel und Detailansicht. Das Bild wird per `background-size: cover` eingesetzt.
+  Der Schmelztiegel bleibt auch bei engerem Crop das zentrale Motiv; die UI-relevanten Bereiche
+  sind dunkel und kontrastarm gehalten.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: a monumental ancient crucible — a true heavy smelting vessel — as the
+defining visual heart of the Crucible view, where recovered Relic Shards are melted down
+and reforged into permanent access, physical strength, and altered combat techniques
+Scene/backdrop: a vast subterranean imperial forge-temple beneath a ruined kingdom, built
+around one colossal stone-and-black-iron crucible set into a circular furnace dais; the
+vessel has a broad heavy rim, short reinforced handles, weathered gold bands, and a deep
+interior glow of molten metal; immense cracked pillars, dormant channels, chains, and faded
+gilded reliefs disappear into the surrounding darkness
+Subject: the crucible itself is unmistakable and dominant, viewed slightly from above so
+both its massive vessel silhouette and the molten interior are clearly readable; it feels
+ancient, functional, sacred, and powerful rather than like a decorative chalice or cooking pot
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+monumental crucible in the lower central third, large enough to remain the clear focal point
+but low enough that UI panels can occupy the middle of the screen; preserve a broad, dark,
+low-detail field through the central and upper-middle area for Tree-Tabs, nodes, connectors,
+and the inspector; keep the upper-left corner especially calm for the live "Crucible" heading;
+distribute secondary architecture symmetrically toward the outer edges; crop-safe from wide
+desktop down to roughly 4:5 mobile, with the crucible remaining recognizable near the center
+Lighting/mood: the only strong light rises from within the crucible, casting a controlled
+ember glow upward onto its rim and the nearest floor carvings; distant forge architecture
+stays in cool shadow with sparse floating embers and soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened iron,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), concentrated molten ember orange
+(#e25822) and restrained amber highlights (#f59e0b)
+Materials/textures: massive soot-darkened stone, forged black iron, worn gold inlays, viscous
+molten metal, cracked furnace masonry, subtle ash and smoke haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast outside
+the crucible; retain enough negative space for large opaque or translucent panels; no border
+or frame; no text, letters, readable runes, icons, characters, weapons as focal objects, logos,
+interface elements, or watermark
+Avoid: a small crucible, cauldron, goblet, trophy cup, kitchen vessel, volcano, open lava lake,
+wall-to-wall flames, bright orange full-frame lighting, excessive bloom, busy foreground clutter,
+modern industrial machinery, horror imagery, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

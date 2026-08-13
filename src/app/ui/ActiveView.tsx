@@ -11,11 +11,7 @@ export function ActiveView() {
     case 'dungeons':
       return <DungeonSelectionScreen />;
     case 'crucible':
-      return (
-        <div className="p-4 sm:p-6">
-          <CrucibleScreen />
-        </div>
-      );
+      return <CrucibleScreen />;
     case 'weapon-mastery':
       return (
         <div className="p-4 sm:p-6">

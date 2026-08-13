@@ -33,11 +33,15 @@
 
 ## Hintergründe
 
-| Datei                                                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
-| [backgrounds/dungeon-ashen-depths.png](backgrounds/dungeon-ashen-depths.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §1](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
-| `backgrounds/dungeon-ember-foundry.png` _(Asset ausstehend)_                 | KI-generiert, Prompt: [concept/PROMPTS.md §12](../../concept/PROMPTS.md)          | Timo Sudeck | projektintern | —           |
-| `backgrounds/dungeon-forgotten-citadel.png` _(Asset ausstehend)_             | KI-generiert, Prompt: [concept/PROMPTS.md §13](../../concept/PROMPTS.md)          | Timo Sudeck | projektintern | —           |
+| Datei                                                                                        | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
+| [backgrounds/dungeon-ashen-depths.png](backgrounds/dungeon-ashen-depths.png)                 | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §1](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —           |
+| `backgrounds/dungeon-ember-foundry.png` _(Asset ausstehend)_                                 | KI-generiert, Prompt: [concept/PROMPTS.md §12](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | —           |
+| `backgrounds/dungeon-forgotten-citadel.png` _(Asset ausstehend)_                             | KI-generiert, Prompt: [concept/PROMPTS.md §13](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | —           |
+| [backgrounds/crucible-tab-anvil-sparks.png](backgrounds/crucible-tab-anvil-sparks.png)       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §18](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2172×724    |
+| [backgrounds/crucible-tab-smelting-flames.png](backgrounds/crucible-tab-smelting-flames.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §19](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2172×724    |
+| [backgrounds/crucible-tab-molten-cast.png](backgrounds/crucible-tab-molten-cast.png)         | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §20](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2172×724    |
+| [backgrounds/crucible-view.png](backgrounds/crucible-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §21](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941    |
 
 ## Rahmen
 

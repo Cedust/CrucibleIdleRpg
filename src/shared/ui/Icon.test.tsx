@@ -14,10 +14,14 @@ describe('Icon', () => {
   });
 
   it('wird mit Label zum benannten Bild', () => {
-    render(<Icon name="melting-metal" size="sm" label="Crucible" className="bg-ember" />);
+    render(<Icon name="crucible-waystones" size="xl" label="Waystones" className="bg-ember" />);
 
-    const icon = screen.getByRole('img', { name: 'Crucible' });
+    const icon = screen.getByRole('img', { name: 'Waystones' });
     expect(icon).not.toHaveAttribute('aria-hidden');
-    expect(icon).toHaveClass('bg-ember', 'size-4');
+    expect(icon).toHaveClass(
+      'bg-ember',
+      'size-11',
+      'mask-[url(/assets/icons/crucible-waystones.svg)]',
+    );
   });
 });

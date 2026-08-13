@@ -108,6 +108,18 @@
 }
 
 /*
+ * Kompakte Overlay-Variante des großen Ornamentrahmens für die flache
+ * Crucible-Tree-Navigation. Sie nutzt dasselbe Asset und denselben Slice,
+ * beeinflusst als absoluter Layer aber nicht die 64 px hohe Tab-Fläche.
+ */
+@utility border-image-tab-ornate {
+  border-style: solid;
+  border-width: 20px;
+  border-image: url('/assets/frames/panel-ornate.png') 400 / 20px round;
+  border-image-outset: 6px 6.75px 8px 6.75px;
+}
+
+/*
  * Schlanker 9-Slice-Rahmen für kleine Panels und Karten (Asset aus
  * concept/PROMPTS.md §7, 1254×1254, Ornamentring im äußeren Sechstel = 209 px).
  * Das Outset legt die Goldlinie (Bandmitte je Seite ~59–67 px vom Asset-Rand,

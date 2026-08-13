@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Coins, Gem, ScrollText } from 'lucide-react';
+import { Coins, ScrollText, Stone } from 'lucide-react';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
@@ -13,13 +13,14 @@ import { useCombatStore } from '@/features/combat/state/combatStore';
 import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
 import { TeamPanel } from '@/features/combat/ui/TeamPanel';
 import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
+import { formatRelicShards } from '@/game/crucible/crucible';
 
 /** Im Run können keine Ausgaben erfolgen; die Differenz seit Mount entspricht den Run-Rewards. */
 function RunRewardSummary() {
   const currencies = useSaveStore((state) => state.data?.currencies ?? null);
-  const [startingCurrencies] = useState(() => currencies ?? { gold: 0, crystals: 0 });
+  const [startingCurrencies] = useState(() => currencies ?? { gold: 0, relicShards: 0 });
   const gold = Math.max((currencies?.gold ?? 0) - startingCurrencies.gold, 0);
-  const crystals = Math.max((currencies?.crystals ?? 0) - startingCurrencies.crystals, 0);
+  const relicShards = Math.max((currencies?.relicShards ?? 0) - startingCurrencies.relicShards, 0);
 
   return (
     <dl aria-label="Run rewards" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
@@ -31,10 +32,10 @@ function RunRewardSummary() {
         </dd>
       </div>
       <div className="flex items-center gap-1.5">
-        <Gem aria-hidden="true" className="size-4 text-info" />
-        <dt className="sr-only">Crystals</dt>
-        <dd aria-label="Crystals amount" className="font-semibold text-text">
-          {formatNumber(crystals)}
+        <Stone aria-hidden="true" className="size-4 text-info" />
+        <dt className="sr-only">Relic Shards</dt>
+        <dd aria-label="Relic Shards amount" className="font-semibold text-text">
+          {formatNumber(relicShards)}
         </dd>
       </div>
       <div className="flex items-center gap-1.5">
@@ -206,7 +207,7 @@ export function DungeonRunScreen() {
                   <div className="space-y-3">
                     <p className="text-sm text-text-muted">
                       Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +
-                      {lastReward.crystals} {lastReward.crystals === 1 ? 'Crystal' : 'Crystals'}
+                      {formatRelicShards(lastReward.relicShards)}
                     </p>
                     {isFinalFloor ? (
                       <>

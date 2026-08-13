@@ -86,14 +86,14 @@ export const saveSchema = z
     currencies: z
       .object({
         gold: z.number().int().nonnegative(),
-        crystals: z.number().int().nonnegative(),
+        relicShards: z.number().int().nonnegative(),
       })
       .strict(),
     firstVictories: z
       .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
       .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
       .readonly(),
-    /** Crucible-Node-Ränge über alle vier Trees — die alleinige Wahrheit (PERSISTENCE §2.3). */
+    /** Crucible-Node-Ränge über alle drei Trees — die alleinige Wahrheit (PERSISTENCE §2.3). */
     crucible: z.record(z.string(), z.number().int().min(1).max(5)).readonly(),
     completedDungeons: completedDungeonsSchema,
   })
@@ -182,7 +182,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
       rhaya: createLevelOneProgression(),
       quinn: createLevelOneProgression(),
     },
-    currencies: { gold: 0, crystals: 0 },
+    currencies: { gold: 0, relicShards: 0 },
     firstVictories: [],
     crucible: {},
     completedDungeons: createDefaultCompletedDungeons(),

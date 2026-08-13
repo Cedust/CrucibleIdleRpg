@@ -1,10 +1,38 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
+
+async function gridMetrics(locator: Locator) {
+  return locator.evaluate((element) => {
+    const htmlElement = element as unknown as {
+      clientWidth: number;
+      scrollWidth: number;
+      ownerDocument: {
+        defaultView: {
+          getComputedStyle: (target: unknown) => { gridTemplateColumns: string };
+        } | null;
+      };
+    };
+    const view = htmlElement.ownerDocument.defaultView;
+    if (view === null) throw new Error('Grid has no browser window');
+
+    return {
+      columns: view.getComputedStyle(element).gridTemplateColumns.split(' ').length,
+      clientWidth: htmlElement.clientWidth,
+      scrollWidth: htmlElement.scrollWidth,
+    };
+  });
+}
+
+async function elementWidth(locator: Locator) {
+  return locator.evaluate((element) => (element as unknown as { clientWidth: number }).clientWidth);
+}
 
 test('loads the accessible dungeon selection', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeVisible();
   await expect(page.getByLabel('Resources')).toBeVisible();
+  await expect(page.getByLabel('Relic Shards amount')).toBeVisible();
+  await expect(page.locator('svg.lucide-stone').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'DUNGEONS', exact: true })).toHaveAttribute(
     'aria-current',
     'page',
@@ -18,6 +46,76 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   await page.getByText('DUNGEON I', { exact: true }).click();
   await expect(page.getByRole('radio', { name: /DUNGEON I\b/ })).toBeChecked();
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();
+});
+
+test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1680, height: 937 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
+
+  await expect(page.getByRole('heading', { name: 'Crucible', exact: true })).toBeVisible();
+  await expect(page.locator('[data-screen-background="crucible"]')).toHaveCSS(
+    'background-image',
+    /crucible-view\.png/,
+  );
+  await expect(page.getByRole('tab', { name: 'ANVIL SPARKS' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByRole('tab', { name: 'ANVIL SPARKS' })).toHaveCSS(
+    'background-image',
+    /crucible-tab-anvil-sparks\.png/,
+  );
+  await expect(page.getByRole('tab', { name: 'SMELTING FLAMES' })).toHaveCSS(
+    'background-image',
+    /crucible-tab-smelting-flames\.png/,
+  );
+  await expect(page.getByRole('tab', { name: 'MOLTEN CAST' })).toHaveCSS(
+    'background-image',
+    /crucible-tab-molten-cast\.png/,
+  );
+  await expect(page.getByRole('tab')).toHaveCount(3);
+  await expect(page.getByRole('tab', { name: 'MASTERWORK' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Waystones,/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Rune Grimoire,/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Runic Focus,/ })).toBeVisible();
+
+  await page.getByRole('tab', { name: 'SMELTING FLAMES' }).click();
+  await page.getByRole('button', { name: /^Overpower,/ }).click();
+  await expect(page.getByText('Requires 1 Relic Shard.')).toBeVisible();
+  await expect(page.getByText('1 Relic Shard', { exact: true })).toBeVisible();
+  await page.getByRole('tab', { name: 'ANVIL SPARKS' }).click();
+
+  const layout = page.getByTestId('crucible-layout');
+  const navigation = page.getByTestId('crucible-tree-navigation');
+  const graph = page.getByTestId('crucible-tree-graph');
+  const tablist = page.getByRole('tablist', { name: 'Trees' });
+  const wideLayout = await gridMetrics(layout);
+  expect(wideLayout.columns).toBe(2);
+  expect(wideLayout.scrollWidth).toBeLessThanOrEqual(wideLayout.clientWidth);
+  expect((await gridMetrics(tablist)).columns).toBe(3);
+  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+
+  await page.setViewportSize({ width: 1180, height: 900 });
+  const stackedLayout = await gridMetrics(layout);
+  expect(stackedLayout.columns).toBe(1);
+  expect(stackedLayout.scrollWidth).toBeLessThanOrEqual(stackedLayout.clientWidth);
+  expect((await gridMetrics(tablist)).columns).toBe(3);
+  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+
+  await page.getByRole('tab', { name: 'MOLTEN CAST' }).click();
+  await expect(page.getByRole('button', { name: /^Mitigation,/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Second Wind,/ })).toBeVisible();
+  await expect(
+    page.getByRole('tabpanel', { name: 'MOLTEN CAST' }).getByRole('button', { name: 'RESPEC' }),
+  ).toBeDisabled();
+  await expect(page.getByRole('region', { name: 'COMBAT ARTS' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'SURVIVAL' })).toBeVisible();
+
+  await page.setViewportSize({ width: 1680, height: 937 });
+  await expect(page.getByRole('region', { name: 'COMBAT ARTS' })).toBeVisible();
 });
 
 test('isolates a dungeon run without sidebar branding or resources', async ({ page }) => {

@@ -33,7 +33,8 @@ describe('AppShell', () => {
       container.querySelector('img[src="/assets/ornaments/nav-selection.png"]'),
     ).toBeInTheDocument();
     expect(screen.getByLabelText('Gold amount')).toHaveTextContent('0');
-    expect(screen.getByLabelText('Crystals amount')).toHaveTextContent('0');
+    expect(screen.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
+    expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
     expect(screen.getByLabelText('Cinder amount')).toHaveTextContent('—');
     expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();

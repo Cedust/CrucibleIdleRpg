@@ -57,8 +57,8 @@ export function SelectedDungeonPanel({
         </p>
       )}
 
-      <div className="flex flex-col items-end gap-3 sm:flex-row sm:items-end">
-        <div className="w-full min-w-0 space-y-1.5 sm:flex-1">
+      <div className="flex flex-col items-end gap-3 @min-[24rem]:flex-row @min-[24rem]:items-end">
+        <div className="w-full min-w-0 space-y-1.5 @min-[24rem]:flex-1">
           <div className="flex items-baseline justify-between gap-3 text-sm">
             <span className="font-medium text-text">Progress</span>
             <span className="tabular-nums text-text-muted">
@@ -79,7 +79,11 @@ export function SelectedDungeonPanel({
             />
           </div>
         </div>
-        <Button className="sm:ml-4 sm:shrink-0" disabled={disabled} onClick={onEnter}>
+        <Button
+          className="@min-[24rem]:ml-4 @min-[24rem]:shrink-0"
+          disabled={disabled}
+          onClick={onEnter}
+        >
           {isStarting ? 'ENTERING DUNGEON...' : 'ENTER DUNGEON'}
         </Button>
       </div>

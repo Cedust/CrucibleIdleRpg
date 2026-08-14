@@ -7,6 +7,7 @@ import {
   ACT_DISPLAY_META,
 } from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { ActPanel } from './ActPanel';
 import { DungeonSelector } from './DungeonSelector';
@@ -45,32 +46,29 @@ export function DungeonSelectionScreen() {
     firstVictories === null ? null : dungeonProgress(selectedDungeonId, firstVictories);
 
   return (
-    <ScreenLayout background="ashen-depths" className="min-h-full">
-      <section className="max-w-7xl space-y-6">
-        <header>
-          <h2 className="font-display text-display-lg text-accent-strong">Dungeons</h2>
-          <p className="mt-1 font-intro text-sm text-text-muted">
-            Descend into the ancient depths, where the ashes of a fallen kingdom conceal a forgotten
-            world.
-          </p>
-        </header>
+    <ScreenLayout background="ashen-depths">
+      <section className="mx-auto w-full max-w-page-narrow space-y-6">
+        <ScreenHeader
+          title="Dungeons"
+          intro="Descend into the ancient depths, where the ashes of a fallen kingdom conceal a forgotten world."
+        />
 
         {unlockedDungeonIds === null || completedDungeons === null || selectedProgress === null ? (
           <p aria-live="polite" className="text-text-muted">
             {saveStatus === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress...'}
           </p>
         ) : (
-          <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="flex flex-col gap-6 @min-[42rem]:flex-row">
             <ul
               aria-label="Acts"
-              className="flex w-full flex-col gap-3 lg:w-64 lg:shrink-0 lg:justify-center"
+              className="flex w-full flex-col gap-3 @min-[42rem]:w-64 @min-[42rem]:shrink-0 @min-[42rem]:justify-center"
             >
               {ACT_DISPLAY_META.map((act) => (
                 <ActPanel key={act.id} act={act} />
               ))}
             </ul>
             <section aria-label={`${ACT_1_DISPLAY_META.label} dungeons`} className="min-w-0 flex-1">
-              <div className="w-220 max-w-full space-y-5">
+              <div className="space-y-5">
                 <DungeonSelector
                   unlockedDungeonIds={unlockedDungeonIds}
                   completedDungeons={completedDungeons}

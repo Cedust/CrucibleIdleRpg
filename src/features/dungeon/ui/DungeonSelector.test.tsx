@@ -35,6 +35,44 @@ describe('DungeonSelector', () => {
     expect(onSelect).toHaveBeenCalledWith('A1-D2');
   });
 
+  it('reflowt die Karten in einem auto-fill-Grid statt horizontal zu scrollen', () => {
+    render(
+      <DungeonSelector
+        unlockedDungeonIds={['A1-D1']}
+        completedDungeons={createDefaultCompletedDungeons()}
+        selectedDungeonId="A1-D1"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    const grid = screen.getByRole('group', { name: 'Dungeon selection' });
+    expect(grid).toHaveClass('grid', 'grid-cols-[repeat(auto-fill,10rem)]');
+    expect(grid).not.toHaveClass('overflow-x-auto');
+  });
+
+  it('exponiert Karten-States über data-selected und data-semantic', () => {
+    render(
+      <DungeonSelector
+        unlockedDungeonIds={['A1-D1', 'A1-D2']}
+        completedDungeons={createDefaultCompletedDungeons()}
+        selectedDungeonId="A1-D1"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    const radios = screen.getAllByRole('radio');
+    const selectedCard = radios[0]?.closest('label');
+    expect(selectedCard).toHaveAttribute('data-selected');
+    expect(selectedCard).not.toHaveAttribute('data-semantic');
+
+    const lockedCard = radios[2]?.closest('label');
+    expect(lockedCard).toHaveAttribute('data-semantic', 'locked');
+    expect(lockedCard).not.toHaveAttribute('data-selected');
+    expect(lockedCard?.querySelector('.border-image-thin')).toHaveClass(
+      'opacity-(--state-deemphasis-strong)',
+    );
+  });
+
   it('names each card with its display label, name and status', () => {
     const completedDungeons = {
       ...createDefaultCompletedDungeons(),

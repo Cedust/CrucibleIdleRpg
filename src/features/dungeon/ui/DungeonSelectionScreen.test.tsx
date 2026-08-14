@@ -48,9 +48,8 @@ describe('DungeonSelectionScreen', () => {
     expect(radios).toHaveLength(5);
     expect(radios[0]).toBeChecked();
     expect(radios.every((radio) => !(radio as HTMLInputElement).disabled)).toBe(true);
-    expect(screen.getByRole('group', { name: 'Dungeon selection' }).parentElement).toHaveClass(
-      'w-220',
-      'max-w-full',
+    expect(screen.getByRole('group', { name: 'Dungeon selection' })).toHaveClass(
+      'grid-cols-[repeat(auto-fill,10rem)]',
     );
 
     const details = screen.getByRole('region', { name: 'Cinder Gate details' });
@@ -65,9 +64,12 @@ describe('DungeonSelectionScreen', () => {
     const progressbar = within(details).getByRole('progressbar');
     const enterButton = within(details).getByRole('button', { name: 'ENTER DUNGEON' });
     expect(enterButton).toBeEnabled();
-    expect(enterButton.parentElement).toHaveClass('sm:flex-row', 'sm:items-end');
+    expect(enterButton.parentElement).toHaveClass(
+      '@min-[24rem]:flex-row',
+      '@min-[24rem]:items-end',
+    );
     expect(enterButton.parentElement).toContainElement(progressbar);
-    expect(progressbar.parentElement).toHaveClass('w-full', 'sm:flex-1');
+    expect(progressbar.parentElement).toHaveClass('w-full', '@min-[24rem]:flex-1');
   });
 
   it('selects a locked dungeon but keeps its entry action disabled', async () => {

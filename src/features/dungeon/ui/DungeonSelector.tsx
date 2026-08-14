@@ -1,6 +1,7 @@
 import { Lock } from 'lucide-react';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
+import { FramedCard } from '@/shared/ui/FramedCard';
 import { DUNGEON_BACKGROUND_CLASSES } from './dungeonBackgrounds';
 
 interface DungeonSelectorProps {
@@ -18,10 +19,13 @@ export function DungeonSelector({
   onSelect,
 }: DungeonSelectorProps) {
   return (
-    // min-w-0 hebt das Fieldset-Default `min-inline-size: min-content` auf, sonst
-    // schiebt die Kartenreihe den Auswahlbereich auf statt zu scrollen. Das Padding gibt den
-    // per Outset überstehenden Frame-Spitzen Raum, die der Scroll-Container sonst clippt.
-    <fieldset className="flex min-w-0 gap-4 overflow-x-auto p-2" aria-label="Dungeon selection">
+    // min-w-0 hebt das Fieldset-Default `min-inline-size: min-content` auf. Das auto-fill-Grid
+    // bricht weitere Karten in neue Reihen um; das Padding gibt den per Outset überstehenden
+    // Frame-Spitzen Raum, die der Container sonst clippt.
+    <fieldset
+      className="grid min-w-0 grid-cols-[repeat(auto-fill,10rem)] gap-4 p-2"
+      aria-label="Dungeon selection"
+    >
       <legend className="sr-only">Choose a dungeon</legend>
       {ACT_1_DUNGEON_IDS.map((dungeonId) => {
         const meta = ACT_1_DUNGEON_DISPLAY_META[dungeonId];
@@ -34,33 +38,14 @@ export function DungeonSelector({
             : 'AVAILABLE';
 
         return (
-          <label
+          <FramedCard
             key={dungeonId}
-            className="group relative isolate flex h-74 w-40 shrink-0 cursor-pointer flex-col justify-between rounded-lg p-3 text-text has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
+            as="label"
+            artClassName={DUNGEON_BACKGROUND_CLASSES[meta.backgroundId]}
+            selected={selected}
+            semantic={unlocked ? 'normal' : 'locked'}
+            className="flex h-74 w-40 shrink-0 cursor-pointer flex-col justify-between rounded-lg p-3 text-text has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-state-focus"
           >
-            <div
-              aria-hidden="true"
-              className={`absolute inset-0 -z-20 rounded-md bg-surface bg-cover bg-center ${
-                DUNGEON_BACKGROUND_CLASSES[meta.backgroundId]
-              } ${unlocked ? '' : 'opacity-40'}`}
-            />
-            <div
-              aria-hidden="true"
-              className={`absolute inset-0 -z-10 rounded-md bg-linear-to-t ${
-                selected ? '' : 'from-background/82 to-background/32'
-              }`}
-            />
-            {/* Selektion = Frame in voller Stärke, alle anderen gedimmt. */}
-            <div
-              aria-hidden="true"
-              className={`pointer-events-none absolute inset-0 border-image-thin transition-opacity ${
-                selected
-                  ? 'shadow-glow-accent'
-                  : unlocked
-                    ? 'opacity-60 group-hover:opacity-90'
-                    : 'opacity-20'
-              }`}
-            />
             <input
               checked={selected}
               className="sr-only"
@@ -89,7 +74,7 @@ export function DungeonSelector({
               </span>
             </span>
             {selected && <span className="sr-only"> selected</span>}
-          </label>
+          </FramedCard>
         );
       })}
     </fieldset>

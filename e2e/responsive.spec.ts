@@ -179,7 +179,7 @@ test('erreicht bei 3840×2160 die Clamp-Maxima und cappt die Arena', async ({ pa
 
   await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
   const tablist = page.getByRole('tablist', { name: 'Trees' });
-  expect(Math.abs((await boxHeight(tablist)) - 80)).toBeLessThanOrEqual(0.5);
+  expect(Math.abs((await boxHeight(tablist)) - 96)).toBeLessThanOrEqual(0.5);
   // Branch-Medaillon md: --spacing-medallion-sm = 5rem am Clamp-Maximum
   const medallion = page.locator('[data-node-medallion="anvil.waystones"]');
   expect(Math.abs((await boxWidth(medallion)) - 80)).toBeLessThanOrEqual(0.5);

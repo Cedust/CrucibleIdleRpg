@@ -96,7 +96,7 @@
    * SLOPE = (MAX − MIN) / 1920, präkomputiert.
    */
   --spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
-  --spacing-tab-strip: clamp(4rem, calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333), 5rem);
+  --spacing-tab-strip: clamp(4rem, calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0166667), 6rem);
   --spacing-inspector: clamp(19rem, calc(19rem + (min(100vw, 177.78vh) - 1920px) * 0.025), 22rem);
   --spacing-page-pad: clamp(
     1.5rem,
@@ -219,23 +219,39 @@
  * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 2172×724-Asset
  * hält seine Endstücke innerhalb der äußeren 300 px und die horizontalen Schienen
  * außerhalb der mittleren 204 px. Die kleine Border-Breite bewahrt bei 64 px
- * Tab-Höhe genügend Raum für Live-Text und optionale Icons.
+ * Tab-Höhe genügend Raum für Live-Text und optionale Icons. Rahmen und Fläche
+ * wachsen mit --spacing-tab-strip (64 px → 96 px, Faktor 1,5 bei 4K) nach dem
+ * Clamp-Muster aus FOUNDATION §2 (DECISIONS D-006).
  */
 @utility border-image-tab-ornate {
+  --tab-frame-y: clamp(16px, calc(16px + (min(100vw, 177.78vh) - 1920px) * 0.0041667), 24px);
+  --tab-frame-x: clamp(24px, calc(24px + (min(100vw, 177.78vh) - 1920px) * 0.00625), 36px);
   border-style: solid;
-  border-width: 16px 24px;
-  border-image: url('/assets/frames/tab-ornate.png') 260 300 / 16px 24px stretch;
+  border-width: var(--tab-frame-y) var(--tab-frame-x);
+  border-image: url('/assets/frames/tab-ornate.png') 260 300 / var(--tab-frame-y) var(--tab-frame-x)
+    stretch;
 }
 
 .tab-ornate-surface {
+  --tab-surface-inset-y: clamp(
+    0.75rem,
+    calc(0.75rem + (min(100vw, 177.78vh) - 1920px) * 0.003125),
+    1.125rem
+  );
+  --tab-surface-inset-x: clamp(
+    0.5rem,
+    calc(0.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0020833),
+    0.75rem
+  );
+  --tab-surface-notch: clamp(10px, calc(10px + (min(100vw, 177.78vh) - 1920px) * 0.0026042), 15px);
   position: absolute;
-  inset: 0.75rem 0.5rem;
+  inset: var(--tab-surface-inset-y) var(--tab-surface-inset-x);
   clip-path: polygon(
-    10px 0,
-    calc(100% - 10px) 0,
+    var(--tab-surface-notch) 0,
+    calc(100% - var(--tab-surface-notch)) 0,
     100% 50%,
-    calc(100% - 10px) 100%,
-    10px 100%,
+    calc(100% - var(--tab-surface-notch)) 100%,
+    var(--tab-surface-notch) 100%,
     0 50%
   );
 }

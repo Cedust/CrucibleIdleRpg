@@ -72,3 +72,35 @@ Optional-Posten „nur bei sichtbarem Bedarf im Review".
 Crucible, Mastery, Run) zeigte scharfe Ornamente und stimmige Proportionen der fixen
 Frame-Geometrie; die Startwerte aus Task 001 blieben unverändert. Bei späterem Bedarf bleibt
 das der dokumentierte Anknüpfungspunkt (FOUNDATION §3, Kategorie „Fixed").
+
+## D-005 — Nutzer-Feedback: Tree-Panels full-height, Mastery-Canvas top-aligned
+
+**Problem:** Nach dem Sichtpass wünschte der Nutzer zwei Layout-Korrekturen: (1) Der
+Crucible-Nodes-Bereich soll wie bei Weapon Mastery die volle Höhe füllen (Task 007 hatte den
+Screen auf dem ScreenLayout-Default-Scroller mit content-getriebener Panelhöhe gelassen).
+(2) Der Mastery-Tree-Canvas soll oben beginnen — Task 008 formulierte „mit `m-auto` zentriert",
+was vertikal mittig rendert.
+
+**Entscheidung:** Beide Screens teilen jetzt dasselbe Full-Height-Muster: Die Crucible-Section
+ist `flex min-h-0 flex-1 flex-col`, das Layout-Grid streckt Reihe 2 über
+`grid-rows-[auto_minmax(0,1fr)]`, das Tree-Panel füllt sie mit `h-full` und scrollt seinen
+Inhalt bei sehr flachen Viewports intern (`overflow-auto`; `min-h-112` bleibt als Floor der
+gestapelten Ansicht). Der Mastery-Canvas nutzt `mx-auto` statt `m-auto` — horizontal zentriert,
+Inhalt top-aligned. Abweichung vom Task-008-Wortlaut („m-auto zentriert") ist damit bewusst
+und nutzergetrieben.
+
+## D-006 — Nutzer-Feedback: Tab-Chrome skaliert ab 1440p mit (Ausnahme zu D-004)
+
+**Problem:** Bei 1440p wirkten die Tree-Tabs zu klein und schwer lesbar: Der Strip wuchs nur
+minimal (64 → 66,7 px), Rahmen (16/24 px) und Surface-Inset blieben fix, und der sehr flache
+Bild-Ausschnitt der Tab-Art (Downscale eines 2172-px-Assets auf ein ~43-px-Band) wirkte
+verpixelt/gestreckt.
+
+**Entscheidung:** Das Tab-Chrome wird als Familie mit Faktor 1,5 leicht fluid —
+`--spacing-tab-strip` clamp(4rem → 6rem), `border-image-tab-ornate` border-width
+clamp(16→24 px / 24→36 px), `.tab-ornate-surface` Inset clamp(12→18 px / 8→12 px) und
+Notch clamp(10→15 px), alle nach dem §2-Muster. Bei ≤ 1080p bleibt alles pixelidentisch;
+bei 1440p ist der Strip ~75 px hoch mit proportional dickerem Rahmen und höherem Art-Band.
+Die Rest-Verpixelung der Tab-Hintergründe ist eine Asset-Eigenschaft (extremes
+Seitenverhältnis des Bandes) — eine schärfere Neufassung der drei `crucible-tab-*.png`
+wäre Asset-Arbeit außerhalb dieses Refactors.

@@ -72,13 +72,13 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
 
 ## 3. Zuordnung fixed und fluid
 
-| Kategorie              | Elemente                                                                                                                    | Mechanik                                                                                                       |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Fixed**              | 9-Slice-Frame-Geometrie (border-width/outset/slices), Frame-Gutter 12 px, Dungeon-Kachel `h-74 w-40`, kleine Gaps/Radii     | px/rem-konstant ([DECISIONS D-004](DECISIONS.md#d-004--task-010-keine-clamps-für-die-9-slice-frame-geometrie)) |
-| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                   | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K                                                                |
-| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grid (`auto-fill`), Listenflächen, Log                                           | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`                                                                  |
-| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                   | `min-h-0 flex-1 overflow-y-auto`                                                                               |
-| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena) | `mx-auto w-full max-w-*`                                                                                       |
+| Kategorie              | Elemente                                                                                                                                      | Mechanik                                                                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Fixed**              | 9-Slice-Frame-Geometrie der Panels/Vollrahmen (border-width/outset/slices), Frame-Gutter 12 px, Dungeon-Kachel `h-74 w-40`, kleine Gaps/Radii | px/rem-konstant ([DECISIONS D-004](DECISIONS.md#d-004--task-010-keine-clamps-für-die-9-slice-frame-geometrie)); Ausnahme Tab-Frame und Tab-Surface: leicht fluid (D-006) |
+| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                                     | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K                                                                                                                          |
+| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grid (`auto-fill`), Listenflächen, Log                                                             | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`                                                                                                                            |
+| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                                     | `min-h-0 flex-1 overflow-y-auto`                                                                                                                                         |
+| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena)                   | `mx-auto w-full max-w-*`                                                                                                                                                 |
 
 Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nicht.
 
@@ -92,7 +92,7 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
 @theme {
   /* — Layout (leicht fluid, Muster §2) — */
   --spacing-nav: clamp(18rem, …, 21.375rem); /* Sidebar */
-  --spacing-tab-strip: clamp(4rem, …, 5rem); /* Tab-Leisten der Tree-Screens */
+  --spacing-tab-strip: clamp(4rem, …, 6rem); /* Tab-Leisten der Tree-Screens (Faktor 1,5) */
   --spacing-inspector: clamp(19rem, …, 22rem); /* Node-Inspector-Spalte */
   --spacing-page-pad: clamp(1.5rem, …, 2rem); /* ScreenLayout-Padding */
   --spacing-medallion: clamp(5rem, …, 6rem); /* Node-Medallion lg */

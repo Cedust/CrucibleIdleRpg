@@ -59,7 +59,10 @@ export function CrucibleScreen() {
 
   return (
     <ScreenLayout background="crucible">
-      <section className="mx-auto w-full min-w-0 max-w-page" aria-label="Crucible">
+      <section
+        className="mx-auto flex min-h-0 w-full min-w-0 max-w-page flex-1 flex-col"
+        aria-label="Crucible"
+      >
         <ScreenHeader
           title="Crucible"
           intro="Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed from conquered depths can be melted down and forged into new strength."
@@ -73,9 +76,9 @@ export function CrucibleScreen() {
 
         <div
           data-testid="crucible-layout"
-          className="grid min-w-0 gap-5 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:items-start"
+          className="grid min-w-0 gap-5 @min-[1200px]:min-h-0 @min-[1200px]:flex-1 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:grid-rows-[auto_minmax(0,1fr)]"
         >
-          <div className="min-w-0 @min-[1200px]:col-start-1">
+          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:self-start">
             <CrucibleTreeNavigation
               activeTree={tree}
               onSelect={(treeId) => {
@@ -84,7 +87,7 @@ export function CrucibleScreen() {
               }}
             />
           </div>
-          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:row-start-2">
+          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:row-start-2 @min-[1200px]:min-h-0">
             <CrucibleTreeGraph
               tree={tree}
               nodes={nodes}
@@ -98,7 +101,7 @@ export function CrucibleScreen() {
             />
           </div>
           {selected ? (
-            <div className="min-w-0 @min-[1200px]:col-start-2 @min-[1200px]:row-start-2 @min-[1200px]:sticky @min-[1200px]:top-5">
+            <div className="min-w-0 @min-[1200px]:col-start-2 @min-[1200px]:row-start-2 @min-[1200px]:sticky @min-[1200px]:top-5 @min-[1200px]:self-start">
               <CrucibleNodeInspector
                 node={selected}
                 rank={save.crucible[selected.id] ?? 0}

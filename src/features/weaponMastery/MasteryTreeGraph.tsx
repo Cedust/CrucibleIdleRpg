@@ -131,8 +131,8 @@ export function MasteryTreeGraph({
     >
       <div className="flex min-h-0 flex-1 overflow-auto p-4 pb-5">
         {/* min-w-225 ist der Lesbarkeits-Floor des Canvas (FOUNDATION §10);
-            m-auto zentriert ihn im Scroll-Panel, schmalere Container scrollen. */}
-        <div ref={ref} className="relative m-auto w-full min-w-225">
+            mx-auto zentriert ihn horizontal, der Inhalt beginnt oben. */}
+        <div ref={ref} className="relative mx-auto w-full min-w-225">
           <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 size-full">
             {connections.map((connection) => (
               <path

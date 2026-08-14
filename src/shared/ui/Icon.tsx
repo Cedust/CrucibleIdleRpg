@@ -1,5 +1,4 @@
 export type IconName =
-  | 'melting-metal'
   | 'crucible-waystones'
   | 'crucible-armory'
   | 'crucible-blacksmith'
@@ -24,27 +23,26 @@ type IconSize = 'sm' | 'md' | 'lg' | 'xl';
 
 // Statische Klassen-Strings, damit Tailwind die mask-Utilities beim Scan findet.
 const ICON_MASK_CLASSES: Record<IconName, string> = {
-  'melting-metal': 'mask-[url(/assets/icons/melting-metal.svg)]',
-  'crucible-waystones': 'mask-[url(/assets/icons/crucible-waystones.svg)]',
-  'crucible-armory': 'mask-[url(/assets/icons/crucible-armory.svg)]',
-  'crucible-blacksmith': 'mask-[url(/assets/icons/crucible-blacksmith.svg)]',
-  'crucible-jeweler': 'mask-[url(/assets/icons/crucible-jeweler.svg)]',
-  'crucible-overpower': 'mask-[url(/assets/icons/crucible-overpower.svg)]',
-  'crucible-iron-skin': 'mask-[url(/assets/icons/crucible-iron-skin.svg)]',
-  'crucible-unyielding': 'mask-[url(/assets/icons/crucible-unyielding.svg)]',
-  'crucible-quick-step': 'mask-[url(/assets/icons/crucible-quick-step.svg)]',
-  'crucible-mitigation': 'mask-[url(/assets/icons/crucible-mitigation.svg)]',
-  'crucible-sunder': 'mask-[url(/assets/icons/crucible-sunder.svg)]',
-  'crucible-suppression': 'mask-[url(/assets/icons/crucible-suppression.svg)]',
-  'crucible-rally': 'mask-[url(/assets/icons/crucible-rally.svg)]',
-  'crucible-ambush': 'mask-[url(/assets/icons/crucible-ambush.svg)]',
-  'crucible-menace': 'mask-[url(/assets/icons/crucible-menace.svg)]',
-  'crucible-momentum': 'mask-[url(/assets/icons/crucible-momentum.svg)]',
-  'crucible-second-wind': 'mask-[url(/assets/icons/crucible-second-wind.svg)]',
-  'crucible-rune-grimoire': 'mask-[url(/assets/icons/crucible-rune-grimoire.svg)]',
-  'crucible-talisman': 'mask-[url(/assets/icons/crucible-talisman.svg)]',
-  'crucible-runic-focus': 'mask-[url(/assets/icons/crucible-runic-focus.svg)]',
-  'crucible-rune-mastery': 'mask-[url(/assets/icons/crucible-rune-mastery.svg)]',
+  'crucible-waystones': 'mask-[url(/assets/icons/crucible/crucible-waystones.svg)]',
+  'crucible-armory': 'mask-[url(/assets/icons/crucible/crucible-armory.svg)]',
+  'crucible-blacksmith': 'mask-[url(/assets/icons/crucible/crucible-blacksmith.svg)]',
+  'crucible-jeweler': 'mask-[url(/assets/icons/crucible/crucible-jeweler.svg)]',
+  'crucible-overpower': 'mask-[url(/assets/icons/crucible/crucible-overpower.svg)]',
+  'crucible-iron-skin': 'mask-[url(/assets/icons/crucible/crucible-iron-skin.svg)]',
+  'crucible-unyielding': 'mask-[url(/assets/icons/crucible/crucible-unyielding.svg)]',
+  'crucible-quick-step': 'mask-[url(/assets/icons/crucible/crucible-quick-step.svg)]',
+  'crucible-mitigation': 'mask-[url(/assets/icons/crucible/crucible-mitigation.svg)]',
+  'crucible-sunder': 'mask-[url(/assets/icons/crucible/crucible-sunder.svg)]',
+  'crucible-suppression': 'mask-[url(/assets/icons/crucible/crucible-suppression.svg)]',
+  'crucible-rally': 'mask-[url(/assets/icons/crucible/crucible-rally.svg)]',
+  'crucible-ambush': 'mask-[url(/assets/icons/crucible/crucible-ambush.svg)]',
+  'crucible-menace': 'mask-[url(/assets/icons/crucible/crucible-menace.svg)]',
+  'crucible-momentum': 'mask-[url(/assets/icons/crucible/crucible-momentum.svg)]',
+  'crucible-second-wind': 'mask-[url(/assets/icons/crucible/crucible-second-wind.svg)]',
+  'crucible-rune-grimoire': 'mask-[url(/assets/icons/crucible/crucible-rune-grimoire.svg)]',
+  'crucible-talisman': 'mask-[url(/assets/icons/crucible/crucible-talisman.svg)]',
+  'crucible-runic-focus': 'mask-[url(/assets/icons/crucible/crucible-runic-focus.svg)]',
+  'crucible-rune-mastery': 'mask-[url(/assets/icons/crucible/crucible-rune-mastery.svg)]',
 };
 
 const SIZE_CLASSES: Record<IconSize, string> = {

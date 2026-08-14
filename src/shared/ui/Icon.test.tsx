@@ -5,7 +5,7 @@ import { Icon } from './Icon';
 
 describe('Icon', () => {
   it('ist ohne Label dekorativ und für Screenreader verborgen', () => {
-    const { container } = render(<Icon name="melting-metal" />);
+    const { container } = render(<Icon name="crucible-waystones" />);
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     const icon = container.firstElementChild as HTMLElement;
@@ -21,7 +21,7 @@ describe('Icon', () => {
     expect(icon).toHaveClass(
       'bg-ember',
       'size-11',
-      'mask-[url(/assets/icons/crucible-waystones.svg)]',
+      'mask-[url(/assets/icons/crucible/crucible-waystones.svg)]',
     );
   });
 });

@@ -142,8 +142,8 @@ export const CRUCIBLE_NODE_ICON: Record<CrucibleNodeId, IconName> = {
   [CRUCIBLE_IDS.runeMastery]: 'crucible-rune-mastery',
 };
 
-const CRUCIBLE_NODE_ICON_BY_ID: Readonly<Record<string, IconName>> = CRUCIBLE_NODE_ICON;
+const CRUCIBLE_NODE_ICON_BY_ID: Readonly<Record<string, IconName | undefined>> = CRUCIBLE_NODE_ICON;
 
-export function crucibleNodeIcon(nodeId: string): IconName {
-  return CRUCIBLE_NODE_ICON_BY_ID[nodeId] ?? 'melting-metal';
+export function crucibleNodeIcon(nodeId: string): IconName | undefined {
+  return CRUCIBLE_NODE_ICON_BY_ID[nodeId];
 }

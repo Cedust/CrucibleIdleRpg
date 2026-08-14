@@ -24,7 +24,7 @@ describe('AppShell', () => {
     expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
     expect(screen.getByText('IDLE RPG')).toBeInTheDocument();
     expect(
-      container.querySelector('img[src="/assets/icons/crucible-emblem.png"]'),
+      container.querySelector('img[src="/assets/icons/logo/crucible-emblem.png"]'),
     ).toBeInTheDocument();
     expect(
       container.querySelector('img[src="/assets/ornaments/divider-ornate.png"]'),

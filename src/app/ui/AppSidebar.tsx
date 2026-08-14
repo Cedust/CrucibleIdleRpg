@@ -58,7 +58,7 @@ export function AppSidebar() {
             <img
               alt=""
               aria-hidden="true"
-              src="/assets/icons/crucible-emblem.png"
+              src="/assets/icons/logo/crucible-emblem.png"
               className="size-full object-cover"
             />
           </div>

@@ -44,6 +44,7 @@ export function CrucibleNodeInspector({
   onInvest,
 }: CrucibleNodeInspectorProps) {
   const atMaxRank = rank >= node.maxRank;
+  const icon = crucibleNodeIcon(node.id);
 
   return (
     <Panel
@@ -56,7 +57,7 @@ export function CrucibleNodeInspector({
       <div className="relative p-5">
         <div className="flex flex-col items-center text-center">
           <span className="flex size-24 items-center justify-center rounded-full border-2 border-ornament bg-ember/10 text-ember-bright shadow-glow-accent">
-            <Icon name={crucibleNodeIcon(node.id)} size="xl" className="bg-current" />
+            {icon === undefined ? null : <Icon name={icon} size="xl" className="bg-current" />}
           </span>
           <h3 className="mt-4 font-display text-display text-accent-strong">{node.name}</h3>
           <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-text-muted">

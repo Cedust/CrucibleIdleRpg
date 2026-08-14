@@ -87,6 +87,7 @@ export function CrucibleNodeButton({
   tooltipAlign = 'center',
   onSelect,
 }: CrucibleNodeButtonProps) {
+  const icon = crucibleNodeIcon(node.id);
   const status = accessibleStatus(state, rank, nextRankCost);
   const accessibleLabel = `${node.name}, rank ${rank} of ${node.maxRank}, ${status}`;
   const isBranch = layout === 'branch';
@@ -128,7 +129,7 @@ export function CrucibleNodeButton({
               aria-hidden="true"
               className="absolute inset-1 rounded-full border border-ornament/40"
             />
-            <Icon name={crucibleNodeIcon(node.id)} size="xl" className="bg-current" />
+            {icon === undefined ? null : <Icon name={icon} size="xl" className="bg-current" />}
             <StatusBadge state={state} />
           </span>
           <span

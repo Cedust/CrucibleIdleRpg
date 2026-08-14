@@ -21,7 +21,7 @@ const BRANCH_GRID_CLASS: Record<CrucibleBranchLayout, string> = {
   fork: 'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem] @min-[800px]:gap-y-3',
   parallel: 'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-4 @min-[800px]:gap-y-0',
   paired:
-    'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-3 @min-[800px]:gap-x-4 @min-[800px]:gap-y-8',
+    'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem] @min-[800px]:gap-y-5',
 };
 
 const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot, string>>> = {
@@ -49,13 +49,13 @@ const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot
   },
   paired: {
     start: 'col-start-1 row-start-1 w-full @min-[800px]:col-start-1',
-    middle: 'col-start-1 row-start-3 w-full @min-[800px]:col-start-2 @min-[800px]:row-start-1',
-    end: 'col-start-1 row-start-5 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-1',
+    middle: 'col-start-1 row-start-3 w-full @min-[800px]:col-start-1 @min-[800px]:row-start-2',
+    end: 'col-start-1 row-start-5 w-full @min-[800px]:col-start-1 @min-[800px]:row-start-3',
     'lower-start':
-      'col-start-1 row-start-2 w-full @min-[800px]:col-start-1 @min-[800px]:row-start-2',
+      'col-start-1 row-start-2 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-1',
     'lower-middle':
-      'col-start-1 row-start-4 w-full @min-[800px]:col-start-2 @min-[800px]:row-start-2',
-    'lower-end': 'col-start-1 row-start-6 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-2',
+      'col-start-1 row-start-4 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-2',
+    'lower-end': 'col-start-1 row-start-6 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-3',
   },
 };
 

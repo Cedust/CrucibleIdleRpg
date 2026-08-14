@@ -214,6 +214,30 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
 
   await page.setViewportSize({ width: 1680, height: 937 });
   await expect(page.getByRole('region', { name: 'COMBAT ARTS' })).toBeVisible();
+
+  const [rallyBox, secondWindBox] = await Promise.all([
+    page.locator('[data-node-medallion="molten.rally"]').boundingBox(),
+    page.locator('[data-node-medallion="molten.second-wind"]').boundingBox(),
+  ]);
+  if (rallyBox === null || secondWindBox === null) throw new Error('Survival node is not visible');
+  const survivalPairDistance = secondWindBox.x - rallyBox.x;
+
+  for (const [sourceId, targetId] of [
+    ['molten.mitigation', 'molten.menace'],
+    ['molten.sunder', 'molten.ambush'],
+    ['molten.suppression', 'molten.momentum'],
+  ]) {
+    const [sourceBox, targetBox] = await Promise.all([
+      page.locator(`[data-node-medallion="${sourceId}"]`).boundingBox(),
+      page.locator(`[data-node-medallion="${targetId}"]`).boundingBox(),
+    ]);
+    if (sourceBox === null || targetBox === null)
+      throw new Error('Combat Arts node is not visible');
+
+    expect(Math.abs(sourceBox.y - targetBox.y)).toBeLessThan(1);
+    expect(targetBox.x).toBeGreaterThan(sourceBox.x);
+    expect(Math.abs(targetBox.x - sourceBox.x - survivalPairDistance)).toBeLessThan(1);
+  }
 });
 
 test('isolates a dungeon run without sidebar branding or resources', async ({ page }) => {

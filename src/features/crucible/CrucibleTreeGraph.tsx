@@ -1,5 +1,6 @@
 import { RotateCcw } from 'lucide-react';
 import {
+  formatRelicShards,
   meetsPrerequisites,
   rankCost,
   type CompletedDungeons,
@@ -8,12 +9,14 @@ import {
   type CrucibleTreeId,
 } from '@/game/crucible/crucible';
 import { Button } from '@/shared/ui/Button';
+import { Icon } from '@/shared/ui/Icon';
+import { NodeButton, type NodeAvailability } from '@/shared/ui/NodeButton';
 import { Panel } from '@/shared/ui/Panel';
 import { CrucibleBranchGraph } from './AnvilBranchGraph';
-import { CrucibleNodeButton, type CrucibleNodePurchaseState } from './CrucibleNodeButton';
 import {
   ANVIL_BRANCH_PRESENTATION,
   CRUCIBLE_TREE_PRESENTATION,
+  crucibleNodeIcon,
   MOLTEN_BRANCH_PRESENTATION,
   SMELTING_BRANCH_PRESENTATION,
 } from './cruciblePresentation';
@@ -36,7 +39,7 @@ function purchaseState(
   ranks: CrucibleRanks,
   relicShards: number,
   completedDungeons: CompletedDungeons,
-): CrucibleNodePurchaseState {
+): NodeAvailability {
   if (rank >= node.maxRank) return 'max';
   if (
     node.lockedUntil !== undefined ||
@@ -68,18 +71,24 @@ function GraphNode({
 }) {
   const rank = ranks[node.id] ?? 0;
   const state = purchaseState(node, rank, ranks, relicShards, completedDungeons);
+  const icon = crucibleNodeIcon(node.id);
 
   return (
-    <CrucibleNodeButton
-      node={node}
+    <NodeButton
+      nodeId={node.id}
+      name={node.name}
+      effect={node.effect}
       rank={rank}
-      state={state}
+      maxRank={node.maxRank}
+      availability={state}
+      insufficientStatus={`Needs ${formatRelicShards(rankCost(rank + 1))}`}
       selected={selectedId === node.id}
-      nextRankCost={rank >= node.maxRank ? null : rankCost(rank + 1)}
       layout={layout}
       tooltipAlign={tooltipAlign}
       onSelect={() => onSelect(node.id)}
-    />
+    >
+      {icon === undefined ? null : <Icon name={icon} size="xl" className="bg-current" />}
+    </NodeButton>
   );
 }
 

@@ -1,5 +1,11 @@
 import type { CharacterId } from '@/game/types';
-import { type DisciplineId, type MasteryNode } from '@/game/weaponMastery/mastery';
+import {
+  minimumLevel,
+  nodesFor,
+  type DisciplineId,
+  type MasteryNode,
+} from '@/game/weaponMastery/mastery';
+import type { NodeAvailability } from '@/shared/ui/NodeButton';
 
 /** UI order only; game rules retain DISCIPLINES' canonical order. */
 export const MASTERY_TAB_ORDER = ['weapon', 'finesse', 'tempest', 'dominance', 'valor'] as const;
@@ -35,6 +41,37 @@ export function masteryNodeLane(node: MasteryNode, nodes: readonly MasteryNode[]
     0,
     atRank.findIndex((candidate) => candidate.id === node.id),
   );
+}
+
+/**
+ * Strukturelle Kauf-Facette eines Nodes nach den `purchaseFailure`-Regeln;
+ * die Sperr-Achse gewinnt gegen fehlende Punkte (FOUNDATION §6).
+ */
+export function masteryNodeAvailability(
+  characterId: CharacterId,
+  node: MasteryNode,
+  level: number,
+  ranks: Readonly<Record<string, number>>,
+  freeMasteryPoints: number,
+): NodeAvailability {
+  if ((ranks[node.id] ?? 0) >= node.maxRank) return 'max';
+
+  const missingPrerequisite =
+    node.prerequisites.length > 0 && !node.prerequisites.some((id) => (ranks[id] ?? 0) > 0);
+  const exclusiveTaken = node.exclusiveWith !== undefined && (ranks[node.exclusiveWith] ?? 0) > 0;
+  const capstoneTaken =
+    node.sharedCapstone === true &&
+    Object.entries(ranks).some(
+      ([id, rank]) =>
+        rank > 0 &&
+        id !== node.id &&
+        nodesFor(characterId).some((other) => other.id === id && other.sharedCapstone),
+    );
+  if (level < minimumLevel(node) || missingPrerequisite || exclusiveTaken || capstoneTaken) {
+    return 'locked';
+  }
+
+  return freeMasteryPoints > 0 ? 'available' : 'insufficient';
 }
 
 export const RANK_PRESENTATION = [

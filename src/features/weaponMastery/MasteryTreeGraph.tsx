@@ -1,9 +1,10 @@
 import { useMemo, useRef } from 'react';
 import type { MasteryNode } from '@/game/weaponMastery/mastery';
 import { ConnectionLayer } from '@/shared/ui/ConnectionLayer';
+import { NodeButton, type NodeAvailability } from '@/shared/ui/NodeButton';
 import { Panel } from '@/shared/ui/Panel';
 import { useConnectionPaths, type NodeConnection } from '@/shared/ui/useConnectionPaths';
-import { MasteryNodeButton, type MasteryNodeVisualState } from './MasteryNodeButton';
+import { MasteryNodeIcon } from './MasteryNodeIcon';
 import { masteryNodeLane, RANK_PRESENTATION } from './masteryPresentation';
 
 function treeConnections(
@@ -21,28 +22,18 @@ function treeConnections(
   );
 }
 
-function nodeState(
-  node: MasteryNode,
-  rank: number,
-  failure: string | null,
-): MasteryNodeVisualState {
-  if (rank >= node.maxRank) return 'max';
-  if (failure === null) return 'available';
-  return failure === 'No Mastery Points available.' ? 'insufficient' : 'locked';
-}
-
 export function MasteryTreeGraph({
   nodes,
   ranks,
   selectedId,
-  purchaseFailure,
+  availabilityFor,
   onSelect,
   label,
 }: {
   nodes: readonly MasteryNode[];
   ranks: Readonly<Record<string, number>>;
   selectedId: string | null;
-  purchaseFailure: (node: MasteryNode) => string | null;
+  availabilityFor: (node: MasteryNode) => NodeAvailability;
   onSelect: (id: string) => void;
   label: string;
 }) {
@@ -85,13 +76,21 @@ export function MasteryTreeGraph({
                       const currentRank = ranks[node.id] ?? 0;
                       return (
                         <div key={node.id} className="flex justify-center">
-                          <MasteryNodeButton
-                            node={node}
+                          <NodeButton
+                            nodeId={node.id}
+                            name={node.name}
+                            visibleLabel={node.label}
+                            effect={node.effect}
                             rank={currentRank}
-                            state={nodeState(node, currentRank, purchaseFailure(node))}
+                            maxRank={node.maxRank}
+                            availability={availabilityFor(node)}
+                            insufficientStatus="No Mastery Points"
                             selected={selectedId === node.id}
+                            medallionSize="md"
                             onSelect={() => onSelect(node.id)}
-                          />
+                          >
+                            <MasteryNodeIcon node={node} />
+                          </NodeButton>
                         </div>
                       );
                     })}

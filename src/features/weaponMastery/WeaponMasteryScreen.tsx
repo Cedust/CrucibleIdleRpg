@@ -14,7 +14,7 @@ import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { MasteryDisciplineNavigation } from './MasteryDisciplineNavigation';
 import { MasteryTreeGraph } from './MasteryTreeGraph';
-import { disciplineLabel } from './masteryPresentation';
+import { disciplineLabel, masteryNodeAvailability } from './masteryPresentation';
 import { NodeInspector } from './NodeInspector';
 import { RespecDialog } from './RespecDialog';
 
@@ -110,13 +110,13 @@ export function WeaponMasteryScreen() {
               ranks={progression.masteryRanks}
               selectedId={selected?.id ?? null}
               label={label}
-              purchaseFailure={(node) =>
-                purchaseFailure(
+              availabilityFor={(node) =>
+                masteryNodeAvailability(
                   characterId,
+                  node,
                   progression.level,
                   progression.masteryRanks,
                   progression.freeMasteryPoints,
-                  node.id,
                 )
               }
               onSelect={setSelectedId}

@@ -177,7 +177,8 @@ type SemanticState = 'normal' | 'locked' | 'empty';
   im CSS. Die kanonischen Fragmente (`focusRing`, `selectedRing`, `selectedSurface`, `hoverBorder`,
   `transitionState`) leben ausschließlich in `state.ts`; ebenso die einzige Arbitrary-Group-Variant
   (`group-[:hover:not([data-semantic=locked])]:`).
-- **Feature-Facetten:** Node-`available|insufficient|max` → `data-availability`;
+- **Feature-Facetten:** Node-`available|insufficient|max` → `data-availability` (gesetzt vom
+  gemeinsamen `NodeButton`, Typ `NodeAvailability` in `src/shared/ui/NodeButton.tsx`);
   Combat-`defeated` → `data-defeated`. Facetten stylen Akzente; Selection-Ring, Locked-Treatment
   und Focus-Ring kommen immer aus den globalen Fragmenten. Eine Facette wird erst zum
   `SemanticState`, wenn ein zweites Feature dieselbe Bedeutung braucht.
@@ -219,7 +220,8 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                                                                                     | alle migrierten Komponenten                          |
 | `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente                                                                       | alle migrierten Komponenten                          |
-| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                               | beide Node-Buttons                                   |
+| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                               | `NodeButton`                                         |
+| `NodeButton`                                | `NodeAvailability`, `name`/`visibleLabel`, `insufficientStatus`, `layout: 'standard' \| 'branch'`, `medallionSize?`, children = Medaillon-Icon  | beide Tree-Graphen                                   |
 | `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                 | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |
 | `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; Cursor-Policy                                                                                           | Playback-Buttons, ErrorBoundary-Reload               |
 | `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                     | beide Respec-Dialoge                                 |

@@ -1,8 +1,9 @@
-# UI-Foundation — Zielarchitektur
+# UI-Foundation — Style-Guide
 
-> **Zweck:** Gemeinsamer Wohnort der Architektur-Regeln für den UI-Foundation-Refactor
-> (Reihenfolge und Tasks: [README.md](README.md)). Die Tasks verlinken hierauf, statt Regeln zu
-> wiederholen. Produktabsicht: [DESIGN.md §5](../../DESIGN.md#5-visuelle-umsetzung);
+> **Zweck:** Dauerhafter Style-Guide der UI-Foundation: Viewport-Contract, Responsive-Mechanik,
+> State-System und Shared Primitives. Neue Screens und UI-Arbeit bauen gegen diese Regeln
+> (Task-Historie: [README.md](README.md)). Produktabsicht:
+> [DESIGN.md §5](../../DESIGN.md#5-visuelle-umsetzung);
 > Styling-Grundregeln: [AGENTS.md](../../../AGENTS.md).
 
 Getroffene Grundsatzentscheidungen (Review 2026-08-14):
@@ -71,19 +72,21 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
 
 ## 3. Zuordnung fixed und fluid
 
-| Kategorie              | Elemente                                                                                                                    | Mechanik                                            |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Fixed**              | 9-Slice-Frame-Geometrie (border-width/outset/slices), Frame-Gutter 12 px, Dungeon-Kachel `h-74 w-40`, kleine Gaps/Radii     | px/rem-konstant (Frame-Clamps optional in Task 010) |
-| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                   | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K     |
-| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grid (`auto-fill`), Listenflächen, Log                                           | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`       |
-| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                   | `min-h-0 flex-1 overflow-y-auto`                    |
-| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena) | `mx-auto w-full max-w-*`                            |
+| Kategorie              | Elemente                                                                                                                    | Mechanik                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Fixed**              | 9-Slice-Frame-Geometrie (border-width/outset/slices), Frame-Gutter 12 px, Dungeon-Kachel `h-74 w-40`, kleine Gaps/Radii     | px/rem-konstant ([DECISIONS D-004](DECISIONS.md#d-004--task-010-keine-clamps-für-die-9-slice-frame-geometrie)) |
+| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                   | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K                                                                |
+| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grid (`auto-fill`), Listenflächen, Log                                           | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`                                                                  |
+| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                   | `min-h-0 flex-1 overflow-y-auto`                                                                               |
+| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena) | `mx-auto w-full max-w-*`                                                                                       |
 
 Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nicht.
 
 ## 4. Token-Katalog
 
-`src/app/index.css`, `@theme` (Startwerte sind Vorschläge, Feintuning in Task 010):
+`src/app/index.css`, `@theme` — finale Werte, validiert über
+[e2e/responsive.spec.ts](../../../e2e/responsive.spec.ts) (Abweichungen der Doku-Stützstellen:
+[DECISIONS D-003](DECISIONS.md#d-003--task-010-nav-stützstelle-bei-1440p-ist-in-foundation-nicht-linear)):
 
 ```css
 @theme {
@@ -218,8 +221,8 @@ dahin).
 
 ## 8. Responsive-Validierungsmatrix
 
-Strukturelle Assertions in `e2e/responsive.spec.ts` (Task 010); Screenshot-Infrastruktur bleibt
-außen vor.
+Strukturelle Assertions in [e2e/responsive.spec.ts](../../../e2e/responsive.spec.ts);
+Screenshot-Infrastruktur bleibt außen vor.
 
 | Auflösung          | Prüfungen                                                                                           |
 | ------------------ | --------------------------------------------------------------------------------------------------- |

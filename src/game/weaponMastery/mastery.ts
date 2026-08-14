@@ -427,10 +427,10 @@ const weaponLayout: Record<
 > = {
   korvin: [
     ['weapon.dmg-i', 'DMG I', 'initiate', '+1 Damage', 'attack', []],
-    ['weapon.def-i', 'DEF I', 'initiate', '+1 Mastery Defense', 'defense', []],
+    ['weapon.def-i', 'DEF I', 'initiate', '+1 Defense', 'defense', []],
     ['weapon.prc-i', 'PRC I', 'initiate', '+1 pp Precision', 'precision', []],
     ['weapon.dmg-ii', 'DMG II', 'adept', '+1 Damage', 'attack', ['weapon.dmg-i']],
-    ['weapon.def-ii', 'DEF II', 'adept', '+1 Mastery Defense', 'defense', ['weapon.def-i']],
+    ['weapon.def-ii', 'DEF II', 'adept', '+1 Defense', 'defense', ['weapon.def-i']],
     ['weapon.prc-ii', 'PRC II', 'adept', '+1 pp Precision', 'precision', ['weapon.prc-i']],
     ['weapon.blk', 'BLK', 'expert', '+1 pp Block Chance', 'blockChance', ['weapon.def-ii']],
     ['weapon.max-rng-i', 'MAX RNG I', 'expert', '+1 pp MAX RNG', 'maxRng', ['weapon.prc-ii']],

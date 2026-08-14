@@ -48,6 +48,12 @@ describe('Tooltip', () => {
     expect(screen.getByRole('tooltip', { hidden: true })).toHaveClass('invisible');
   });
 
+  it('vergibt kein tabIndex — Trigger sind nativ fokussierbare Elemente', () => {
+    renderTooltip();
+
+    expect(screen.getByRole('button')).not.toHaveAttribute('tabindex');
+  });
+
   it('richtet Tooltips an Rand-Triggern nach innen aus', () => {
     render(
       <Tooltip content="Gold" align="end">

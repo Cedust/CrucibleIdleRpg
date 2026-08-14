@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { Button } from '@/shared/ui/Button';
+import { Dialog } from '@/shared/ui/Dialog';
 
 interface RespecDialogProps {
   disciplineLabel: string;
@@ -9,10 +9,7 @@ interface RespecDialogProps {
   onConfirm: () => void;
 }
 
-/**
- * Modaler Respec-Dialog auf nativem `<dialog>` + `showModal()`: Der Fokus wandert hinein,
- * Escape schließt, und beim Schließen kehrt der Fokus zum Auslöser zurück.
- */
+/** Bestätigung des Disziplin-Respecs gegen Gold über das Dialog-Primitive. */
 export function RespecDialog({
   disciplineLabel,
   refundedPoints,
@@ -20,37 +17,27 @@ export function RespecDialog({
   onCancel,
   onConfirm,
 }: RespecDialogProps) {
-  const dialog = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
-  const handleClose = () => {
-    if (dialog.current?.returnValue === 'confirm') {
-      onConfirm();
-    } else {
-      onCancel();
-    }
-  };
-
   return (
-    <dialog
-      ref={dialog}
-      aria-label="Confirm Discipline Respec"
-      onClose={handleClose}
-      className="m-auto w-full max-w-sm rounded-md border border-border bg-surface-raised p-5 text-text backdrop:bg-black/60"
+    <Dialog
+      label="Confirm Discipline Respec"
+      onClose={(returnValue) => (returnValue === 'confirm' ? onConfirm() : onCancel())}
     >
-      <h3 className="font-semibold">Respec {disciplineLabel}?</h3>
-      <p className="mt-2 text-sm text-text-muted">
-        Refund {refundedPoints} Mastery Points for {cost} Gold.
-      </p>
-      <div className="mt-4 flex justify-end gap-2">
-        <Button variant="ghost" onClick={() => dialog.current?.close('cancel')}>
-          Cancel
-        </Button>
-        <Button onClick={() => dialog.current?.close('confirm')}>Confirm Respec</Button>
-      </div>
-    </dialog>
+      {(close) => (
+        <>
+          <h3 className="font-display text-display-sm text-accent-strong">
+            Respec {disciplineLabel}?
+          </h3>
+          <p className="mt-2 text-sm text-text-muted">
+            Refund {refundedPoints} Mastery Points for {cost} Gold.
+          </p>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => close('cancel')}>
+              Cancel
+            </Button>
+            <Button onClick={() => close('confirm')}>Confirm Respec</Button>
+          </div>
+        </>
+      )}
+    </Dialog>
   );
 }

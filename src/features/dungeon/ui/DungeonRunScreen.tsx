@@ -96,16 +96,13 @@ function RunStatusBar({
         aria-label="Combat playback"
         className="flex flex-wrap gap-2 lg:justify-self-start"
       >
-        <Button
-          variant={isPaused ? 'primary' : 'ghost'}
-          disabled={!isOngoing}
-          onClick={onTogglePause}
-        >
+        <Button variant="ghost" selected={isPaused} disabled={!isOngoing} onClick={onTogglePause}>
           {isPaused ? 'Resume' : 'Pause'}
         </Button>
         <Button
           aria-pressed={playbackSpeed === 1}
-          variant={playbackSpeed === 1 ? 'primary' : 'ghost'}
+          variant="ghost"
+          selected={playbackSpeed === 1}
           disabled={!isOngoing}
           onClick={() => onSetPlaybackSpeed(1)}
         >
@@ -113,7 +110,8 @@ function RunStatusBar({
         </Button>
         <Button
           aria-pressed={playbackSpeed === 2}
-          variant={playbackSpeed === 2 ? 'primary' : 'ghost'}
+          variant="ghost"
+          selected={playbackSpeed === 2}
           disabled={!isOngoing || !doubleSpeedUnlocked}
           onClick={() => onSetPlaybackSpeed(2)}
         >

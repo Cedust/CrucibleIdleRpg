@@ -2,7 +2,6 @@ import { useId, useState, type KeyboardEvent, type ReactNode } from 'react';
 
 export interface TooltipTriggerProps {
   'aria-describedby': string;
-  tabIndex: 0;
   onFocus: () => void;
   onBlur: () => void;
   onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
@@ -34,7 +33,6 @@ export function Tooltip({ content, children, className = '', align = 'center' }:
 
   const trigger: TooltipTriggerProps = {
     'aria-describedby': id,
-    tabIndex: 0,
     onFocus: () => setOpen(true),
     onBlur: () => setOpen(false),
     onKeyDown: (event) => {

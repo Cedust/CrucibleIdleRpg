@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Button } from './Button';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -31,18 +32,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
+        <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-8 text-center">
           <h1 className="text-2xl font-bold text-danger">Something went wrong</h1>
           <p className="text-text-muted">
             The game ran into an unexpected error. Try reloading the page.
           </p>
-          <button
-            type="button"
-            onClick={this.handleReload}
-            className="rounded-md bg-accent px-4 py-2 font-medium text-background hover:bg-accent-strong"
-          >
-            Reload
-          </button>
+          <Button onClick={this.handleReload}>Reload</Button>
         </div>
       );
     }

@@ -1,10 +1,10 @@
 # 005 — Button-, Dialog- & Tooltip-Härtung
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | UIF     |
-| **Hängt ab von** | 001     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | UIF    |
+| **Hängt ab von** | 001    |
 
 ## Ziel
 

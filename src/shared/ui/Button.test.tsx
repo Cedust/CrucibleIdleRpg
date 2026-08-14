@@ -43,6 +43,34 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('text-danger');
   });
 
+  it('markiert selected über data-selected mit Gold-Border/Tint auf ghost', () => {
+    render(
+      <Button variant="ghost" selected>
+        1×
+      </Button>,
+    );
+
+    const button = screen.getByRole('button', { name: '1×' });
+    expect(button).toHaveAttribute('data-selected');
+    expect(button).toHaveClass(
+      'data-selected:border-accent',
+      'data-selected:bg-state-selected-tint',
+    );
+  });
+
+  it('setzt ohne selected kein data-selected', () => {
+    render(<Button variant="ghost">2×</Button>);
+
+    expect(screen.getByRole('button', { name: '2×' })).not.toHaveAttribute('data-selected');
+  });
+
+  it('trägt die Cursor-Policy und den transition-state', () => {
+    render(<Button>Enter</Button>);
+
+    const button = screen.getByRole('button', { name: 'Enter' });
+    expect(button).toHaveClass('cursor-pointer', 'disabled:cursor-not-allowed', 'transition-state');
+  });
+
   it('blockiert Klicks im disabled-Zustand', async () => {
     const onClick = vi.fn();
     render(

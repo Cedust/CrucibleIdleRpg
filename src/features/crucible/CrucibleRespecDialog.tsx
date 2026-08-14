@@ -1,8 +1,7 @@
-import { useEffect, useRef } from 'react';
 import { formatRelicShards } from '@/game/crucible/crucible';
 import { Button } from '@/shared/ui/Button';
+import { Dialog } from '@/shared/ui/Dialog';
 import { Icon, type IconName } from '@/shared/ui/Icon';
-import { Panel } from '@/shared/ui/Panel';
 
 interface CrucibleRespecDialogProps {
   treeLabel: string;
@@ -12,11 +11,7 @@ interface CrucibleRespecDialogProps {
   onConfirm: () => void;
 }
 
-/**
- * Modaler Respec-Dialog auf nativem `<dialog>` + `showModal()`: Der Fokus wandert hinein,
- * Escape schließt, und beim Schließen kehrt der Fokus zum Auslöser zurück. Der Tree-Respec
- * ist kostenlos (PROGRESSION §3).
- */
+/** Bestätigung des kostenlosen Tree-Respecs (PROGRESSION §3) über das Dialog-Primitive. */
 export function CrucibleRespecDialog({
   treeLabel,
   treeIcon,
@@ -24,29 +19,13 @@ export function CrucibleRespecDialog({
   onCancel,
   onConfirm,
 }: CrucibleRespecDialogProps) {
-  const dialog = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
-  const handleClose = () => {
-    if (dialog.current?.returnValue === 'confirm') {
-      onConfirm();
-    } else {
-      onCancel();
-    }
-  };
-
   return (
-    <dialog
-      ref={dialog}
-      aria-label="Confirm Tree Respec"
-      onClose={handleClose}
-      className="m-auto w-full max-w-sm overflow-visible bg-transparent p-3 text-text backdrop:bg-black/70"
+    <Dialog
+      label="Confirm Tree Respec"
+      onClose={(returnValue) => (returnValue === 'confirm' ? onConfirm() : onCancel())}
     >
-      <Panel variant="thin" padding="none">
-        <div className="relative p-5">
+      {(close) => (
+        <>
           <div className="flex items-center gap-3">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-ornament bg-ember/10 text-ember-bright">
               <Icon name={treeIcon} size="lg" className="bg-current" />
@@ -58,13 +37,13 @@ export function CrucibleRespecDialog({
             Free of charge.
           </p>
           <div className="mt-5 flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => dialog.current?.close('cancel')}>
+            <Button variant="ghost" onClick={() => close('cancel')}>
               Cancel
             </Button>
-            <Button onClick={() => dialog.current?.close('confirm')}>Confirm Respec</Button>
+            <Button onClick={() => close('confirm')}>Confirm Respec</Button>
           </div>
-        </div>
-      </Panel>
-    </dialog>
+        </>
+      )}
+    </Dialog>
   );
 }

@@ -1,10 +1,10 @@
 # 009 — Screen: Dungeon Run
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | UIF       |
-| **Hängt ab von** | 002, 005  |
+| Feld             | Wert     |
+| ---------------- | -------- |
+| **Status**       | `ready`  |
+| **Meilenstein**  | UIF      |
+| **Hängt ab von** | 002, 005 |
 
 ## Ziel
 

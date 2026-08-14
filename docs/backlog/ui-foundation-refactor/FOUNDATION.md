@@ -38,8 +38,9 @@ AppShell            → flex h-dvh; Run- und Normal-Branch symmetrisch
 - Gescrollt wird ausschließlich in dafür vorgesehenen Containern (Listen, Logs, Trees,
   Tab-Strips als Fallback). Der ScreenLayout-Default-Scroller deckt Screens ohne eigene
   Scroll-Struktur ab.
-- `ScreenHeader` rendert das gemeinsame Titel-/Intro-Muster (`h2 font-display text-display-lg`
-  - `font-intro`-Absatz).
+- `ScreenHeader` rendert das gemeinsame Titel-/Intro-Muster (`font-display text-display-lg`
+  - `font-intro`-Absatz); `headingLevel` wählt `h2` (Default) oder `h1` (Dungeon-Run ohne
+    App-Navigation).
 - Ein Dungeon-Run belegt den gesamten Viewport ohne Navigation
   ([Fortschritt §4](../../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch)); der Run-Branch der
   AppShell bleibt dafür der Schalter.
@@ -233,7 +234,7 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                                                                                       | alle migrierten Komponenten                          |
 | `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente                                                                         | alle migrierten Komponenten                          |
-| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                                 | `NodeButton`                                         |
+| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                                 | `NodeButton`; Pips zusätzlich `NodeInspectorPanel`   |
 | `NodeButton`                                | `NodeAvailability`, `name`/`visibleLabel`, `insufficientStatus`, `layout: 'standard' \| 'branch'`, `medallionSize?`, children = Medaillon-Icon    | beide Tree-Graphen                                   |
 | `NodeInspectorPanel`                        | `label`, `medallion`, `title`, `rankCaption`, `effect`, `lockReason`/`lockReasonId` → `aria-describedby`, `actionLabel?`, children = Detailzeilen | beide Node-Inspectors, M3-Equip-Panels               |
 | `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                   | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |

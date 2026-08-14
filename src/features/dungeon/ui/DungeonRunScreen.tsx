@@ -89,6 +89,7 @@ function RunStatusBar({
     <Panel
       as="footer"
       variant="thin"
+      padding="none"
       data-testid="run-status-bar"
       className="grid items-center gap-3 px-4 py-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
     >

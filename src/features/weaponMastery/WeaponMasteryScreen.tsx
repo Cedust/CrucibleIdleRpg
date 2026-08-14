@@ -55,12 +55,27 @@ export function WeaponMasteryScreen() {
     setDiscipline(id);
     setSelectedId(null);
   };
+  const selectedAvailability =
+    selected === undefined
+      ? null
+      : masteryNodeAvailability(
+          characterId,
+          selected,
+          progression.level,
+          progression.masteryRanks,
+          progression.freeMasteryPoints,
+        );
+  // Bei gesperrten Nodes benennt der Inspector den Sperrgrund statt der fehlenden
+  // Punkte (die Sperr-Achse gewinnt, FOUNDATION §6): ein fiktiver freier Punkt
+  // lässt purchaseFailure am Punkte-Check vorbei zum eigentlichen Grund laufen.
   const lockReason = selected
     ? purchaseFailure(
         characterId,
         progression.level,
         progression.masteryRanks,
-        progression.freeMasteryPoints,
+        selectedAvailability === 'locked'
+          ? Math.max(progression.freeMasteryPoints, 1)
+          : progression.freeMasteryPoints,
         selected.id,
       )
     : 'Select a node.';

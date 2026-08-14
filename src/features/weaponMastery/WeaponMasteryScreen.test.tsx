@@ -65,6 +65,27 @@ describe('WeaponMasteryScreen', () => {
     expect(insufficient[0]).toHaveAttribute('data-availability', 'insufficient');
   });
 
+  it('names the lock reason for locked nodes even without free Mastery Points', async () => {
+    const save = createDefaultSave(4242);
+    saveStore.setState({
+      data: {
+        ...save,
+        characters: {
+          ...save.characters,
+          korvin: { ...save.characters.korvin, freeMasteryPoints: 0 },
+        },
+      },
+    });
+    const user = userEvent.setup();
+    render(<WeaponMasteryScreen />);
+
+    await user.click(screen.getByRole('tab', { name: 'FINESSE' }));
+    await user.click(screen.getByRole('button', { name: /^CHC II,.*Locked$/ }));
+
+    const inspector = screen.getByRole('complementary', { name: 'Mastery node inspector' });
+    expect(within(inspector).getByText('Requires level 20.')).toBeInTheDocument();
+  });
+
   it('shows the lore intro and available Mastery Points in the header', () => {
     render(<WeaponMasteryScreen />);
 

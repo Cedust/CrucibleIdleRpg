@@ -189,6 +189,9 @@ je Task ein Conventional Commit auf `feat/ui-fundament`.
 4. **`masteryNodeAvailability` dupliziert die `purchaseFailure`-Regeln bewusst** (UI-seitige
    strukturelle Ableitung statt Game-API-Änderung; die Sperr-Achse gewinnt gegen fehlende
    Punkte). Drift-Schutz: Unit-Tests decken alle Zweige inklusive `exclusiveWith` und
-   `sharedCapstone` ab (Review-Finding der Welle).
+   `sharedCapstone` ab (Review-Finding der Welle). Der Inspector folgt derselben Priorität:
+   Bei gesperrten Nodes läuft `purchaseFailure` mit einem fiktiven freien Punkt am
+   Punkte-Check vorbei, damit Badge und Sperrgrund denselben Zustand benennen
+   (Review-Finding des Abschluss-Passes).
 5. **UIF-019 ersetzt die D-009-Verschiebung der Nav-Migration:** Der genehmigte Plan enthielt
    die Migration explizit; D-009 Punkt 1 dokumentiert den erreichten Stand.

@@ -104,3 +104,20 @@ bei 1440p ist der Strip ~75 px hoch mit proportional dickerem Rahmen und höhere
 Die Rest-Verpixelung der Tab-Hintergründe ist eine Asset-Eigenschaft (extremes
 Seitenverhältnis des Bandes) — eine schärfere Neufassung der drei `crucible-tab-*.png`
 wäre Asset-Arbeit außerhalb dieses Refactors.
+
+## D-007 — Nutzer-Feedback: Tab-Rahmen unten neu vermessen (asymmetrischer Slice)
+
+**Problem:** Unter der unteren Goldschiene der Tree-Tabs ragte die Tab-Fläche heraus und
+darunter sickerte der Seitenhintergrund durch. Pixel-Messung des Assets `tab-ornate.png`
+(2171×724): Die Grafik belegt nur die Zeilen 184–505, die Transparenzränder sind ungleich
+(oben 184 px, unten 219 px), die Goldschienen liegen bei 188–198 und 463–473. Mit dem
+symmetrischen 9-Slice 260 landete die obere Schiene bei ~12 px von der Kante (deckungsgleich
+mit dem Surface-Inset), die untere aber bei ~15,7 px — darunter 4 px Fläche und ~13 px
+transparentes Loch. Der Defekt bestand schon vor dem Refactor und wurde durch das größere
+Tab-Chrome sichtbar.
+
+**Entscheidung:** Asymmetrischer Slice `260 300 335 300`: Der Bottom-Slice 335 spiegelt die
+untere Schiene auf ~12 px vor die Kante — die Fläche liegt beidseitig knapp innerhalb der
+Schienen, unterhalb bleibt nur der schmale Asset-Glow. Die bewusste Abweichung von der
+strikten ≤-1080p-Pixel-Identität (untere Schiene rückt 3,7 px nach außen) ist eine
+nutzerbeauftragte Korrektur einer Alt-Fehlkalibrierung („insgesamt nochmal ausmessen").

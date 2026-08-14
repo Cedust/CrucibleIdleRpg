@@ -216,20 +216,22 @@
 }
 
 /*
- * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 2172×724-Asset
- * hält seine Endstücke innerhalb der äußeren 300 px und die horizontalen Schienen
- * außerhalb der mittleren 204 px. Die kleine Border-Breite bewahrt bei 64 px
- * Tab-Höhe genügend Raum für Live-Text und optionale Icons. Rahmen und Fläche
- * wachsen mit --spacing-tab-strip (64 px → 96 px, Faktor 1,5 bei 4K) nach dem
- * Clamp-Muster aus FOUNDATION §2 (DECISIONS D-006).
+ * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 2171×724-Asset
+ * trägt seine Grafik in den Zeilen 184–505 mit ungleichen Transparenzrändern
+ * (oben 184 px, unten 219 px); die Goldschienen liegen bei 188–198 und 463–473
+ * (per Pixel-Messung). Der asymmetrische Bottom-Slice 335 spiegelt die untere
+ * Schiene auf die Position der oberen (~12 px vor der Kante, DECISIONS D-007);
+ * die Endstücke bleiben in den äußeren 300 px. Rahmen und Fläche wachsen mit
+ * --spacing-tab-strip (64 px → 96 px, Faktor 1,5 bei 4K) nach dem Clamp-Muster
+ * aus FOUNDATION §2 (DECISIONS D-006).
  */
 @utility border-image-tab-ornate {
   --tab-frame-y: clamp(16px, calc(16px + (min(100vw, 177.78vh) - 1920px) * 0.0041667), 24px);
   --tab-frame-x: clamp(24px, calc(24px + (min(100vw, 177.78vh) - 1920px) * 0.00625), 36px);
   border-style: solid;
   border-width: var(--tab-frame-y) var(--tab-frame-x);
-  border-image: url('/assets/frames/tab-ornate.png') 260 300 / var(--tab-frame-y) var(--tab-frame-x)
-    stretch;
+  border-image: url('/assets/frames/tab-ornate.png') 260 300 335 300 / var(--tab-frame-y)
+    var(--tab-frame-x) stretch;
 }
 
 .tab-ornate-surface {

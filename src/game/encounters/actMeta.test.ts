@@ -27,4 +27,14 @@ describe('actMeta', () => {
     expect(new Set(labels).size).toBe(ACT_1_DUNGEON_IDS.length);
     expect(new Set(names).size).toBe(ACT_1_DUNGEON_IDS.length);
   });
+
+  it('gives every act-1 dungeon a unique description', () => {
+    const descriptions = ACT_1_DUNGEON_IDS.map(
+      (dungeonId) => ACT_1_DUNGEON_DISPLAY_META[dungeonId].description,
+    );
+    expect(new Set(descriptions).size).toBe(ACT_1_DUNGEON_IDS.length);
+    for (const description of descriptions) {
+      expect(description.length).toBeGreaterThan(0);
+    }
+  });
 });

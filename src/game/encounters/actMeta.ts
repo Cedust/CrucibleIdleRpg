@@ -53,13 +53,48 @@ export interface DungeonDisplayMeta {
    * Design-Entscheidung: docs/backlog/OPEN_ISSUES.md.
    */
   readonly name: string;
+  /**
+   * PLATZHALTER — Kurz-Lore analog zu `name`; final mit der
+   * Content-Überarbeitung: docs/backlog/OPEN_ISSUES.md.
+   */
+  readonly description: string;
   readonly backgroundId: DungeonBackgroundId;
 }
 
 export const ACT_1_DUNGEON_DISPLAY_META: Readonly<Record<Act1DungeonId, DungeonDisplayMeta>> = {
-  'A1-D1': { label: 'DUNGEON I', name: 'Cinder Gate', backgroundId: 'ashen-depths' },
-  'A1-D2': { label: 'DUNGEON II', name: 'The Charred Vaults', backgroundId: 'ashen-depths' },
-  'A1-D3': { label: 'DUNGEON III', name: 'Ashfall Causeway', backgroundId: 'ashen-depths' },
-  'A1-D4': { label: 'DUNGEON IV', name: 'The Gilded Ossuary', backgroundId: 'ashen-depths' },
-  'A1-D5': { label: 'DUNGEON V', name: 'Throne of Cinders', backgroundId: 'ashen-depths' },
+  'A1-D1': {
+    label: 'DUNGEON I',
+    name: 'Cinder Gate',
+    description:
+      'The outer gate to the Ashen Depths. Once a grand entrance, now reduced to ember and stone.',
+    backgroundId: 'ashen-depths',
+  },
+  'A1-D2': {
+    label: 'DUNGEON II',
+    name: 'The Charred Vaults',
+    description:
+      'Vaults of a burned treasury. The soot on the walls still whispers of the fires that sealed them.',
+    backgroundId: 'ashen-depths',
+  },
+  'A1-D3': {
+    label: 'DUNGEON III',
+    name: 'Ashfall Causeway',
+    description:
+      'A causeway buried in ash. Every step raises the dust of the kingdom that marched here last.',
+    backgroundId: 'ashen-depths',
+  },
+  'A1-D4': {
+    label: 'DUNGEON IV',
+    name: 'The Gilded Ossuary',
+    description:
+      'Gilded tombs of forgotten nobles. Their gold endured; their guardians never left.',
+    backgroundId: 'ashen-depths',
+  },
+  'A1-D5': {
+    label: 'DUNGEON V',
+    name: 'Throne of Cinders',
+    description:
+      'The seat of the fallen throne. Behind this gate, the cinders remember their king.',
+    backgroundId: 'ashen-depths',
+  },
 };

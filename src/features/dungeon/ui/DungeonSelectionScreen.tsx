@@ -80,6 +80,8 @@ export function DungeonSelectionScreen() {
                   actName={ACT_1_DISPLAY_META.name}
                   dungeonLabel={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].label}
                   dungeonName={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].name}
+                  description={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].description}
+                  locked={!selectedDungeonUnlocked}
                   masteredFloorCount={selectedProgress.masteredFloorCount}
                   totalFloorCount={selectedProgress.totalFloorCount}
                   disabled={

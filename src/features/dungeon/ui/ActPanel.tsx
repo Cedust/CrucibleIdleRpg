@@ -11,8 +11,8 @@ interface ActPanelProps {
 /**
  * Statusanzeige eines Akts in der Dungeon-Auswahl. Solange nur Akt 1 Content hat,
  * ist das Panel bewusst kein Control; mit Akt-2-Content wird die Liste zur Radio-Group.
- * Als nicht-interaktive Fläche trägt es weder Hover-Affordance noch Selection-Glow;
- * „current" zeigt sich über vollen Frame und Gold-Titel (FOUNDATION §6).
+ * „current" zeigt sich über vollen Frame, Gold-Titel und Glow (FOUNDATION §6);
+ * gesperrte Akte tragen ein Lock-Medaillon unten-mittig.
  */
 export function ActPanel({ act }: ActPanelProps) {
   return (
@@ -25,9 +25,9 @@ export function ActPanel({ act }: ActPanelProps) {
       interactive={false}
       className="h-36 rounded-lg p-4 @min-[42rem]:h-auto @min-[42rem]:aspect-video"
     >
-      <div className="flex h-full flex-col justify-end gap-1">
+      <div className="flex h-full flex-col items-center justify-between gap-1 text-center">
         {/* Whitespace-Textknoten trennen Label, Name und Status im Textinhalt des Panels. */}
-        <div className="flex items-center justify-between gap-3">
+        <div>
           <p
             className={cn(
               'font-display text-display',
@@ -35,15 +35,15 @@ export function ActPanel({ act }: ActPanelProps) {
             )}
           >
             {act.label}
-          </p>
-          {!act.hasContent && (
-            <span className="text-text-muted">
-              <Lock aria-hidden="true" className="size-4" />
-              <span className="sr-only">Locked</span>
-            </span>
-          )}
-        </div>{' '}
-        <p className="text-sm tracking-wide text-text-muted">{act.name}</p>{' '}
+          </p>{' '}
+          <p className="text-sm tracking-wide text-text-muted">{act.name}</p>{' '}
+        </div>
+        {!act.hasContent && (
+          <span className="flex size-9 items-center justify-center rounded-full border border-ornament/50 bg-background/70 text-text-muted">
+            <Lock aria-hidden="true" className="size-4" />
+            <span className="sr-only">Locked</span>
+          </span>
+        )}
       </div>
     </FramedCard>
   );

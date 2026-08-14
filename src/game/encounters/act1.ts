@@ -72,6 +72,11 @@ export function isFinalAct1Floor(encounter: Act1EncounterDefinition): boolean {
   return encounter.floorNumber === FLOORS_PER_DUNGEON;
 }
 
+/** Klassifikation des letzten Floors (Floor 20): `boss` nur für A1-D5, sonst `elite`. */
+export function act1FinalFloorClass(dungeonId: Act1DungeonId): EncounterClass {
+  return encounterClass(dungeonId, FLOORS_PER_DUNGEON);
+}
+
 /** Liefert den Folgekampf desselben Dungeons oder `null` nach dessen letzten Floor. */
 export function getNextAct1DungeonEncounter(
   encounter: Act1EncounterDefinition,

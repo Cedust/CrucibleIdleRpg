@@ -32,7 +32,7 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Invest' })).toHaveClass('mt-4', 'w-full');
   });
 
-  it('unterstützt die Varianten primary, ghost und danger', () => {
+  it('unterstützt die Varianten primary, ghost, danger und ornate', () => {
     const { rerender } = render(<Button>Enter</Button>);
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('border-ornament');
 
@@ -41,6 +41,11 @@ describe('Button', () => {
 
     rerender(<Button variant="danger">Enter</Button>);
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('text-danger');
+
+    rerender(<Button variant="ornate">Enter</Button>);
+    const ornate = screen.getByRole('button', { name: 'Enter' });
+    expect(ornate).toHaveClass('border-image-button', 'font-display', 'bg-clip-padding');
+    expect(ornate).not.toHaveClass('rounded-md');
   });
 
   it('markiert selected über data-selected mit Gold-Border/Tint auf ghost', () => {

@@ -17,7 +17,8 @@ describe('DungeonSelectionScreen', () => {
   it('shows the act stack with only act 1 unlocked', () => {
     render(<DungeonSelectionScreen />);
 
-    expect(screen.getByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
+    const heading = screen.getByRole('heading', { name: 'Dungeons' });
+    expect(heading).toHaveClass('font-display', 'text-display-lg', 'text-accent-strong');
     expect(
       screen.getByText(
         'Descend into the ancient depths, where the ashes of a fallen kingdom conceal a forgotten world.',
@@ -36,43 +37,44 @@ describe('DungeonSelectionScreen', () => {
     const actTwoLockLabel = within(acts[1] as HTMLElement).getByText('Locked');
     expect(actTwoLockLabel).toHaveClass('sr-only');
     expect(actTwoLockLabel.previousElementSibling?.tagName).toBe('svg');
+    expect(actTwoLockLabel.parentElement).toHaveClass('rounded-full');
     expect(actTwoLockLabel.closest('div')).toContainElement(
       within(acts[1] as HTMLElement).getByText('ACT II'),
     );
   });
 
-  it('offers the dungeon cards with the fresh-save unlock state', () => {
+  it('offers the dungeon gates with the fresh-save unlock state', () => {
     render(<DungeonSelectionScreen />);
 
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(5);
     expect(radios[0]).toBeChecked();
     expect(radios.every((radio) => !(radio as HTMLInputElement).disabled)).toBe(true);
-    expect(screen.getByRole('group', { name: 'Dungeon selection' })).toHaveClass(
-      'grid-cols-[repeat(auto-fill,10rem)]',
-    );
+    const gateGrid = screen.getByRole('group', { name: 'Dungeon selection' });
+    expect(gateGrid).toHaveClass('grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))]');
 
     const details = screen.getByRole('region', { name: 'Cinder Gate details' });
-    expect(details).toHaveClass('mx-2', 'gap-3', 'px-4', 'py-3');
+    expect(details).toHaveClass('mx-4', 'grid', 'px-4', 'py-3');
+    expect(details).toHaveClass('@min-[42rem]:grid-cols-[minmax(0,1fr)_auto]');
     expect(details.querySelector('.border-image-thin')).toBeInTheDocument();
     expect(within(details).getByText('ACT I - The Ashen Depths')).toBeInTheDocument();
     expect(
       within(details).getByRole('heading', { name: 'DUNGEON I - Cinder Gate' }),
     ).toBeInTheDocument();
     expect(screen.queryByText('ACT I - THE ASHEN DEPTHS')).not.toBeInTheDocument();
+    expect(
+      within(details).getByText(
+        'The outer gate to the Ashen Depths. Once a grand entrance, now reduced to ember and stone.',
+      ),
+    ).toBeInTheDocument();
     expect(within(details).getByText('0 / 20')).toBeInTheDocument();
-    const progressbar = within(details).getByRole('progressbar');
+    expect(within(details).getByRole('progressbar')).toBeInTheDocument();
     const enterButton = within(details).getByRole('button', { name: 'ENTER DUNGEON' });
     expect(enterButton).toBeEnabled();
-    expect(enterButton.parentElement).toHaveClass(
-      '@min-[19rem]:flex-row',
-      '@min-[19rem]:items-end',
-    );
-    expect(enterButton.parentElement).toContainElement(progressbar);
-    expect(progressbar.parentElement).toHaveClass('w-full', '@min-[19rem]:flex-1');
+    expect(enterButton).toHaveClass('border-image-button');
   });
 
-  it('selects a locked dungeon but keeps its entry action disabled', async () => {
+  it('selects a locked dungeon and hides progress and entry action', async () => {
     const user = userEvent.setup();
     render(<DungeonSelectionScreen />);
 
@@ -83,9 +85,16 @@ describe('DungeonSelectionScreen', () => {
 
     expect(lockedDungeon).toBeChecked();
     const details = screen.getByRole('region', { name: 'The Charred Vaults details' });
-    expect(within(details).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
-    expect(within(details).getByText('0 / 20')).toBeInTheDocument();
-    expect(within(details).getByRole('button', { name: 'ENTER DUNGEON' })).toBeDisabled();
+    expect(
+      within(details).getByText(
+        'Vaults of a burned treasury. The soot on the walls still whispers of the fires that sealed them.',
+      ),
+    ).toBeInTheDocument();
+    expect(within(details).queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(within(details).queryByText('0 / 20')).not.toBeInTheDocument();
+    expect(
+      within(details).queryByRole('button', { name: 'ENTER DUNGEON' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows mastered-floor progress for the selected dungeon', () => {

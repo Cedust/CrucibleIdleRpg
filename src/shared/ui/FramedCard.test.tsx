@@ -48,7 +48,7 @@ describe('FramedCard', () => {
     expect(frame).not.toHaveClass('opacity-(--state-deemphasis-weak)');
   });
 
-  it('zeigt highlight ohne Glow und ohne Hover-Affordance', () => {
+  it('zeigt highlight mit Glow und ohne Hover-Affordance', () => {
     const { container } = render(
       <FramedCard as="li" artClassName={ART} highlight interactive={false} aria-current="true">
         <span>Akt I</span>
@@ -60,7 +60,7 @@ describe('FramedCard', () => {
     expect(root).toHaveAttribute('aria-current', 'true');
     const [, scrim, frame] = container.querySelectorAll('[aria-hidden="true"]');
     expect(scrim).not.toHaveClass('bg-linear-to-t');
-    expect(frame).not.toHaveClass('shadow-glow-accent');
+    expect(frame).toHaveClass('shadow-glow-accent');
     expect(frame).not.toHaveClass('group-hover:opacity-90');
   });
 });

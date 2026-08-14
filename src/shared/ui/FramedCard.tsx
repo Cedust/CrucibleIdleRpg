@@ -9,8 +9,8 @@ interface FramedCardProps extends HTMLAttributes<HTMLElement> {
   selected?: boolean;
   semantic?: SemanticState;
   /**
-   * Frame in voller Stärke und Scrim aus, ohne Selection-Glow — für
-   * nicht-interaktive „current“-Flächen wie das ActPanel (FOUNDATION §6).
+   * Frame in voller Stärke, Scrim aus und Glow an — für nicht-interaktive
+   * „current“-Flächen wie das ActPanel (FOUNDATION §6).
    */
   highlight?: boolean;
   /** `false` entfernt die Hover-Affordance nicht-interaktiver Flächen. */
@@ -66,7 +66,7 @@ export function FramedCard({
         className={cn(
           'pointer-events-none absolute inset-0 border-image-thin',
           transitionState,
-          selected && 'shadow-glow-accent',
+          emphasized && 'shadow-glow-accent',
           !emphasized &&
             (semantic === 'locked'
               ? 'opacity-(--state-deemphasis-strong)'

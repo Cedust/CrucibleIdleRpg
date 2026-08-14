@@ -335,6 +335,21 @@
 }
 
 /*
+ * Ornamentrahmen der Button-Variante `ornate` (Asset aus concept/PROMPTS.md
+ * §28, vertikal zugeschnitten: 2172×423). Vermessung: Schienen in Zeilen
+ * 51–111 und 312–373, Endkappen in Spalten 35–263 bzw. 1909–2137, Öffnung in
+ * Zeilen 112–311. Die Slices liegen exakt auf den gezeichneten Innenkanten
+ * (oben/unten 112, seitlich 264), damit die Padding-Kante die Rahmenlinie
+ * berührt und die CSS-Füllung (bg-clip-padding) bündig anschließt; die
+ * Border-Widths 10 px / 36 px halten den bisherigen Zeichnungsmaßstab.
+ */
+@utility border-image-button {
+  border-style: solid;
+  border-width: 10px 36px;
+  border-image: url('/assets/frames/button-ornate.png') 112 264 112 264 / 10px 36px stretch;
+}
+
+/*
  * Vollhöhen-Rahmen für Sidebar und Main-Area. Die generierten Assets sind
  * 1024×1536; 275 px enthalten die nach innen reichenden Eckornamente
  * vollständig. Das Pseudoelement vermeidet, dass die 40 px Border den Inhalt

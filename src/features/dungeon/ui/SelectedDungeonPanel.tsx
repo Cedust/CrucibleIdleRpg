@@ -7,6 +7,9 @@ interface SelectedDungeonPanelProps {
   actName: string;
   dungeonLabel: string;
   dungeonName: string;
+  description: string;
+  /** Gesperrte Dungeons zeigen weder Progress noch Entry-Action. */
+  locked: boolean;
   masteredFloorCount: number;
   totalFloorCount: number;
   disabled: boolean;
@@ -21,6 +24,8 @@ export function SelectedDungeonPanel({
   actName,
   dungeonLabel,
   dungeonName,
+  description,
+  locked,
   masteredFloorCount,
   totalFloorCount,
   disabled,
@@ -36,41 +41,49 @@ export function SelectedDungeonPanel({
       aria-label={`${dungeonName} details`}
       variant="thin"
       padding="none"
-      className="mx-2 flex flex-col gap-3 px-4 py-3"
+      className="mx-4 grid grid-cols-1 items-center gap-x-5 gap-y-3 px-4 py-3 @min-[42rem]:grid-cols-[minmax(0,1fr)_auto]"
     >
-      <header className="space-y-0.5">
-        <p className="font-display text-display-sm tracking-widest text-accent-strong">
-          {actLabel} - {actName}
-        </p>
-        <h3 className="font-display text-display text-accent-strong">
-          {dungeonLabel} - {dungeonName}
-        </h3>
-      </header>
+      <div className="flex min-w-0 flex-col gap-2">
+        <header className="space-y-0.5">
+          <p className="font-display text-display-sm tracking-widest text-accent-strong">
+            {actLabel} - {actName}
+          </p>
+          <h3 className="font-display text-display text-accent-strong">
+            {dungeonLabel} - {dungeonName}
+          </h3>
+        </header>
 
-      {startError !== null && (
-        <p role="alert" className="text-sm text-danger">
-          {startError}
-        </p>
-      )}
+        <p className="text-sm leading-6 text-text-muted">{description}</p>
 
-      <div className="flex flex-col items-end gap-3 @min-[19rem]:flex-row @min-[19rem]:items-end">
-        <ProgressBar
-          className="w-full min-w-0 @min-[19rem]:flex-1"
-          label="Progress"
-          ariaLabel={`${dungeonName} progress`}
-          value={progress}
-          max={totalFloorCount}
-          tone="accent"
-          labelSize="sm"
-        />
+        {startError !== null && (
+          <p role="alert" className="text-sm text-danger">
+            {startError}
+          </p>
+        )}
+
+        {!locked && (
+          <ProgressBar
+            className="w-full min-w-0"
+            label="Progress"
+            ariaLabel={`${dungeonName} progress`}
+            value={progress}
+            max={totalFloorCount}
+            tone="accent"
+            labelSize="sm"
+          />
+        )}
+      </div>
+
+      {!locked && (
         <Button
-          className="@min-[19rem]:ml-4 @min-[19rem]:shrink-0"
+          variant="ornate"
+          className="justify-self-end self-end @min-[42rem]:self-center"
           disabled={disabled}
           onClick={onEnter}
         >
           {isStarting ? 'ENTERING DUNGEON…' : 'ENTER DUNGEON'}
         </Button>
-      </div>
+      )}
     </Panel>
   );
 }

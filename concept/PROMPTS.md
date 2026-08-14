@@ -830,6 +830,187 @@ photorealistic objects, painterly color, black backgrounds, clipped shapes, thin
 lines, busy engraving, soft blurry edges, merged neighboring cells, any content in cell eight
 ```
 
+## 26. Titel-Banner der Screens (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/title-banner.png`
+- **Format:** Querformat 4:1, mindestens 2048×512
+- **Verwendung:** Banner-Rahmen für Screen-Überschriften; das Asset liegt generiert unter
+  der Zieldatei und ist für eine spätere Einbindung vorgehalten.
+- **Technik:** Vollständig transparenter Außenbereich und vollständig transparente
+  Rahmenöffnung. Die Endstücke liegen in den äußeren Vierteln; lange, gerade, detailarme
+  Schienen an Ober- und Unterkante bilden die horizontal streckbare Mitte für unterschiedlich
+  lange Titel („Dungeons", „Weapon Mastery"). Der Banner wird bei ungefähr 80 CSS-Pixeln Höhe
+  angezeigt.
+- **Referenzen:** Für Form und Wirkung der Titelzone
+  `concept/ui-draft-2/ui-dungeon-selection-v7.png`; für Metall, Farbe und Alterung
+  `public/assets/frames/tab-ornate.png` und `public/assets/frames/panel-ornate.png`.
+
+```text
+Use case: stylized-concept
+Asset type: reusable horizontal 9-slice ornamental title banner frame for a dark fantasy game UI
+Primary request: one wide imperial metal banner frame that surrounds a live centered screen
+title, designed to crown the top of every main screen while remaining reusable for titles of
+different lengths
+Canvas and transparency: exact 4:1 landscape aspect ratio, at least 2048 by 512 pixels; true
+transparent alpha outside the ornament and throughout the entire inner opening; preserve a
+clear transparent safety margin around every outer point; do not simulate transparency with
+black, white, or a checkerboard
+Structure: strict left-right symmetry; a shallow elongated banner with bold blackened-iron
+rails edged with aged gold; each short end resolves into a sweeping winged or spear-point
+finial that tapers outward; small matching points may rise from the top and bottom rails near
+the end caps; the silhouette should read as a ceremonial imperial title plaque from a fallen
+golden empire
+9-slice requirements: keep all distinctive end-cap and finial construction inside the outer
+left and right quarters of the canvas; make the middle half of the top and bottom rails
+straight, horizontal, continuous, and deliberately low-detail so it can stretch without
+visible distortion; keep the inner opening broad and unobstructed; no crest, medallion, or
+ornament may sit on or cross the center of the rails or the opening
+Frame style: heavy stone-carved imperial metalwork, dark aged brass and blackened iron with
+restrained warm gold highlights (#8a6d3b to #fbbf24), subtle worn edges, and only tiny
+ember-orange reflections (#e25822); noble, martial, and mysterious rather than luxurious
+Composition and readability: front-facing orthographic presentation with no perspective; bold
+continuous rails, large calm shapes, crisp alpha edges, and enough visual weight to remain
+recognizable when the complete banner is only about 80 CSS pixels high
+Lighting and states: neutral canonical metal under controlled warm edge light; no baked glow,
+hover state, focus ring, selection flare, cast shadow, or dark interior fill because all
+states and surfaces will be rendered separately with CSS
+Rendering style: polished game UI asset, crisp vector-like contours with restrained painterly
+worn-metal texture, matching the project's Gilded Ruins visual language
+Constraints: frame only; no text, letters, readable runes, numbers, skull, crown, character,
+scenery, background panel, interior texture, particles, flames, lens flare, bloom haze, logo,
+interface mockup, or watermark
+Avoid: a centered crest that blocks the stretchable middle, thin filigree, asymmetry, broken
+rails, large curls, excessive spikes, bright solid-gold metal, colored gemstones, separate
+state versions, multiple frames in one image, mockup presentation
+```
+
+## 27. Dungeon-Tor-Illustrationen (vier Varianten)
+
+- **Zieldateien:** `public/assets/gates/gate-open.png`,
+  `public/assets/gates/gate-locked.png`, `public/assets/gates/gate-boss-open.png`,
+  `public/assets/gates/gate-boss-locked.png`
+- **Format:** je Hochformat 3:4, mindestens 768×1024, freigestellt auf transparentem
+  Hintergrund
+- **Verwendung:** Wiederverwendete Tor-Kacheln der Dungeon-Auswahl; jede Kachel zeigt genau
+  eine Variante als `<img>`. Dungeon 1–4 eines Akts nutzen das normale Tor, Dungeon 5 das
+  Boss-Tor; der Freischalt-Zustand wählt zwischen offener und verschlossener Variante. Labels,
+  Auswahl-Glow, Hover und Fokus bleiben Live-UI (CSS).
+- **Technik:** Alle vier Varianten teilen Stil, Perspektive, Bodenlinie und optische Größe
+  innerhalb der Leinwand, damit die Kacheln in einer Reihe ruhig nebeneinanderstehen. Der
+  Ember-Glow ist ausschließlich in den offenen Varianten eingebacken; Ketten und
+  Schloss-Medaillon ausschließlich in den verschlossenen Varianten. Angezeigt bei ungefähr
+  140–190 CSS-Pixeln Breite.
+- **Referenzen:** Für Tor-Aufbau, Glut und Ketten `concept/ui-draft-2/ui-dungeon-selection-v7.png`;
+  für Material und Palette `public/assets/backgrounds/dungeon-ashen-depths.png`.
+
+Gemeinsamer Familien-Block, der jedem der vier Prompts vorangestellt wird:
+
+```text
+Use case: stylized-concept
+Asset type: free-standing dungeon gate illustration for a dark fantasy game UI, one of a
+consistent family of four
+Canvas and transparency: exact 3:4 portrait aspect ratio, at least 768 by 1024 pixels; true
+transparent alpha everywhere outside the gate silhouette; the gate stands free on a shallow
+rocky base that fades out before the canvas edges; do not simulate transparency with black,
+white, or a checkerboard
+Family consistency: all four gates share the same front-facing orthographic presentation, the
+same ground line, the same optical size inside the canvas, and the same material language of
+ancient blackened stone, dark aged brass, and restrained gold accents (#8a6d3b to #fbbf24);
+imperial dark-fantasy architecture of a fallen golden empire, noble and ominous
+Composition and readability: one single gate centered in the canvas, bold silhouette, large
+calm shapes, crisp alpha edges, readable at about 150 CSS pixels width
+Rendering style: polished painterly game UI asset with crisp contours, matching the project's
+Gilded Ruins visual language
+Constraints: gate only; no characters, text, letters, readable runes, numbers, interface
+elements, logo, mockup presentation, or watermark
+Avoid: photorealism, perspective distortion, busy micro-detail, baked selection or hover
+effects, multiple gates in one image, checkerboard transparency
+```
+
+Variantenspezifische Ergänzungen:
+
+```text
+gate-open.png — Primary request: the standard dungeon gate, unlocked and inviting descent; a
+tall arched stone portal with brass fittings; the archway stands open and a warm ember glow
+(#e25822 to #ff8a4d) radiates from inside the passage, spilling soft embers and heat light
+onto the threshold; the glow is part of the artwork; mood: dangerous invitation
+```
+
+```text
+gate-locked.png — Primary request: the same standard dungeon gate as the open variant, sealed
+and dormant; the archway is closed by a dark iron portcullis or door; heavy iron chains are
+draped across the front and meet in a circular brass lock medallion at the lower center of the
+gate; the passage is dark and cold with no inner glow; mood: silent refusal
+```
+
+```text
+gate-boss-open.png — Primary request: the act's final boss gate, unlocked; visibly grander and
+more threatening than the standard gate while keeping the same optical size; a taller crowned
+arch with a skull or crown motif worked into the stone above the apex; the archway stands open
+with a stronger ember glow (#e25822 to #ff8a4d) burning from inside; mood: throne-room menace
+```
+
+```text
+gate-boss-locked.png — Primary request: the same boss gate as the open variant, sealed; the
+crowned arch is closed by a dark iron door; heavy iron chains cross the front and meet in a
+circular brass lock medallion at the lower center; the passage is dark and cold with no inner
+glow; mood: forbidden threshold
+```
+
+## 28. Ornament-Button-Rahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/button-ornate.png`
+- **Format:** Querformat 2:1, mindestens 1536×768
+- **Verwendung:** Rahmen der `Button`-Variante `ornate` für primäre Screen-Aktionen
+  („Enter Dungeon"). Beschriftung, Füllung und alle Interaktionszustände bleiben
+  Live-UI (CSS).
+- **Technik:** Vollständig transparenter Außenbereich und vollständig transparente
+  Rahmenöffnung; die CSS-Füllung (dunkle Fläche mit Ember-Schimmer, goldene Beschriftung)
+  liegt hinter dem Rahmen, dessen Zeichnung sich davon abheben muss. Endstücke in den äußeren Vierteln; gerade,
+  detailarme Schienen bilden die streckbare Mitte. Der Rahmen wird bei ungefähr 52 CSS-Pixeln
+  Höhe angezeigt.
+- **Referenzen:** Für Form und Wirkung der Button-Zone
+  `concept/ui-draft-2/ui-dungeon-selection-v7.png`; für Metall, Farbe und Alterung
+  `public/assets/frames/tab-ornate.png`.
+
+```text
+Use case: stylized-concept
+Asset type: reusable horizontal 9-slice ornamental button frame for a dark fantasy game UI
+Primary request: one compact imperial metal frame for the primary action button of a game
+screen, designed to sit on top of a dark ember-lit fill rendered separately in CSS and to stay
+reusable for labels of different lengths
+Canvas and transparency: exact 2:1 landscape aspect ratio, at least 1536 by 768 pixels; true
+transparent alpha outside the ornament and throughout the entire inner opening; preserve a
+clear transparent safety margin around every outer point; do not simulate transparency with
+black, white, or a checkerboard
+Structure: strict left-right symmetry; a slender rectangular frame with bold blackened-iron
+rails edged with aged gold; each short end carries one compact pointed or bracket-shaped end
+cap; small matching studs or points may sit on the rails near the end caps; the silhouette
+should read as the forged bezel of a royal command seal
+9-slice requirements: keep all distinctive end-cap construction inside the outer left and
+right quarters of the canvas; make the middle half of the top and bottom rails straight,
+horizontal, continuous, and deliberately low-detail so it can stretch without visible
+distortion; keep the inner opening broad and unobstructed; no ornament may cross the opening
+Frame style: dark aged brass and blackened iron with restrained warm gold highlights (#8a6d3b
+to #fbbf24); the rails must keep enough contrast and visual weight to stay clearly readable in
+front of a dark ember-lit interior fill (deep surface tones warmed by #e25822) as well as in
+front of dark scenery; noble, martial, and mysterious rather than luxurious
+Composition and readability: front-facing orthographic presentation with no perspective; bold
+continuous rails, large calm shapes, crisp alpha edges, and enough visual weight to remain
+recognizable when the complete frame is only about 52 CSS pixels high
+Lighting and states: neutral canonical metal under controlled warm edge light; no baked glow,
+hover state, focus ring, pressed state, selection flare, cast shadow, or interior fill because
+all states and surfaces will be rendered separately with CSS
+Rendering style: polished game UI asset, crisp vector-like contours with restrained painterly
+worn-metal texture, matching the project's Gilded Ruins visual language
+Constraints: frame only; no text, letters, readable runes, numbers, skull, crown, character,
+scenery, background panel, interior texture, particles, flames, lens flare, bloom haze, logo,
+interface mockup, or watermark
+Avoid: thick heavy borders that shrink the label area, thin filigree, asymmetry, broken rails,
+large curls, excessive spikes, bright solid-gold metal, colored gemstones, separate state
+versions, multiple frames in one image, mockup presentation
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

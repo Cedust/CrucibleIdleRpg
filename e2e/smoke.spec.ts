@@ -54,7 +54,7 @@ test('loads the accessible dungeon selection', async ({ page }) => {
 
   await page.getByText('DUNGEON II', { exact: true }).click();
   await expect(page.getByRole('radio', { name: /DUNGEON II\b/ })).toBeChecked();
-  await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toHaveCount(0);
   await page.getByText('DUNGEON I', { exact: true }).click();
   await expect(page.getByRole('radio', { name: /DUNGEON I\b/ })).toBeChecked();
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();

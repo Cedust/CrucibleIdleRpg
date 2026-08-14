@@ -38,9 +38,9 @@ AppShell            → flex h-dvh; Run- und Normal-Branch symmetrisch
 - Gescrollt wird ausschließlich in dafür vorgesehenen Containern (Listen, Logs, Trees,
   Tab-Strips als Fallback). Der ScreenLayout-Default-Scroller deckt Screens ohne eigene
   Scroll-Struktur ab.
-- `ScreenHeader` rendert das gemeinsame Titel-/Intro-Muster (`font-display text-display-lg`
-  - `font-intro`-Absatz); `headingLevel` wählt `h2` (Default) oder `h1` (Dungeon-Run ohne
-    App-Navigation).
+- `ScreenHeader` rendert den Titel (`font-display text-display-lg`) linksbündig, direkt
+  darunter den `font-intro`-Absatz; `headingLevel` wählt `h2` (Default) oder `h1`
+  (Dungeon-Run ohne App-Navigation).
 - Ein Dungeon-Run belegt den gesamten Viewport ohne Navigation
   ([Fortschritt §4](../../spec/PROGRESSION.md#4-checkpoints-wipe--abbruch)); der Run-Branch der
   AppShell bleibt dafür der Schalter.
@@ -79,13 +79,13 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
 
 ## 3. Zuordnung fixed und fluid
 
-| Kategorie              | Elemente                                                                                                                                      | Mechanik                                                                                                                                                                 |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Fixed**              | 9-Slice-Frame-Geometrie der Panels/Vollrahmen (border-width/outset/slices), Frame-Gutter 12 px, Dungeon-Kachel `h-74 w-40`, kleine Gaps/Radii | px/rem-konstant ([DECISIONS D-004](DECISIONS.md#d-004--task-010-keine-clamps-für-die-9-slice-frame-geometrie)); Ausnahme Tab-Frame und Tab-Surface: leicht fluid (D-006) |
-| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                                     | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K                                                                                                                          |
-| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grid (`auto-fill`), Listenflächen, Log                                                             | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`                                                                                                                            |
-| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                                     | `min-h-0 flex-1 overflow-y-auto`                                                                                                                                         |
-| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena)                   | `mx-auto w-full max-w-*`                                                                                                                                                 |
+| Kategorie              | Elemente                                                                                                                    | Mechanik                                                                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Fixed**              | 9-Slice-Frame-Geometrie der Panels/Vollrahmen/Buttons (border-width/outset/slices), Frame-Gutter 12 px, kleine Gaps/Radii   | px/rem-konstant ([DECISIONS D-004](DECISIONS.md#d-004--task-010-keine-clamps-für-die-9-slice-frame-geometrie)); Ausnahme Tab-Frame und Tab-Surface: leicht fluid (D-006) |
+| **Leicht fluid**       | Nav-Breite, Tab-Strip-Höhe, Inspector-Spalte, Page-Padding, Text-Skala, Node-Medallions, Combat-Portraits                   | Clamp-Tokens, 1,00× → ~1,09× @1440p → 1,25× @4K                                                                                                                          |
+| **Voll fluid**         | Graph-/Tree-Spalten, Arena-Spalten, Karten-Grids (`auto-fill`), Tor-Grid (`auto-fit`), Listenflächen, Log                   | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0`                                                                                                                            |
+| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                   | `min-h-0 flex-1 overflow-y-auto`                                                                                                                                         |
+| **max-width-begrenzt** | pro Screen-Typ, zentriert: `--container-page` (Trees), `--container-page-narrow` (Listen/Detail), `--container-run` (Arena) | `mx-auto w-full max-w-*`                                                                                                                                                 |
 
 Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nicht.
 
@@ -145,6 +145,7 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
   --shadow-glow-accent-sm: 0 0 5px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
   --drop-shadow-glow-accent: 0 0 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
   --shadow-glow-ember-inset: inset 0 0 20px color-mix(in srgb, var(--color-ember) 42%, transparent);
+  --shadow-glow-ember: 0 0 14px 0 color-mix(in srgb, var(--color-ember) 35%, transparent);
 
   /* — Text-Kontrast auf Bild-Hintergründen — */
   --drop-shadow-text-contrast: 0 1px 3px rgb(0 0 0 / 0.95);
@@ -225,27 +226,27 @@ Ebene nutzt `transition-state motion-reduce:transition-none`. Focus:
 | Facette insufficient    | `border-border text-text`, kein Glow                                                                                                                          |
 | Facette defeated        | Portrait `grayscale` + `--state-deemphasis-medium`; Name und Werte voll lesbar                                                                                |
 
-Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch Selection-Glow;
-„current" zeigt sich über vollen Frame und Gold-Titel, `aria-current` bleibt.
+Nicht-interaktive „current"-Flächen (z. B. ActPanel) zeigen vollen Frame, Gold-Titel und
+`shadow-glow-accent`, ohne Hover-Affordance; `aria-current` bleibt.
 
 ## 7. Shared Primitives
 
-| Primitive                                   | API (minimal)                                                                                                                                     | Konsumenten                                          |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                                                                                       | alle migrierten Komponenten                          |
-| `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente                                                                         | alle migrierten Komponenten                          |
-| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                                 | `NodeButton`; Pips zusätzlich `NodeInspectorPanel`   |
-| `NodeButton`                                | `NodeAvailability`, `name`/`visibleLabel`, `insufficientStatus`, `layout: 'standard' \| 'branch'`, `medallionSize?`, children = Medaillon-Icon    | beide Tree-Graphen                                   |
-| `NodeInspectorPanel`                        | `label`, `medallion`, `title`, `rankCaption`, `effect`, `lockReason`/`lockReasonId` → `aria-describedby`, `actionLabel?`, children = Detailzeilen | beide Node-Inspectors, M3-Equip-Panels               |
-| `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                   | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |
-| `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; Cursor-Policy                                                                                             | Playback-Buttons, ErrorBoundary-Reload               |
-| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                       | `ConfirmDialog`                                      |
-| `ConfirmDialog`                             | `label`, `title`, `icon?` (Glut-Roundel), `confirmLabel`, `cancelLabel?`, children = Body-Text                                                    | beide Respec-Dialoge, M3-Confirms                    |
-| `ProgressBar`-Erweiterung                   | `tone: health \| barrier \| xp \| accent`, `labelSize: 'xs' \| 'sm'`, `className` erweitert das Root                                              | Combat-Bars, SelectedDungeonPanel                    |
-| `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                    | DungeonSelector-Karte, ActPanel                      |
-| `ScreenHeader`                              | `title`, `intro?`, `headingLevel: 'h1' \| 'h2'`, children (Actions)                                                                               | Dungeons, Crucible, Mastery, Run, Placeholder        |
-| `SectionTitle`                              | `as: 'h2' \| 'h3'`, `align: 'center' \| 'start'`, `id?`                                                                                           | Heroes, Combat Log, Enemy-Lanes                      |
-| `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard   | Crucible-Branch-Graph, Mastery-Tree-Canvas           |
+| Primitive                                   | API (minimal)                                                                                                                                                            | Konsumenten                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                                                                                                              | alle migrierten Komponenten                           |
+| `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente                                                                                                | alle migrierten Komponenten                           |
+| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                                                        | `NodeButton`; Pips zusätzlich `NodeInspectorPanel`    |
+| `NodeButton`                                | `NodeAvailability`, `name`/`visibleLabel`, `insufficientStatus`, `layout: 'standard' \| 'branch'`, `medallionSize?`, children = Medaillon-Icon                           | beide Tree-Graphen                                    |
+| `NodeInspectorPanel`                        | `label`, `medallion`, `title`, `rankCaption`, `effect`, `lockReason`/`lockReasonId` → `aria-describedby`, `actionLabel?`, children = Detailzeilen                        | beide Node-Inspectors, M3-Equip-Panels                |
+| `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                                          | beide Tree-Navs; Roving zusätzlich CharacterSwitcher  |
+| `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; `variant: primary \| ghost \| danger \| ornate` (ornate = 9-Slice-Rahmen, dunkle Glut-Füllung, Gold-Beschriftung); Cursor-Policy | Playback-Buttons, ErrorBoundary-Reload, Enter Dungeon |
+| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                                              | `ConfirmDialog`                                       |
+| `ConfirmDialog`                             | `label`, `title`, `icon?` (Glut-Roundel), `confirmLabel`, `cancelLabel?`, children = Body-Text                                                                           | beide Respec-Dialoge, M3-Confirms                     |
+| `ProgressBar`-Erweiterung                   | `tone: health \| barrier \| xp \| accent`, `labelSize: 'xs' \| 'sm'`, `className` erweitert das Root                                                                     | Combat-Bars, SelectedDungeonPanel                     |
+| `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                                           | ActPanel                                              |
+| `ScreenHeader`                              | `title`, `intro?`, `headingLevel: 'h1' \| 'h2'`, children (Ressourcen-Stände, Aktionen); linksbündiger Titel + Intro                                                     | Dungeons, Crucible, Mastery, Run, Placeholder         |
+| `SectionTitle`                              | `as: 'h2' \| 'h3'`, `align: 'center' \| 'start'`, `id?`                                                                                                                  | Heroes, Combat Log, Enemy-Lanes                       |
+| `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard                          | Crucible-Branch-Graph, Mastery-Tree-Canvas            |
 
 **className-Policy:** `className`-Props erweitern die Klassenliste eines Primitives, sie
 überschreiben keine Property, die das Primitive selbst setzt — Variation läuft über Props
@@ -297,7 +298,10 @@ Dokumentierte, bleibende Abweichungen:
 
 - `min-w-225` des Mastery-Tree-Canvas — Lesbarkeits-Floor, Scroller fängt schmalere Container.
 - `max-w-5xl` des Crucible-Branch-Graphen — Lesbarkeits-Cap der Lane-Graphen.
-- Dungeon-Kachel `h-74 w-40` — gestaltete Kachelgröße.
+- Dungeon-Tore als `<img>`-Illustrationen (`gateArt.ts`) direkt auf dem Screen-Hintergrund —
+  die vier Tor-Varianten liegen als freigestellte Assets vor; Zustände laufen über CSS auf dem
+  Art-Layer. Ein Gold-Pfad mit Status-Medaillons (Raute/Lock/Check) verbindet die Tore zur
+  Akt-Route.
 - `--shadow-glow-ember-inset` — Ember-Identität der Mastery-Tabs.
 - Ornate-Tab-Focus-Offset `-5px` — der Frame-Überhang würde einen Außen-Ring clippen.
 - CharacterSwitcher-Focus-Offset `1px` — der enge Kachelraster lässt keinen 2-px-Außenring zu.

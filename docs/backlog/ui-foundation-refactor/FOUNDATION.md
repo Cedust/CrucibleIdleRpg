@@ -225,7 +225,8 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 | `NodeInspectorPanel`                        | `label`, `medallion`, `title`, `rankCaption`, `effect`, `lockReason`/`lockReasonId` → `aria-describedby`, `actionLabel?`, children = Detailzeilen | beide Node-Inspectors, M3-Equip-Panels               |
 | `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                   | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |
 | `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; Cursor-Policy                                                                                             | Playback-Buttons, ErrorBoundary-Reload               |
-| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                       | beide Respec-Dialoge                                 |
+| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                       | `ConfirmDialog`                                      |
+| `ConfirmDialog`                             | `label`, `title`, `icon?` (Glut-Roundel), `confirmLabel`, `cancelLabel?`, children = Body-Text                                                    | beide Respec-Dialoge, M3-Confirms                    |
 | `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                    | DungeonSelector-Karte, ActPanel                      |
 | `ScreenHeader`                              | `title`, `intro?`, children (Actions)                                                                                                             | Dungeons, Crucible, Mastery, alle M3+-Screens        |
 | `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard   | Crucible-Branch-Graph, Mastery-Tree-Canvas           |
@@ -280,6 +281,8 @@ Dokumentierte, bleibende Abweichungen:
 - Die Sidebar-Navigation behält ihre eigene Selektionssprache (Ornament-Asset, Hairlines);
   ihre Migration auf das State-System liegt außerhalb des UIF-Scopes
   ([DECISIONS D-009](DECISIONS.md#d-009--offene-reste-außerhalb-des-uif-scopes)).
+- Der Leave-Confirm der Run-Statusleiste bleibt ein nicht-modaler Zwei-Schritt (Keep Fighting /
+  Confirm Leave Dungeon) — der Kampf läuft sichtbar weiter, ein Modal würde ihn verdecken.
 
 ## 11. Teststrategie
 

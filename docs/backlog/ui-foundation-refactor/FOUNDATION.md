@@ -99,7 +99,11 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
 @theme {
   /* — Layout (leicht fluid, Muster §2) — */
   --spacing-nav: clamp(18rem, …, 21.375rem); /* Sidebar */
-  --spacing-tab-strip: clamp(4rem, …, 6rem); /* Tab-Leisten der Tree-Screens (Faktor 1,5) */
+  --spacing-tab-strip: clamp(
+    5rem,
+    …,
+    7.5rem
+  ); /* Tab-Leisten der Tree-Screens (Faktor 1,5, D-011) */
   --spacing-inspector: clamp(19rem, …, 22rem); /* Node-Inspector-Spalte */
   --spacing-page-pad: clamp(1.5rem, …, 2rem); /* ScreenLayout-Padding */
   --spacing-medallion: clamp(5rem, …, 6rem); /* Node-Medallion lg */

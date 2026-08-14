@@ -195,3 +195,25 @@ je Task ein Conventional Commit auf `feat/ui-fundament`.
    (Review-Finding des Abschluss-Passes).
 5. **UIF-019 ersetzt die D-009-Verschiebung der Nav-Migration:** Der genehmigte Plan enthielt
    die Migration explizit; D-009 Punkt 1 dokumentiert den erreichten Stand.
+
+## D-011 — Nutzer-Feedback: Neues Tab-Rahmen-Asset, höhengekoppeltes Tab-Chrome
+
+**Problem:** Die Tree-Tabs wirkten zu niedrig, der Rahmen zu dünn, und die Diamant-Endstücke
+saßen vertikal außermittig. Pixel-Messung des alten Assets (2171×724): 52 % des Top-Slice
+waren eingebrannte Transparenz (sichtbare Schiene ~2,5 px bei 16 px border-width), und das
+Mittelband der Slices 260/335 (Mitte 324,5) lag 20 px über der Diamant-Mitte 345 — beim
+vertikalen Strecken rutschte der Diamant-Bauch unter die Tab-Mitte, zunehmend mit der
+Strip-Höhe.
+
+**Entscheidung:** Als Rahmen dient jetzt das frühere Title-Banner-Asset (Prompt §26,
+1536×424). Messwerte: Schienen Zeilen 84–128 und 297–342, Endstücke bis Spalte 368/369,
+Diamant-Spitzen exakt auf y=213, Sicherheitsränder 28 px seitlich / 8 px vertikal. Die
+Slices `132 380 130 380` legen das Mittelband (132–294) symmetrisch um y=213 — die
+Zentrierung gilt für jede Strip-Höhe. Das gesamte Tab-Chrome ist als Asset-Anteil an
+`--spacing-tab-strip` gekoppelt: border-width y=132/424 und x=380/424 (Ecken und Mittelband
+skalieren mit demselben Faktor, der Rahmen bleibt formtreu), Surface-Inset 110/424 und
+235/424, Notch 55/424, Tab-Padding 0,62 (hält den Inhalt in der Öffnung zwischen den
+breiten Endstücken). `--tab-frame-scale` zeigt das gesamte Chrome dünner als die
+natürliche Asset-Skalierung und ist der eine Geschmacks-Regler für die Rahmenstärke
+(Nutzer-Feedback „ein wenig dünner"; Wert nutzergetunt in index.css). `--spacing-tab-strip` wächst auf
+clamp(5rem → 7,5rem). Dieser Eintrag löst die D-006-Clamps und den D-007-Spiegel-Slice ab.

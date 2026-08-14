@@ -103,7 +103,12 @@
    * SLOPE = (MAX − MIN) / 1920, präkomputiert.
    */
   --spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
-  --spacing-tab-strip: clamp(4rem, calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0166667), 6rem);
+  --spacing-tab-strip: clamp(
+    5rem,
+    calc(5rem + (min(100vw, 177.78vh) - 1920px) * 0.0208333),
+    7.5rem
+  );
+  --tab-frame-scale: 0.75; /* Anzeige-Faktor des Tab-Chromes relativ zur natürlichen Asset-Skalierung (D-011) */
   --spacing-inspector: clamp(19rem, calc(19rem + (min(100vw, 177.78vh) - 1920px) * 0.025), 22rem);
   --spacing-page-pad: clamp(
     1.5rem,
@@ -232,36 +237,36 @@
 }
 
 /*
- * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 2171×724-Asset
- * trägt seine Grafik in den Zeilen 184–505 mit ungleichen Transparenzrändern
- * (oben 184 px, unten 219 px); die Goldschienen liegen bei 188–198 und 463–473
- * (per Pixel-Messung). Der asymmetrische Bottom-Slice 335 spiegelt die untere
- * Schiene auf die Position der oberen (~12 px vor der Kante, DECISIONS D-007);
- * die Endstücke bleiben in den äußeren 300 px. Rahmen und Fläche wachsen mit
- * --spacing-tab-strip (64 px → 96 px, Faktor 1,5 bei 4K) nach dem Clamp-Muster
- * aus FOUNDATION §2 (DECISIONS D-006).
+ * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 1536×424-Asset
+ * trägt die Schienen in den Zeilen 84–128 und 297–342, die Endstücke in den
+ * äußeren 380 Spalten (per Pixel-Messung, DECISIONS D-011). Das Mittelband
+ * 132–294 liegt symmetrisch um die Diamant-Mitte y=213 — die Endstücke bleiben
+ * dadurch bei jeder Tab-Höhe vertikal zentriert. Die Border-Breiten sind als
+ * Asset-Anteile (y = 132/424, x = 380/424) an --spacing-tab-strip gekoppelt:
+ * Ecken und Mittelband skalieren mit demselben Faktor, der Rahmen rendert bei
+ * jeder Strip-Höhe formtreu. --tab-frame-scale zeigt das Chrome dünner als die
+ * natürliche Skalierung; er wirkt auf Rahmen, Surface und Padding gemeinsam.
  */
 @utility border-image-tab-ornate {
-  --tab-frame-y: clamp(16px, calc(16px + (min(100vw, 177.78vh) - 1920px) * 0.0041667), 24px);
-  --tab-frame-x: clamp(24px, calc(24px + (min(100vw, 177.78vh) - 1920px) * 0.00625), 36px);
+  --tab-frame-y: calc(var(--spacing-tab-strip) * 0.3113 * var(--tab-frame-scale));
+  --tab-frame-x: calc(var(--spacing-tab-strip) * 0.8962 * var(--tab-frame-scale));
   border-style: solid;
   border-width: var(--tab-frame-y) var(--tab-frame-x);
-  border-image: url('/assets/frames/tab-ornate.png') 260 300 335 300 / var(--tab-frame-y)
+  border-image: url('/assets/frames/tab-ornate.png') 132 380 130 380 / var(--tab-frame-y)
     var(--tab-frame-x) stretch;
 }
 
+/*
+ * Tab-Fläche unter dem Ornamentrahmen. Insets und Notch sind als Asset-Anteile
+ * an --spacing-tab-strip gekoppelt (D-011): Die Längskanten liegen in den
+ * Schienen (Asset-Zeile 110 von 424), die Notch-Spitze fasst 12 Asset-Spalten
+ * hinter die Bracket-Innenkante der Endstücke (Spalte 235, engster Punkt 247
+ * auf Diamant-Höhe), die Notch-Schräge folgt der Bracket-Kurve mit Reserve.
+ */
 .tab-ornate-surface {
-  --tab-surface-inset-y: clamp(
-    0.75rem,
-    calc(0.75rem + (min(100vw, 177.78vh) - 1920px) * 0.003125),
-    1.125rem
-  );
-  --tab-surface-inset-x: clamp(
-    0.5rem,
-    calc(0.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0020833),
-    0.75rem
-  );
-  --tab-surface-notch: clamp(10px, calc(10px + (min(100vw, 177.78vh) - 1920px) * 0.0026042), 15px);
+  --tab-surface-inset-y: calc(var(--spacing-tab-strip) * 0.2594 * var(--tab-frame-scale));
+  --tab-surface-inset-x: calc(var(--spacing-tab-strip) * 0.5542 * var(--tab-frame-scale));
+  --tab-surface-notch: calc(var(--spacing-tab-strip) * 0.1297 * var(--tab-frame-scale));
   position: absolute;
   inset: var(--tab-surface-inset-y) var(--tab-surface-inset-x);
   clip-path: polygon(

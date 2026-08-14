@@ -128,7 +128,7 @@ test('rendert bei 1920×1080 die Clamp-Minima', async ({ page }) => {
   await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Crucible', exact: true })).toBeVisible();
   const tablist = page.getByRole('tablist', { name: 'Trees' });
-  expect(Math.abs((await boxHeight(tablist)) - 64)).toBeLessThanOrEqual(0.5);
+  expect(Math.abs((await boxHeight(tablist)) - 80)).toBeLessThanOrEqual(0.5);
   // Branch-Medaillon md: --spacing-medallion-sm = 4rem am Clamp-Minimum
   const medallion = page.locator('[data-node-medallion="anvil.waystones"]');
   expect(Math.abs((await boxWidth(medallion)) - 64)).toBeLessThanOrEqual(0.5);
@@ -179,7 +179,7 @@ test('erreicht bei 3840×2160 die Clamp-Maxima und cappt die Arena', async ({ pa
 
   await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
   const tablist = page.getByRole('tablist', { name: 'Trees' });
-  expect(Math.abs((await boxHeight(tablist)) - 96)).toBeLessThanOrEqual(0.5);
+  expect(Math.abs((await boxHeight(tablist)) - 120)).toBeLessThanOrEqual(0.5);
   // Branch-Medaillon md: --spacing-medallion-sm = 5rem am Clamp-Maximum
   const medallion = page.locator('[data-node-medallion="anvil.waystones"]');
   expect(Math.abs((await boxWidth(medallion)) - 80)).toBeLessThanOrEqual(0.5);

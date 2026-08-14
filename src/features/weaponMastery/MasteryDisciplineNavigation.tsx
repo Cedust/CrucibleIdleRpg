@@ -58,7 +58,7 @@ export function MasteryDisciplineNavigation({
     >
       <OrnateTabs
         label="Disciplines"
-        className="min-w-200 grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]"
+        className="min-w-branch-cols grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]"
       >
         {MASTERY_TAB_ORDER.map((discipline) => {
           const points = investedPoints(masteryRanks, discipline);

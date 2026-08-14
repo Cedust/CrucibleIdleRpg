@@ -41,7 +41,9 @@ interface OrnateTabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /**
  * Einzelner Tab mit 9-Slice-Ornamentrahmen. Der Focus-Ring liegt mit
  * Offset -5px innen, weil der Frame-Überhang einen Außen-Ring clippen
- * würde (FOUNDATION §10).
+ * würde (FOUNDATION §10). Das horizontale Padding ist an die Strip-Höhe
+ * gekoppelt und hält den Inhalt in der Rahmenöffnung zwischen den breiten
+ * Endstücken (DECISIONS D-011).
  */
 export function OrnateTab({
   selected,
@@ -59,7 +61,7 @@ export function OrnateTab({
       aria-controls={controls}
       {...stateAttrs({ selected })}
       className={cn(
-        'group relative isolate flex min-w-0 cursor-pointer items-center justify-center px-5 text-center font-display text-xs tracking-wide',
+        'group relative isolate flex min-w-0 cursor-pointer items-center justify-center px-[calc(var(--spacing-tab-strip)*0.62*var(--tab-frame-scale))] text-center font-display text-xs tracking-wide',
         transitionState,
         'text-text-muted hover:text-text data-selected:text-accent-strong',
         'focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-[-5px] focus-visible:outline-state-focus',

@@ -11,6 +11,7 @@ import {
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
 import { useSaveStore } from '@/features/save/saveStore';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { CrucibleNodeInspector } from './CrucibleNodeInspector';
 import { CrucibleRespecDialog } from './CrucibleRespecDialog';
@@ -36,7 +37,7 @@ export function CrucibleScreen() {
 
   if (save === null) {
     return (
-      <ScreenLayout background="crucible" className="min-h-full">
+      <ScreenLayout background="crucible">
         <p aria-live="polite" className="text-text-muted">
           Loading crucible…
         </p>
@@ -57,23 +58,22 @@ export function CrucibleScreen() {
     : 'Select a node.';
 
   return (
-    <ScreenLayout background="crucible" className="min-h-full">
-      <section className="@container min-w-0 max-w-384" aria-label="Crucible">
-        <header className="mb-6">
-          <h2 className="font-display text-display-lg text-accent-strong">Crucible</h2>
-          <p className="mt-1 font-intro text-sm leading-6 text-text-muted">
-            Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed
-            from conquered depths can be melted down and forged into new strength.
-          </p>
+    <ScreenLayout background="crucible">
+      <section className="mx-auto w-full min-w-0 max-w-page" aria-label="Crucible">
+        <ScreenHeader
+          title="Crucible"
+          intro="Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed from conquered depths can be melted down and forged into new strength."
+          className="mb-6"
+        >
           <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-text">
             <Stone aria-hidden="true" className="size-4 text-info" />
             {formatRelicShards(save.currencies.relicShards)}
           </p>
-        </header>
+        </ScreenHeader>
 
         <div
           data-testid="crucible-layout"
-          className="grid min-w-0 gap-5 @min-[1200px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1200px]:items-start"
+          className="grid min-w-0 gap-5 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:items-start"
         >
           <div className="min-w-0 @min-[1200px]:col-start-1">
             <CrucibleTreeNavigation

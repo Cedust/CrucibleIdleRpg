@@ -2,7 +2,7 @@
 
 | Feld             | Wert               |
 | ---------------- | ------------------ |
-| **Status**       | `ready`            |
+| **Status**       | `done`             |
 | **Meilenstein**  | UIF                |
 | **Hängt ab von** | 003, 004, 005, 006 |
 

@@ -14,14 +14,19 @@ interface CrucibleBranchGraphProps {
   renderNode: (node: CrucibleNode, slot: CrucibleBranchSlot) => ReactNode;
 }
 
+/**
+ * 8rem-Node-Spalten der Branch-Layouts — bewusst ohne `@theme`-Token
+ * (FOUNDATION §4: lokale TS-Konstante, ein Konsument).
+ */
+const NODE_COLUMNS_GRID =
+  '@min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem]';
+
 const BRANCH_GRID_CLASS: Record<CrucibleBranchLayout, string> = {
   single: 'grid min-w-0 grid-cols-1',
-  chain:
-    'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem] @min-[800px]:gap-y-0',
-  fork: 'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem] @min-[800px]:gap-y-3',
+  chain: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-0`,
+  fork: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-3`,
   parallel: 'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-4 @min-[800px]:gap-y-0',
-  paired:
-    'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem] @min-[800px]:gap-y-5',
+  paired: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-5`,
 };
 
 const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot, string>>> = {

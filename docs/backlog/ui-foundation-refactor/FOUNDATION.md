@@ -215,16 +215,17 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 
 ## 7. Shared Primitives
 
-| Primitive                                   | API (minimal)                                                                     | Konsumenten                                          |
-| ------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                       | alle migrierten Komponenten                          |
-| `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente         | alle migrierten Komponenten                          |
-| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*` | beide Node-Buttons                                   |
-| `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                   | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |
-| `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; Cursor-Policy                             | Playback-Buttons, ErrorBoundary-Reload               |
-| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`       | beide Respec-Dialoge                                 |
-| `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough    | DungeonSelector-Karte, ActPanel                      |
-| `ScreenHeader`                              | `title`, `intro?`, children (Actions)                                             | Dungeons, Crucible, Mastery, alle M3+-Screens        |
+| Primitive                                   | API (minimal)                                                                                                                                   | Konsumenten                                          |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `cn()` (`src/shared/ui/cn.ts`)              | `cn(...parts: Array<string \| false \| null \| undefined>)`                                                                                     | alle migrierten Komponenten                          |
+| `state.ts`                                  | `SemanticState`, `VisualStateProps`, `stateAttrs()`, kanonische Fragmente                                                                       | alle migrierten Komponenten                          |
+| `NodeMedallion` + `RankPips`                | `size: 'md' \| 'lg'`, `invested`, children = Icon; Badge/Ring über `group-data-*`                                                               | beide Node-Buttons                                   |
+| `OrnateTabs`/`OrnateTab` + `useRovingFocus` | Tab: `selected`, `controls`, `surface: ReactNode` (Render-Slot)                                                                                 | beide Tree-Navs; Roving zusätzlich CharacterSwitcher |
+| `Button`-Erweiterung                        | `selected?: boolean` → `data-selected`; Cursor-Policy                                                                                           | Playback-Buttons, ErrorBoundary-Reload               |
+| `Dialog`                                    | natives `<dialog>` + `showModal`; Panel-thin-Chrome, `backdrop:bg-black/70`                                                                     | beide Respec-Dialoge                                 |
+| `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                  | DungeonSelector-Karte, ActPanel                      |
+| `ScreenHeader`                              | `title`, `intro?`, children (Actions)                                                                                                           | Dungeons, Crucible, Mastery, alle M3+-Screens        |
+| `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard | Crucible-Branch-Graph, Mastery-Tree-Canvas           |
 
 Bewusst ohne eigenes Primitive: Panel-State-API (Panel bleibt zustandslose Fläche), generisches
 SelectableTile, Slot-Primitive (Item-Slots kommen mit M3; `semantic="empty"` + Tokens tragen bis

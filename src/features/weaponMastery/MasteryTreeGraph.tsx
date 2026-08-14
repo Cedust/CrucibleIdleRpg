@@ -1,93 +1,24 @@
-import { useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { useMemo, useRef } from 'react';
 import type { MasteryNode } from '@/game/weaponMastery/mastery';
+import { ConnectionLayer } from '@/shared/ui/ConnectionLayer';
 import { Panel } from '@/shared/ui/Panel';
+import { useConnectionPaths, type NodeConnection } from '@/shared/ui/useConnectionPaths';
 import { MasteryNodeButton, type MasteryNodeVisualState } from './MasteryNodeButton';
 import { masteryNodeLane, RANK_PRESENTATION } from './masteryPresentation';
-
-export interface TreeConnection {
-  source: MasteryNode;
-  target: MasteryNode;
-  unlocked: boolean;
-}
-
-function connectionKey(connection: TreeConnection): string {
-  return `${connection.source.id}->${connection.target.id}`;
-}
 
 function treeConnections(
   nodes: readonly MasteryNode[],
   ranks: Readonly<Record<string, number>>,
-): readonly TreeConnection[] {
+): readonly NodeConnection[] {
   const byId = new Map(nodes.map((node) => [node.id, node]));
   return nodes.flatMap((target) =>
     target.prerequisites.flatMap((id) => {
       const source = byId.get(id);
       return source === undefined
         ? []
-        : [{ source, target, unlocked: (ranks[source.id] ?? 0) > 0 }];
+        : [{ sourceId: source.id, targetId: target.id, unlocked: (ranks[source.id] ?? 0) > 0 }];
     }),
   );
-}
-
-function useConnectionPaths(
-  ref: RefObject<HTMLDivElement | null>,
-  connections: readonly TreeConnection[],
-) {
-  const [paths, setPaths] = useState<ReadonlyMap<string, string>>(() => new Map());
-  useLayoutEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-    const update = () => {
-      const root = container.getBoundingClientRect();
-      const anchors = new Map(
-        Array.from(container.querySelectorAll<HTMLElement>('[data-node-medallion]')).flatMap(
-          (element) => {
-            const id = element.dataset.nodeMedallion;
-            const rect = element.getBoundingClientRect();
-            return id === undefined
-              ? []
-              : [
-                  [
-                    id,
-                    {
-                      left: rect.left - root.left,
-                      right: rect.right - root.left,
-                      top: rect.top - root.top,
-                      bottom: rect.bottom - root.top,
-                      x: rect.left - root.left + rect.width / 2,
-                      y: rect.top - root.top + rect.height / 2,
-                    },
-                  ] as const,
-                ];
-          },
-        ),
-      );
-      const next = new Map<string, string>();
-      connections.forEach((connection) => {
-        const source = anchors.get(connection.source.id);
-        const target = anchors.get(connection.target.id);
-        if (!source || !target) return;
-        const middle = (source.right + target.left) / 2;
-        next.set(
-          connectionKey(connection),
-          `M ${source.right} ${source.y} H ${middle} V ${target.y} H ${target.left}`,
-        );
-      });
-      setPaths(next);
-    };
-    update();
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', update);
-      return () => window.removeEventListener('resize', update);
-    }
-    const observer = new ResizeObserver(update);
-    observer.observe(container);
-    Array.from(container.querySelectorAll<HTMLElement>('[data-node-medallion]')).forEach((node) =>
-      observer.observe(node),
-    );
-    return () => observer.disconnect();
-  }, [connections, ref]);
-  return paths;
 }
 
 function nodeState(
@@ -134,24 +65,7 @@ export function MasteryTreeGraph({
             bleibt Block-Element: Seine Höhe folgt dem Inhalt, damit das Connector-SVG
             (absolute inset-0) auch beim internen Scrollen alle Pfade abdeckt. */}
         <div ref={ref} className="relative min-w-225">
-          <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 size-full">
-            {connections.map((connection) => (
-              <path
-                key={connectionKey(connection)}
-                data-connection={connectionKey(connection)}
-                data-state={connection.unlocked ? 'unlocked' : 'locked'}
-                d={paths.get(connectionKey(connection)) ?? ''}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={connection.unlocked ? 2 : 1.5}
-                strokeDasharray={connection.unlocked ? undefined : '3 5'}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
-                className={connection.unlocked ? 'text-accent' : 'text-border'}
-              />
-            ))}
-          </svg>
+          <ConnectionLayer connections={connections} paths={paths} />
           <div className="relative z-10 grid grid-cols-5 gap-4">
             {RANK_PRESENTATION.map((rank) => (
               <section key={rank.id} aria-label={rank.label}>

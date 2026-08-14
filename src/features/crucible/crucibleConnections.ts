@@ -1,16 +1,11 @@
 import type { CrucibleNode, CrucibleRanks } from '@/game/crucible/crucible';
-
-export interface CrucibleConnection {
-  source: CrucibleNode;
-  target: CrucibleNode;
-  unlocked: boolean;
-}
+import type { NodeConnection } from '@/shared/ui/useConnectionPaths';
 
 /** Derives visible edges and their state exclusively from catalog prerequisites. */
 export function crucibleConnections(
   nodes: readonly CrucibleNode[],
   ranks: CrucibleRanks,
-): readonly CrucibleConnection[] {
+): readonly NodeConnection[] {
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
 
   return nodes.flatMap((target) =>
@@ -26,8 +21,8 @@ export function crucibleConnections(
 
       return [
         {
-          source,
-          target,
+          sourceId: source.id,
+          targetId: target.id,
           unlocked: (ranks[source.id] ?? 0) >= requiredRank,
         },
       ];

@@ -1,6 +1,8 @@
-import { useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import type { CrucibleNode, CrucibleRanks } from '@/game/crucible/crucible';
-import { crucibleConnections, type CrucibleConnection } from './crucibleConnections';
+import { ConnectionLayer } from '@/shared/ui/ConnectionLayer';
+import { useConnectionPaths } from '@/shared/ui/useConnectionPaths';
+import { crucibleConnections } from './crucibleConnections';
 import {
   type CrucibleBranchLayout,
   type CrucibleBranchPresentation,
@@ -64,150 +66,6 @@ const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot
   },
 };
 
-interface NodeAnchor {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-  centerX: number;
-  centerY: number;
-}
-
-function rounded(value: number): number {
-  return Math.round(value * 10) / 10;
-}
-
-function anchorFor(rect: DOMRect, containerRect: DOMRect): NodeAnchor {
-  const left = rect.left - containerRect.left;
-  const top = rect.top - containerRect.top;
-
-  return {
-    left,
-    right: left + rect.width,
-    top,
-    bottom: top + rect.height,
-    centerX: left + rect.width / 2,
-    centerY: top + rect.height / 2,
-  };
-}
-
-function connectorPath(source: NodeAnchor, target: NodeAnchor): string {
-  const deltaX = target.centerX - source.centerX;
-  const deltaY = target.centerY - source.centerY;
-
-  if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-    const movesRight = deltaX >= 0;
-    const sourceX = movesRight ? source.right : source.left;
-    const targetX = movesRight ? target.left : target.right;
-    const middleX = (sourceX + targetX) / 2;
-
-    return `M ${rounded(sourceX)} ${rounded(source.centerY)} H ${rounded(middleX)} V ${rounded(
-      target.centerY,
-    )} H ${rounded(targetX)}`;
-  }
-
-  const movesDown = deltaY >= 0;
-  const sourceY = movesDown ? source.bottom : source.top;
-  const targetY = movesDown ? target.top : target.bottom;
-  const middleY = (sourceY + targetY) / 2;
-
-  return `M ${rounded(source.centerX)} ${rounded(sourceY)} V ${rounded(middleY)} H ${rounded(
-    target.centerX,
-  )} V ${rounded(targetY)}`;
-}
-
-function connectionKey(connection: CrucibleConnection): string {
-  return `${connection.source.id}->${connection.target.id}`;
-}
-
-function useMeasuredConnectionPaths(
-  containerRef: RefObject<HTMLDivElement | null>,
-  connections: readonly CrucibleConnection[],
-): ReadonlyMap<string, string> {
-  const [paths, setPaths] = useState<ReadonlyMap<string, string>>(() => new Map());
-
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (container === null) return;
-
-    const medallions = Array.from(container.querySelectorAll<HTMLElement>('[data-node-medallion]'));
-
-    const updatePaths = () => {
-      const containerRect = container.getBoundingClientRect();
-      const anchors = new Map(
-        medallions.flatMap((medallion) => {
-          const nodeId = medallion.dataset.nodeMedallion;
-          return nodeId === undefined
-            ? []
-            : [[nodeId, anchorFor(medallion.getBoundingClientRect(), containerRect)] as const];
-        }),
-      );
-      const nextPaths = new Map<string, string>();
-
-      for (const connection of connections) {
-        const source = anchors.get(connection.source.id);
-        const target = anchors.get(connection.target.id);
-        if (source !== undefined && target !== undefined) {
-          nextPaths.set(connectionKey(connection), connectorPath(source, target));
-        }
-      }
-
-      setPaths((current) => {
-        const isUnchanged =
-          current.size === nextPaths.size &&
-          Array.from(nextPaths).every(([key, path]) => current.get(key) === path);
-        return isUnchanged ? current : nextPaths;
-      });
-    };
-
-    updatePaths();
-
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', updatePaths);
-      return () => window.removeEventListener('resize', updatePaths);
-    }
-
-    const observer = new ResizeObserver(updatePaths);
-    observer.observe(container);
-    medallions.forEach((medallion) => observer.observe(medallion));
-    return () => observer.disconnect();
-  }, [connections, containerRef]);
-
-  return paths;
-}
-
-function BranchConnections({
-  connections,
-  paths,
-}: {
-  connections: readonly CrucibleConnection[];
-  paths: ReadonlyMap<string, string>;
-}) {
-  return (
-    <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 size-full">
-      {connections.map((connection) => {
-        const key = connectionKey(connection);
-        return (
-          <path
-            key={key}
-            d={paths.get(key) ?? ''}
-            data-connection={key}
-            data-state={connection.unlocked ? 'unlocked' : 'locked'}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={connection.unlocked ? 2 : 1.5}
-            strokeDasharray={connection.unlocked ? undefined : '3 5'}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-            className={connection.unlocked ? 'text-accent' : 'text-border'}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
 function CrucibleBranch({
   branch,
   nodesById,
@@ -229,7 +87,7 @@ function CrucibleBranch({
     [branch.nodes, nodesById],
   );
   const connections = useMemo(() => crucibleConnections(branchNodes, ranks), [branchNodes, ranks]);
-  const paths = useMeasuredConnectionPaths(graphRef, connections);
+  const paths = useConnectionPaths(graphRef, connections);
   const headingId = `crucible-branch-${branch.id}`;
 
   return (
@@ -245,7 +103,7 @@ function CrucibleBranch({
         {branch.label}
       </h4>
       <div ref={graphRef} className="relative min-w-0">
-        <BranchConnections connections={connections} paths={paths} />
+        <ConnectionLayer connections={connections} paths={paths} />
         <div className={`relative z-10 ${BRANCH_GRID_CLASS[branch.layout]}`}>
           {branch.nodes.map(({ nodeId, slot }) => {
             const node = nodesById.get(nodeId);

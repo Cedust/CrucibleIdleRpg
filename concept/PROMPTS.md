@@ -1011,6 +1011,118 @@ large curls, excessive spikes, bright solid-gold metal, colored gemstones, separ
 versions, multiple frames in one image, mockup presentation
 ```
 
+## 29. Crucible-Tree-Tab-Icon-Sheet
+
+- **Zielrohdatei:** `concept/ui-draft-2/crucible-tab-icons-sheet.png`
+- **Format:** exakt 2048×512 mit transparentem Hintergrund; unsichtbares 4×1-Raster aus
+  512×512 großen Feldern
+- **Verwendung:** Gemeinsame Produktionsgrundlage für drei stilistisch konsistente
+  Crucible-Tree-Tab-Icons. Das Sheet wird nicht direkt in der Anwendung verwendet.
+- **Kachelreihenfolge:** `Anvil Sparks`, `Smelting Flames`, `Molten Cast`, leeres Feld.
+- **Aufbereitung:** Die drei belegten Felder werden ohne kreative Umgestaltung an den exakten
+  Viertelgrenzen ausgeschnitten und als Alpha-Masken unter `public/assets/icons/crucible/`
+  abgelegt. Jede Glyphe muss deshalb innerhalb einer zentralen 384×384-Sicherheitszone liegen.
+- **Referenz:** Stilfamilie wie das Weapon-Mastery-Sheet (§25,
+  `concept/ui-draft-2/weapon-mastery-tab-icons-sheet.png`) — gleiche Strichstärke,
+  optische Größe und Formensprache, damit beide Icon-Familien in denselben Tabs bestehen.
+
+```text
+Use case: stylized-concept
+Asset type: production icon sheet containing three monochrome alpha-mask glyphs for dark
+fantasy Crucible skill tree tabs
+Primary request: create one internally consistent family of three bold imperial forge
+symbols that remains unmistakable at only 24 to 28 CSS pixels; the symbols will later be
+cut into individual square PNG files and recolored through CSS masks
+Canvas and grid: exact 2048 by 512 pixel transparent canvas, divided conceptually into an
+invisible four-column by one-row grid of exact 512 by 512 pixel cells; do not draw grid
+lines, cell borders, guides, labels, captions, numbers, or tile backgrounds; keep the
+fourth and final right cell completely empty and transparent
+Placement and safe area: center exactly one symbol in each occupied cell; every visible
+pixel of each symbol must remain inside the central 384 by 384 pixel safe area of its
+cell; use the same optical size, line weight, visual density, orientation logic, and
+amount of negative space for all three symbols; symbols must never touch, overlap, or
+extend into neighboring cells
+Fixed left-to-right order and motifs:
+1. first cell — ANVIL SPARKS: one heavy flat-topped blacksmith anvil in strict side view,
+with a broad level working face, one pointed horn, and a compact waisted base; a small
+controlled burst of three to five short spark strokes rises just above the face,
+expressing the first awakening strike without any hammer
+2. second cell — SMELTING FLAMES: one wide shallow smelting vat in strict front view, a
+heavy open crucible basin with a thick reinforced rim, two stubby side lugs or handles,
+and a completely plain smooth body and base without any holes, dots, studs, or rivets;
+three to four bold tongues of flame rise from inside the rim in a calm symmetric
+cluster, expressing contained refining heat rather than wildfire
+3. third cell — MOLTEN CAST: one heavy open casting mould shown from the side, a low
+rectangular mould block resting on the ground in the same strict orthographic side
+elevation as the anvil; above it a compact tilted pouring crucible releases one short
+thick stream of molten metal falling into the open top of the mould, with a small
+controlled splash of two or three round drops at the impact point; the visible long
+side of the mould block carries a clean sword-shaped cavity as a fully transparent
+stencil-like cutout through blade, guard, and grip, the blade lying horizontal with
+the tip toward one end, so the block is unmistakably a sword mould; the block face is
+otherwise completely plain without corner holes, pins, bolts, or rivets; the whole
+glyph expresses liquid metal committed to a decisive new form
+Visual language: one coherent set of ancient imperial dark-fantasy forge glyphs from a
+fallen golden empire, in the same family as the existing Weapon Mastery tab glyphs; bold
+engraved-emblem silhouettes, controlled symmetry where appropriate, strong outer
+contours, only a few large interior cutouts, no delicate filigree, and clear semantic
+separation between all three motifs
+Mask rendering: each glyph is a single fully opaque warm-white shape on true transparent
+alpha; all intended holes and negative spaces are fully transparent; no intentional
+semi-transparent shading inside the glyphs, with partial alpha allowed only for minimal
+clean edge antialiasing; no material color, gradient, texture, lighting, shadow, glow,
+outline halo, ambient occlusion, or background fill
+Readability: design for severe downscaling to 24 to 28 pixels; prefer one dominant
+silhouette and two or three large internal separations over small detail; maintain at
+least a robust medium stroke weight after downscaling
+Constraints: icons only; no medallions, circles around the icons, frames, UI tabs,
+letters, words, readable runes, numbers, characters, hands, hammers, scenery, smoke,
+particles beyond the named sparks and drops, logos, mockup, watermark, checkerboard
+transparency, or visible grid
+Avoid: three unrelated art styles, inconsistent scale, duplicate silhouettes, a lava
+puddle leaking from the mould base, a top-down view of the mould, an upright mould
+slab facing the viewer, corner pin holes, rivet dots, or bolt heads on the mould block
+or the vat, photorealistic objects,
+painterly color, black backgrounds, clipped shapes, thin scratchy lines, busy
+engraving, soft blurry edges, merged neighboring cells, any content in cell four
+```
+
+### Edit-Prompt: Bottich säubern und Gussform neu aufbauen
+
+- **Eingabe:** das bestehende `concept/ui-draft-2/crucible-tab-icons-sheet.png` mit hochladen
+- **Zieldatei:** ersetzt `concept/ui-draft-2/crucible-tab-icons-sheet.png` (gleiche Maße
+  und Rasterung beibehalten)
+- **Zweck:** Der Amboss (Zelle 1) ist abgenommen. Am Bottich (Zelle 2) stören die drei
+  Löcher im Fußband. Die Gussform (Zelle 3) liest sich als von oben betrachtete, flach
+  liegende Platte mit Passstift-Löchern in den Ecken; sie soll stattdessen als liegender
+  Formkasten in Seitenansicht stehen, in den ein gekippter Gießtiegel von oben eingießt,
+  mit der Schwertkavität als schablonenartiger Durchbrechung in der sichtbaren Längsseite.
+
+```text
+Edit this icon sheet of three monochrome alpha-mask glyphs on a transparent 2048 by 512
+canvas with an invisible four-column grid of 512 by 512 pixel cells. Keep the overall
+style, the fully opaque warm-white mask rendering on true transparent alpha, the shared
+optical size, line weight, and safe-area placement, and keep the fourth cell completely
+empty.
+Cell one (anvil with sparks): keep exactly as it is, unchanged.
+Cell two (smelting vat with flames): keep the vat, handles, and flames unchanged; only
+remove the three holes from the band at the base of the vat so the body and base are
+completely plain and smooth.
+Cell three (casting mould): rebuild this glyph. Replace the flat top-down slab with a
+heavy open casting mould shown from the side, in the same strict orthographic side
+elevation as the anvil: a low rectangular mould block resting on the ground, and above
+it a compact tilted pouring crucible releasing one short thick stream of molten metal
+that falls into the open top of the mould, with a small controlled splash of two or
+three round drops at the impact point. The visible long side of the mould block
+carries a clean sword-shaped cavity as a fully transparent stencil-like cutout through
+blade, guard, and grip, the blade lying horizontal with the tip toward one end, so the
+block is unmistakably a sword mould. The block face is otherwise completely plain
+without corner holes, pins, bolts, or rivets. Bold
+engraved-emblem silhouette, strong outer contour, no delicate filigree, readable at 24
+to 28 pixels. No text, frames, grid lines, color, gradients, shadows, glow, or
+watermark anywhere on the sheet.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

@@ -20,7 +20,10 @@ export type IconName =
   | 'crucible-rune-grimoire'
   | 'crucible-talisman'
   | 'crucible-runic-focus'
-  | 'crucible-rune-mastery';
+  | 'crucible-rune-mastery'
+  | 'crucible-tree-anvil'
+  | 'crucible-tree-smelting'
+  | 'crucible-tree-molten';
 type IconSize = 'sm' | 'md' | 'lg' | 'xl';
 
 // Statische Klassen-Strings, damit Tailwind die mask-Utilities beim Scan findet.
@@ -45,6 +48,9 @@ const ICON_MASK_CLASSES: Record<IconName, string> = {
   'crucible-talisman': 'mask-[url(/assets/icons/crucible/crucible-talisman.svg)]',
   'crucible-runic-focus': 'mask-[url(/assets/icons/crucible/crucible-runic-focus.svg)]',
   'crucible-rune-mastery': 'mask-[url(/assets/icons/crucible/crucible-rune-mastery.svg)]',
+  'crucible-tree-anvil': 'mask-[url(/assets/icons/crucible/crucible-tree-anvil.png)]',
+  'crucible-tree-smelting': 'mask-[url(/assets/icons/crucible/crucible-tree-smelting.png)]',
+  'crucible-tree-molten': 'mask-[url(/assets/icons/crucible/crucible-tree-molten.png)]',
 };
 
 const SIZE_CLASSES: Record<IconSize, string> = {

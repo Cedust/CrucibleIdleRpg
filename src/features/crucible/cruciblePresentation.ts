@@ -7,9 +7,9 @@ export interface CrucibleTreePresentation {
 }
 
 export const CRUCIBLE_TREE_PRESENTATION: Record<CrucibleTreeId, CrucibleTreePresentation> = {
-  anvil: { label: 'ANVIL SPARKS', icon: 'crucible-blacksmith' },
-  smelting: { label: 'SMELTING FLAMES', icon: 'crucible-overpower' },
-  molten: { label: 'MOLTEN CAST', icon: 'crucible-rally' },
+  anvil: { label: 'ANVIL SPARKS', icon: 'crucible-tree-anvil' },
+  smelting: { label: 'SMELTING FLAMES', icon: 'crucible-tree-smelting' },
+  molten: { label: 'MOLTEN CAST', icon: 'crucible-tree-molten' },
 };
 
 export type CrucibleNodeId = (typeof CRUCIBLE_IDS)[keyof typeof CRUCIBLE_IDS];

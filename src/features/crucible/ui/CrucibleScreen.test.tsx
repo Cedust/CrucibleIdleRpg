@@ -47,6 +47,9 @@ describe('CrucibleScreen', () => {
     expect(anvilTab.querySelector('[data-ornate-tab-selection]')).toHaveClass(
       'ornate-tab-selection',
     );
+    expect(anvilTab.querySelector('[class*="crucible-tree-anvil.png"]')).toBeInTheDocument();
+    expect(smeltingTab.querySelector('[class*="crucible-tree-smelting.png"]')).toBeInTheDocument();
+    expect(moltenTab.querySelector('[class*="crucible-tree-molten.png"]')).toBeInTheDocument();
     expect(within(trees).queryByRole('tab', { name: 'MASTERWORK' })).not.toBeInTheDocument();
     const crucibleIntro = screen.getByText(
       'Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed from conquered depths can be melted down and forged into new strength.',

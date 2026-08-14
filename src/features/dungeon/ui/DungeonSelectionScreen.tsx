@@ -9,7 +9,7 @@ import {
 import { useSaveStore } from '@/features/save/saveStore';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
-import { ActPanel } from './ActPanel';
+import { ActBanner } from './ActBanner';
 import { DungeonSelector } from './DungeonSelector';
 import { SelectedDungeonPanel } from './SelectedDungeonPanel';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
@@ -47,7 +47,7 @@ export function DungeonSelectionScreen() {
 
   return (
     <ScreenLayout background="ashen-depths">
-      <section className="mx-auto w-full max-w-page-narrow space-y-6">
+      <section className="mx-auto w-full max-w-page-narrow space-y-4">
         <ScreenHeader
           title="Dungeons"
           intro="Descend into the ancient depths, where the ashes of a fallen kingdom conceal a forgotten world."
@@ -59,12 +59,16 @@ export function DungeonSelectionScreen() {
           </p>
         ) : (
           <div className="flex flex-col gap-6 @min-[42rem]:flex-row">
+            {/* Die Banner-Spalte streckt sich auf die Zeilenhöhe; ihre Breite ist
+                --spacing-banner, weil das Banner-Chrome daran skaliert (ActBanner.tsx). */}
             <ul
               aria-label="Acts"
-              className="flex w-full flex-col gap-3 @min-[42rem]:w-64 @min-[42rem]:shrink-0 @min-[42rem]:justify-center"
+              className="flex w-full flex-col items-center @min-[42rem]:w-banner @min-[42rem]:shrink-0 @min-[42rem]:justify-center"
             >
               {ACT_DISPLAY_META.map((act) => (
-                <ActPanel key={act.id} act={act} />
+                // Der Content-Akt ist der gewählte; mit Akt-2-Content wird daraus
+                // selectedActId-State und die Liste eine Radio-Group.
+                <ActBanner key={act.id} act={act} selected={act.id === ACT_1_DISPLAY_META.id} />
               ))}
             </ul>
             <section aria-label={`${ACT_1_DISPLAY_META.label} dungeons`} className="min-w-0 flex-1">

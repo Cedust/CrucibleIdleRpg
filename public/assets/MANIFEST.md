@@ -64,6 +64,7 @@
 | [frames/character-portrait-frame.png](frames/character-portrait-frame.png) | KI-generiert, Prompt: [concept/PROMPTS.md §23](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; natives 2:3-Format statt angefordertem 7:10                                                                                                      |
 | [frames/tab-ornate.png](frames/tab-ornate.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §26](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:2 statt angefordertem 4:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (1536×424); aktuell ungenutzt, dient §26 und §28 als Stilreferenz |
 | [frames/button-ornate.png](frames/button-ornate.png)                       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §28](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:1 statt angefordertem 2:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (2172×423)                                                        |
+| [frames/banner-act.png](frames/banner-act.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §29](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 2:3 (1024×1536) statt angefordertem 3:4; vertikaler 9-Slice-Rahmen der Akt-Banner                                                                   |
 
 ## Ornamente
 

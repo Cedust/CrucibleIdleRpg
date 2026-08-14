@@ -1123,6 +1123,71 @@ to 28 pixels. No text, frames, grid lines, color, gradients, shadows, glow, or
 watermark anywhere on the sheet.
 ```
 
+## 29. Akt-Bannerrahmen (9-Slice, vertikal)
+
+- **Zieldatei:** `public/assets/frames/banner-act.png`
+- **Format:** Hochformat 3:4, mindestens 1152×1536
+- **Verwendung:** Gemeinsamer Rahmen der Akt-Banner in der Dungeon-Auswahl. Ein Asset trägt
+  alle Akte; Akt-Szenerie (`backgrounds/dungeon-*.png`), Label, Name, Schloss-Medaillon,
+  Selektions-Glow und alle Interaktionszustände bleiben Live-UI (CSS).
+- **Technik:** Vollständig transparenter Außenbereich und vollständig transparente
+  Rahmenöffnung, einschließlich des Bereichs innerhalb der unteren Spitze — die
+  CSS-Bildfläche folgt der Spitze über ein `clip-path`-Polygon. Kopfschiene mit Finials
+  vollständig im oberen Viertel, Schwanzspitze vollständig im unteren Viertel; die mittlere
+  Hälfte der linken und rechten Schiene ist gerade, vertikal und detailarm und bildet die
+  vertikal streckbare Mitte. Die Spitze ist ein breiter, flacher Chevron: Ober- und
+  Unterkante werden horizontal gestreckt, und ein flacher Winkel bleibt dabei formtreu.
+  Angezeigt bei ungefähr 230–290 CSS-Pixeln Breite.
+- **Referenzen:** Für Form, Aufhängung und Proportionen
+  `concept/ui-draft-2/ui-dungeon-selection-v5.png`; für Metall, Farbe und Alterung
+  `public/assets/frames/tab-ornate.png` und `public/assets/frames/panel-ornate.png`.
+
+```text
+Use case: stylized-concept
+Asset type: reusable vertical 9-slice ornamental banner frame for a dark fantasy game UI
+Primary request: one hanging imperial banner frame that surrounds a live portrait content area,
+designed to present one act of a game campaign and to stay reusable for several acts and all
+interaction states
+Canvas and transparency: exact 3:4 portrait aspect ratio, at least 1152 by 1536 pixels; true
+transparent alpha outside the ornament and throughout the entire inner opening, including the
+area inside the lower point; preserve a clear transparent safety margin around every outer
+point so the outward-reaching finials stay inside the canvas; do not simulate transparency with
+black, white, or a checkerboard
+Structure: strict left-right symmetry; a tall rectangular banner suspended from a horizontal
+ornamental head rail whose ends resolve into compact finials that reach outward past the
+banner body; bold blackened-iron side rails edged with aged gold run down both long edges; the
+lower end closes as one broad shallow chevron point; small matching studs or points may sit on
+the side rails near the head and near the point; the silhouette should read as the forged
+standard of a fallen golden empire, hanging in a hall
+9-slice requirements: keep all distinctive head-rail and finial construction inside the upper
+quarter of the canvas and all point construction inside the lower quarter; make the middle half
+of the left and right side rails straight, vertical, continuous, and deliberately low-detail so
+it can stretch vertically without visible distortion; keep the horizontal center of the head
+rail and of the lower point calm and low-detail so a modest horizontal scale change stays
+invisible; carry the visual weight of the head in the corners and finials rather than in a
+large centered crest; keep the inner opening broad and unobstructed; no ornament may cross the
+opening
+Frame style: heavy stone-carved imperial metalwork, dark aged brass and blackened iron with
+restrained warm gold highlights (#8a6d3b to #fbbf24), subtle worn edges, and only tiny
+ember-orange reflections (#e25822); noble, martial, and mysterious rather than luxurious
+Composition and readability: front-facing orthographic presentation with no perspective; bold
+continuous rails, large calm shapes, crisp alpha edges, and enough visual weight to remain
+recognizable when the complete banner is only about 260 CSS pixels high; prioritize silhouette
+and material separation over micro-detail
+Lighting and states: neutral canonical metal under controlled warm edge light; no baked glow,
+hover state, focus ring, selection flare, ember rim light, cast shadow, lock, chain, emblem, or
+interior fill because all states, artwork, and surfaces will be rendered separately with CSS
+Rendering style: polished game UI asset, crisp vector-like contours with restrained painterly
+worn-metal texture, matching the project's Gilded Ruins visual language
+Constraints: frame only; no text, letters, readable runes, numbers, cross, sunburst, skull,
+crown, lock, chain, rope, character, scenery, background panel, interior texture, cloth folds,
+fabric weave, particles, flames, lens flare, bloom haze, logo, interface mockup, or watermark
+Avoid: a long needle-like tail, a centered crest that blocks the stretchable middle, thin
+filigree, asymmetry, broken rails, large curls, excessive spikes, bright solid-gold metal,
+colored gemstones, painted cloth banner instead of a metal frame, separate state versions,
+multiple banners in one image, mockup presentation
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

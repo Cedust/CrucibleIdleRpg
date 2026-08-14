@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+
 import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
 import { cn } from '../utils/cn';
 
@@ -78,7 +79,7 @@ export function ScreenLayout({
         ) : null}
         <div
           className={cn(
-            '@container relative flex min-h-0 flex-1 flex-col p-4 sm:p-page-pad',
+            '@container relative flex min-h-0 flex-1 flex-col px-4 py-3 sm:px-page-pad',
             scroll && 'overflow-y-auto',
             contentClassName,
           )}

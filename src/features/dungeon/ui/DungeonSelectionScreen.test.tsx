@@ -29,6 +29,10 @@ describe('DungeonSelectionScreen', () => {
     expect(acts).toHaveLength(3);
     expect(acts[0]).toHaveTextContent(/ACT I\b.*The Ashen Depths/);
     expect(acts[0]).toHaveAttribute('aria-current', 'true');
+    expect(acts[0]).toHaveAttribute('data-selected');
+    expect(acts[0]?.querySelector('.border-image-banner')).toBeInTheDocument();
+    expect(acts[1]).toHaveAttribute('data-semantic', 'locked');
+    expect(acts[2]).toHaveAttribute('data-semantic', 'locked');
     expect(within(acts[1] as HTMLElement).getByText('ACT II')).toBeInTheDocument();
     expect(within(acts[1] as HTMLElement).getByText('The Ember Foundry')).toBeInTheDocument();
     expect(within(acts[2] as HTMLElement).getByText('ACT III')).toBeInTheDocument();

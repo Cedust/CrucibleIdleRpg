@@ -20,7 +20,7 @@ zwischen M2.5 und M3).
 | 5           | [005 — Button-, Dialog- & Tooltip-Härtung](005-button-dialog-tooltip-haertung.md)     | `done`    | 001                |
 | 6           | [006 — Screen: Dungeon Selection](006-screen-dungeon-selection.md)                    | `done`    | 002                |
 | 7           | [007 — Screen: Crucible](007-screen-crucible.md)                                      | `done`    | 003, 004, 005, 006 |
-| 8           | [008 — Screen: Weapon Mastery](008-screen-weapon-mastery.md)                          | `ready`   | 003, 004, 005, 006 |
+| 8           | [008 — Screen: Weapon Mastery](008-screen-weapon-mastery.md)                          | `done`    | 003, 004, 005, 006 |
 | 9           | [009 — Screen: Dungeon Run](009-screen-dungeon-run.md)                                | `ready`   | 002, 005           |
 | 10          | [010 — Ultrawide-Polish & Responsive-E2E](010-ultrawide-polish-und-responsive-e2e.md) | `blocked` | 006, 007, 008, 009 |
 | 11          | [011 — Cleanup & Style-Guide](011-cleanup-und-styleguide.md)                          | `blocked` | 010                |

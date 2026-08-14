@@ -127,10 +127,12 @@ export function MasteryTreeGraph({
       id={`mastery-tree-panel-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-labelledby={`mastery-tab-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-label={`${label} mastery tree`}
-      className="flex min-w-0 flex-col @min-[1280px]:h-full @min-[1280px]:min-h-0"
+      className="flex min-w-0 flex-col @min-[1200px]:h-full @min-[1200px]:min-h-0"
     >
-      <div className="min-h-0 flex-1 overflow-auto p-4 pb-5">
-        <div ref={ref} className="relative min-w-225">
+      <div className="flex min-h-0 flex-1 overflow-auto p-4 pb-5">
+        {/* min-w-225 ist der Lesbarkeits-Floor des Canvas (FOUNDATION §10);
+            m-auto zentriert ihn im Scroll-Panel, schmalere Container scrollen. */}
+        <div ref={ref} className="relative m-auto w-full min-w-225">
           <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 size-full">
             {connections.map((connection) => (
               <path
@@ -151,7 +153,7 @@ export function MasteryTreeGraph({
           </svg>
           <div className="relative z-10 grid grid-cols-5 gap-4">
             {RANK_PRESENTATION.map((rank) => (
-              <section key={rank.id} className="min-h-120" aria-label={rank.label}>
+              <section key={rank.id} aria-label={rank.label}>
                 <header className="mb-5 text-center">
                   <h3 className="font-display text-xs tracking-wide text-accent-strong">
                     {rank.label}

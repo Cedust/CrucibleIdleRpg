@@ -10,6 +10,7 @@ import {
 import { useNavigationStore } from '@/app/navigationStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { MasteryDisciplineNavigation } from './MasteryDisciplineNavigation';
 import { MasteryTreeGraph } from './MasteryTreeGraph';
@@ -63,52 +64,45 @@ export function WeaponMasteryScreen() {
     : 'Select a node.';
 
   return (
-    <ScreenLayout
-      background="weapon-mastery"
-      className="h-full min-h-0"
-      contentClassName="flex min-h-0 flex-1 flex-col"
-    >
+    <ScreenLayout background="weapon-mastery">
       <section
-        className="@container flex min-h-0 min-w-0 max-w-384 flex-1 flex-col"
+        className="mx-auto flex min-h-0 w-full min-w-0 max-w-page flex-1 flex-col"
         aria-label="Weapon Mastery"
       >
         <div className="flex min-h-0 flex-1 flex-col">
-          <header className="mb-2">
-            <div>
-              <h2 className="font-display text-display-lg text-accent-strong">Weapon Mastery</h2>
-              <p className="mt-1 font-intro text-sm leading-6 text-text-muted">
-                Every weapon remembers the battles it has survived. Hone its nature through
-                different disciplines and forge a fighting style worthy of the depths.
-              </p>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <p className="flex items-center gap-1.5 text-sm font-medium text-text">
-                  <span
-                    aria-hidden="true"
-                    className="font-display text-base leading-none text-accent-strong"
-                  >
-                    ✦
-                  </span>
-                  {progression.freeMasteryPoints} {masteryPointLabel}
-                </p>
-                <Button
-                  variant="ghost"
-                  className="shrink-0 px-3 py-1.5 text-sm"
-                  aria-label={`Respec ${label} for ${cost} Gold`}
-                  disabled={refunded === 0 || save.currencies.gold < cost}
-                  onClick={() => setConfirmRespec(true)}
+          <ScreenHeader
+            title="Weapon Mastery"
+            intro="Every weapon remembers the battles it has survived. Hone its nature through different disciplines and forge a fighting style worthy of the depths."
+            className="mb-2"
+          >
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <p className="flex items-center gap-1.5 text-sm font-medium text-text">
+                <span
+                  aria-hidden="true"
+                  className="font-display text-base leading-none text-accent-strong"
                 >
-                  Respec <span aria-hidden="true">&middot;</span> {cost} Gold
-                </Button>
-              </div>
+                  ✦
+                </span>
+                {progression.freeMasteryPoints} {masteryPointLabel}
+              </p>
+              <Button
+                variant="ghost"
+                className="shrink-0 px-3 py-1.5 text-sm"
+                aria-label={`Respec ${label} for ${cost} Gold`}
+                disabled={refunded === 0 || save.currencies.gold < cost}
+                onClick={() => setConfirmRespec(true)}
+              >
+                Respec <span aria-hidden="true">&middot;</span> {cost} Gold
+              </Button>
             </div>
-          </header>
+          </ScreenHeader>
           <MasteryDisciplineNavigation
             activeDiscipline={discipline}
             characterId={characterId}
             masteryRanks={progression.masteryRanks}
             onSelect={selectDiscipline}
           />
-          <div className="grid min-w-0 gap-5 @min-[1280px]:min-h-0 @min-[1280px]:flex-1 @min-[1280px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1280px]:grid-rows-[minmax(0,1fr)]">
+          <div className="grid min-w-0 gap-5 @min-[1200px]:min-h-0 @min-[1200px]:flex-1 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:grid-rows-[minmax(0,1fr)]">
             <MasteryTreeGraph
               nodes={nodes}
               ranks={progression.masteryRanks}
@@ -126,7 +120,7 @@ export function WeaponMasteryScreen() {
               onSelect={setSelectedId}
             />
             {selected ? (
-              <div className="min-w-0 @min-[1280px]:sticky @min-[1280px]:top-5 @min-[1280px]:self-start">
+              <div className="min-w-0 @min-[1200px]:sticky @min-[1200px]:top-5 @min-[1200px]:self-start">
                 <NodeInspector
                   characterId={characterId}
                   node={selected}

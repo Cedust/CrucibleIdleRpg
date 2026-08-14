@@ -146,6 +146,35 @@ test('keeps mastery tab focus ornaments visible and scrolls tall trees within th
   expect(treeMetrics.scrollHeight).toBeGreaterThan(treeMetrics.clientHeight);
 });
 
+test('keeps the ornamental mastery tabs inside their own narrow-screen scroller', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'WEAPON MASTERY', exact: true }).click();
+
+  const navigation = page.getByTestId('mastery-discipline-navigation');
+  const scroller = navigation.locator('.overflow-x-auto');
+  const [documentMetrics, navigationMetrics] = await Promise.all([
+    page.locator('html').evaluate((element) => {
+      const html = element as unknown as { clientWidth: number; scrollWidth: number };
+      return { clientWidth: html.clientWidth, scrollWidth: html.scrollWidth };
+    }),
+    scroller.evaluate((element) => {
+      const tabs = element as unknown as { clientWidth: number; scrollWidth: number };
+      return { clientWidth: tabs.clientWidth, scrollWidth: tabs.scrollWidth };
+    }),
+  ]);
+
+  expect(documentMetrics.scrollWidth).toBeLessThanOrEqual(documentMetrics.clientWidth);
+  expect(navigationMetrics.scrollWidth).toBeGreaterThan(navigationMetrics.clientWidth);
+  await expect(page.getByRole('tab', { name: 'WARHAMMER', exact: true })).toHaveAttribute(
+    'data-state',
+    'active',
+  );
+  await expect(page.locator('[data-mastery-tab-frame]').first()).toBeVisible();
+});
+
 test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({
   page,
 }) => {

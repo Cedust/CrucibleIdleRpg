@@ -120,6 +120,75 @@
 }
 
 /*
+ * Flacher 9-Slice-Rahmen für die fünf Weapon-Mastery-Discipline-Tabs. Das
+ * generierte 2172×724-Asset hält seine Endstücke innerhalb der äußeren 300 px
+ * und die horizontalen Schienen außerhalb der mittleren 204 px. Die kleine
+ * Border-Breite bewahrt bei 64 px Tab-Höhe genügend Raum für Icon und Live-Text.
+ */
+@utility border-image-mastery-tab {
+  border-style: solid;
+  border-width: 16px 24px;
+  border-image: url('/assets/frames/weapon-mastery-discipline-tab.png') 260 300 / 16px 24px stretch;
+}
+
+.mastery-tab-surface {
+  position: absolute;
+  inset: 0.75rem 0.5rem;
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 50%,
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 50%
+  );
+}
+
+.mastery-tab-icon {
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.mastery-tab-icon-warhammer {
+  -webkit-mask-image: url('/assets/icons/mastery/weapon-warhammer.png');
+  mask-image: url('/assets/icons/mastery/weapon-warhammer.png');
+}
+
+.mastery-tab-icon-twin-blades {
+  -webkit-mask-image: url('/assets/icons/mastery/weapon-twin-blades.png');
+  mask-image: url('/assets/icons/mastery/weapon-twin-blades.png');
+}
+
+.mastery-tab-icon-longbow {
+  -webkit-mask-image: url('/assets/icons/mastery/weapon-longbow.png');
+  mask-image: url('/assets/icons/mastery/weapon-longbow.png');
+}
+
+.mastery-tab-icon-finesse {
+  -webkit-mask-image: url('/assets/icons/mastery/discipline-finesse.png');
+  mask-image: url('/assets/icons/mastery/discipline-finesse.png');
+}
+
+.mastery-tab-icon-tempest {
+  -webkit-mask-image: url('/assets/icons/mastery/discipline-tempest.png');
+  mask-image: url('/assets/icons/mastery/discipline-tempest.png');
+}
+
+.mastery-tab-icon-dominance {
+  -webkit-mask-image: url('/assets/icons/mastery/discipline-dominance.png');
+  mask-image: url('/assets/icons/mastery/discipline-dominance.png');
+}
+
+.mastery-tab-icon-valor {
+  -webkit-mask-image: url('/assets/icons/mastery/discipline-valor.png');
+  mask-image: url('/assets/icons/mastery/discipline-valor.png');
+}
+
+/*
  * Schlanker 9-Slice-Rahmen für kleine Panels und Karten (Asset aus
  * concept/PROMPTS.md §7, 1254×1254, Ornamentring im äußeren Sechstel = 209 px).
  * Das Outset legt die Goldlinie (Bandmitte je Seite ~59–67 px vom Asset-Rand,

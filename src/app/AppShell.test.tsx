@@ -68,7 +68,7 @@ describe('AppShell', () => {
     await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
 
     expect(screen.getByRole('heading', { name: 'Weapon Mastery' })).toBeInTheDocument();
-    expect(screen.getByText(/1 Mastery Points available/)).toBeInTheDocument();
+    expect(screen.getByText('1 Mastery Points', { exact: true })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'WARHAMMER' })).toHaveAttribute('aria-selected', 'true');
   });
 

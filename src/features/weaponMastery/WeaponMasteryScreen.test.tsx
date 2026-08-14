@@ -45,6 +45,13 @@ describe('WeaponMasteryScreen', () => {
     expect(await screen.findByText('No Mastery Points available.')).toBeInTheDocument();
   });
 
+  it('groups character level and available Mastery Points in the header', () => {
+    render(<WeaponMasteryScreen />);
+
+    expect(screen.getByText(/Korvin/)).toHaveTextContent('Korvin · Level 1');
+    expect(screen.getByText('1 Mastery Points', { exact: true })).toBeInTheDocument();
+  });
+
   it('supports Discipline keyboard navigation and resets selection on character change', async () => {
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
@@ -59,13 +66,55 @@ describe('WeaponMasteryScreen', () => {
     expect(within(inspector()).getByRole('heading', { name: 'CHC I' })).toBeInTheDocument();
   });
 
+  it('uses the character Weapon icon and fixed Discipline icons with live point labels', () => {
+    saveStore.setState({ data: saveWithInvestment(), status: 'ready' });
+    render(<WeaponMasteryScreen />);
+
+    const weapon = screen.getByRole('tab', { name: 'WARHAMMER' });
+    expect(weapon.querySelector('[data-mastery-tab-icon="weapon-korvin"]')).toBeInTheDocument();
+    expect(
+      screen
+        .getByRole('tab', { name: 'FINESSE [2]' })
+        .querySelector('[data-mastery-tab-icon="discipline-finesse"]'),
+    ).toBeInTheDocument();
+    for (const discipline of ['tempest', 'dominance', 'valor']) {
+      expect(
+        screen
+          .getByRole('tab', { name: discipline.toUpperCase() })
+          .querySelector(`[data-mastery-tab-icon="discipline-${discipline}"]`),
+      ).toBeInTheDocument();
+    }
+
+    act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
+    expect(
+      screen
+        .getByRole('tab', { name: 'TWIN BLADES' })
+        .querySelector('[data-mastery-tab-icon="weapon-rhaya"]'),
+    ).toBeInTheDocument();
+    act(() => useNavigationStore.getState().setActiveCharacterId('quinn'));
+    expect(
+      screen
+        .getByRole('tab', { name: 'LONGBOW' })
+        .querySelector('[data-mastery-tab-icon="weapon-quinn"]'),
+    ).toBeInTheDocument();
+  });
+
+  it('uses full-tab selection surfaces without an outer navigation frame', () => {
+    render(<WeaponMasteryScreen />);
+
+    const navigation = screen.getByTestId('mastery-discipline-navigation');
+    const weapon = screen.getByRole('tab', { name: 'WARHAMMER' });
+    expect(navigation.querySelector('.border-image-tab-ornate')).not.toBeInTheDocument();
+    expect(weapon.querySelector('[data-mastery-tab-surface]')).toHaveClass('mastery-tab-surface');
+  });
+
   it('closes an open respec dialog on character change', async () => {
     saveStore.setState({ data: saveWithInvestment(), status: 'ready' });
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
 
     await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
-    await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
     expect(screen.getByRole('dialog', { name: 'Confirm Discipline Respec' })).toBeInTheDocument();
 
     act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
@@ -80,11 +129,11 @@ describe('WeaponMasteryScreen', () => {
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
     await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
-    await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
     const dialog = screen.getByRole('dialog', { name: 'Confirm Discipline Respec' });
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(saveStore.getState().data?.characters.korvin.masteryRanks['finesse.chc-i']).toBe(2);
-    await user.click(screen.getByRole('button', { name: 'Respec 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
     await user.click(screen.getByRole('button', { name: 'Confirm Respec' }));
     await vi.waitFor(() =>
       expect(saveStore.getState().data?.characters.korvin.masteryRanks).toEqual({}),

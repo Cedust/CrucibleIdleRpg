@@ -708,6 +708,128 @@ transparency shown as checkerboard, baked-in dark backdrop, separate active and 
 versions, multiple frames in one image, mockup presentation
 ```
 
+## 24. Weapon-Mastery-Discipline-Tab-Rahmen (9-Slice)
+
+- **Zieldatei:** `public/assets/frames/weapon-mastery-discipline-tab.png`
+- **Format:** sehr breites Querformat 4:1, mindestens 1600×400
+- **Verwendung:** Ein gemeinsamer skalierbarer Ornamentrahmen für alle fünf Discipline-Tabs der
+  Weapon-Mastery-Ansicht. Icon, Discipline-Name, investierte Punkte, Innenfläche und sämtliche
+  Interaktionszustände bleiben Live-UI.
+- **Technik:** Vollständig transparenter Außenbereich und vollständig transparente
+  Rahmenöffnung. Die seitlichen Endstücke bleiben beim 9-Slice-Skalieren unverändert; lange,
+  gerade und detailarme Abschnitte an Ober- und Unterkante bilden die horizontal streckbare
+  Mitte. Der Rahmen wird bei ungefähr 64 CSS-Pixeln Höhe angezeigt und darf deshalb keine
+  haarfeinen tragenden Linien verwenden.
+- **Referenzen:** Für Form, Proportionen und Segmentierung
+  `concept/ui-draft-2/ui-weapon-mastery-v1.png`; für Metall, Farbe und Alterung
+  `public/assets/frames/panel-ornate.png` und `public/assets/frames/mainview-ornate.png`.
+
+```text
+Use case: stylized-concept
+Asset type: reusable horizontal 9-slice ornamental tab frame for a dark fantasy game UI
+Primary request: one shallow imperial metal frame for a Weapon Mastery discipline tab,
+designed to turn live text and a separately rendered icon into a strong game-style tab while
+remaining reusable for five different labels and interaction states
+Canvas and transparency: exact 4:1 landscape aspect ratio, at least 1600 by 400 pixels; true
+transparent alpha outside the ornament and throughout the entire inner opening; preserve a
+clear transparent safety margin around every outer point; do not simulate transparency with
+black, white, or a checkerboard
+Structure: strict left-right symmetry; a long shallow frame with stepped, slightly clipped
+corners; bold blackened-iron rails edged with aged gold; one restrained diamond or spear-point
+accent centered on each short end; small matching points may project from the top and bottom
+near the end caps; the silhouette should resemble one segment of the Weapon Mastery tab row in
+the reference concept without copying any text or icon from it
+9-slice requirements: keep all distinctive end-cap construction inside the outer left and
+right quarters of the canvas; make the middle half of the top and bottom rails straight,
+horizontal, continuous, and deliberately low-detail so it can stretch without visible
+distortion; keep the inner opening broad and unobstructed; no ornament may cross through the
+center opening
+Frame style: heavy stone-carved imperial metalwork from a fallen golden empire, dark aged
+brass and blackened iron with restrained warm gold highlights (#8a6d3b to #fbbf24), subtle
+worn edges, and only tiny ember-orange reflections (#e25822); noble, martial, and mysterious
+rather than luxurious or decorative
+Composition and readability: front-facing orthographic presentation with no perspective;
+bold continuous rails, large calm shapes, crisp alpha edges, and enough visual weight to remain
+recognizable when the complete frame is only about 64 CSS pixels high; prioritize silhouette
+and material separation over micro-detail
+Lighting and states: neutral canonical metal under controlled warm edge light; no baked active
+glow, hover glow, focus ring, selection flare, cast shadow, or dark interior fill because all
+states and surfaces will be rendered separately with CSS
+Rendering style: polished game UI asset, crisp vector-like contours with restrained painterly
+worn-metal texture, matching the project's Gilded Ruins visual language
+Constraints: frame only; no text, letters, readable runes, numbers, weapon, shield, discipline
+symbol, character, scenery, background panel, interior texture, particles, flames, lens flare,
+bloom haze, logo, interface mockup, or watermark
+Avoid: ornate corner rosettes that consume the shallow opening, thin filigree, asymmetry,
+broken rails, large curls, excessive spikes, bright solid-gold metal, colored gemstones,
+separate active and inactive versions, multiple frames in one image, mockup presentation
+```
+
+## 25. Weapon-Mastery-Tab-Icon-Sheet
+
+- **Zielrohdatei:** `concept/ui-draft-2/weapon-mastery-tab-icons-sheet.png`
+- **Format:** exakt 2048×1024 mit transparentem Hintergrund; unsichtbares 4×2-Raster aus
+  512×512 großen Feldern
+- **Verwendung:** Gemeinsame Produktionsgrundlage für sieben stilistisch konsistente
+  Weapon-Mastery-Tab-Icons. Das Sheet wird nicht direkt in der Anwendung verwendet.
+- **Kachelreihenfolge:** Oben `Warhammer`, `Twin Blades`, `Longbow`, `Finesse`; unten `Tempest`,
+  `Dominance`, `Valor`, leeres Feld.
+- **Aufbereitung:** Die sieben belegten Felder werden ohne kreative Umgestaltung an den exakten
+  Viertelgrenzen ausgeschnitten und als Alpha-Masken unter `public/assets/icons/weapon-mastery/`
+  abgelegt. Jede Glyphe muss deshalb innerhalb einer zentralen 384×384-Sicherheitszone liegen.
+
+```text
+Use case: stylized-concept
+Asset type: production icon sheet containing seven monochrome alpha-mask glyphs for dark
+fantasy Weapon Mastery tabs
+Primary request: create one internally consistent family of seven bold imperial martial
+symbols that replaces generic library icons and remains unmistakable at only 24 to 28 CSS
+pixels; the symbols will later be cut into individual square PNG files and recolored through
+CSS masks
+Canvas and grid: exact 2048 by 1024 pixel transparent canvas, divided conceptually into an
+invisible four-column by two-row grid of exact 512 by 512 pixel cells; do not draw grid lines,
+cell borders, guides, labels, captions, numbers, or tile backgrounds; keep the eighth and final
+bottom-right cell completely empty and transparent
+Placement and safe area: center exactly one symbol in each occupied cell; every visible pixel
+of each symbol must remain inside the central 384 by 384 pixel safe area of its cell; use the
+same optical size, line weight, visual density, orientation logic, and amount of negative space
+for all seven symbols; symbols must never touch, overlap, or extend into neighboring cells
+Fixed row-major order and motifs:
+1. top-left — WARHAMMER: one heavy square-headed warhammer in a compact rising diagonal pose,
+with a short reinforced haft and a broad unmistakable striking head
+2. top-second — TWIN BLADES: two matching slender slightly curved swords crossed in a balanced
+X, with distinct grips and clean gaps between the blades
+3. top-third — LONGBOW: one tall recurved longbow with a clearly nocked arrow, compressed into
+a strong centered silhouette without becoming a generic crossbow
+4. top-right — FINESSE: a precise many-pointed target-star or needle-star impulse with a small
+controlled center and four stronger cardinal points, expressing accuracy and critical mastery
+5. bottom-left — TEMPEST: three parallel aggressive diagonal storm-slashes, tapered and
+slightly offset to imply rapid repeated strikes without resembling three separate swords
+6. bottom-second — DOMINANCE: a compact radial impact burst with a heavy central core and short
+forceful outward fractures, expressing overwhelming area impact rather than fire or sunlight
+7. bottom-third — VALOR: a heraldic shield containing one simple upward-pointing martial
+chevron or blade motif, expressing guarded retaliation and courage without crowns or text
+8. bottom-right — EMPTY: no mark, ornament, placeholder, guide, or residual shadow
+Visual language: one coherent set of ancient imperial dark-fantasy glyphs from a fallen golden
+empire; bold engraved-emblem silhouettes, controlled symmetry where appropriate, strong outer
+contours, only a few large interior cutouts, no delicate filigree, and clear semantic separation
+between all seven motifs
+Mask rendering: each glyph is a single fully opaque warm-white shape on true transparent
+alpha; all intended holes and negative spaces are fully transparent; no intentional
+semi-transparent shading inside the glyphs, with partial alpha allowed only for minimal clean
+edge antialiasing; no material color, gradient, texture, lighting, shadow, glow, outline halo,
+ambient occlusion, or background fill
+Readability: design for severe downscaling to 24 to 28 pixels; prefer one dominant silhouette
+and two or three large internal separations over small detail; maintain at least a robust
+medium stroke weight after downscaling
+Constraints: icons only; no medallions, circles around the icons, frames, UI tabs, letters,
+words, readable runes, numbers, characters, hands, scenery, flames, particles, logos, mockup,
+watermark, checkerboard transparency, or visible grid
+Avoid: seven unrelated art styles, inconsistent scale, duplicate silhouettes, weapon bundles,
+photorealistic objects, painterly color, black backgrounds, clipped shapes, thin scratchy
+lines, busy engraving, soft blurry edges, merged neighboring cells, any content in cell eight
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

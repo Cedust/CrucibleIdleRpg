@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
+import { cn } from './cn';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
 type ScreenBackgroundId = DungeonBackgroundId | 'crucible' | 'weapon-mastery';
@@ -25,13 +26,18 @@ interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
   /** Ohne Angabe rendert der Screen auf der reinen Hintergrundfarbe. */
   background?: ScreenBackgroundId;
   contentClassName?: string;
+  /**
+   * `true` (Default): der Content-Wrapper ist der Scroller des Screens.
+   * `false`: der Screen managt eigene Scroll-Areas (FOUNDATION §1).
+   */
+  scroll?: boolean;
   children: ReactNode;
 }
 
 /**
- * Screen-Primitive mit Hintergrund-Layer und Kontrast-Overlay (DESIGN.md §5).
- * Die Layer leben in einem mitwachsenden inneren Wrapper, damit sie auch dann
- * die volle Inhaltshöhe abdecken, wenn das Root-Element selbst scrollt.
+ * Screen-Primitive mit Hintergrund-Layer und Kontrast-Overlay (DESIGN.md §5)
+ * nach dem Viewport-Contract aus FOUNDATION §1: full-height, `@container`
+ * am Content-Wrapper, Scrollen nur in dafür vorgesehenen Containern.
  * Die Rand-Vignette auf dem Kontrast-Overlay lässt das Bild zur Kante hin in
  * den Grundton auslaufen; der Screen schließt dadurch nahtlos an das Gutter
  * des App-Rahmens an.
@@ -41,11 +47,15 @@ export function ScreenLayout({
   background,
   className = '',
   contentClassName = '',
+  scroll = true,
   children,
   ...props
 }: ScreenLayoutProps) {
   return (
-    <Tag className={`relative isolate flex flex-col bg-background ${className}`} {...props}>
+    <Tag
+      className={cn('relative isolate flex h-full min-h-0 flex-col bg-background', className)}
+      {...props}
+    >
       <div className="relative flex min-h-0 flex-1 flex-col">
         {background !== undefined ? (
           <>
@@ -60,7 +70,15 @@ export function ScreenLayout({
             />
           </>
         ) : null}
-        <div className={`relative p-4 sm:p-6 ${contentClassName}`}>{children}</div>
+        <div
+          className={cn(
+            '@container relative flex min-h-0 flex-1 flex-col p-4 sm:p-page-pad',
+            scroll && 'overflow-y-auto',
+            contentClassName,
+          )}
+        >
+          {children}
+        </div>
       </div>
     </Tag>
   );

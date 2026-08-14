@@ -53,4 +53,29 @@ describe('ScreenLayout', () => {
     );
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });
+
+  it('rendert full-height und scrollt per Default im Content-Wrapper', () => {
+    render(
+      <ScreenLayout as="main">
+        <p>Content</p>
+      </ScreenLayout>,
+    );
+
+    const root = screen.getByRole('main');
+    expect(root).toHaveClass('h-full', 'min-h-0');
+    const contentWrapper = screen.getByText('Content').parentElement;
+    expect(contentWrapper).toHaveClass('@container', 'overflow-y-auto');
+  });
+
+  it('überlässt mit scroll={false} das Scrollen dem Screen', () => {
+    render(
+      <ScreenLayout scroll={false}>
+        <p>Content</p>
+      </ScreenLayout>,
+    );
+
+    const contentWrapper = screen.getByText('Content').parentElement;
+    expect(contentWrapper).toHaveClass('@container');
+    expect(contentWrapper).not.toHaveClass('overflow-y-auto');
+  });
 });

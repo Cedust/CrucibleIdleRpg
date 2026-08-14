@@ -16,7 +16,7 @@ describe('AppShell', () => {
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
-  it('shows sidebar branding, floating resources, and accessible primary navigation outside a run', () => {
+  it('shows sidebar branding and accessible primary navigation outside a run', () => {
     const { container } = render(<AppShell />);
 
     expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
@@ -32,11 +32,6 @@ describe('AppShell', () => {
     expect(
       container.querySelector('img[src="/assets/ornaments/nav-selection.png"]'),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Gold amount')).toHaveTextContent('0');
-    expect(screen.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
-    expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
-    expect(screen.getByLabelText('Cinder amount')).toHaveTextContent('—');
-    expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
   });
 
@@ -105,7 +100,6 @@ describe('AppShell', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
     expect(screen.queryByRole('heading', { name: 'Crucible Idle RPG' })).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Resources')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('navigation', { name: 'Primary navigation' }),
     ).not.toBeInTheDocument();

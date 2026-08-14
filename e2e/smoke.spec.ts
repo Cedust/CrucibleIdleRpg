@@ -26,13 +26,25 @@ async function elementWidth(locator: Locator) {
   return locator.evaluate((element) => (element as unknown as { clientWidth: number }).clientWidth);
 }
 
+async function scrollState(locator: Locator) {
+  return locator.evaluate((element) => {
+    const scrollContainer = element as unknown as {
+      clientWidth: number;
+      scrollWidth: number;
+      clientHeight: number;
+      scrollHeight: number;
+    };
+    return {
+      scrollsX: scrollContainer.scrollWidth > scrollContainer.clientWidth,
+      scrollsY: scrollContainer.scrollHeight > scrollContainer.clientHeight,
+    };
+  });
+}
+
 test('loads the accessible dungeon selection', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeVisible();
-  await expect(page.getByLabel('Resources')).toBeVisible();
-  await expect(page.getByLabel('Relic Shards amount')).toBeVisible();
-  await expect(page.locator('svg.lucide-stone').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'DUNGEONS', exact: true })).toHaveAttribute(
     'aria-current',
     'page',
@@ -299,7 +311,6 @@ test('isolates a dungeon run without sidebar branding or resources', async ({ pa
 
   await expect(page.getByRole('heading', { name: 'The Ashen Depths — Cinder Gate' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Crucible Idle RPG' })).toHaveCount(0);
-  await expect(page.getByLabel('Resources')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'CRUCIBLE', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Resume' })).toBeVisible();
@@ -331,7 +342,25 @@ test('isolates a dungeon run without sidebar branding or resources', async ({ pa
 
   await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
-  await expect(page.getByLabel('Resources')).toBeVisible();
+});
+
+test('keeps dungeon selection and crucible free of document and main scroll', async ({ page }) => {
+  for (const viewport of [
+    { width: 1920, height: 1080 },
+    { width: 1280, height: 720 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
+    expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
+    expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+
+    await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Crucible', exact: true })).toBeVisible();
+    expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
+    expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+  }
 });
 
 test('reload during a run returns to the selection', async ({ page }) => {

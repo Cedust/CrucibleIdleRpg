@@ -1,10 +1,10 @@
 # 006 — Screen: Dungeon Selection
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | UIF       |
-| **Hängt ab von** | 002       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | UIF     |
+| **Hängt ab von** | 002     |
 
 ## Ziel
 

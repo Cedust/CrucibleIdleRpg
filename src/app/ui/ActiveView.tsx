@@ -1,6 +1,7 @@
 import { useNavigationStore, VIEW_LABELS } from '../navigationStore';
 import { CrucibleScreen } from '@/features/crucible/CrucibleScreen';
 import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
+import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
 
 /** Renders the currently selected normal-shell view. */
@@ -16,9 +17,9 @@ export function ActiveView() {
       return <WeaponMasteryScreen />;
     default:
       return (
-        <div className="p-4 sm:p-6">
+        <ScreenLayout>
           <PlaceholderView label={VIEW_LABELS[activeView]} />
-        </div>
+        </ScreenLayout>
       );
   }
 }

@@ -59,7 +59,7 @@ export function CrucibleScreen() {
   return (
     <ScreenLayout background="crucible" className="min-h-full">
       <section className="@container min-w-0 max-w-384" aria-label="Crucible">
-        <header className="mb-6 @min-[900px]:pr-80">
+        <header className="mb-6">
           <h2 className="font-display text-display-lg text-accent-strong">Crucible</h2>
           <p className="mt-1 font-intro text-sm leading-6 text-text-muted">
             Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed

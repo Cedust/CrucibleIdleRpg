@@ -1,7 +1,6 @@
 import { ActiveView } from './ui/ActiveView';
 import { AppSidebar } from './ui/AppSidebar';
 import { DungeonRunScreen } from '@/features/dungeon/ui/DungeonRunScreen';
-import { ResourceDock } from './ui/ResourceDock';
 import { useAppRuntime } from './useAppRuntime';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 
@@ -13,15 +12,14 @@ export function AppShell() {
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-text">
       {runMode === 'run' ? (
-        <div className="border-image-mainview relative flex min-w-0 flex-1 overflow-hidden">
+        <div className="border-image-mainview relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
           <DungeonRunScreen />
         </div>
       ) : (
         <>
           <AppSidebar />
-          <div className="border-image-mainview relative min-w-0 flex-1">
-            <ResourceDock />
-            <main className="h-full overflow-auto">
+          <div className="border-image-mainview relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
+            <main className="min-h-0 flex-1 overflow-hidden">
               <ActiveView />
             </main>
           </div>

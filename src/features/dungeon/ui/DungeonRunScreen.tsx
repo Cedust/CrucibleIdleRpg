@@ -166,7 +166,7 @@ export function DungeonRunScreen() {
 
   if (floorId === null) {
     return (
-      <ScreenLayout as="main" className="min-h-0 flex-1 text-text">
+      <ScreenLayout as="main" scroll={false} className="min-h-0 flex-1 text-text">
         Preparing dungeon run...
       </ScreenLayout>
     );
@@ -179,6 +179,7 @@ export function DungeonRunScreen() {
     <ScreenLayout
       as="main"
       background={dungeonMeta?.backgroundId ?? 'ashen-depths'}
+      scroll={false}
       contentClassName="h-full min-h-0 overflow-hidden"
       className="min-h-0 flex-1 overflow-hidden text-text"
     >

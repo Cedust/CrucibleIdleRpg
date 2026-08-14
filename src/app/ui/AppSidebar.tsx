@@ -24,7 +24,7 @@ const VIEW_ICONS: Record<View, LucideIcon> = {
   'weapon-mastery': Swords,
   blacksmith: Hammer,
   jeweler: Gem,
-  runes: ScrollText,
+  runescribe: ScrollText,
 };
 
 const ACTIVE_NAV_ITEM_CLASS = [

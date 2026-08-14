@@ -23,7 +23,7 @@ Persistenz. Für eine Implementierung wird die direkt betroffene Datei gelesen, 
 | [CHARACTERS.md](CHARACTERS.md)         | Team, Stats, Attribute, Level und Armor                       |
 | [PROGRESSION.md](PROGRESSION.md)       | Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige |
 | [ITEMS.md](ITEMS.md)                   | Items, Loot und Handwerk                                      |
-| [RUNES.md](RUNES.md)                   | Rune Grimoire, Talismane, Rites und Anvil-Sparks-Nodes        |
+| [RUNES.md](RUNES.md)                   | Runescribe, Grimoire, Talismane, Rites und Anvil-Nodes        |
 | [SIMULATION.md](SIMULATION.md)         | Simulation, Playback, Catch-up, Seeds und Reload              |
 | [PERSISTENCE.md](PERSISTENCE.md)       | Speicherzeitpunkte und Save-Inhalt                            |
 

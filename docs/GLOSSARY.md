@@ -159,13 +159,14 @@
 
 ## Runen (Endgame)
 
-| Begriff                         | EN / Code  | Abgrenzung                                                                                        |
-| ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| **Rune**                        | _Rune_     | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse |
-| **Trigger / Effect / Modifier** | —          | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                              |
-| **Rune Grimoire**               | —          | Katalog aller Runen; zugleich Station für **Inscribe** und **Etch**. Kein Bestand, kein Inventar  |
-| **Talisman**                    | _Talisman_ | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**          |
-| **Rite**                        | _Rite_     | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                       |
-| **Runedust**                    | _Runedust_ | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Relic Shard**       |
-| **Inscribe**                    | _Inscribe_ | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                  |
-| **Etch**                        | _Etch_     | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                          |
+| Begriff                         | EN / Code    | Abgrenzung                                                                                                  |
+| ------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Rune**                        | _Rune_       | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse           |
+| **Trigger / Effect / Modifier** | —            | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                                        |
+| **Runescribe**                  | _Runescribe_ | Station/Persona für **Rune Grimoire**, **Talisman/Rites**, **Inscribe** und **Etch**; nicht das Rune-System |
+| **Rune Grimoire**               | —            | Katalog aller Runen; in Runescribe für **Inscribe** und **Etch**. Kein Bestand, kein Inventar               |
+| **Talisman**                    | _Talisman_   | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**                    |
+| **Rite**                        | _Rite_       | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                                 |
+| **Runedust**                    | _Runedust_   | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Relic Shard**                 |
+| **Inscribe**                    | _Inscribe_   | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                            |
+| **Etch**                        | _Etch_       | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                                    |

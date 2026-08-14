@@ -55,10 +55,10 @@ describe('AppShell', () => {
     const user = userEvent.setup();
     render(<AppShell />);
 
-    await user.click(screen.getByRole('button', { name: 'RUNES' }));
+    await user.click(screen.getByRole('button', { name: 'RUNESCRIBE' }));
 
-    expect(screen.getByRole('heading', { name: 'RUNES' })).toBeInTheDocument();
-    expect(useNavigationStore.getState().activeView).toBe('runes');
+    expect(screen.getByRole('heading', { name: 'RUNESCRIBE' })).toBeInTheDocument();
+    expect(useNavigationStore.getState().activeView).toBe('runescribe');
   });
 
   it('opens the weapon mastery tree from navigation', async () => {

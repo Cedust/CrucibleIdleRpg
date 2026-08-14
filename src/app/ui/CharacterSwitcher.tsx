@@ -1,7 +1,9 @@
-import type { KeyboardEvent } from 'react';
 import { Crosshair, Shield, Swords, type LucideIcon } from 'lucide-react';
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
 import type { CharacterId, Role } from '@/game/types';
+import { cn } from '@/shared/ui/cn';
+import { stateAttrs, transitionState } from '@/shared/ui/state';
+import { useRovingFocus } from '@/shared/ui/useRovingFocus';
 
 interface CharacterSwitcherProps {
   activeCharacterId: CharacterId;
@@ -14,37 +16,16 @@ const ROLE_ICON: Record<Role, LucideIcon> = {
   ranged: Crosshair,
 };
 
-function focusCharacter(id: CharacterId) {
-  document.getElementById(`character-switcher-${id}`)?.focus();
-}
-
-function handleCharacterKey(
-  event: KeyboardEvent<HTMLButtonElement>,
-  characterId: CharacterId,
-  onSelect: (id: CharacterId) => void,
-) {
-  const index = TEAM_ORDER.indexOf(characterId);
-  const nextIndex =
-    event.key === 'ArrowRight' || event.key === 'ArrowDown'
-      ? (index + 1) % TEAM_ORDER.length
-      : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
-        ? (index - 1 + TEAM_ORDER.length) % TEAM_ORDER.length
-        : event.key === 'Home'
-          ? 0
-          : event.key === 'End'
-            ? TEAM_ORDER.length - 1
-            : null;
-
-  if (nextIndex === null) return;
-  const nextId = TEAM_ORDER[nextIndex];
-  if (nextId === undefined) return;
-  event.preventDefault();
-  onSelect(nextId);
-  focusCharacter(nextId);
-}
-
 /** Compact, controlled party context for all character-scoped views. */
 export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwitcherProps) {
+  const rovingProps = useRovingFocus({
+    items: TEAM_ORDER,
+    selected: activeCharacterId,
+    onSelect,
+    itemDomId: (characterId) => `character-switcher-${characterId}`,
+    orientation: 'both',
+  });
+
   return (
     <div
       role="radiogroup"
@@ -52,7 +33,7 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
       className="grid grid-cols-3 gap-0.5 overflow-visible rounded-b-md border-x border-b border-border/50 bg-background/85 px-1 pb-1 pt-1.5"
     >
       {TEAM_ORDER.map((characterId) => {
-        const active = characterId === activeCharacterId;
+        const selected = characterId === activeCharacterId;
         const character = CHARACTERS[characterId];
         const RoleIcon = ROLE_ICON[character.role];
 
@@ -62,13 +43,16 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
             id={`character-switcher-${characterId}`}
             type="button"
             role="radio"
-            aria-checked={active}
-            tabIndex={active ? 0 : -1}
+            aria-checked={selected}
+            {...stateAttrs({ selected })}
             onClick={() => onSelect(characterId)}
-            onKeyDown={(event) => handleCharacterKey(event, characterId, onSelect)}
-            className={`group relative h-28 min-h-11 w-[4.667rem] min-w-11 justify-self-center overflow-visible text-center transition-[filter] motion-reduce:transition-none focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
-              active ? 'text-accent-strong' : 'text-text-muted'
-            }`}
+            {...rovingProps(characterId)}
+            className={cn(
+              'group relative h-28 min-h-11 w-[4.667rem] min-w-11 cursor-pointer justify-self-center overflow-visible text-center',
+              transitionState,
+              'text-text-muted data-selected:text-accent-strong',
+              'focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-state-focus',
+            )}
           >
             <span
               aria-hidden="true"
@@ -78,11 +62,14 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
                 src={`/assets/portraits/${characterId}.png`}
                 alt=""
                 data-character-part="portrait"
-                className={`size-full object-cover object-center transition-[filter,opacity] duration-150 motion-reduce:transition-none ${
-                  active
-                    ? 'brightness-100 saturate-100'
-                    : 'opacity-80 brightness-[.55] grayscale saturate-50 group-hover:opacity-95 group-hover:brightness-75 group-hover:grayscale-0 group-focus-visible:opacity-95 group-focus-visible:brightness-75 group-focus-visible:grayscale-0'
-                }`}
+                className={cn(
+                  'size-full object-cover object-center',
+                  transitionState,
+                  'opacity-(--state-deemphasis-weak) brightness-[.55] grayscale saturate-50',
+                  'group-hover:opacity-95 group-hover:brightness-75 group-hover:grayscale-0',
+                  'group-focus-visible:opacity-95 group-focus-visible:brightness-75 group-focus-visible:grayscale-0',
+                  'group-data-selected:opacity-100 group-data-selected:brightness-100 group-data-selected:grayscale-0 group-data-selected:saturate-100',
+                )}
               />
               <span className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-background/90 to-transparent" />
             </span>
@@ -92,19 +79,20 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
               alt=""
               aria-hidden="true"
               data-character-part="frame"
-              className={`pointer-events-none absolute inset-0 z-10 size-full object-fill transition-[filter,opacity] duration-150 motion-reduce:transition-none ${
-                active
-                  ? 'drop-shadow-[0_0_5px_rgba(245,158,11,0.55)]'
-                  : 'opacity-75 brightness-[.65] grayscale group-hover:opacity-90 group-hover:brightness-75 group-hover:grayscale-0 group-focus-visible:opacity-90 group-focus-visible:brightness-75 group-focus-visible:grayscale-0'
-              }`}
+              className={cn(
+                'pointer-events-none absolute inset-0 z-10 size-full object-fill',
+                transitionState,
+                'opacity-(--state-deemphasis-weak) brightness-[.65] grayscale',
+                'group-hover:opacity-90 group-hover:brightness-75 group-hover:grayscale-0',
+                'group-focus-visible:opacity-90 group-focus-visible:brightness-75 group-focus-visible:grayscale-0',
+                'group-data-selected:opacity-100 group-data-selected:brightness-100 group-data-selected:grayscale-0 group-data-selected:drop-shadow-glow-accent',
+              )}
             />
 
             <RoleIcon
               aria-hidden="true"
               data-character-part="role-icon"
-              className={`pointer-events-none absolute left-1/2 top-[5.5%] z-20 size-3.5 -translate-x-1/2 drop-shadow-[0_1px_2px_rgba(2,7,13,0.9)] ${
-                active ? 'text-accent-strong' : 'text-text-muted'
-              }`}
+              className="pointer-events-none absolute left-1/2 top-[5.5%] z-20 size-3.5 -translate-x-1/2 text-text-muted drop-shadow-[0_1px_2px_rgba(2,7,13,0.9)] group-data-selected:text-accent-strong"
             />
 
             <span
@@ -114,7 +102,7 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
               {character.name}
             </span>
 
-            {active ? (
+            {selected ? (
               <span
                 aria-hidden="true"
                 data-character-part="active-marker"

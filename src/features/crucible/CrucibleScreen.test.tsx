@@ -48,9 +48,10 @@ describe('CrucibleScreen', () => {
     expect(moltenTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
       'bg-[url(/assets/backgrounds/crucible-tab-molten-cast.png)]',
     );
-    expect(anvilTab).toHaveAttribute('data-state', 'active');
-    expect(smeltingTab).toHaveAttribute('data-state', 'inactive');
-    expect(moltenTab).toHaveAttribute('data-state', 'inactive');
+    expect(anvilTab).toHaveAttribute('data-selected');
+    expect(anvilTab).toHaveAttribute('aria-selected', 'true');
+    expect(smeltingTab).not.toHaveAttribute('data-selected');
+    expect(moltenTab).not.toHaveAttribute('data-selected');
     expect(anvilTab.querySelector('[data-ornate-tab-frame]')).toHaveClass(
       'border-image-tab-ornate',
     );

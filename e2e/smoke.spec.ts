@@ -181,8 +181,8 @@ test('keeps the ornamental mastery tabs inside their own narrow-screen scroller'
   expect(documentMetrics.scrollWidth).toBeLessThanOrEqual(documentMetrics.clientWidth);
   expect(navigationMetrics.scrollWidth).toBeGreaterThan(navigationMetrics.clientWidth);
   await expect(page.getByRole('tab', { name: 'WARHAMMER', exact: true })).toHaveAttribute(
-    'data-state',
-    'active',
+    'data-selected',
+    '',
   );
   await expect(page.locator('[data-ornate-tab-frame]').first()).toBeVisible();
 });

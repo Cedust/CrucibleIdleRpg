@@ -42,7 +42,7 @@ export function CrucibleTreeNavigation({ activeTree, onSelect }: CrucibleTreeNav
           role="tablist"
           aria-label="Trees"
           aria-orientation="horizontal"
-          className="grid h-16 min-w-168 grid-cols-3 gap-1"
+          className="grid h-16 min-w-2xl grid-cols-3 gap-1"
         >
           {CRUCIBLE_TREES.map((tree) => {
             const presentation = CRUCIBLE_TREE_PRESENTATION[tree];

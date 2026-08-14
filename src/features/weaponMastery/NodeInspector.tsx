@@ -1,7 +1,5 @@
 import { minimumLevel, nodeById, type MasteryNode } from '@/game/weaponMastery/mastery';
-import { Button } from '@/shared/ui/Button';
-import { Panel } from '@/shared/ui/Panel';
-import { RankPips } from '@/shared/ui/NodeMedallion';
+import { NodeInspectorPanel } from '@/shared/ui/NodeInspectorPanel';
 import { MasteryNodeIcon } from './MasteryNodeIcon';
 
 interface NodeInspectorProps {
@@ -23,71 +21,41 @@ export function NodeInspector({
   const prerequisiteText = node.prerequisites.length
     ? node.prerequisites.map((id) => nodeById(characterId, id)?.name ?? id).join(' or ')
     : 'None';
+  const nextRank = rank < node.maxRank ? ` · Next rank ${rank + 1}` : '';
+
   return (
-    <Panel
-      as="aside"
-      variant="thin"
-      padding="none"
-      className="min-w-0"
-      aria-label="Mastery node inspector"
+    <NodeInspectorPanel
+      label="Mastery node inspector"
+      medallion={<MasteryNodeIcon node={node} className="size-11" />}
+      title={node.name}
+      rankCaption={`Rank ${rank} / ${node.maxRank}${nextRank}`}
+      rank={rank}
+      maxRank={node.maxRank}
+      effect={node.effect}
+      lockReason={lockReason}
+      lockReasonId="mastery-lock-reason"
+      onAction={onInvest}
     >
-      <div className="p-5">
-        <div className="flex flex-col items-center text-center">
-          <span className="flex size-20 items-center justify-center rounded-full border-2 border-ornament bg-ember/10 text-ember-bright shadow-glow-accent">
-            <MasteryNodeIcon node={node} className="size-11" />
-          </span>
-          <h3 className="mt-3 font-display text-display text-accent-strong">{node.name}</h3>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
-            Rank {rank} / {node.maxRank}
-            {rank < node.maxRank ? ` · Next rank ${rank + 1}` : ''}
-          </p>
-          <div className="mt-2">
-            <RankPips rank={rank} maxRank={node.maxRank} />
-          </div>
+      <dl className="mt-4 space-y-3 text-sm">
+        <div>
+          <dt className="text-xs font-semibold uppercase tracking-wide text-accent">Requires</dt>
+          <dd className="mt-1 text-text">
+            Level {minimumLevel(node)}; {prerequisiteText}
+          </dd>
         </div>
-        <p className="mt-5 border-y border-border/70 py-4 text-sm leading-6 text-text-muted">
-          {node.effect}
+        <div>
+          <dt className="text-xs font-semibold uppercase tracking-wide text-accent">Cost</dt>
+          <dd className="mt-1 text-text">1 Mastery Point</dd>
+        </div>
+      </dl>
+      {node.exclusiveWith ? (
+        <p className="mt-3 text-sm text-text-muted">Choose one Master path.</p>
+      ) : null}
+      {node.sharedCapstone ? (
+        <p className="mt-3 text-sm text-text-muted">
+          Only one shared Discipline Capstone may be active.
         </p>
-        <dl className="mt-4 space-y-2 text-sm">
-          <div>
-            <dt className="inline text-text-muted">Rank: </dt>
-            <dd className="inline">
-              {rank}/{node.maxRank}
-            </dd>
-          </div>
-          <div>
-            <dt className="inline text-text-muted">Requires: </dt>
-            <dd className="inline">
-              Level {minimumLevel(node)}; {prerequisiteText}
-            </dd>
-          </div>
-          <div>
-            <dt className="inline text-text-muted">Cost: </dt>
-            <dd className="inline">1 Mastery Point</dd>
-          </div>
-        </dl>
-        {node.exclusiveWith ? (
-          <p className="mt-3 text-sm text-text-muted">Choose one Master path.</p>
-        ) : null}
-        {node.sharedCapstone ? (
-          <p className="mt-3 text-sm text-text-muted">
-            Only one shared Discipline Capstone may be active.
-          </p>
-        ) : null}
-        {lockReason !== null && (
-          <p id="mastery-lock-reason" className="mt-3 text-sm text-warning">
-            {lockReason}
-          </p>
-        )}
-        <Button
-          className="mt-4 w-full"
-          disabled={lockReason !== null}
-          aria-describedby={lockReason !== null ? 'mastery-lock-reason' : undefined}
-          onClick={onInvest}
-        >
-          Invest
-        </Button>
-      </div>
-    </Panel>
+      ) : null}
+    </NodeInspectorPanel>
   );
 }

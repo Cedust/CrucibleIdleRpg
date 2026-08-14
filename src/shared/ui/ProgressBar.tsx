@@ -87,10 +87,16 @@ export function ProgressBar({
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={safeValue}
-        className={`${SIZE_CLASSES[size]} overflow-hidden rounded-full bg-background ring-1 ring-inset ring-border/60`}
+        className={cn(
+          SIZE_CLASSES[size],
+          'overflow-hidden rounded-full bg-background ring-1 ring-inset ring-border/60',
+        )}
       >
         <div
-          className={`h-full rounded-full bg-linear-to-r transition-[width] motion-reduce:transition-none ${TONE_CLASSES[tone]}`}
+          className={cn(
+            'h-full rounded-full bg-linear-to-r transition-[width] motion-reduce:transition-none',
+            TONE_CLASSES[tone],
+          )}
           style={{ width: `${percentage(safeValue, max)}%` }}
         />
       </div>

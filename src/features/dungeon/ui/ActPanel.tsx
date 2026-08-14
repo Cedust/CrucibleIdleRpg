@@ -1,4 +1,5 @@
 import type { ActDisplayMeta } from '@/game/encounters/actMeta';
+import { cn } from '@/shared/ui/cn';
 import { FramedCard } from '@/shared/ui/FramedCard';
 import { DUNGEON_BACKGROUND_CLASSES } from './dungeonBackgrounds';
 import { Lock } from 'lucide-react';
@@ -28,7 +29,10 @@ export function ActPanel({ act }: ActPanelProps) {
         {/* Whitespace-Textknoten trennen Label, Name und Status im Textinhalt des Panels. */}
         <div className="flex items-center justify-between gap-3">
           <p
-            className={`font-display text-display ${act.hasContent ? 'text-accent-strong' : 'text-text'}`}
+            className={cn(
+              'font-display text-display',
+              act.hasContent ? 'text-accent-strong' : 'text-text',
+            )}
           >
             {act.label}
           </p>

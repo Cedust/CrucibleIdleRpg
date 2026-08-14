@@ -1,4 +1,5 @@
 import { useId, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { cn } from './cn';
 
 export interface TooltipTriggerProps {
   'aria-describedby': string;
@@ -44,7 +45,7 @@ export function Tooltip({ content, children, className = '', align = 'center' }:
 
   return (
     <span
-      className={`relative inline-flex ${className}`}
+      className={cn('relative inline-flex', className)}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
@@ -52,9 +53,11 @@ export function Tooltip({ content, children, className = '', align = 'center' }:
       <span
         role="tooltip"
         id={id}
-        className={`pointer-events-none absolute bottom-full z-10 mb-2 w-max max-w-56 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity motion-reduce:transition-none ${ALIGN_CLASS[align]} ${
-          open ? 'visible opacity-100' : 'invisible opacity-0'
-        }`}
+        className={cn(
+          'pointer-events-none absolute bottom-full z-10 mb-2 w-max max-w-56 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity motion-reduce:transition-none',
+          ALIGN_CLASS[align],
+          open ? 'visible opacity-100' : 'invisible opacity-0',
+        )}
       >
         {content}
       </span>

@@ -1,5 +1,6 @@
 import { useMemo, useRef, type ReactNode } from 'react';
 import type { CrucibleNode, CrucibleRanks } from '@/game/crucible/crucible';
+import { cn } from '@/shared/ui/cn';
 import { ConnectionLayer } from '@/shared/ui/ConnectionLayer';
 import { useConnectionPaths } from '@/shared/ui/useConnectionPaths';
 import { crucibleConnections } from './crucibleConnections';
@@ -104,7 +105,7 @@ function CrucibleBranch({
       </h4>
       <div ref={graphRef} className="relative min-w-0">
         <ConnectionLayer connections={connections} paths={paths} />
-        <div className={`relative z-10 ${BRANCH_GRID_CLASS[branch.layout]}`}>
+        <div className={cn('relative z-10', BRANCH_GRID_CLASS[branch.layout])}>
           {branch.nodes.map(({ nodeId, slot }) => {
             const node = nodesById.get(nodeId);
             if (node === undefined) return null;

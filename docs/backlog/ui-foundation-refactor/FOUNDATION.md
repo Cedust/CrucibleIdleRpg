@@ -158,6 +158,8 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
 
 Der `--container-*`-Namespace trägt zwei Rollen: Screen-Caps (`max-w-*`) und
 Container-Query-Stützstellen (`@tree-cols:`, `@branch-cols:`), unterschieden über den Namen.
+Das `min-w-200` der Mastery-Tab-Leiste bleibt numerisch — ein eigenständiger Lesbarkeits-Floor,
+der nur zufällig wertgleich mit `--container-branch-cols` ist.
 Schwarz-Literale bleiben Scrims und Schatten vorbehalten (`backdrop:bg-black/70` des Dialogs,
 `--drop-shadow-text-contrast`); alle anderen Farben laufen über Palette-Tokens.
 
@@ -240,6 +242,11 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 | `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                    | DungeonSelector-Karte, ActPanel                      |
 | `ScreenHeader`                              | `title`, `intro?`, children (Actions)                                                                                                             | Dungeons, Crucible, Mastery, alle M3+-Screens        |
 | `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard   | Crucible-Branch-Graph, Mastery-Tree-Canvas           |
+
+**className-Policy:** `className`-Props erweitern die Klassenliste eines Primitives, sie
+überschreiben keine Property, die das Primitive selbst setzt — Variation läuft über Props
+(`cn()` hat bewusst keine Merge-Logik, Grundsatzentscheidung 3). Alle Klassenkompositionen
+laufen über `cn()`; Template-Literale sind Combat-UI-Bestand bis zu dessen Konsolidierung.
 
 Bewusst ohne eigenes Primitive: Panel-State-API (Panel bleibt zustandslose Fläche), generisches
 SelectableTile, Slot-Primitive (Item-Slots kommen mit M3; `semantic="empty"` + Tokens tragen bis

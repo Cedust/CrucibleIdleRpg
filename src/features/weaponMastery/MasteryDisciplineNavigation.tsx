@@ -88,7 +88,10 @@ export function MasteryDisciplineNavigation({
               <span
                 aria-hidden="true"
                 data-mastery-tab-icon={iconName(discipline, characterId)}
-                className={`mastery-tab-icon relative z-20 size-7 shrink-0 bg-current ${iconClass(discipline, characterId)}`}
+                className={cn(
+                  'mastery-tab-icon relative z-20 size-7 shrink-0 bg-current',
+                  iconClass(discipline, characterId),
+                )}
               />
               <span className="relative z-20 truncate drop-shadow-text-contrast">
                 {disciplineLabel(discipline, characterId)}

@@ -62,11 +62,17 @@ export function ScreenLayout({
             <div
               aria-hidden="true"
               data-screen-background={background}
-              className={`absolute inset-0 -z-10 bg-cover bg-position-[center_bottom] ${BACKGROUND_CLASSES[background]}`}
+              className={cn(
+                'absolute inset-0 -z-10 bg-cover bg-position-[center_bottom]',
+                BACKGROUND_CLASSES[background],
+              )}
             />
             <div
               aria-hidden="true"
-              className={`absolute inset-0 -z-10 shadow-[inset_0_0_32px_12px_var(--color-background)] ${BACKGROUND_OVERLAY_CLASSES[background]}`}
+              className={cn(
+                'absolute inset-0 -z-10 shadow-[inset_0_0_32px_12px_var(--color-background)]',
+                BACKGROUND_OVERLAY_CLASSES[background],
+              )}
             />
           </>
         ) : null}

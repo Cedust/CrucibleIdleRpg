@@ -26,7 +26,7 @@ export function NodeInspector({
   return (
     <NodeInspectorPanel
       label="Mastery node inspector"
-      medallion={<MasteryNodeIcon node={node} className="size-11" />}
+      medallion={<MasteryNodeIcon node={node} size="lg" />}
       title={node.name}
       rankCaption={`Rank ${rank} / ${node.maxRank}${nextRank}`}
       rank={rank}

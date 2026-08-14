@@ -1,3 +1,5 @@
+import { cn } from './cn';
+
 export type IconName =
   | 'crucible-waystones'
   | 'crucible-armory'
@@ -71,7 +73,12 @@ export function Icon({ name, size = 'md', label, className = 'bg-current' }: Ico
       role={label === undefined ? undefined : 'img'}
       aria-label={label}
       aria-hidden={label === undefined ? 'true' : undefined}
-      className={`inline-block shrink-0 mask-center mask-contain mask-no-repeat ${SIZE_CLASSES[size]} ${ICON_MASK_CLASSES[name]} ${className}`}
+      className={cn(
+        'inline-block shrink-0 mask-center mask-contain mask-no-repeat',
+        SIZE_CLASSES[size],
+        ICON_MASK_CLASSES[name],
+        className,
+      )}
     />
   );
 }

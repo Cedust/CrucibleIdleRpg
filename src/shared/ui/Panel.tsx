@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { cn } from './cn';
 
 type PanelElement = 'div' | 'section' | 'article' | 'aside' | 'footer';
 type PanelVariant = 'ornate' | 'thin' | 'plain';
@@ -35,14 +36,11 @@ export function Panel({
   const overlayClass = variant === 'thin' ? 'border-image-thin' : null;
 
   return (
-    <Tag
-      className={`${VARIANT_CLASSES[variant]} ${PADDING_CLASSES[padding]} ${className}`}
-      {...props}
-    >
+    <Tag className={cn(VARIANT_CLASSES[variant], PADDING_CLASSES[padding], className)} {...props}>
       {overlayClass !== null ? (
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 z-20 ${overlayClass}`}
+          className={cn('pointer-events-none absolute inset-0 z-20', overlayClass)}
         />
       ) : null}
       {children}

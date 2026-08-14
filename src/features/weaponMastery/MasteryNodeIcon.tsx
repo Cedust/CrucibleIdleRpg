@@ -61,14 +61,17 @@ function iconFor(node: MasteryNode): LucideIcon {
 /** Semantically distinct glyphs for compact Mastery medallions. */
 export function MasteryNodeIcon({
   node,
-  className = '',
+  size = 'md',
 }: {
   node: MasteryNode;
-  className?: string;
+  /** `md` = Medaillon-Glyphe, `lg` = Inspector-Roundel. */
+  size?: 'md' | 'lg';
 }) {
-  return <MasteryGlyph glyph={iconFor(node)} className={className} />;
+  return <MasteryGlyph glyph={iconFor(node)} size={size} />;
 }
 
-function MasteryGlyph({ glyph: Glyph, className }: { glyph: LucideIcon; className: string }) {
-  return <Glyph aria-hidden="true" className={`size-8 ${className}`} strokeWidth={1.8} />;
+function MasteryGlyph({ glyph: Glyph, size }: { glyph: LucideIcon; size: 'md' | 'lg' }) {
+  return (
+    <Glyph aria-hidden="true" className={size === 'lg' ? 'size-11' : 'size-8'} strokeWidth={1.8} />
+  );
 }

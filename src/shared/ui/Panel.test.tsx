@@ -37,7 +37,7 @@ describe('Panel', () => {
         Plain
       </Panel>,
     );
-    expect(panel).toHaveClass('border-border');
+    expect(panel).toHaveClass('rounded-lg', 'border-border', 'bg-surface/90', 'shadow-panel');
     expect(panel).not.toHaveClass('border-image-ornate', 'p-4');
     expect(panel.querySelector('.border-image-thin')).not.toBeInTheDocument();
   });

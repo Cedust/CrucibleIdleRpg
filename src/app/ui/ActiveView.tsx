@@ -1,6 +1,7 @@
 import { useNavigationStore, VIEW_LABELS } from '../navigationStore';
 import { CrucibleScreen } from '@/features/crucible/CrucibleScreen';
 import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
 
@@ -27,7 +28,7 @@ export function ActiveView() {
 function PlaceholderView({ label }: { label: string }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold">{label}</h2>
+      <ScreenHeader title={label} />
       <p className="mt-2 text-text-muted">Coming soon.</p>
     </section>
   );

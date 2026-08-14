@@ -1,4 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { cn } from '@/shared/ui/cn';
+import { Panel } from '@/shared/ui/Panel';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import type { CombatEvent } from '@/features/combat/engine/combatEvents';
 import type { ActorRef, CombatState } from '@/features/combat/engine/combatState';
@@ -111,13 +114,12 @@ export function CombatLog({ className = '', heading = 'Combat Log' }: CombatLogP
   };
 
   return (
-    <section aria-label="Combat Log" className={`flex min-h-0 flex-col ${className}`}>
-      <h2 className="mb-3 text-center font-display text-display-sm text-accent-strong">
-        {heading}
-      </h2>
-      <div
+    <section aria-label="Combat Log" className={cn('flex min-h-0 flex-col', className)}>
+      <SectionTitle className="mb-3">{heading}</SectionTitle>
+      <Panel
+        variant="plain"
         data-testid="combat-log-panel"
-        className="flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-surface/90 p-4 shadow-panel"
+        className="flex min-h-0 flex-1 flex-col"
       >
         {ticks.length === 0 ? (
           <p className="text-sm text-text-muted">No turns resolved yet.</p>
@@ -147,7 +149,7 @@ export function CombatLog({ className = '', heading = 'Combat Log' }: CombatLogP
             </li>
           ))}
         </ol>
-      </div>
+      </Panel>
     </section>
   );
 }

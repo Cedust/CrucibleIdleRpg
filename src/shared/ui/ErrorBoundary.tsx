@@ -33,7 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.hasError) {
       return (
         <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-8 text-center">
-          <h1 className="text-2xl font-bold text-danger">Something went wrong</h1>
+          <h1 className="font-display text-display-lg text-danger">Something went wrong</h1>
           <p className="text-text-muted">
             The game ran into an unexpected error. Try reloading the page.
           </p>

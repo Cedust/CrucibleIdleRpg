@@ -240,13 +240,19 @@ Nicht-interaktive Elemente (z. B. ActPanel) tragen weder Hover-Affordance noch S
 | `ConfirmDialog`                             | `label`, `title`, `icon?` (Glut-Roundel), `confirmLabel`, `cancelLabel?`, children = Body-Text                                                    | beide Respec-Dialoge, M3-Confirms                    |
 | `ProgressBar`-Erweiterung                   | `tone: health \| barrier \| xp \| accent`, `labelSize: 'xs' \| 'sm'`, `className` erweitert das Root                                              | Combat-Bars, SelectedDungeonPanel                    |
 | `FramedCard`                                | Layer-Stack Art/Scrim/9-Slice-Frame mit §6-Opacities; `stateAttrs`-Passthrough                                                                    | DungeonSelector-Karte, ActPanel                      |
-| `ScreenHeader`                              | `title`, `intro?`, children (Actions)                                                                                                             | Dungeons, Crucible, Mastery, alle M3+-Screens        |
+| `ScreenHeader`                              | `title`, `intro?`, `headingLevel: 'h1' \| 'h2'`, children (Actions)                                                                               | Dungeons, Crucible, Mastery, Run, Placeholder        |
+| `SectionTitle`                              | `as: 'h2' \| 'h3'`, `align: 'center' \| 'start'`, `id?`                                                                                           | Heroes, Combat Log, Enemy-Lanes                      |
 | `useConnectionPaths` + `ConnectionLayer`    | `NodeConnection { sourceId, targetId, unlocked }`, `connectionKey()`; misst `[data-node-medallion]`-Anker, orthogonale Pfade, Gleichheits-Guard   | Crucible-Branch-Graph, Mastery-Tree-Canvas           |
 
 **className-Policy:** `className`-Props erweitern die Klassenliste eines Primitives, sie
 überschreiben keine Property, die das Primitive selbst setzt — Variation läuft über Props
 (`cn()` hat bewusst keine Merge-Logik, Grundsatzentscheidung 3). Alle Klassenkompositionen
-laufen über `cn()`; Template-Literale sind Combat-UI-Bestand bis zu dessen Konsolidierung.
+laufen über `cn()`.
+
+**Panel-Flächen:** `ornate` = große Screen-Panels, `thin` = Karten/Inspectors/Bars,
+`plain` = ruhige Log-Fläche (`rounded-lg border-border bg-surface/90 shadow-panel`). Das
+Padding folgt der Rolle: `p-5` Dialoge/Inspectors, `p-4` Default, `p-3`/`p-2` kompakte
+Karten und Slots, `px-4 py-3` Leisten — eine bewusste Rhythmus-Skala, kein Drift.
 
 Bewusst ohne eigenes Primitive: Panel-State-API (Panel bleibt zustandslose Fläche), generisches
 SelectableTile, Slot-Primitive (Item-Slots kommen mit M3; `semantic="empty"` + Tokens tragen bis

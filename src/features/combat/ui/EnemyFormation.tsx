@@ -1,6 +1,8 @@
 import { CombatPortrait } from './CombatPortrait';
+import { cn } from '@/shared/ui/cn';
 import { Panel } from '@/shared/ui/Panel';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
 import { stateAttrs } from '@/shared/ui/state';
 import { bulwarkDamageFactor } from '@/features/combat/engine/bulwark';
 import { useCombatStore } from '@/features/combat/state/combatStore';
@@ -67,6 +69,7 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
     <Panel
       as="article"
       variant="thin"
+      padding="none"
       data-testid="formation-slot"
       aria-label={`${slot.name} ${lane} slot ${slotIndex + 1}`}
       className="flex min-h-44 min-w-0 flex-col gap-2 p-2 @min-[36rem]:p-3"
@@ -111,7 +114,8 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
 /** Gegneranzeige als verbindliche, ohne horizontalen Scrollbereich schrumpfende 2×3-Formation. */
 export function EnemyFormation({ className = '' }: EnemyFormationProps) {
   return (
-    <section aria-label="Enemy Formation" className={`min-h-0 min-w-0 ${className}`}>
+    <section aria-label="Enemy Formation" className={cn('min-h-0 min-w-0', className)}>
+      <h2 className="sr-only">Enemies</h2>
       <div
         data-testid="enemy-formation-grid"
         className="grid min-w-0 grid-cols-2 gap-2 @min-[36rem]:gap-3"
@@ -122,12 +126,9 @@ export function EnemyFormation({ className = '' }: EnemyFormationProps) {
             aria-labelledby={`${lane.id}-heading`}
             className="min-w-0 space-y-3"
           >
-            <h3
-              id={`${lane.id}-heading`}
-              className="text-center font-display text-display-sm text-accent-strong"
-            >
+            <SectionTitle as="h3" id={`${lane.id}-heading`}>
               {lane.label}
-            </h3>
+            </SectionTitle>
             {[0, 1, 2].map((slotIndex) => {
               const formationIndex = lane.offset + slotIndex;
 

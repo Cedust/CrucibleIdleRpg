@@ -16,7 +16,7 @@ const VARIANT_CLASSES: Record<PanelVariant, string> = {
   // border-ornament bleibt als Fallback sichtbar, bis das 9-Slice-Asset lädt.
   ornate: 'border-image-ornate border-ornament bg-surface/90 shadow-panel',
   thin: 'relative isolate rounded-lg bg-surface/70 shadow-panel',
-  plain: 'rounded-lg border border-border bg-surface',
+  plain: 'rounded-lg border border-border bg-surface/90 shadow-panel',
 };
 
 const PADDING_CLASSES: Record<PanelPadding, string> = {

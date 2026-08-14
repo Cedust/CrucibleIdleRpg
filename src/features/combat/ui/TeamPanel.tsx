@@ -3,9 +3,11 @@ import { xpRequiredForNextLevel } from '@/game/rewards/xpRewards';
 import type { Role } from '@/game/types';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useSaveStore } from '@/features/save/saveStore';
+import { cn } from '@/shared/ui/cn';
 import { Panel } from '@/shared/ui/Panel';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { ROLE_ICON } from '@/shared/ui/roleIcons';
+import { SectionTitle } from '@/shared/ui/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { useShallow } from 'zustand/react/shallow';
 import { CombatPortrait } from './CombatPortrait';
@@ -112,8 +114,8 @@ export function TeamPanel({ className = '' }: TeamPanelProps) {
   const hasCombat = useCombatStore((state) => state.combat !== null);
 
   return (
-    <section aria-label="Party" className={`min-h-0 min-w-0 ${className}`}>
-      <h2 className="mb-3 text-center font-display text-display-sm text-accent-strong">Heroes</h2>
+    <section aria-label="Party" className={cn('min-h-0 min-w-0', className)}>
+      <SectionTitle className="mb-3">Heroes</SectionTitle>
       {!hasCombat ? (
         <p className="text-sm text-text-muted">Start a combat to see your party.</p>
       ) : (

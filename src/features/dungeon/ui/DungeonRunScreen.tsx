@@ -6,6 +6,7 @@ import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounter
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/Button';
 import { Panel } from '@/shared/ui/Panel';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/ScreenLayout';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { CombatLog } from '@/features/combat/ui/CombatLog';
@@ -165,7 +166,9 @@ export function DungeonRunScreen() {
   if (floorId === null) {
     return (
       <ScreenLayout as="main" scroll={false} className="min-h-0 flex-1 text-text">
-        Preparing dungeon run…
+        <p aria-live="polite" className="text-text-muted">
+          Preparing dungeon run…
+        </p>
       </ScreenLayout>
     );
   }
@@ -182,11 +185,11 @@ export function DungeonRunScreen() {
       className="min-h-0 flex-1 overflow-hidden text-text"
     >
       <section className="mx-auto grid h-full min-h-0 w-full max-w-run grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4">
-        <header className="text-center">
-          <h1 className="font-display text-display-lg text-accent-strong">
-            {ACT_1_DISPLAY_META.name} — {dungeonMeta?.name ?? 'Dungeon Run'}
-          </h1>
-        </header>
+        <ScreenHeader
+          headingLevel="h1"
+          title={`${ACT_1_DISPLAY_META.name} — ${dungeonMeta?.name ?? 'Dungeon Run'}`}
+          className="text-center"
+        />
 
         <TurnOrderBar />
 

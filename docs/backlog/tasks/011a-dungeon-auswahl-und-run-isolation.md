@@ -16,8 +16,7 @@ normalen Dungeon-View fortgesetzt. Er hat eine eigene, vollständige Ansicht ohn
 Primärnavigation und ohne Progressions- oder Ausgabefunktionen; die lesende Kopfzeile bleibt
 sichtbar.
 
-Der verbindliche visuelle Ausgangspunkt ist der UI-Draft
-[Crucible Idle RPG.dc.html](../../../concept/ui-draft/Crucible%20Idle%20RPG.dc.html): Die
+Der verbindliche visuelle Ausgangspunkt ist der UI-Draft: Die
 Overview-Karte **DUNGEONS** führt zur Akt-/Dungeon-Auswahl; **ENTER DUNGEON** wechselt in die
 separate Battle-Arena. Die Draft-Arena hat bewusst keine Seitenleiste. Ihre kompakte Kopfzeile
 zeigt Ressourcen nur lesend an; sie ist keine App-Navigation.

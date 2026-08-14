@@ -52,7 +52,7 @@ und analytisch. Spieltexte sind englisch, kurz, atmosphärisch und eindeutig.
 Die UI setzt „Gilded Ruins“ als eigenes Design-System um: Farben, Typografie und Ornamentik
 leben als Tailwind-`@theme`-Tokens, wiederkehrende Bausteine (Panel, Rahmen, Balken, Tooltip)
 als Primitives in `src/shared/ui/`. Visuelle Referenz sind die Concept-Screens unter
-[concept/ui-draft/assets/](../concept/ui-draft/assets/): dunkler Blau-Slate-Stein,
+[concept/ui-draft-2/](../concept/ui-draft-2/): dunkler Blau-Slate-Stein,
 Gold-Ornamentik, Glut- und Arkan-Akzente; Display-Schrift Cinzel, Text-Schrift Inter.
 
 - **Asset-Strategie (hybrid):** Icons stammen aus freien Bibliotheken (z. B.

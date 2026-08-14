@@ -102,9 +102,9 @@
  */
 @utility border-image-ornate {
   border-style: solid;
-  border-width: 40px;
-  border-image: url('/assets/frames/panel-ornate.png') 400 / 40px round;
-  border-image-outset: 12px 13.5px 16px 13.5px;
+  border-width: 30px;
+  border-image: url('/assets/frames/panel-ornate.png') 400 / 30px round;
+  border-image-outset: 9px 10.125px 12px 10.125px;
 }
 
 /*
@@ -114,9 +114,9 @@
  */
 @utility border-image-tab-ornate {
   border-style: solid;
-  border-width: 20px;
-  border-image: url('/assets/frames/panel-ornate.png') 400 / 20px round;
-  border-image-outset: 6px 6.75px 8px 6.75px;
+  border-width: 30px;
+  border-image: url('/assets/frames/panel-ornate.png') 400 / 30px round;
+  border-image-outset: 9px 10.125px 12px 10.125px;
 }
 
 /*
@@ -130,9 +130,9 @@
  */
 @utility border-image-thin {
   border-style: solid;
-  border-width: 20px;
-  border-image: url('/assets/frames/panel-thin.png') 209 / 20px round;
-  border-image-outset: 6px 5.5px 6.5px 6px;
+  border-width: 30px;
+  border-image: url('/assets/frames/panel-thin.png') 209 / 30px round;
+  border-image-outset: 9px 8.25px 9.75px 9px;
 }
 
 /*

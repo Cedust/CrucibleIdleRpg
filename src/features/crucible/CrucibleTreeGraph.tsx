@@ -115,9 +115,9 @@ export function CrucibleTreeGraph({
       role="tabpanel"
       aria-labelledby={`crucible-tree-tab-${tree}`}
       data-testid="crucible-tree-graph"
-      className="flex min-w-0 flex-col @min-[1200px]:h-full @min-[1200px]:min-h-0"
+      className="flex min-w-0 flex-col @tree-cols:h-full @tree-cols:min-h-0"
     >
-      <div className="relative min-h-112 flex-1 overflow-auto bg-[radial-gradient(circle_at_50%_35%,color-mix(in_srgb,var(--color-ember)_10%,transparent),transparent_58%)] p-4 @min-[1200px]:min-h-0">
+      <div className="relative min-h-112 flex-1 overflow-auto bg-[radial-gradient(circle_at_50%_35%,color-mix(in_srgb,var(--color-ember)_10%,transparent),transparent_58%)] p-4 @tree-cols:min-h-0">
         <h3 className="sr-only">{presentation.label}</h3>
         {onRequestRespec !== undefined ? (
           <div className="mb-3 flex justify-end">

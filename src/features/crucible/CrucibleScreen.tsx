@@ -76,9 +76,9 @@ export function CrucibleScreen() {
 
         <div
           data-testid="crucible-layout"
-          className="grid min-w-0 gap-5 @min-[1200px]:min-h-0 @min-[1200px]:flex-1 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:grid-rows-[auto_minmax(0,1fr)]"
+          className="grid min-w-0 gap-5 @tree-cols:min-h-0 @tree-cols:flex-1 @tree-cols:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @tree-cols:grid-rows-[auto_minmax(0,1fr)]"
         >
-          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:self-start">
+          <div className="min-w-0 @tree-cols:col-start-1 @tree-cols:self-start">
             <CrucibleTreeNavigation
               activeTree={tree}
               onSelect={(treeId) => {
@@ -87,7 +87,7 @@ export function CrucibleScreen() {
               }}
             />
           </div>
-          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:row-start-2 @min-[1200px]:min-h-0">
+          <div className="min-w-0 @tree-cols:col-start-1 @tree-cols:row-start-2 @tree-cols:min-h-0">
             <CrucibleTreeGraph
               tree={tree}
               nodes={nodes}
@@ -101,7 +101,7 @@ export function CrucibleScreen() {
             />
           </div>
           {selected ? (
-            <div className="min-w-0 @min-[1200px]:col-start-2 @min-[1200px]:row-start-2 @min-[1200px]:sticky @min-[1200px]:top-5 @min-[1200px]:self-start">
+            <div className="min-w-0 @tree-cols:col-start-2 @tree-cols:row-start-2 @tree-cols:sticky @tree-cols:top-5 @tree-cols:self-start">
               <CrucibleNodeInspector
                 node={selected}
                 rank={save.crucible[selected.id] ?? 0}

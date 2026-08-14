@@ -105,7 +105,7 @@ export function NodeButton({
       align={tooltipAlign}
       className={
         isBranch
-          ? 'flex min-w-0 w-full justify-start @min-[800px]:justify-center'
+          ? 'flex min-w-0 w-full justify-start @branch-cols:justify-center'
           : 'flex min-w-0 justify-center'
       }
     >
@@ -122,7 +122,7 @@ export function NodeButton({
             'group flex min-w-0 cursor-pointer items-center rounded-md px-1 text-center',
             focusRing,
             isBranch
-              ? 'w-full max-w-none flex-row gap-3 py-0 text-left @min-[800px]:max-w-32 @min-[800px]:flex-col @min-[800px]:gap-0 @min-[800px]:text-center'
+              ? 'w-full max-w-none flex-row gap-3 py-0 text-left @branch-cols:max-w-32 @branch-cols:flex-col @branch-cols:gap-0 @branch-cols:text-center'
               : 'max-w-32 flex-col py-2',
           )}
         >
@@ -133,13 +133,13 @@ export function NodeButton({
           <span
             className={cn(
               'flex min-w-0 flex-col',
-              isBranch ? 'items-start @min-[800px]:items-center' : 'mt-3 min-h-8 items-center',
+              isBranch ? 'items-start @branch-cols:items-center' : 'mt-3 min-h-8 items-center',
             )}
           >
             <span
               className={cn(
                 'text-xs font-semibold leading-4 text-text',
-                isBranch && '@min-[800px]:mt-2',
+                isBranch && '@branch-cols:mt-2',
               )}
             >
               {visibleLabel ?? name}

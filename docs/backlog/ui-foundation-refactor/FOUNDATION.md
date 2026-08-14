@@ -73,6 +73,8 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
   (ScreenLayout stellt `@container`); Media-Queries nur für echte Viewport-Belange
   (`sm:`-Padding-Fallback, ErrorBoundary). Umrechnungsrezept:
   Container-Threshold = Viewport-Threshold − Nav − Frame − Page-Padding.
+  Wiederholte Thresholds laufen über benannte `--container-*`-Varianten (`@tree-cols:`,
+  `@branch-cols:`); einmalige Thresholds bleiben arbitrary und rem-basiert (`@min-[19rem]` u. a.).
 
 ## 3. Zuordnung fixed und fluid
 
@@ -110,6 +112,10 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
   --container-page: 96rem; /* Tree-Screens */
   --container-page-narrow: 80rem; /* Listen/Detail */
   --container-run: clamp(105rem, …, 131rem); /* Dungeon-Run-Arena */
+
+  /* — Container-Query-Thresholds (Tree-Screens) — */
+  --container-tree-cols: 75rem; /* zweispaltiges Tree-Layout (@tree-cols:) */
+  --container-branch-cols: 50rem; /* Branch-Lane-Flip (@branch-cols:) */
 
   /* — Typografie (fluid; ersetzt die Defaults) — */
   --text-xs: clamp(0.75rem, …, 0.9375rem);
@@ -150,11 +156,14 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
 }
 ```
 
+Der `--container-*`-Namespace trägt zwei Rollen: Screen-Caps (`max-w-*`) und
+Container-Query-Stützstellen (`@tree-cols:`, `@branch-cols:`), unterschieden über den Namen.
 Schwarz-Literale bleiben Scrims und Schatten vorbehalten (`backdrop:bg-black/70` des Dialogs,
 `--drop-shadow-text-contrast`); alle anderen Farben laufen über Palette-Tokens.
 
 Bewusst ohne Token: Panel-Gap (`gap-5` genügt), Button-Höhen (padding-getrieben), die
-`8rem`-Node-Spalten des Branch-Graphen (lokale TS-Konstante, ein Konsument), komponentenspezifische
+`8rem`-Node-Spalten des Branch-Graphen (lokale TS-Konstante, ein Konsument), einmalige
+Container-Thresholds der Listen-/Combat-Screens (`@min-[19rem]` u. a.), komponentenspezifische
 State-Tokens (`--shadow-glow-ember-inset` ist die einzige, dokumentierte Ausnahme:
 Ember-Identität der Mastery-Tabs).
 

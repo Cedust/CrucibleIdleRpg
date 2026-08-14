@@ -21,14 +21,14 @@ interface CrucibleBranchGraphProps {
  * (FOUNDATION §4: lokale TS-Konstante, ein Konsument).
  */
 const NODE_COLUMNS_GRID =
-  '@min-[800px]:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem]';
+  '@branch-cols:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem]';
 
 const BRANCH_GRID_CLASS: Record<CrucibleBranchLayout, string> = {
   single: 'grid min-w-0 grid-cols-1',
-  chain: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-0`,
-  fork: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-3`,
-  parallel: 'grid min-w-0 grid-cols-1 gap-y-5 @min-[800px]:grid-cols-4 @min-[800px]:gap-y-0',
-  paired: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @min-[800px]:gap-y-5`,
+  chain: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @branch-cols:gap-y-0`,
+  fork: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @branch-cols:gap-y-3`,
+  parallel: 'grid min-w-0 grid-cols-1 gap-y-5 @branch-cols:grid-cols-4 @branch-cols:gap-y-0',
+  paired: `grid min-w-0 grid-cols-1 gap-y-5 ${NODE_COLUMNS_GRID} @branch-cols:gap-y-5`,
 };
 
 const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot, string>>> = {
@@ -37,32 +37,32 @@ const SLOT_CLASS: Record<CrucibleBranchLayout, Partial<Record<CrucibleBranchSlot
   },
   chain: {
     start: 'col-start-1 row-start-1 w-full',
-    middle: 'col-start-1 row-start-2 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-1',
-    end: 'col-start-1 row-start-3 w-full @min-[800px]:col-start-5 @min-[800px]:row-start-1',
+    middle: 'col-start-1 row-start-2 w-full @branch-cols:col-start-3 @branch-cols:row-start-1',
+    end: 'col-start-1 row-start-3 w-full @branch-cols:col-start-5 @branch-cols:row-start-1',
   },
   fork: {
     start: 'col-start-1 row-start-1 w-full',
     middle:
-      'col-start-1 row-start-2 ml-16 w-[calc(100%-4rem)] @min-[800px]:col-start-3 @min-[800px]:row-start-1 @min-[800px]:ml-0 @min-[800px]:w-full',
-    end: 'col-start-1 row-start-3 ml-16 w-[calc(100%-4rem)] @min-[800px]:col-start-5 @min-[800px]:row-start-1 @min-[800px]:ml-0 @min-[800px]:w-full',
+      'col-start-1 row-start-2 ml-16 w-[calc(100%-4rem)] @branch-cols:col-start-3 @branch-cols:row-start-1 @branch-cols:ml-0 @branch-cols:w-full',
+    end: 'col-start-1 row-start-3 ml-16 w-[calc(100%-4rem)] @branch-cols:col-start-5 @branch-cols:row-start-1 @branch-cols:ml-0 @branch-cols:w-full',
     'lower-middle':
-      'col-start-1 row-start-4 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-2',
+      'col-start-1 row-start-4 w-full @branch-cols:col-start-3 @branch-cols:row-start-2',
   },
   parallel: {
-    start: 'col-start-1 row-start-1 w-full @min-[800px]:col-start-1',
-    middle: 'col-start-1 row-start-2 w-full @min-[800px]:col-start-2 @min-[800px]:row-start-1',
-    end: 'col-start-1 row-start-3 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-1',
-    last: 'col-start-1 row-start-4 w-full @min-[800px]:col-start-4 @min-[800px]:row-start-1',
+    start: 'col-start-1 row-start-1 w-full @branch-cols:col-start-1',
+    middle: 'col-start-1 row-start-2 w-full @branch-cols:col-start-2 @branch-cols:row-start-1',
+    end: 'col-start-1 row-start-3 w-full @branch-cols:col-start-3 @branch-cols:row-start-1',
+    last: 'col-start-1 row-start-4 w-full @branch-cols:col-start-4 @branch-cols:row-start-1',
   },
   paired: {
-    start: 'col-start-1 row-start-1 w-full @min-[800px]:col-start-1',
-    middle: 'col-start-1 row-start-3 w-full @min-[800px]:col-start-1 @min-[800px]:row-start-2',
-    end: 'col-start-1 row-start-5 w-full @min-[800px]:col-start-1 @min-[800px]:row-start-3',
+    start: 'col-start-1 row-start-1 w-full @branch-cols:col-start-1',
+    middle: 'col-start-1 row-start-3 w-full @branch-cols:col-start-1 @branch-cols:row-start-2',
+    end: 'col-start-1 row-start-5 w-full @branch-cols:col-start-1 @branch-cols:row-start-3',
     'lower-start':
-      'col-start-1 row-start-2 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-1',
+      'col-start-1 row-start-2 w-full @branch-cols:col-start-3 @branch-cols:row-start-1',
     'lower-middle':
-      'col-start-1 row-start-4 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-2',
-    'lower-end': 'col-start-1 row-start-6 w-full @min-[800px]:col-start-3 @min-[800px]:row-start-3',
+      'col-start-1 row-start-4 w-full @branch-cols:col-start-3 @branch-cols:row-start-2',
+    'lower-end': 'col-start-1 row-start-6 w-full @branch-cols:col-start-3 @branch-cols:row-start-3',
   },
 };
 
@@ -94,11 +94,11 @@ function CrucibleBranch({
     <section
       data-crucible-branch={branch.id}
       aria-labelledby={headingId}
-      className="grid min-w-0 gap-2 border-t border-border/50 py-2.5 first:border-t-0 @min-[800px]:grid-cols-[7rem_minmax(0,1fr)] @min-[800px]:gap-4"
+      className="grid min-w-0 gap-2 border-t border-border/50 py-2.5 first:border-t-0 @branch-cols:grid-cols-[7rem_minmax(0,1fr)] @branch-cols:gap-4"
     >
       <h4
         id={headingId}
-        className="text-2xs font-semibold tracking-[0.16em] text-text-muted @min-[800px]:pt-7"
+        className="text-2xs font-semibold tracking-[0.16em] text-text-muted @branch-cols:pt-7"
       >
         {branch.label}
       </h4>

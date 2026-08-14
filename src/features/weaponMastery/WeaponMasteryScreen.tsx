@@ -104,7 +104,7 @@ export function WeaponMasteryScreen() {
             masteryRanks={progression.masteryRanks}
             onSelect={selectDiscipline}
           />
-          <div className="grid min-w-0 gap-5 @min-[1200px]:min-h-0 @min-[1200px]:flex-1 @min-[1200px]:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @min-[1200px]:grid-rows-[minmax(0,1fr)]">
+          <div className="grid min-w-0 gap-5 @tree-cols:min-h-0 @tree-cols:flex-1 @tree-cols:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @tree-cols:grid-rows-[minmax(0,1fr)]">
             <MasteryTreeGraph
               nodes={nodes}
               ranks={progression.masteryRanks}
@@ -122,7 +122,7 @@ export function WeaponMasteryScreen() {
               onSelect={setSelectedId}
             />
             {selected ? (
-              <div className="min-w-0 @min-[1200px]:sticky @min-[1200px]:top-5 @min-[1200px]:self-start">
+              <div className="min-w-0 @tree-cols:sticky @tree-cols:top-5 @tree-cols:self-start">
                 <NodeInspector
                   characterId={characterId}
                   node={selected}

@@ -149,6 +149,12 @@
     131rem
   );
 
+  /* Container-Query-Thresholds der Tree-Screens: der --container-*-Namespace
+     trägt Caps (max-w-*) und Query-Stützstellen (@tree-cols:/@branch-cols:),
+     unterschieden über den Namen. */
+  --container-tree-cols: 75rem;
+  --container-branch-cols: 50rem;
+
   /* State: Interaction (FOUNDATION §5) */
   --color-state-selected: var(--color-accent);
   --color-state-selected-tint: color-mix(in srgb, var(--color-accent) 12%, transparent);

@@ -49,7 +49,7 @@ export function MasteryTreeGraph({
       id={`mastery-tree-panel-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-labelledby={`mastery-tab-${nodes[0]?.discipline ?? 'unknown'}`}
       aria-label={`${label} mastery tree`}
-      className="flex min-w-0 flex-col @min-[1200px]:h-full @min-[1200px]:min-h-0"
+      className="flex min-w-0 flex-col @tree-cols:h-full @tree-cols:min-h-0"
     >
       <div className="min-h-0 flex-1 overflow-auto p-4 pb-5">
         {/* min-w-225 ist der Lesbarkeits-Floor des Canvas (FOUNDATION §10). Der Canvas

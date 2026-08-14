@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
@@ -68,7 +68,12 @@ describe('AppShell', () => {
     await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
 
     expect(screen.getByRole('heading', { name: 'Weapon Mastery' })).toBeInTheDocument();
-    expect(screen.getByText('1 Mastery Points', { exact: true })).toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText('Weapon Mastery')).getByText('1 Mastery Point', {
+        exact: true,
+        selector: 'p',
+      }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'WARHAMMER' })).toHaveAttribute('aria-selected', 'true');
   });
 

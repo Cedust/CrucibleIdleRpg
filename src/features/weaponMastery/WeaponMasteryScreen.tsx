@@ -46,6 +46,8 @@ export function WeaponMasteryScreen() {
   const refunded = investedPoints(progression.masteryRanks, discipline);
   const cost = respecCost(refunded);
   const label = disciplineLabel(discipline, characterId);
+  const masteryPointLabel =
+    progression.freeMasteryPoints === 1 ? 'Mastery Point' : 'Mastery Points';
   const selectDiscipline = (id: DisciplineId) => {
     setDiscipline(id);
     setSelectedId(null);
@@ -86,7 +88,7 @@ export function WeaponMasteryScreen() {
                   >
                     ✦
                   </span>
-                  {progression.freeMasteryPoints} Mastery Points
+                  {progression.freeMasteryPoints} {masteryPointLabel}
                 </p>
                 <Button
                   variant="ghost"

@@ -53,7 +53,29 @@ describe('WeaponMasteryScreen', () => {
         'Every weapon remembers the battles it has survived. Hone its nature through different disciplines and forge a fighting style worthy of the depths.',
       ),
     ).toHaveClass('font-intro');
-    expect(screen.getByText('1 Mastery Points', { exact: true })).toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText('Weapon Mastery')).getByText('1 Mastery Point', {
+        exact: true,
+        selector: 'p',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('uses the plural label for every Mastery Point count except one', () => {
+    const save = createDefaultSave(4242);
+    saveStore.setState({
+      data: {
+        ...save,
+        characters: {
+          ...save.characters,
+          korvin: { ...save.characters.korvin, freeMasteryPoints: 2 },
+        },
+      },
+    });
+
+    render(<WeaponMasteryScreen />);
+
+    expect(screen.getByText('2 Mastery Points', { exact: true })).toBeInTheDocument();
   });
 
   it('supports Discipline keyboard navigation and resets selection on character change', async () => {

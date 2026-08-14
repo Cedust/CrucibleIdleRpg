@@ -15,6 +15,8 @@ import {
   VIEWS,
   type View,
 } from '../navigationStore';
+import { cn } from '@/shared/ui/cn';
+import { focusRing, stateAttrs, transitionState } from '@/shared/ui/state';
 import { CharacterSwitcher } from './CharacterSwitcher';
 
 const VIEW_ICONS: Record<View, LucideIcon> = {
@@ -89,11 +91,11 @@ export function AppSidebar() {
           className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto"
         >
           {VIEWS.map((view) => {
-            const isActive = view === activeView;
+            const selected = view === activeView;
             return (
               <div key={view}>
-                <SidebarNavItem view={view} isActive={isActive} onSelect={setActiveView} />
-                {isActive && isCharacterScopedView(view) ? (
+                <SidebarNavItem view={view} selected={selected} onSelect={setActiveView} />
+                {selected && isCharacterScopedView(view) ? (
                   <CharacterSwitcher
                     activeCharacterId={activeCharacterId}
                     onSelect={setActiveCharacterId}
@@ -110,11 +112,11 @@ export function AppSidebar() {
 
 function SidebarNavItem({
   view,
-  isActive,
+  selected,
   onSelect,
 }: {
   view: View;
-  isActive: boolean;
+  selected: boolean;
   onSelect: (view: View) => void;
 }) {
   const NavIcon = VIEW_ICONS[view];
@@ -123,14 +125,21 @@ function SidebarNavItem({
     <button
       type="button"
       onClick={() => onSelect(view)}
-      aria-current={isActive ? 'page' : undefined}
-      className={`relative flex w-full items-center gap-3 whitespace-nowrap rounded-r-md py-2 pl-7 pr-3 text-left font-display text-display-sm transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-state-focus ${
-        isActive
+      aria-current={selected ? 'page' : undefined}
+      {...stateAttrs({ selected })}
+      className={cn(
+        'relative flex w-full items-center gap-3 whitespace-nowrap rounded-r-md py-2 pl-7 pr-3 text-left font-display text-display-sm',
+        transitionState,
+        focusRing,
+        // Die Selektionssprache der Nav bleibt asset-basiert (FOUNDATION §10);
+        // nav-selection-surface muss literal am Element stehen, damit die
+        // ::before/::after-Regeln aus index.css greifen.
+        selected
           ? ACTIVE_NAV_ITEM_CLASS
-          : 'text-accent-strong/70 hover:bg-surface hover:text-accent-strong'
-      }`}
+          : 'text-accent-strong/70 hover:bg-surface hover:text-accent-strong',
+      )}
     >
-      {isActive ? (
+      {selected ? (
         <img
           alt=""
           aria-hidden="true"

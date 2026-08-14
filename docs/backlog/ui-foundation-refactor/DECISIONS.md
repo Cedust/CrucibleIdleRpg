@@ -155,10 +155,11 @@ Elemente bleiben `text-text` (FOUNDATION §10).
 
 Vom Abschluss-Review benannt, bewusst offen gelassen:
 
-1. **SidebarNavItem** spricht das State-System nicht (Ternary-Styling, eigene
-   Selektionssprache mit Ornament-Asset). Kein UIF-Task adressierte die Nav-Items;
-   Migration gehört in den M6-Politur-Pass. Focus-Token und `motion-reduce` wurden
-   nachgezogen.
+1. **SidebarNavItem** läuft seit UIF-019 auf `cn()`, `stateAttrs({ selected })` und den
+   kanonischen Fragmenten (`focusRing`, `transitionState`). Die Selektionsoptik bleibt
+   asset-basiert und damit konditional: `nav-selection-surface` muss literal am Element
+   stehen, weil die `::before/::after`-Regeln aus index.css am Klassennamen hängen
+   (FOUNDATION §10).
 2. **Sidebar-Glow-Freistellung:** Der Nav-Scroller (`overflow-y-auto`) kann den
    Selection-Glow des CharacterSwitcher-Frames horizontal clippen (Plan-Optional-Punkt) —
    sichtbar nur bei übervoller Nav; offen für M6.

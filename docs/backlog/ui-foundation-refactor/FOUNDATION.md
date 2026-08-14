@@ -288,9 +288,10 @@ Dokumentierte, bleibende Abweichungen:
 - TurnOrder-Akteur kombiniert Selection-Ring und Glow-Fläche — Bestandsschutz der Combat-Optik.
 - Namens-Labels gesperrter Nodes und Karten bleiben `text-text` — Bestandsschutz; nur
   Medaillon-/Statusebenen sind muted.
-- Die Sidebar-Navigation behält ihre eigene Selektionssprache (Ornament-Asset, Hairlines);
-  ihre Migration auf das State-System liegt außerhalb des UIF-Scopes
-  ([DECISIONS D-009](DECISIONS.md#d-009--offene-reste-außerhalb-des-uif-scopes)).
+- Die Sidebar-Navigation behält ihre eigene Selektionssprache (Ornament-Asset, Hairlines) mit
+  konditionaler Klassenliste: `nav-selection-surface` muss literal am Element stehen, weil die
+  `::before/::after`-Regeln aus index.css am Klassennamen hängen; State-Attribute und Fragmente
+  kommen aus `state.ts` ([DECISIONS D-009](DECISIONS.md#d-009--offene-reste-außerhalb-des-uif-scopes)).
 - Der Leave-Confirm der Run-Statusleiste bleibt ein nicht-modaler Zwei-Schritt (Keep Fighting /
   Confirm Leave Dungeon) — der Kampf läuft sichtbar weiter, ein Modal würde ihn verdecken.
 

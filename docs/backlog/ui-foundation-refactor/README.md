@@ -13,11 +13,11 @@ zwischen M2.5 und M3).
 
 | Reihenfolge | Task                                                                                  | Status    | Hängt ab von       |
 | ----------- | ------------------------------------------------------------------------------------- | --------- | ------------------ |
-| 1           | [001 — Tokens & State-Fundament](001-tokens-und-state-fundament.md)                   | `ready`   | —                  |
-| 2           | [002 — Shell- & Viewport-Contract](002-shell-und-viewport-contract.md)                | `blocked` | 001                |
-| 3           | [003 — Node-Medallion-Primitive](003-node-medallion-primitive.md)                     | `blocked` | 001                |
-| 4           | [004 — Ornate-Tabs & Roving Focus](004-ornate-tabs-und-roving-focus.md)               | `blocked` | 001                |
-| 5           | [005 — Button-, Dialog- & Tooltip-Härtung](005-button-dialog-tooltip-haertung.md)     | `blocked` | 001                |
+| 1           | [001 — Tokens & State-Fundament](001-tokens-und-state-fundament.md)                   | `done`    | —                  |
+| 2           | [002 — Shell- & Viewport-Contract](002-shell-und-viewport-contract.md)                | `ready`   | 001                |
+| 3           | [003 — Node-Medallion-Primitive](003-node-medallion-primitive.md)                     | `ready`   | 001                |
+| 4           | [004 — Ornate-Tabs & Roving Focus](004-ornate-tabs-und-roving-focus.md)               | `ready`   | 001                |
+| 5           | [005 — Button-, Dialog- & Tooltip-Härtung](005-button-dialog-tooltip-haertung.md)     | `ready`   | 001                |
 | 6           | [006 — Screen: Dungeon Selection](006-screen-dungeon-selection.md)                    | `blocked` | 002                |
 | 7           | [007 — Screen: Crucible](007-screen-crucible.md)                                      | `blocked` | 003, 004, 005, 006 |
 | 8           | [008 — Screen: Weapon Mastery](008-screen-weapon-mastery.md)                          | `blocked` | 003, 004, 005, 006 |

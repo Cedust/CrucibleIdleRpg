@@ -1,10 +1,10 @@
 # 002 — Shell- & Viewport-Contract
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | UIF       |
-| **Hängt ab von** | 001       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | UIF     |
+| **Hängt ab von** | 001     |
 
 ## Ziel
 

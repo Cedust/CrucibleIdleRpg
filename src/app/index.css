@@ -18,19 +18,43 @@
   --font-intro: 'MedievalSharp', 'Times New Roman', serif;
   --font-body: 'Inter Variable', system-ui, sans-serif;
 
-  /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking */
-  --text-display-sm: 0.875rem;
+  /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking.
+     Fluid nach dem Clamp-Muster unten (FOUNDATION §2); Line-Height und
+     Letter-Spacing sind Ratios/em und skalieren mit. */
+  --text-display-sm: clamp(
+    0.875rem,
+    calc(0.875rem + (min(100vw, 177.78vh) - 1920px) * 0.0018229),
+    1.09375rem
+  );
   --text-display-sm--line-height: 1.25;
   --text-display-sm--letter-spacing: 0.12em;
   --text-display-sm--font-weight: 600;
-  --text-display: 1.25rem;
+  --text-display: clamp(
+    1.25rem,
+    calc(1.25rem + (min(100vw, 177.78vh) - 1920px) * 0.0026042),
+    1.5625rem
+  );
   --text-display--line-height: 1.3;
   --text-display--letter-spacing: 0.08em;
   --text-display--font-weight: 600;
-  --text-display-lg: 1.75rem;
+  --text-display-lg: clamp(
+    1.75rem,
+    calc(1.75rem + (min(100vw, 177.78vh) - 1920px) * 0.0036458),
+    2.1875rem
+  );
   --text-display-lg--line-height: 1.2;
   --text-display-lg--letter-spacing: 0.06em;
   --text-display-lg--font-weight: 700;
+
+  /* Fluide Text-Skala: ersetzt die Tailwind-Defaults; die unitless
+     Line-Height-Ratios der Defaults bleiben erhalten und skalieren mit. */
+  --text-xs: clamp(0.75rem, calc(0.75rem + (min(100vw, 177.78vh) - 1920px) * 0.0015625), 0.9375rem);
+  --text-sm: clamp(
+    0.875rem,
+    calc(0.875rem + (min(100vw, 177.78vh) - 1920px) * 0.0018229),
+    1.09375rem
+  );
+  --text-base: clamp(1rem, calc(1rem + (min(100vw, 177.78vh) - 1920px) * 0.0020833), 1.25rem);
 
   /* Hintergründe / Flächen (Stein-Töne) */
   --color-background: #02070d;
@@ -62,9 +86,91 @@
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
 
-  /* Flächen-Tiefe und Gold-Glow für Panels und aktive Elemente */
+  /* Flächen-Tiefe für Panels */
   --shadow-panel: 0 12px 32px -16px rgb(0 0 0 / 0.7);
-  --shadow-glow-accent: 0 0 16px 0 rgb(245 158 11 / 0.25);
+
+  /*
+   * Layout-Clamps (leicht fluid, FOUNDATION §2): MIN bis 1920px-Äquivalent,
+   * linear bis MAX bei 3840px-Äquivalent. min(100vw, 177.78vh) normiert
+   * Ultrawide auf 16:9 (3440×1440 skaliert wie 1440p);
+   * SLOPE = (MAX − MIN) / 1920, präkomputiert.
+   */
+  --spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
+  --spacing-tab-strip: clamp(4rem, calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333), 5rem);
+  --spacing-inspector: clamp(19rem, calc(19rem + (min(100vw, 177.78vh) - 1920px) * 0.025), 22rem);
+  --spacing-page-pad: clamp(
+    1.5rem,
+    calc(1.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0041667),
+    2rem
+  );
+  --spacing-medallion: clamp(5rem, calc(5rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333), 6rem);
+  --spacing-medallion-sm: clamp(
+    4rem,
+    calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333),
+    5rem
+  );
+  --spacing-portrait-sm: clamp(
+    2.25rem,
+    calc(2.25rem + (min(100vw, 177.78vh) - 1920px) * 0.0046875),
+    2.8125rem
+  );
+  --spacing-portrait-md: clamp(
+    3.5rem,
+    calc(3.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0072917),
+    4.375rem
+  );
+  --spacing-portrait-lg: clamp(
+    5.5rem,
+    calc(5.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0114583),
+    6.875rem
+  );
+  --spacing-portrait-xl: clamp(
+    9rem,
+    calc(9rem + (min(100vw, 177.78vh) - 1920px) * 0.01875),
+    11.25rem
+  );
+
+  /* Layout (fix): Gutter der Vollrahmen (border-image-sidebar/-mainview) */
+  --spacing-frame-pad: 0.75rem;
+
+  /* Screen-Caps pro Screen-Typ (FOUNDATION §3); kein globales Maximum */
+  --container-page: 96rem;
+  --container-page-narrow: 80rem;
+  --container-run: clamp(
+    105rem,
+    calc(105rem + (min(100vw, 177.78vh) - 1920px) * 0.2166667),
+    131rem
+  );
+
+  /* State: Interaction (FOUNDATION §5) */
+  --color-state-selected: var(--color-accent);
+  --color-state-selected-tint: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-state-focus: var(--color-accent);
+
+  /* State: Semantic */
+  --color-state-locked-border: var(--color-border);
+  --color-state-empty-border: color-mix(in srgb, var(--color-border) 70%, transparent);
+
+  /* De-Emphasis-Skala: Opacity liegt ausschließlich auf Art-Layern (FOUNDATION §6) */
+  --state-deemphasis-strong: 0.3;
+  --state-deemphasis-medium: 0.55;
+  --state-deemphasis-weak: 0.75;
+
+  /* Glows, palette-gebunden über color-mix, kontrollierter Radius */
+  --shadow-glow-accent: 0 0 16px 0 color-mix(in srgb, var(--color-accent) 25%, transparent);
+  --shadow-glow-accent-sm: 0 0 5px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
+  --drop-shadow-glow-accent: 0 0 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  --shadow-glow-ember-inset: inset 0 0 20px color-mix(in srgb, var(--color-ember) 42%, transparent);
+}
+
+/*
+ * Gemeinsamer Übergang aller state-tragenden Ebenen (FOUNDATION §4);
+ * Callsites kombinieren ihn mit motion-reduce:transition-none.
+ */
+@utility transition-state {
+  transition-property:
+    color, background-color, border-color, outline-color, opacity, box-shadow, filter;
+  transition-duration: 150ms;
 }
 
 /*

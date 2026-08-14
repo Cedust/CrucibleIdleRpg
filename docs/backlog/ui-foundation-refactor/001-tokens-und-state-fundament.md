@@ -1,10 +1,10 @@
 # 001 — Tokens & State-Fundament
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | UIF     |
-| **Hängt ab von** | —       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | UIF    |
+| **Hängt ab von** | —      |
 
 ## Ziel
 

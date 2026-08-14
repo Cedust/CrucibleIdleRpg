@@ -46,9 +46,11 @@ describe('CrucibleScreen', () => {
       'bg-[url(/assets/backgrounds/crucible-tab-molten-cast.png)]',
     );
     expect(within(trees).queryByRole('tab', { name: 'MASTERWORK' })).not.toBeInTheDocument();
-    expect(
-      screen.getByText('Beneath the ruined kingdom, the ancient Crucible still burns.'),
-    ).toBeInTheDocument();
+    const crucibleIntro = screen.getByText(
+      'Beneath the ruined kingdom, the ancient Crucible still burns.',
+    );
+    expect(crucibleIntro).toBeInTheDocument();
+    expect(crucibleIntro.closest('p')).toHaveClass('font-intro');
     expect(
       screen.getByText(
         'Relic Shards reclaimed from conquered depths can be melted down here and forged into new strength.',

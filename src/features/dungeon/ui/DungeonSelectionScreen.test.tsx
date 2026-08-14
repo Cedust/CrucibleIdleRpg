@@ -18,6 +18,7 @@ describe('DungeonSelectionScreen', () => {
     render(<DungeonSelectionScreen />);
 
     expect(screen.getByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
+    expect(screen.getByText('Choose a dungeon entrance.')).toHaveClass('font-intro');
 
     const acts = within(screen.getByRole('list', { name: 'Acts' })).getAllByRole('listitem');
     expect(acts).toHaveLength(3);

@@ -45,10 +45,14 @@ describe('WeaponMasteryScreen', () => {
     expect(await screen.findByText('No Mastery Points available.')).toBeInTheDocument();
   });
 
-  it('groups character level and available Mastery Points in the header', () => {
+  it('shows the lore intro and available Mastery Points in the header', () => {
     render(<WeaponMasteryScreen />);
 
-    expect(screen.getByText(/Korvin/)).toHaveTextContent('Korvin · Level 1');
+    expect(
+      screen.getByText(
+        'Every weapon remembers the battles it has survived. Hone its nature through different disciplines and forge a fighting style worthy of the depths.',
+      ),
+    ).toHaveClass('font-intro');
     expect(screen.getByText('1 Mastery Points', { exact: true })).toBeInTheDocument();
   });
 

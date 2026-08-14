@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/cinzel';
 @import '@fontsource-variable/inter';
+@import '@fontsource/medievalsharp';
 
 /*
  * Tailwind v4 CSS-first-Konfiguration.
@@ -14,6 +15,7 @@
 @theme {
   /* Schriften: Display für Titel und Überschriften, Body für Fließtext */
   --font-display: 'Cinzel Variable', 'Times New Roman', serif;
+  --font-intro: 'MedievalSharp', 'Times New Roman', serif;
   --font-body: 'Inter Variable', system-ui, sans-serif;
 
   /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking */

@@ -49,7 +49,7 @@ export function DungeonSelectionScreen() {
       <section className="max-w-7xl space-y-6">
         <header>
           <h2 className="font-display text-display-lg text-accent-strong">Dungeons</h2>
-          <p className="mt-1 text-sm text-text-muted">Choose a dungeon entrance.</p>
+          <p className="mt-1 font-intro text-sm text-text-muted">Choose a dungeon entrance.</p>
         </header>
 
         {unlockedDungeonIds === null || completedDungeons === null || selectedProgress === null ? (

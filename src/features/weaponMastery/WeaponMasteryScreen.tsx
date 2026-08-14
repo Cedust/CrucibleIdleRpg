@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { CHARACTERS } from '@/game/characters/characters';
 import {
   investedPoints,
   nodeById,
@@ -75,10 +74,9 @@ export function WeaponMasteryScreen() {
           <header className="mb-2">
             <div>
               <h2 className="font-display text-display-lg text-accent-strong">Weapon Mastery</h2>
-              <p className="mt-1 text-sm text-text-muted">
-                {CHARACTERS[characterId].name}
-                <span aria-hidden="true"> &middot; </span>
-                Level {progression.level}
+              <p className="mt-1 font-intro text-sm leading-6 text-text-muted">
+                Every weapon remembers the battles it has survived. Hone its nature through
+                different disciplines and forge a fighting style worthy of the depths.
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <p className="flex items-center gap-1.5 text-sm font-medium text-text">

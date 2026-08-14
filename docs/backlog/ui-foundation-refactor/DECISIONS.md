@@ -43,3 +43,22 @@ jsdom misst zudem kein echtes Grid-Layout; eine „zweite Reihe" wäre dort ohne
 die verbaute Mechanik (Klassen-Assertion, kein `overflow-x-auto`) und in `e2e/responsive.spec.ts`
 das echte Umbruchverhalten der fünf vorhandenen Karten bei schmalen Containern. Die Game-Typen
 bleiben strikt (AGENTS.md); der Task-Wortlaut „Testfixture" ist damit sinngemäß erfüllt.
+
+## D-003 — Task 010: Nav-Stützstelle bei 1440p ist in FOUNDATION nicht linear
+
+**Problem:** FOUNDATION §2 definiert die Nav-Breite als lineare Clamp
+(`SLOPE = (342 − 288) / 1920 = 0.028125`). Bei 2560×1440 ergibt das 288 + 640 × 0.028125 =
+**306 px** — der Formel-Kommentar und die §8-Matrix nennen aber „312 px @1440p". Die drei
+Stützstellen 288/312/342 liegen auf keiner Geraden; Formel und Kommentar widersprechen sich.
+
+**Optionen:**
+
+1. Slope auf 312 px @1440p anheben (0.0375) — dann läge 4K bei 360 px statt der
+   spezifizierten 342 px.
+2. Der Formel folgen (288 → 306 → 342) und die dokumentierten Erwartungswerte in
+   FOUNDATION §4/§8 nachziehen.
+
+**Entscheidung:** Option 2. Die Formel mit präkomputiertem SLOPE ist der verbindliche
+Spec-Anker (§2), die Matrix-Werte tragen ein „≈" und Task 010 sieht das Nachziehen der
+Token-Werte in FOUNDATION ausdrücklich vor. `e2e/responsive.spec.ts` assertiert die
+Formelwerte (306 px @2560/3440, 342 px @3840); §4-Kommentar und §8-Matrix wurden korrigiert.

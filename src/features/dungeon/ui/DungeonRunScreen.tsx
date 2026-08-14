@@ -89,12 +89,12 @@ function RunStatusBar({
       as="footer"
       variant="thin"
       data-testid="run-status-bar"
-      className="grid items-center gap-3 px-4 py-3 lg:grid-cols-[1fr_auto_1fr]"
+      className="grid items-center gap-3 px-4 py-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
     >
       <div
         role="group"
         aria-label="Combat playback"
-        className="flex flex-wrap gap-2 lg:justify-self-start"
+        className="flex flex-wrap gap-2 @min-[60rem]:justify-self-start"
       >
         <Button variant="ghost" selected={isPaused} disabled={!isOngoing} onClick={onTogglePause}>
           {isPaused ? 'Resume' : 'Pause'}
@@ -121,7 +121,7 @@ function RunStatusBar({
 
       <RunRewardSummary />
 
-      <div className="flex flex-wrap justify-start gap-2 lg:justify-self-end">
+      <div className="flex flex-wrap justify-start gap-2 @min-[60rem]:justify-self-end">
         {confirmingLeave ? (
           <>
             <Button variant="ghost" onClick={onCancelLeave}>
@@ -181,7 +181,7 @@ export function DungeonRunScreen() {
       contentClassName="h-full min-h-0 overflow-hidden"
       className="min-h-0 flex-1 overflow-hidden text-text"
     >
-      <section className="grid h-full min-h-0 w-full grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4">
+      <section className="mx-auto grid h-full min-h-0 w-full max-w-run grid-rows-[auto_auto_minmax(0,1fr)_auto] gap-4">
         <header className="text-center">
           <h1 className="font-display text-display-lg text-accent-strong">
             {ACT_1_DISPLAY_META.name} — {dungeonMeta?.name ?? 'Dungeon Run'}
@@ -192,7 +192,7 @@ export function DungeonRunScreen() {
 
         <div
           data-testid="combat-main-area"
-          className="-mx-2 grid min-h-0 gap-4 overflow-y-auto px-2 py-2 min-[1440px]:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)_minmax(0,1fr)]"
+          className="-mx-2 grid min-h-0 gap-4 overflow-y-auto px-2 py-2 @min-[85rem]:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)_minmax(0,1fr)]"
         >
           <TeamPanel />
           <div className="flex min-h-0 flex-col gap-4">

@@ -56,6 +56,8 @@ describe('TurnOrderBar', () => {
       initialOrder.map((actor) => actorName(initialCombat, actor)),
     );
     expect(items[0]).toHaveAttribute('aria-current', 'step');
+    expect(items[0]).toHaveAttribute('data-selected');
+    expect(items[1]).not.toHaveAttribute('data-selected');
     expect(items[0]).toHaveClass('after:w-3');
     const initialActive = items[0]?.getAttribute('aria-label') ?? '';
 

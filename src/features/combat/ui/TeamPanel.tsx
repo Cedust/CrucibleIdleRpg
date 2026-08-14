@@ -57,11 +57,7 @@ function CharacterCard({ index }: { index: number }) {
   const xpRequired = xpRequiredForNextLevel(progression.level);
 
   return (
-    <Panel
-      as="article"
-      variant="thin"
-      className={`flex min-w-0 items-center gap-3 p-3 ${isDefeated ? 'opacity-55' : ''}`}
-    >
+    <Panel as="article" variant="thin" className="flex min-w-0 items-center gap-3 p-3">
       <CombatPortrait
         characterId={character.id}
         size="xl"
@@ -122,7 +118,7 @@ export function TeamPanel({ className = '' }: TeamPanelProps) {
   const hasCombat = useCombatStore((state) => state.combat !== null);
 
   return (
-    <section aria-label="Party" className={`min-w-0 ${className}`}>
+    <section aria-label="Party" className={`min-h-0 min-w-0 ${className}`}>
       <h2 className="mb-3 text-center font-display text-display-sm text-accent-strong">Heroes</h2>
       {!hasCombat ? (
         <p className="text-sm text-text-muted">Start a combat to see your party.</p>

@@ -1,6 +1,7 @@
 import { CombatPortrait } from './CombatPortrait';
 import { Panel } from '@/shared/ui/Panel';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { stateAttrs } from '@/shared/ui/state';
 import { bulwarkDamageFactor } from '@/features/combat/engine/bulwark';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -47,63 +48,62 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
   );
   const isDefeated = (slot?.health ?? 0) <= 0;
 
+  if (slot === null) {
+    return (
+      <article
+        data-testid="formation-slot"
+        aria-label={`Empty ${lane} slot ${slotIndex + 1}`}
+        {...stateAttrs({ semantic: 'empty' })}
+        className="flex min-h-44 min-w-0 flex-col gap-2 rounded-lg border border-dashed border-state-empty-border bg-surface/40 p-2 shadow-panel @min-[36rem]:p-3"
+      >
+        <div className="flex flex-1 items-center justify-center gap-3">
+          <span className="text-xs text-text-muted">Empty</span>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <Panel
       as="article"
       variant="thin"
       data-testid="formation-slot"
-      aria-label={
-        slot === null
-          ? `Empty ${lane} slot ${slotIndex + 1}`
-          : `${slot.name} ${lane} slot ${slotIndex + 1}`
-      }
-      className={`flex min-h-44 min-w-0 flex-col gap-2 p-2 sm:p-3 ${
-        slot === null ? 'opacity-20' : isDefeated ? 'opacity-55' : ''
-      }`}
+      aria-label={`${slot.name} ${lane} slot ${slotIndex + 1}`}
+      className="flex min-h-44 min-w-0 flex-col gap-2 p-2 @min-[36rem]:p-3"
     >
-      {slot === null ? (
-        <div className="flex flex-1 items-center justify-center gap-3">
-          <span className="text-xs text-text-muted">Empty</span>
-        </div>
-      ) : (
-        <>
-          <h4 className="w-full text-left text-sm font-semibold leading-tight text-text">
-            {slot.name}
-          </h4>
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <CombatPortrait size="lg" isDefeated={isDefeated} label={`${slot.name} portrait`} />
-            <dl className="min-w-0 flex-1 text-xs">
-              <div className="flex items-baseline justify-between gap-2">
-                <dt className="text-text-muted">
-                  {lane === 'frontline' ? 'Bulwark' : 'Bulwark DR'}
-                </dt>
-                <dd
-                  aria-label={
-                    lane === 'frontline'
-                      ? `${slot.name} Bulwark`
-                      : `${slot.name} Bulwark damage reduction`
-                  }
-                  className="font-semibold tabular-nums text-text"
-                >
-                  {PERCENT_FORMAT.format(slot.bulwarkValue)}
-                </dd>
-              </div>
-            </dl>
+      <h4 className="w-full text-left text-sm font-semibold leading-tight text-text">
+        {slot.name}
+      </h4>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <CombatPortrait size="lg" isDefeated={isDefeated} label={`${slot.name} portrait`} />
+        <dl className="min-w-0 flex-1 text-xs">
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="text-text-muted">{lane === 'frontline' ? 'Bulwark' : 'Bulwark DR'}</dt>
+            <dd
+              aria-label={
+                lane === 'frontline'
+                  ? `${slot.name} Bulwark`
+                  : `${slot.name} Bulwark damage reduction`
+              }
+              className="font-semibold tabular-nums text-text"
+            >
+              {PERCENT_FORMAT.format(slot.bulwarkValue)}
+            </dd>
           </div>
-          <div data-testid="enemy-health" className="w-full">
-            <ProgressBar
-              label="Health"
-              ariaLabel={`${slot.name} health`}
-              value={slot.health}
-              max={slot.maxHealth}
-              valueText={isDefeated ? 'FALLEN' : undefined}
-              hideLabel
-              tone="health"
-              size="sm"
-            />
-          </div>
-        </>
-      )}
+        </dl>
+      </div>
+      <div data-testid="enemy-health" className="w-full">
+        <ProgressBar
+          label="Health"
+          ariaLabel={`${slot.name} health`}
+          value={slot.health}
+          max={slot.maxHealth}
+          valueText={isDefeated ? 'FALLEN' : undefined}
+          hideLabel
+          tone="health"
+          size="sm"
+        />
+      </div>
     </Panel>
   );
 }
@@ -111,8 +111,11 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
 /** Gegneranzeige als verbindliche, ohne horizontalen Scrollbereich schrumpfende 2×3-Formation. */
 export function EnemyFormation({ className = '' }: EnemyFormationProps) {
   return (
-    <section aria-label="Enemy Formation" className={`min-w-0 ${className}`}>
-      <div data-testid="enemy-formation-grid" className="grid min-w-0 grid-cols-2 gap-2 sm:gap-3">
+    <section aria-label="Enemy Formation" className={`min-h-0 min-w-0 ${className}`}>
+      <div
+        data-testid="enemy-formation-grid"
+        className="grid min-w-0 grid-cols-2 gap-2 @min-[36rem]:gap-3"
+      >
         {LANES.map((lane) => (
           <section
             key={lane.id}

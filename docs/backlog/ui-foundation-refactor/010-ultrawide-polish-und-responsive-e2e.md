@@ -2,7 +2,7 @@
 
 | Feld             | Wert               |
 | ---------------- | ------------------ |
-| **Status**       | `blocked`          |
+| **Status**       | `ready`            |
 | **Meilenstein**  | UIF                |
 | **Hängt ab von** | 006, 007, 008, 009 |
 

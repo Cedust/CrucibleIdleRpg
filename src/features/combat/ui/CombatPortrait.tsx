@@ -1,5 +1,7 @@
 import type { CharacterId } from '@/game/types';
 import { Skull } from 'lucide-react';
+import { cn } from '@/shared/ui/cn';
+import { transitionState } from '@/shared/ui/state';
 
 type PortraitSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -10,10 +12,10 @@ const CHARACTER_PORTRAIT_SRC: Record<CharacterId, string> = {
 };
 
 const SIZE_CLASSES: Record<PortraitSize, string> = {
-  sm: 'size-9',
-  md: 'size-14',
-  lg: 'size-22',
-  xl: 'size-36',
+  sm: 'size-portrait-sm',
+  md: 'size-portrait-md',
+  lg: 'size-portrait-lg',
+  xl: 'size-portrait-xl',
 };
 
 interface CombatPortraitProps {
@@ -23,7 +25,11 @@ interface CombatPortraitProps {
   label?: string;
 }
 
-/** Einheitliche statische Portraits für Team, Gegner-Platzhalter und Zuganzeige. */
+/**
+ * Einheitliche statische Portraits für Team, Gegner-Platzhalter und Zuganzeige.
+ * Die Facette `data-defeated` dimmt ausschließlich diesen Art-Layer
+ * (FOUNDATION §6); Name und Werte daneben bleiben voll lesbar.
+ */
 export function CombatPortrait({
   characterId,
   size = 'md',
@@ -40,9 +46,13 @@ export function CombatPortrait({
           ? 'enemy-portrait-placeholder'
           : `character-portrait-${characterId}`
       }
-      className={`${SIZE_CLASSES[size]} shrink-0 overflow-hidden rounded-md border border-ornament/70 bg-surface-raised shadow-panel ${
-        isDefeated ? 'opacity-35 grayscale' : ''
-      }`}
+      data-defeated={isDefeated ? '' : undefined}
+      className={cn(
+        SIZE_CLASSES[size],
+        'shrink-0 overflow-hidden rounded-md border border-ornament/70 bg-surface-raised shadow-panel',
+        transitionState,
+        'data-defeated:opacity-(--state-deemphasis-medium) data-defeated:grayscale',
+      )}
     >
       {characterId === undefined ? (
         <div

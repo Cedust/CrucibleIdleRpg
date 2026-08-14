@@ -47,13 +47,14 @@ describe('EnemyFormation', () => {
     }
     expect(screen.getByRole('article', { name: 'Empty backline slot 3' })).toBeInTheDocument();
     for (const emptySlot of screen.getAllByRole('article', { name: /^Empty/ })) {
-      expect(emptySlot).toHaveClass('opacity-20');
+      expect(emptySlot).toHaveAttribute('data-semantic', 'empty');
+      expect(emptySlot).toHaveClass('border-dashed', 'border-state-empty-border');
     }
-    expect(screen.getByRole('article', { name: 'Slag Bulwark frontline slot 1' })).not.toHaveClass(
-      'opacity-20',
-    );
+    expect(
+      screen.getByRole('article', { name: 'Slag Bulwark frontline slot 1' }),
+    ).not.toHaveAttribute('data-semantic');
     for (const portrait of screen.getAllByTestId('enemy-portrait-placeholder')) {
-      expect(portrait).toHaveClass('size-22');
+      expect(portrait).toHaveClass('size-portrait-lg');
     }
     const slagCard = screen.getByRole('article', { name: 'Slag Bulwark frontline slot 1' });
     const slagName = within(slagCard).getByRole('heading', { name: 'Slag Bulwark' });
@@ -106,6 +107,7 @@ describe('EnemyFormation', () => {
 
     expect(screen.getAllByTestId('formation-slot')).toHaveLength(6);
     expect(screen.getByText('FALLEN')).toBeInTheDocument();
+    expect(screen.getAllByTestId('enemy-portrait-placeholder')[0]).toHaveAttribute('data-defeated');
     expect(screen.queryByText(`0 / ${state.enemies[0]?.maxHealth ?? 0}`)).not.toBeInTheDocument();
   });
 });

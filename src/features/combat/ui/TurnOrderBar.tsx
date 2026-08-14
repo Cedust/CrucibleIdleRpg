@@ -2,6 +2,8 @@ import type { ActorRef } from '@/features/combat/engine/combatState';
 import { sameActor } from '@/features/combat/engine/turnOrder';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useShallow } from 'zustand/react/shallow';
+import { cn } from '@/shared/ui/cn';
+import { selectedRing, selectedSurface, stateAttrs, transitionState } from '@/shared/ui/state';
 import { CombatPortrait } from './CombatPortrait';
 
 function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean }) {
@@ -29,9 +31,14 @@ function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean
     <li
       aria-current={isActive ? 'step' : undefined}
       aria-label={`${participant.name}${isActive ? ', active' : ''}`}
-      className={`relative flex shrink-0 items-center rounded-lg p-1 transition-colors after:absolute after:left-full after:top-1/2 after:h-px after:w-3 after:bg-border last:after:hidden ${
-        isActive ? 'bg-accent/15 ring-1 ring-accent shadow-glow-accent' : ''
-      }`}
+      {...stateAttrs({ selected: isActive })}
+      className={cn(
+        'relative flex shrink-0 items-center rounded-lg p-1',
+        transitionState,
+        selectedRing,
+        selectedSurface,
+        'after:absolute after:left-full after:top-1/2 after:h-px after:w-3 after:bg-border last:after:hidden',
+      )}
     >
       <CombatPortrait
         characterId={participant.id}
@@ -71,7 +78,8 @@ export function TurnOrderBar() {
       ) : (
         <ol
           aria-label="Combat turn order"
-          className="mx-auto flex max-w-full justify-center gap-3 overflow-x-auto p-1"
+          // -mx-2 px-2 stellt den Selection-Glow des aktiven Akteurs im Scroller frei.
+          className="-mx-2 flex justify-center gap-3 overflow-x-auto px-2 py-1"
         >
           {turnOrder.map((actor) => (
             <TurnOrderItem

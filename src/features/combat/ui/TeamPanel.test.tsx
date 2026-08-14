@@ -103,7 +103,7 @@ describe('TeamPanel & EnemyFormation — selektive Subscriptions', () => {
     expect(screen.getByRole('progressbar', { name: 'Korvin experience' })).toBeInTheDocument();
     const korvinCard = screen.getByTestId('character-portrait-korvin').closest('article');
     if (korvinCard === null) throw new Error('Korvin card missing');
-    expect(screen.getByTestId('character-portrait-korvin')).toHaveClass('size-36');
+    expect(screen.getByTestId('character-portrait-korvin')).toHaveClass('size-portrait-xl');
     expect(screen.getByTestId('korvin-details')).toHaveClass('flex-1');
     expect(screen.getByTestId('korvin-details')).not.toHaveClass('w-36');
     expect(within(korvinCard).getByText('Level 1')).toBeInTheDocument();

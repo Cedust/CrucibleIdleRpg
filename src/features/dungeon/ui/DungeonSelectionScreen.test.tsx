@@ -18,7 +18,11 @@ describe('DungeonSelectionScreen', () => {
     render(<DungeonSelectionScreen />);
 
     expect(screen.getByRole('heading', { name: 'Dungeons' })).toBeInTheDocument();
-    expect(screen.getByText('Choose a dungeon entrance.')).toHaveClass('font-intro');
+    expect(
+      screen.getByText(
+        'Descend into the ancient depths, where the ashes of a fallen kingdom conceal a forgotten world.',
+      ),
+    ).toHaveClass('font-intro');
 
     const acts = within(screen.getByRole('list', { name: 'Acts' })).getAllByRole('listitem');
     expect(acts).toHaveLength(3);

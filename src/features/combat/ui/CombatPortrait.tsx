@@ -1,7 +1,7 @@
 import type { CharacterId } from '@/game/types';
 import { Skull } from 'lucide-react';
-import { cn } from '@/shared/ui/cn';
-import { transitionState } from '@/shared/ui/state';
+import { cn } from '@/shared/ui/utils/cn';
+import { transitionState } from '@/shared/ui/utils/state';
 
 type PortraitSize = 'sm' | 'md' | 'lg' | 'xl';
 

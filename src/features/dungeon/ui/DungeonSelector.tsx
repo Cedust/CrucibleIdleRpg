@@ -1,8 +1,8 @@
 import { Check, Lock } from 'lucide-react';
 import { ACT_1_DUNGEON_IDS, type Act1DungeonId } from '@/game/encounters/act1';
 import { ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
-import { cn } from '@/shared/ui/cn';
-import { stateAttrs, transitionState } from '@/shared/ui/state';
+import { cn } from '@/shared/ui/utils/cn';
+import { stateAttrs, transitionState } from '@/shared/ui/utils/state';
 import { GATE_ART_SRC, gateVariantFor } from './gateArt';
 
 interface DungeonSelectorProps {

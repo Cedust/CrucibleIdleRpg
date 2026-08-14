@@ -18,11 +18,11 @@ Balancing-Literale sind über den Engine-Code verstreut:
 
 - [characterStats.ts](../../../src/features/combat/engine/characterStats.ts) (Z. 126–137):
   Waffen-Flat-Boni `+5`/`+3`/`+3`, Block `+0.15`.
-- [outgoingDamage.ts](../../../src/features/combat/engine/outgoingDamage.ts) (Z. 123, 151,
+- [outgoingDamage.ts](../../../src/features/combat/engine/damage/outgoingDamage.ts) (Z. 123, 151,
   190, 194, 232, 257, 262, 268, 281, 286, 295): Executioner `+0.5` mit Schwelle `0.25`,
   Zeroing `0.05`/Stack mit Caps `3`/`5`, Epicenter `0.5`, Focused Blast `0.25` mit Cap `1`,
   Aftershock `0.5`, Echo `0.5`, Second Wind `0.25`, Storm-Surge-Cap `2`.
-- [counter.ts](../../../src/features/combat/engine/counter.ts) (Z. 101) und
+- [counter.ts](../../../src/features/combat/engine/damage/counter.ts) (Z. 101) und
   [combatEngine.ts](../../../src/features/combat/engine/combatEngine.ts) (Z. 404):
   Escalating Retaliation `0.25` mit Cap `3`.
 - [masteryCombat.ts](../../../src/features/combat/engine/masteryCombat.ts) (Z. 28–49):

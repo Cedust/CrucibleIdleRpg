@@ -1,10 +1,10 @@
 import { CombatPortrait } from './CombatPortrait';
-import { cn } from '@/shared/ui/cn';
-import { Panel } from '@/shared/ui/Panel';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
-import { SectionTitle } from '@/shared/ui/SectionTitle';
-import { stateAttrs } from '@/shared/ui/state';
-import { bulwarkDamageFactor } from '@/features/combat/engine/bulwark';
+import { cn } from '@/shared/ui/utils/cn';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { ProgressBar } from '@/shared/ui/feedback/ProgressBar';
+import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
+import { stateAttrs } from '@/shared/ui/utils/state';
+import { bulwarkDamageFactor } from '@/features/combat/engine/damage/bulwark';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useShallow } from 'zustand/react/shallow';
 

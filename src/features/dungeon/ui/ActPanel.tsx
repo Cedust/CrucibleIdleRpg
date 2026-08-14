@@ -1,6 +1,6 @@
 import type { ActDisplayMeta } from '@/game/encounters/actMeta';
-import { cn } from '@/shared/ui/cn';
-import { FramedCard } from '@/shared/ui/FramedCard';
+import { cn } from '@/shared/ui/utils/cn';
+import { FramedCard } from '@/shared/ui/layout/FramedCard';
 import { DUNGEON_BACKGROUND_CLASSES } from './dungeonBackgrounds';
 import { Lock } from 'lucide-react';
 

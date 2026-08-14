@@ -16,7 +16,7 @@ Verhalten bleibt bit-identisch (bestehende ScriptedPrng-Tests als Beleg).
 Alle Fundstellen unter `src/features/combat/engine/`:
 
 - **NaN-Pfad Perfect Exploit:**
-  [outgoingDamage.ts](../../../src/features/combat/engine/outgoingDamage.ts) (Z. 206–208)
+  [outgoingDamage.ts](../../../src/features/combat/engine/damage/outgoingDamage.ts) (Z. 206–208)
   rechnet `(base.damage / baseDamage) * maxRaw`; bei `baseDamage === 0` mit erzwungenem Crit
   propagiert `NaN` bis in `enemy.health`.
 - **Wegwerf-Allokation:** `projectedState(state, hits)` (Z. 219–220) klont pro Kettenglied
@@ -34,7 +34,7 @@ Alle Fundstellen unter `src/features/combat/engine/`:
 - **Tote Exports:** `queueIndexOf`, `removeFromQueue`
   ([turnOrder.ts](../../../src/features/combat/engine/turnOrder.ts) Z. 87–89, 103–105),
   `actorAt` ([combatState.ts](../../../src/features/combat/engine/combatState.ts) Z. 338–343),
-  `bulwarkMalus` ([bulwark.ts](../../../src/features/combat/engine/bulwark.ts) Z. 50–55) —
+  `bulwarkMalus` ([bulwark.ts](../../../src/features/combat/engine/damage/bulwark.ts) Z. 50–55) —
   nur von den eigenen Tests genutzt.
 - **ID-Aufzählung:** `effectiveDamage: { korvin: 0, rhaya: 0, quinn: 0 }`
   (combatState.ts Z. 323) statt Aufbau über `TEAM_ORDER`.
@@ -62,7 +62,7 @@ Verlagerung der Balancing-Literale — [004](004-mastery-balancing-deklarativ.md
 
 ## Betroffene Dateien
 
-- `src/features/combat/engine/outgoingDamage.ts`, `combatEngine.ts`, `combatState.ts`, `turnOrder.ts`, `bulwark.ts` + Tests
+- `src/features/combat/engine/damage/outgoingDamage.ts`, `combatEngine.ts`, `combatState.ts`, `turnOrder.ts`, `damage/bulwark.ts` + Tests
 - `src/game/weaponMastery/mastery.ts` — Katalog-Cache
 
 ## Definition of Done

@@ -1,9 +1,9 @@
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
 import type { CharacterId } from '@/game/types';
-import { cn } from '@/shared/ui/cn';
-import { ROLE_ICON } from '@/shared/ui/roleIcons';
-import { stateAttrs, transitionState } from '@/shared/ui/state';
-import { useRovingFocus } from '@/shared/ui/useRovingFocus';
+import { cn } from '@/shared/ui/utils/cn';
+import { ROLE_ICON } from '@/shared/ui/icons/roleIcons';
+import { stateAttrs, transitionState } from '@/shared/ui/utils/state';
+import { useRovingFocus } from '@/shared/ui/utils/useRovingFocus';
 
 interface CharacterSwitcherProps {
   activeCharacterId: CharacterId;

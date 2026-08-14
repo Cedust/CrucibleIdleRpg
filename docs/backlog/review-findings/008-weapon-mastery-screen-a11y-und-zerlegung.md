@@ -14,7 +14,7 @@ zerlegt, und seine UI-Verdrahtung ist getestet.
 ## Befund
 
 Alle Fundstellen in
-[WeaponMasteryScreen.tsx](../../../src/features/weaponMastery/WeaponMasteryScreen.tsx):
+[WeaponMasteryScreen.tsx](../../../src/features/weaponMastery/ui/WeaponMasteryScreen.tsx):
 
 - **Dialog ohne Fokus-Management (Schwere: hoch):** Der Respec-Dialog (Z. 187–214) trägt
   `role="dialog"` + `aria-modal="true"`; Fokus-Move, Fokus-Trap und Escape fehlen — der
@@ -54,7 +54,7 @@ Alle Fundstellen in
 
 ## Betroffene Dateien
 
-- `src/features/weaponMastery/WeaponMasteryScreen.tsx` — Zerlegung
+- `src/features/weaponMastery/ui/WeaponMasteryScreen.tsx` — Zerlegung
 - `src/features/weaponMastery/` — neue Komponenten + Tests
 
 ## Definition of Done

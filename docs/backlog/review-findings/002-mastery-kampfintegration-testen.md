@@ -23,7 +23,7 @@ Die Engine-Tests laufen mit `neutralProgression` ausschließlich durch den Alles
 - [combatEngine.ts](../../../src/features/combat/engine/combatEngine.ts) (Z. 309–312,
   396–407): Verbrauch von `guarded` samt Write-back von `nextZeroing`, `guarded = true` nach
   Block mit Immovable Guard, Stack-Inkrement mit Cap 3.
-- [counter.ts](../../../src/features/combat/engine/counter.ts): `guardedReprisal`
+- [counter.ts](../../../src/features/combat/engine/damage/counter.ts): `guardedReprisal`
   (Z. 87–88), `escalatingRetaliation`-Bonus (Z. 100–101), `perfectRiposte` (Z. 166). In den
   `guaranteed`-Pfaden verschieben übersprungene Chance-Würfe die PRNG-Sequenz — das
   vorhandene ScriptedPrng-Protokoll deckt genau diese Fehlerklasse auf.

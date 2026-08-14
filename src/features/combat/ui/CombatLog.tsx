@@ -1,12 +1,12 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { cn } from '@/shared/ui/cn';
-import { Panel } from '@/shared/ui/Panel';
-import { SectionTitle } from '@/shared/ui/SectionTitle';
+import { cn } from '@/shared/ui/utils/cn';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import type { CombatEvent } from '@/features/combat/engine/combatEvents';
 import type { ActorRef, CombatState } from '@/features/combat/engine/combatState';
 import type { TickResult } from '@/features/combat/engine/combatEngine';
-import type { HitKind } from '@/features/combat/engine/outgoingDamage';
+import type { HitKind } from '@/features/combat/engine/damage/outgoingDamage';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { CombatPortrait } from './CombatPortrait';
 

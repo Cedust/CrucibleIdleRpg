@@ -5,7 +5,7 @@ import {
   type DisciplineId,
   type MasteryNode,
 } from '@/game/weaponMastery/mastery';
-import type { NodeAvailability } from '@/shared/ui/NodeButton';
+import type { NodeAvailability } from '@/shared/ui/controls/NodeButton';
 
 /** UI order only; game rules retain DISCIPLINES' canonical order. */
 export const MASTERY_TAB_ORDER = ['weapon', 'finesse', 'tempest', 'dominance', 'valor'] as const;

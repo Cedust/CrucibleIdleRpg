@@ -15,8 +15,8 @@ import {
   VIEWS,
   type View,
 } from '../navigationStore';
-import { cn } from '@/shared/ui/cn';
-import { focusRing, stateAttrs, transitionState } from '@/shared/ui/state';
+import { cn } from '@/shared/ui/utils/cn';
+import { focusRing, stateAttrs, transitionState } from '@/shared/ui/utils/state';
 import { CharacterSwitcher } from './CharacterSwitcher';
 
 const VIEW_ICONS: Record<View, LucideIcon> = {

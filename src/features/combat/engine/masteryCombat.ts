@@ -6,7 +6,7 @@ import {
   WEAPON_MODES,
 } from '@/game/weaponMastery/mastery';
 import type { CombatCharacter } from './combatState';
-import { NO_CRIT_NODES, type AttackContext, type MasteryEffects } from './outgoingDamage';
+import { NO_CRIT_NODES, type AttackContext, type MasteryEffects } from './damage/outgoingDamage';
 
 function has(character: CombatCharacter, id: string): boolean {
   return (character.masteryRanks?.[id] ?? 0) > 0;

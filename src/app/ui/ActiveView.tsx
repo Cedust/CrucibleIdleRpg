@@ -1,9 +1,9 @@
 import { useNavigationStore, VIEW_LABELS } from '../navigationStore';
-import { CrucibleScreen } from '@/features/crucible/CrucibleScreen';
+import { CrucibleScreen } from '@/features/crucible/ui/CrucibleScreen';
 import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
-import { ScreenHeader } from '@/shared/ui/ScreenHeader';
-import { ScreenLayout } from '@/shared/ui/ScreenLayout';
-import { WeaponMasteryScreen } from '@/features/weaponMastery/WeaponMasteryScreen';
+import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
+import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
+import { WeaponMasteryScreen } from '@/features/weaponMastery/ui/WeaponMasteryScreen';
 
 /** Renders the currently selected normal-shell view. */
 export function ActiveView() {

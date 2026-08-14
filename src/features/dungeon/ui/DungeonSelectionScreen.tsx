@@ -7,8 +7,8 @@ import {
   ACT_DISPLAY_META,
 } from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
-import { ScreenHeader } from '@/shared/ui/ScreenHeader';
-import { ScreenLayout } from '@/shared/ui/ScreenLayout';
+import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
+import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
 import { ActPanel } from './ActPanel';
 import { DungeonSelector } from './DungeonSelector';
 import { SelectedDungeonPanel } from './SelectedDungeonPanel';

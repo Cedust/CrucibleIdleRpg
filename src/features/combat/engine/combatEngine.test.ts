@@ -22,8 +22,8 @@ import {
   type CombatContext,
 } from './combatEngine';
 import type { CombatEvent, CombatEventType } from './combatEvents';
-import { NO_MITIGATION } from './damagePipeline';
-import { NO_CRIT_NODES } from './outgoingDamage';
+import { NO_MITIGATION } from './damage/damagePipeline';
+import { NO_CRIT_NODES } from './damage/outgoingDamage';
 import {
   characterFixture as character,
   combatStateFixture,

@@ -1,5 +1,5 @@
 import type { CrucibleNode, CrucibleRanks } from '@/game/crucible/crucible';
-import type { NodeConnection } from '@/shared/ui/useConnectionPaths';
+import type { NodeConnection } from '@/shared/ui/tree/useConnectionPaths';
 
 /** Derives visible edges and their state exclusively from catalog prerequisites. */
 export function crucibleConnections(

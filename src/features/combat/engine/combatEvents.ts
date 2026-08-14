@@ -1,5 +1,5 @@
 import type { ActorRef } from './combatState';
-import type { HitKind } from './outgoingDamage';
+import type { HitKind } from './damage/outgoingDamage';
 
 /**
  * Kampf-Events — was ein Takt berichtet (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).

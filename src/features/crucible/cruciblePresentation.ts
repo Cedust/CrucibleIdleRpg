@@ -1,5 +1,5 @@
 import { CRUCIBLE_IDS, type CrucibleTreeId } from '@/game/crucible/crucible';
-import type { IconName } from '@/shared/ui/Icon';
+import type { IconName } from '@/shared/ui/icons/Icon';
 
 export interface CrucibleTreePresentation {
   label: string;

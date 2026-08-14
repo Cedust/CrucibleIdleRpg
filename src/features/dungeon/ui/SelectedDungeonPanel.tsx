@@ -1,6 +1,6 @@
-import { Button } from '@/shared/ui/Button';
-import { Panel } from '@/shared/ui/Panel';
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { Button } from '@/shared/ui/controls/Button';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { ProgressBar } from '@/shared/ui/feedback/ProgressBar';
 
 interface SelectedDungeonPanelProps {
   actLabel: string;

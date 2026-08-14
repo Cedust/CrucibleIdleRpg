@@ -1,7 +1,7 @@
 import type { CharacterId } from '@/game/types';
 import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
-import { applySunder, type SunderEffect } from './bulwark';
+import { applySunder, type SunderEffect } from './damage/bulwark';
 import {
   beginRound,
   isAlive,
@@ -11,16 +11,16 @@ import {
   type CombatState,
 } from './combatState';
 import type { CombatEvent } from './combatEvents';
-import { resolveCounters } from './counter';
+import { resolveCounters } from './damage/counter';
 import {
   menacedAccuracy,
   NO_MITIGATION,
   resolveEnemyAttack,
   type IncomingDamageResult,
-} from './damagePipeline';
+} from './damage/damagePipeline';
 import { masteryContextFor } from './masteryCombat';
-import { resolveCharacterAttack, type AttackContext, type Hit } from './outgoingDamage';
-import { resolveRegeneration } from './regeneration';
+import { resolveCharacterAttack, type AttackContext, type Hit } from './damage/outgoingDamage';
+import { resolveRegeneration } from './damage/regeneration';
 import { pruneDefeated, sameActor, suppressPendingAction, takeNextActor } from './turnOrder';
 
 /**

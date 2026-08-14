@@ -2,8 +2,13 @@ import type { ActorRef } from '@/features/combat/engine/combatState';
 import { sameActor } from '@/features/combat/engine/turnOrder';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useShallow } from 'zustand/react/shallow';
-import { cn } from '@/shared/ui/cn';
-import { selectedRing, selectedSurface, stateAttrs, transitionState } from '@/shared/ui/state';
+import { cn } from '@/shared/ui/utils/cn';
+import {
+  selectedRing,
+  selectedSurface,
+  stateAttrs,
+  transitionState,
+} from '@/shared/ui/utils/state';
 import { CombatPortrait } from './CombatPortrait';
 
 function TurnOrderItem({ actor, isActive }: { actor: ActorRef; isActive: boolean }) {

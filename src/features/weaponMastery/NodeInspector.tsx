@@ -1,8 +1,8 @@
 import { minimumLevel, nodeById, type MasteryNode } from '@/game/weaponMastery/mastery';
 import { Button } from '@/shared/ui/Button';
 import { Panel } from '@/shared/ui/Panel';
+import { RankPips } from '@/shared/ui/NodeMedallion';
 import { MasteryNodeIcon } from './MasteryNodeIcon';
-import { MasteryRankPips } from './MasteryNodeButton';
 
 interface NodeInspectorProps {
   characterId: 'korvin' | 'rhaya' | 'quinn';
@@ -42,7 +42,7 @@ export function NodeInspector({
             {rank < node.maxRank ? ` · Next rank ${rank + 1}` : ''}
           </p>
           <div className="mt-2">
-            <MasteryRankPips rank={rank} maxRank={node.maxRank} />
+            <RankPips rank={rank} maxRank={node.maxRank} />
           </div>
         </div>
         <p className="mt-5 border-y border-border/70 py-4 text-sm leading-6 text-text-muted">

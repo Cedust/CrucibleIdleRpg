@@ -45,6 +45,26 @@ describe('WeaponMasteryScreen', () => {
     expect(await screen.findByText('No Mastery Points available.')).toBeInTheDocument();
   });
 
+  it('exposes node states as data attributes for the shared state system', async () => {
+    const user = userEvent.setup();
+    render(<WeaponMasteryScreen />);
+
+    const selected = screen.getByRole('button', { pressed: true });
+    expect(selected).toHaveAttribute('data-selected');
+
+    const available = screen.getAllByRole('button', { name: /, Available$/ })[0];
+    expect(available).toHaveAttribute('data-availability', 'available');
+    expect(available).not.toHaveAttribute('data-semantic');
+
+    const locked = screen.getAllByRole('button', { name: /, Locked$/ })[0];
+    expect(locked).toHaveAttribute('data-semantic', 'locked');
+    expect(locked).not.toHaveAttribute('data-availability');
+
+    await user.click(screen.getByRole('button', { name: 'Invest' }));
+    const insufficient = await screen.findAllByRole('button', { name: /, No Mastery Points$/ });
+    expect(insufficient[0]).toHaveAttribute('data-availability', 'insufficient');
+  });
+
   it('shows the lore intro and available Mastery Points in the header', () => {
     render(<WeaponMasteryScreen />);
 

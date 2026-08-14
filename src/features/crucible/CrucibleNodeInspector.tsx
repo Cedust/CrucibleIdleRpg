@@ -9,8 +9,8 @@ import {
 import { Button } from '@/shared/ui/Button';
 import { Icon } from '@/shared/ui/Icon';
 import { Panel } from '@/shared/ui/Panel';
+import { RankPips } from '@/shared/ui/NodeMedallion';
 import { Tooltip } from '@/shared/ui/Tooltip';
-import { CrucibleRankPips } from './CrucibleNodeButton';
 import { crucibleNodeIcon } from './cruciblePresentation';
 
 interface CrucibleNodeInspectorProps {
@@ -64,7 +64,7 @@ export function CrucibleNodeInspector({
             Rank {rank} / {node.maxRank}
           </p>
           <div className="mt-2">
-            <CrucibleRankPips rank={rank} maxRank={node.maxRank} />
+            <RankPips rank={rank} maxRank={node.maxRank} />
           </div>
         </div>
 

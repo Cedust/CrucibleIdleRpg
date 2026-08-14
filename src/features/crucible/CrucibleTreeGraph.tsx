@@ -74,7 +74,7 @@ function GraphNode({
       node={node}
       rank={rank}
       state={state}
-      isSelected={selectedId === node.id}
+      selected={selectedId === node.id}
       nextRankCost={rank >= node.maxRank ? null : rankCost(rank + 1)}
       layout={layout}
       tooltipAlign={tooltipAlign}

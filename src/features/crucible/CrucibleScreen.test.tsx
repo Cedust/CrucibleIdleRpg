@@ -159,21 +159,24 @@ describe('CrucibleScreen', () => {
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    expect(screen.getByRole('button', { name: /Armory, rank 0 of 4, Locked/ })).toBeInTheDocument();
+    const armory = screen.getByRole('button', { name: /Armory, rank 0 of 4, Locked/ });
+    expect(armory).toHaveAttribute('data-semantic', 'locked');
+    expect(armory).not.toHaveAttribute('data-availability');
 
     await user.click(screen.getByRole('tab', { name: 'SMELTING FLAMES' }));
     expect(
       screen.getByRole('button', { name: /Overpower, rank 2 of 5, Needs 3 Relic Shards/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /Iron Skin, rank 0 of 5, Available/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /Unyielding, rank 5 of 5, Max/ }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('data-availability', 'insufficient');
+    const ironSkin = screen.getByRole('button', { name: /Iron Skin, rank 0 of 5, Available/ });
+    expect(ironSkin).toHaveAttribute('data-availability', 'available');
+    expect(ironSkin).not.toHaveAttribute('data-semantic');
+    expect(screen.getByRole('button', { name: /Unyielding, rank 5 of 5, Max/ })).toHaveAttribute(
+      'data-availability',
+      'max',
+    );
     expect(
       screen.getByRole('button', { name: /Quick Step, rank 1 of 5, Next rank available/ }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('data-availability', 'available');
     for (const status of [
       'Locked',
       'Available',
@@ -311,6 +314,7 @@ describe('CrucibleScreen', () => {
     mitigation.focus();
     await user.keyboard('{Enter}');
     expect(mitigation).toHaveAttribute('aria-pressed', 'true');
+    expect(mitigation).toHaveAttribute('data-selected');
     expect(screen.getByRole('heading', { name: 'Mitigation' })).toBeInTheDocument();
   });
 

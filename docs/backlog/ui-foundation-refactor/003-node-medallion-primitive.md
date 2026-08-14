@@ -1,10 +1,10 @@
 # 003 — Node-Medallion-Primitive
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | UIF     |
-| **Hängt ab von** | 001     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | UIF    |
+| **Hängt ab von** | 001    |
 
 ## Ziel
 

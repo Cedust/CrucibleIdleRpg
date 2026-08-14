@@ -100,6 +100,14 @@ auf. Der vollständige Politur-Pass über alle Screens bleibt in [M6](#m6--endga
 **020** bleibt unabhängig von 019 und kann parallel zu 021 umgesetzt werden. Simulation, Stores
 und Save-Schema bleiben unverändert; die freigegebene Crucible-Konsolidierung ist Teil von 020.
 
+### UIF — UI-Foundation-Refactor (zwischen M2.5 und M3)
+
+Eigener Meilenstein auf `feat/ui-fundament`: Viewport-Shell, hybrid-fluides Layout,
+State-System und die Konsolidierungswelle der Shared Primitives (UIF-001–022, alle `done`).
+Tasks und Style-Guide: [ui-foundation-refactor/](ui-foundation-refactor/README.md).
+Koordination: Task 021 (Combat-Feedback) berührt dieselben Combat-UI-Dateien wie UIF-009 und
+UIF-021 — nacheinander bearbeiten, Reihenfolge frei.
+
 ## M3 — Ausrüstung
 
 Vier Armor-Slots, Innate-Affixe, Item-Level, Seltenheit, Item-Drops, Equip-Ansicht

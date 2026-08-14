@@ -169,3 +169,26 @@ Vom Abschluss-Review benannt, bewusst offen gelassen:
    Teil-Mitigation.
 5. **`hoverBorder`** hat aktuell keinen Konsumenten — das Fragment bleibt als kanonischer
    Teil der state.ts-API für kommende Self-Hover-Konsumenten (M3-Slots).
+
+## D-010 — Entscheidungen der Konsolidierungswelle (UIF-012–022)
+
+Umsetzung mit adversarialem Review-Gate je größerem Diff (Multi-Agent-Verifikation vor Commit);
+je Task ein Conventional Commit auf `feat/ui-fundament`.
+
+1. **Container-Tokens landen mit ihren Konsumenten** (UIF-018 statt UIF-012): Der Review der
+   Token-Nachträge bestätigte, dass `--container-tree-cols`/`--container-branch-cols` ohne
+   Konsumenten tote Tokens wären und die Doku den Ist-Zustand überzeichnet hätte — die Tokens
+   zogen in den Sweep-Task um (Präzedenz UIF-003: Primitive + Konsumenten in einem Commit).
+2. **`NodeButton`: Mastery behält md-Medaillons** über die explizite `medallionSize`-Prop.
+   Die Plan-Kopplung „standard-Layout ⇒ lg" hätte die Mastery-Medaillons von 64 auf 80 px
+   springen lassen; die Badge skaliert stattdessen mit der Medaillongröße (lg 6/3.5, md 5/3) —
+   die Crucible-Branch-Badges werden dadurch minimal kleiner (6 → 5).
+3. **Connector-Routing vereinheitlicht auf H+V:** Die geteilte `useConnectionPaths` übernimmt
+   die Crucible-Implementierung (gerundete Koordinaten, Gleichheits-Guard). Steile
+   Mastery-Kanten routen seither V-H-V statt erzwungen horizontal — Teil des Sichtpasses.
+4. **`masteryNodeAvailability` dupliziert die `purchaseFailure`-Regeln bewusst** (UI-seitige
+   strukturelle Ableitung statt Game-API-Änderung; die Sperr-Achse gewinnt gegen fehlende
+   Punkte). Drift-Schutz: Unit-Tests decken alle Zweige inklusive `exclusiveWith` und
+   `sharedCapstone` ab (Review-Finding der Welle).
+5. **UIF-019 ersetzt die D-009-Verschiebung der Nav-Migration:** Der genehmigte Plan enthielt
+   die Migration explizit; D-009 Punkt 1 dokumentiert den erreichten Stand.

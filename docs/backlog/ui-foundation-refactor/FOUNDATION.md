@@ -159,7 +159,9 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
 Der `--container-*`-Namespace trägt zwei Rollen: Screen-Caps (`max-w-*`) und
 Container-Query-Stützstellen (`@tree-cols:`, `@branch-cols:`), unterschieden über den Namen.
 Das `min-w-200` der Mastery-Tab-Leiste bleibt numerisch — ein eigenständiger Lesbarkeits-Floor,
-der nur zufällig wertgleich mit `--container-branch-cols` ist.
+der nur zufällig wertgleich mit `--container-branch-cols` ist. Die Dungeon-Hintergründe leben
+in zwei absichtlichen Maps: `ScreenLayout` trägt die Screen-Art, `dungeonBackgrounds.ts` die
+Karten-Art (nur `ashen-depths` nutzt eine eigene Karten-Variante).
 Schwarz-Literale bleiben Scrims und Schatten vorbehalten (`backdrop:bg-black/70` des Dialogs,
 `--drop-shadow-text-contrast`); alle anderen Farben laufen über Palette-Tokens.
 
@@ -256,7 +258,9 @@ Karten und Slots, `px-4 py-3` Leisten — eine bewusste Rhythmus-Skala, kein Dri
 
 Bewusst ohne eigenes Primitive: Panel-State-API (Panel bleibt zustandslose Fläche), generisches
 SelectableTile, Slot-Primitive (Item-Slots kommen mit M3; `semantic="empty"` + Tokens tragen bis
-dahin).
+dahin), ResourceStat/CurrencyDisplay (die Ressourcen-Anzeige wird mit M4 neu verortet,
+Grundsatzentscheidung 2). `CombatPortrait` bleibt in `features/combat/ui` — alle Konsumenten
+sind Combat-Komponenten.
 
 ## 8. Responsive-Validierungsmatrix
 

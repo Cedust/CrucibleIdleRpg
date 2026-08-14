@@ -11,8 +11,9 @@ interface OrnateTabsProps {
 }
 
 /**
- * Tab-Leiste der Tree-Screens: eigener X-Scroller als
- * Fallback schmaler Container, Höhe aus `h-tab-strip`.
+ * Tab-Leiste der Tree-Screens: eine durchgehende flache Leiste mit
+ * Haarlinien-Rahmen und Eckwinkeln, eigener X-Scroller als Fallback schmaler
+ * Container, Höhe aus `h-tab-strip`.
  */
 export function OrnateTabs({ label, className, children }: OrnateTabsProps) {
   return (
@@ -21,7 +22,8 @@ export function OrnateTabs({ label, className, children }: OrnateTabsProps) {
         role="tablist"
         aria-label={label}
         aria-orientation="horizontal"
-        className={cn('grid h-tab-strip gap-1', className)}
+        data-ornate-tab-bar
+        className={cn('ornate-tab-bar ornate-corners relative grid h-tab-strip', className)}
       >
         {children}
       </div>
@@ -33,26 +35,20 @@ interface OrnateTabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   selected: boolean;
   /** id des kontrollierten Tabpanels (`aria-controls`). */
   controls: string;
-  /** Render-Slot der Tab-Fläche; stylt sich über `group-data-selected`. */
-  surface: ReactNode;
   children: ReactNode;
 }
 
 /**
- * Einzelner Tab mit 9-Slice-Ornamentrahmen. Der Focus-Ring liegt mit
- * Offset -5px innen, weil der Frame-Überhang einen Außen-Ring clippen
- * würde. Das horizontale Padding ist an die Strip-Höhe
- * gekoppelt und hält den Inhalt in der Rahmenöffnung zwischen den breiten
- * Endstücken.
+ * Einzelnes Segment der Tab-Leiste. Inaktiv trägt es nur die Trennlinie zum
+ * Vorgänger und einen neutralen Hover-Lift; die Selektion liegt als eingesetzte
+ * Goldfläche mit Glut-Verlauf und Eckwinkeln darüber. Die Fläche liegt im
+ * isolierten Button hinter dem Inhalt (`-z-10`), Labels und Icons brauchen
+ * daher keine eigene Stapelordnung. Der Focus-Ring liegt innen, weil
+ * Leistenkante und X-Scroller einen Außen-Ring clippen würden; sein Offset
+ * hält ihn innerhalb der Selektionsfläche, damit Focus und Selektion nicht zu
+ * einer verdickten Goldlinie verschmelzen.
  */
-export function OrnateTab({
-  selected,
-  controls,
-  surface,
-  className,
-  children,
-  ...props
-}: OrnateTabProps) {
+export function OrnateTab({ selected, controls, className, children, ...props }: OrnateTabProps) {
   return (
     <button
       type="button"
@@ -61,23 +57,23 @@ export function OrnateTab({
       aria-controls={controls}
       {...stateAttrs({ selected })}
       className={cn(
-        'group relative isolate flex min-w-0 cursor-pointer items-center justify-center px-[calc(var(--spacing-tab-strip)*0.62*var(--tab-frame-scale))] text-center font-display text-xs tracking-wide',
+        'group relative isolate flex min-w-0 cursor-pointer items-center justify-center px-4 text-center font-display text-sm tracking-wide',
+        'not-first:border-l not-first:border-ornament/25',
         transitionState,
-        'text-text-muted hover:text-text data-selected:text-accent-strong',
-        'focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-[-5px] focus-visible:outline-state-focus',
+        'text-text-muted hover:bg-surface/70 hover:text-text',
+        'data-selected:bg-transparent data-selected:text-accent-strong',
+        'focus-visible:z-30 focus-visible:outline-2 focus-visible:-outline-offset-8 focus-visible:outline-state-focus',
         className,
       )}
       {...props}
     >
-      {surface}
       <span
         aria-hidden="true"
-        data-ornate-tab-frame
+        data-ornate-tab-selection
         className={cn(
-          'border-image-tab-ornate pointer-events-none absolute inset-0 z-10',
+          'ornate-tab-selection ornate-corners pointer-events-none absolute inset-1 -z-10 opacity-0',
           transitionState,
-          'opacity-(--state-deemphasis-weak) grayscale-25 group-hover:opacity-80',
-          'group-data-selected:opacity-100 group-data-selected:grayscale-0 group-data-selected:drop-shadow-glow-accent',
+          'group-data-selected:opacity-100',
         )}
       />
       {children}

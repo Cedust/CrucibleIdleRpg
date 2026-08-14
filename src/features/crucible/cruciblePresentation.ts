@@ -4,25 +4,12 @@ import type { IconName } from '@/shared/ui/icons/Icon';
 export interface CrucibleTreePresentation {
   label: string;
   icon: IconName;
-  tabBackgroundClass: string;
 }
 
 export const CRUCIBLE_TREE_PRESENTATION: Record<CrucibleTreeId, CrucibleTreePresentation> = {
-  anvil: {
-    label: 'ANVIL SPARKS',
-    icon: 'crucible-blacksmith',
-    tabBackgroundClass: 'bg-[url(/assets/backgrounds/crucible-tab-anvil-sparks.png)]',
-  },
-  smelting: {
-    label: 'SMELTING FLAMES',
-    icon: 'crucible-overpower',
-    tabBackgroundClass: 'bg-[url(/assets/backgrounds/crucible-tab-smelting-flames.png)]',
-  },
-  molten: {
-    label: 'MOLTEN CAST',
-    icon: 'crucible-rally',
-    tabBackgroundClass: 'bg-[url(/assets/backgrounds/crucible-tab-molten-cast.png)]',
-  },
+  anvil: { label: 'ANVIL SPARKS', icon: 'crucible-blacksmith' },
+  smelting: { label: 'SMELTING FLAMES', icon: 'crucible-overpower' },
+  molten: { label: 'MOLTEN CAST', icon: 'crucible-rally' },
 };
 
 export type CrucibleNodeId = (typeof CRUCIBLE_IDS)[keyof typeof CRUCIBLE_IDS];

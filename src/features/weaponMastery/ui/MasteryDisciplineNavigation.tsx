@@ -2,7 +2,6 @@ import type { CharacterId } from '@/game/types';
 import { investedPoints, type DisciplineId } from '@/game/weaponMastery/mastery';
 import { cn } from '@/shared/ui/utils/cn';
 import { OrnateTab, OrnateTabs } from '@/shared/ui/controls/OrnateTabs';
-import { transitionState } from '@/shared/ui/utils/state';
 import { useRovingFocus } from '@/shared/ui/utils/useRovingFocus';
 import { disciplineLabel, MASTERY_TAB_ORDER } from '../masteryPresentation';
 
@@ -72,29 +71,17 @@ export function MasteryDisciplineNavigation({
               controls={`mastery-tree-panel-${discipline}`}
               onClick={() => onSelect(discipline)}
               className="gap-2 font-semibold"
-              surface={
-                <span
-                  aria-hidden="true"
-                  data-ornate-tab-surface
-                  className={cn(
-                    'tab-ornate-surface pointer-events-none z-0',
-                    transitionState,
-                    'bg-background/85 group-hover:bg-surface/95',
-                    'group-data-selected:bg-transparent group-data-selected:bg-linear-to-b group-data-selected:from-ember/30 group-data-selected:via-ember/20 group-data-selected:to-surface/90 group-data-selected:shadow-glow-ember-inset',
-                  )}
-                />
-              }
               {...rovingProps(discipline)}
             >
               <span
                 aria-hidden="true"
                 data-mastery-tab-icon={iconName(discipline, characterId)}
                 className={cn(
-                  'relative z-20 size-7 shrink-0 bg-current mask-center mask-contain mask-no-repeat',
+                  'size-6 shrink-0 bg-current mask-center mask-contain mask-no-repeat',
                   iconClass(discipline, characterId),
                 )}
               />
-              <span className="relative z-20 truncate drop-shadow-text-contrast">
+              <span className="truncate">
                 {disciplineLabel(discipline, characterId)}
                 {points > 0 ? ` [${points}]` : ''}
               </span>

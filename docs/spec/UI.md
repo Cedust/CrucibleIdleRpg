@@ -90,7 +90,7 @@ Die Caps sind pro Screen-Typ definiert; ein globales Maximum bleibt offen.
 - State-Übergänge laufen über die gemeinsame `transition-state`-Utility, kombiniert mit
   `motion-reduce:transition-none`.
 - Komponentenspezifische Tokens brauchen eine dokumentierte Begründung; der Ember-Inset-Glow der
-  Mastery-Tabs ist die bestehende Ausnahme.
+  Tab-Selektion ist die bestehende Ausnahme.
 
 ## 5. State-Modell
 
@@ -201,9 +201,14 @@ Dokumentierte, bleibende Abweichungen:
 - Dungeon-Tore sind freigestellte `<img>`-Illustrationen direkt auf dem Screen-Hintergrund; ihre
   Zustände laufen über CSS auf dem Art-Layer. Ein Gold-Pfad mit Status-Medaillons verbindet die
   Tore zur Akt-Route.
-- Der Ember-Inset-Glow trägt die Identität der Mastery-Tabs als einziges
-  komponentenspezifisches State-Token.
-- Ornate-Tabs führen den Focus-Ring nach innen, weil der Frame-Überhang einen Außen-Ring clippt.
+- Die Tree-Tabs sind Segmente einer durchgehenden flachen Leiste: Haarlinien-Rahmen und
+  Eckwinkel tragen das Chrome, Gold und der Ember-Inset-Glow allein das aktive Segment. Der
+  Ember-Inset-Glow bleibt dabei das einzige komponentenspezifische State-Token. Eckwinkel und
+  Selektionsfläche sind CSS-Ornamente, weil ein 9-Slice-Rahmen auf dieser Bauhöhe schwerer
+  aufträgt als die Navigation trägt.
+- Ornate-Tabs führen den Focus-Ring nach innen, weil Leistenkante und X-Scroller einen
+  Außen-Ring clippen; sein Offset liegt innerhalb der Selektionsfläche, damit Focus und
+  Selektion getrennt lesbar bleiben.
 - Der CharacterSwitcher trägt einen verkleinerten Focus-Offset und handjustierte
   Prozent-Geometrie, beides auf das Portrait-Frame-Asset abgestimmt.
 - Controls senken im Disabled-Zustand ihre Opacity ganzheitlich, weil sie keinen

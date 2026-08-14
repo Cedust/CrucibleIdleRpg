@@ -6,15 +6,10 @@ import { OrnateTab, OrnateTabs } from './OrnateTabs';
 function renderTabs() {
   return render(
     <OrnateTabs label="Trees" className="grid-cols-2">
-      <OrnateTab
-        id="tab-one"
-        selected
-        controls="panel-one"
-        surface={<span data-testid="surface-one" />}
-      >
+      <OrnateTab id="tab-one" selected controls="panel-one">
         ONE
       </OrnateTab>
-      <OrnateTab id="tab-two" selected={false} controls="panel-two" surface={<span />}>
+      <OrnateTab id="tab-two" selected={false} controls="panel-two">
         TWO
       </OrnateTab>
     </OrnateTabs>,
@@ -27,7 +22,7 @@ describe('OrnateTabs', () => {
 
     const tablist = screen.getByRole('tablist', { name: 'Trees' });
     expect(tablist).toHaveAttribute('aria-orientation', 'horizontal');
-    expect(tablist).toHaveClass('h-tab-strip', 'grid-cols-2');
+    expect(tablist).toHaveClass('ornate-tab-bar', 'ornate-corners', 'h-tab-strip', 'grid-cols-2');
     expect(container.querySelector('.overflow-x-auto')).toContainElement(tablist);
   });
 
@@ -43,11 +38,16 @@ describe('OrnateTabs', () => {
     expect(two).not.toHaveAttribute('data-selected');
   });
 
-  it('rendert Surface-Slot und Ornamentrahmen je Tab', () => {
+  it('legt die Selektionsfläche hinter den Inhalt jedes Tabs', () => {
     renderTabs();
 
-    const one = screen.getByRole('tab', { name: 'ONE' });
-    expect(one).toContainElement(screen.getByTestId('surface-one'));
-    expect(one.querySelector('[data-ornate-tab-frame]')).toHaveClass('border-image-tab-ornate');
+    for (const name of ['ONE', 'TWO']) {
+      const tab = screen.getByRole('tab', { name });
+      expect(tab.querySelector('[data-ornate-tab-selection]')).toHaveClass(
+        'ornate-tab-selection',
+        'ornate-corners',
+        '-z-10',
+      );
+    }
   });
 });

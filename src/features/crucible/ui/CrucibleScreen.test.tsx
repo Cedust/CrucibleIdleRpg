@@ -39,21 +39,13 @@ describe('CrucibleScreen', () => {
     const anvilTab = screen.getByRole('tab', { name: 'ANVIL SPARKS' });
     const smeltingTab = screen.getByRole('tab', { name: 'SMELTING FLAMES' });
     const moltenTab = screen.getByRole('tab', { name: 'MOLTEN CAST' });
-    expect(anvilTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
-      'bg-[url(/assets/backgrounds/crucible-tab-anvil-sparks.png)]',
-    );
-    expect(smeltingTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
-      'bg-[url(/assets/backgrounds/crucible-tab-smelting-flames.png)]',
-    );
-    expect(moltenTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
-      'bg-[url(/assets/backgrounds/crucible-tab-molten-cast.png)]',
-    );
     expect(anvilTab).toHaveAttribute('data-selected');
     expect(anvilTab).toHaveAttribute('aria-selected', 'true');
     expect(smeltingTab).not.toHaveAttribute('data-selected');
     expect(moltenTab).not.toHaveAttribute('data-selected');
-    expect(anvilTab.querySelector('[data-ornate-tab-frame]')).toHaveClass(
-      'border-image-tab-ornate',
+    expect(trees).toHaveClass('ornate-tab-bar');
+    expect(anvilTab.querySelector('[data-ornate-tab-selection]')).toHaveClass(
+      'ornate-tab-selection',
     );
     expect(within(trees).queryByRole('tab', { name: 'MASTERWORK' })).not.toBeInTheDocument();
     const crucibleIntro = screen.getByText(

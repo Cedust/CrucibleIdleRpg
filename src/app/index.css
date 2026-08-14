@@ -92,8 +92,7 @@
    * SLOPE = (MAX − MIN) / 1920, präkomputiert.
    */
   --spacing-nav: clamp(18rem, calc(18rem + var(--fluid-delta) * 0.028125), 21.375rem);
-  --spacing-tab-strip: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0208333), 7.5rem);
-  --tab-frame-scale: 0.75; /* Anzeige-Faktor des Tab-Chromes relativ zur natürlichen Asset-Skalierung */
+  --spacing-tab-strip: clamp(3.25rem, calc(3.25rem + var(--fluid-delta) * 0.00625), 4rem);
   --spacing-inspector: clamp(19rem, calc(19rem + var(--fluid-delta) * 0.025), 22rem);
   --spacing-page-pad: clamp(1.5rem, calc(1.5rem + var(--fluid-delta) * 0.0041667), 2rem);
   --spacing-medallion: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0083333), 6rem);
@@ -195,46 +194,73 @@
 }
 
 /*
- * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 1536×424-Asset
- * trägt die Schienen in den Zeilen 84–128 und 297–342, die Endstücke in den
- * äußeren 380 Spalten (per Pixel-Messung). Das Mittelband
- * 132–294 liegt symmetrisch um die Diamant-Mitte y=213 — die Endstücke bleiben
- * dadurch bei jeder Tab-Höhe vertikal zentriert. Die Border-Breiten sind als
- * Asset-Anteile (y = 132/424, x = 380/424) an --spacing-tab-strip gekoppelt:
- * Ecken und Mittelband skalieren mit demselben Faktor, der Rahmen rendert bei
- * jeder Strip-Höhe formtreu. --tab-frame-scale zeigt das Chrome dünner als die
- * natürliche Skalierung; er wirkt auf Rahmen, Surface und Padding gemeinsam.
+ * Tab-Leiste der Tree-Screens: eine durchgehende, flache Fläche mit
+ * Haarlinien-Rahmen. Gold trägt allein das aktive Segment (UI.md §6); die
+ * Segmentgrenzen kommen als Trennlinie aus dem Tab selbst.
  */
-@utility border-image-tab-ornate {
-  --tab-frame-y: calc(var(--spacing-tab-strip) * 0.3113 * var(--tab-frame-scale));
-  --tab-frame-x: calc(var(--spacing-tab-strip) * 0.8962 * var(--tab-frame-scale));
-  border-style: solid;
-  border-width: var(--tab-frame-y) var(--tab-frame-x);
-  border-image: url('/assets/frames/tab-ornate.png') 132 380 130 380 / var(--tab-frame-y)
-    var(--tab-frame-x) stretch;
+@utility ornate-tab-bar {
+  border: 1px solid color-mix(in srgb, var(--color-ornament) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-background) 78%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-ornament) 16%, transparent);
 }
 
 /*
- * Tab-Fläche unter dem Ornamentrahmen. Insets und Notch sind als Asset-Anteile
- * an --spacing-tab-strip gekoppelt: Die Längskanten liegen in den
- * Schienen (Asset-Zeile 110 von 424), die Notch-Spitze fasst 12 Asset-Spalten
- * hinter die Bracket-Innenkante der Endstücke (Spalte 235, engster Punkt 247
- * auf Diamant-Höhe), die Notch-Schräge folgt der Bracket-Kurve mit Reserve.
+ * Aktive Tab-Fläche: Goldkante über einem Glut-Verlauf mit Inset-Glow und
+ * Akzent-Halo, in die Leiste eingesetzt. Trägt die Selektion beider
+ * Tree-Screens.
  */
-.tab-ornate-surface {
-  --tab-surface-inset-y: calc(var(--spacing-tab-strip) * 0.2594 * var(--tab-frame-scale));
-  --tab-surface-inset-x: calc(var(--spacing-tab-strip) * 0.5542 * var(--tab-frame-scale));
-  --tab-surface-notch: calc(var(--spacing-tab-strip) * 0.1297 * var(--tab-frame-scale));
-  position: absolute;
-  inset: var(--tab-surface-inset-y) var(--tab-surface-inset-x);
-  clip-path: polygon(
-    var(--tab-surface-notch) 0,
-    calc(100% - var(--tab-surface-notch)) 0,
-    100% 50%,
-    calc(100% - var(--tab-surface-notch)) 100%,
-    var(--tab-surface-notch) 100%,
-    0 50%
+@utility ornate-tab-selection {
+  border: 1px solid var(--color-accent);
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ember) 22%, transparent),
+    color-mix(in srgb, var(--color-surface) 92%, transparent) 55%,
+    color-mix(in srgb, var(--color-surface) 96%, transparent)
   );
+  box-shadow:
+    var(--shadow-glow-ember-inset),
+    0 0 14px -2px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/*
+ * Eckwinkel als Ornament flacher Chrome-Flächen, wo ein 9-Slice-Rahmen zu
+ * schwer trägt: vier Markenpaare (waagerecht und senkrecht) aus
+ * Linear-Gradients auf einem Overlay-Pseudoelement. Konsumenten justieren
+ * Farbe, Länge, Stärke und Kantenabstand über die --corner-*-Variablen und
+ * setzen die Positionierungsbasis selbst.
+ */
+.ornate-corners::after {
+  --corner-color: color-mix(in srgb, var(--color-ornament) 85%, transparent);
+  --corner-length: 0.625rem;
+  --corner-weight: 1px;
+  position: absolute;
+  inset: var(--corner-inset, 0.1875rem);
+  background-image:
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0);
+  background-repeat: no-repeat;
+  background-position:
+    top left,
+    top left,
+    top right,
+    top right,
+    bottom left,
+    bottom left,
+    bottom right,
+    bottom right;
+  background-size:
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length);
+  pointer-events: none;
+  content: '';
 }
 
 /*

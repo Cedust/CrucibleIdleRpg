@@ -184,7 +184,7 @@ test('keeps the ornamental mastery tabs inside their own narrow-screen scroller'
     'data-selected',
     '',
   );
-  await expect(page.locator('[data-ornate-tab-frame]').first()).toBeVisible();
+  await expect(page.locator('[data-ornate-tab-bar]').first()).toBeVisible();
 });
 
 test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({
@@ -204,14 +204,11 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
     'true',
   );
   await expect(
-    page.getByRole('tab', { name: 'ANVIL SPARKS' }).locator('[data-crucible-tab-surface]'),
-  ).toHaveCSS('background-image', /crucible-tab-anvil-sparks\.png/);
+    page.getByRole('tab', { name: 'ANVIL SPARKS' }).locator('[data-ornate-tab-selection]'),
+  ).toHaveCSS('opacity', '1');
   await expect(
-    page.getByRole('tab', { name: 'SMELTING FLAMES' }).locator('[data-crucible-tab-surface]'),
-  ).toHaveCSS('background-image', /crucible-tab-smelting-flames\.png/);
-  await expect(
-    page.getByRole('tab', { name: 'MOLTEN CAST' }).locator('[data-crucible-tab-surface]'),
-  ).toHaveCSS('background-image', /crucible-tab-molten-cast\.png/);
+    page.getByRole('tab', { name: 'SMELTING FLAMES' }).locator('[data-ornate-tab-selection]'),
+  ).toHaveCSS('opacity', '0');
   await expect(page.getByRole('tab')).toHaveCount(3);
   await expect(page.getByRole('tab', { name: 'MASTERWORK' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: /^Waystones,/ })).toBeVisible();
@@ -263,7 +260,7 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
   ]);
   expect(documentMetrics.scrollWidth).toBeLessThanOrEqual(documentMetrics.clientWidth);
   expect(navigationMetrics.scrollWidth).toBeGreaterThan(navigationMetrics.clientWidth);
-  await expect(page.locator('[data-ornate-tab-frame]').first()).toBeVisible();
+  await expect(page.locator('[data-ornate-tab-bar]').first()).toBeVisible();
 
   await page.setViewportSize({ width: 1180, height: 900 });
 

@@ -166,14 +166,15 @@ describe('WeaponMasteryScreen', () => {
     ).toBeInTheDocument();
   });
 
-  it('uses full-tab selection surfaces without an outer navigation frame', () => {
+  it('renders the disciplines as segments of one shared tab bar', () => {
     render(<WeaponMasteryScreen />);
 
     const navigation = screen.getByTestId('mastery-discipline-navigation');
+    const bar = screen.getByRole('tablist', { name: 'Disciplines' });
     const weapon = screen.getByRole('tab', { name: 'WARHAMMER' });
-    expect(navigation.querySelector(':scope > [data-ornate-tab-frame]')).not.toBeInTheDocument();
-    expect(weapon.querySelector('[data-ornate-tab-frame]')).toHaveClass('border-image-tab-ornate');
-    expect(weapon.querySelector('[data-ornate-tab-surface]')).toHaveClass('tab-ornate-surface');
+    expect(navigation).toContainElement(bar);
+    expect(bar).toHaveClass('ornate-tab-bar');
+    expect(weapon.querySelector('[data-ornate-tab-selection]')).toHaveClass('ornate-tab-selection');
   });
 
   it('closes an open respec dialog on character change', async () => {

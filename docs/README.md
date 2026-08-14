@@ -8,7 +8,7 @@ Interne Dokumentation ist Deutsch; Spieltexte, UI und Content sind Englisch.
 | ---------------------------- | ------------------------------------------------------- |
 | [adr/](adr/)                 | unveränderliche Entscheidungs-Historie                  |
 | [backlog/](backlog/)         | offene Fragen, Reihenfolge und konkrete Arbeitsaufträge |
-| [spec/](spec/)               | verbindliche Spielregeln und Formeln                    |
+| [spec/](spec/)               | verbindliche Spielregeln, Formeln und UI-Architektur    |
 | [DESIGN.md](DESIGN.md)       | Produktabsicht, Zielgefühl und Tonalität                |
 | [BALANCING.md](BALANCING.md) | Begründung der Balance-Leitplanken                      |
 | [GLOSSARY.md](GLOSSARY.md)   | verbindliche Begriffe für Prosa, UI und Code            |

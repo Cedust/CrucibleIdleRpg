@@ -84,7 +84,7 @@ export function SelectedDungeonPanel({
           disabled={disabled}
           onClick={onEnter}
         >
-          {isStarting ? 'ENTERING DUNGEON...' : 'ENTER DUNGEON'}
+          {isStarting ? 'ENTERING DUNGEON…' : 'ENTER DUNGEON'}
         </Button>
       </div>
     </Panel>

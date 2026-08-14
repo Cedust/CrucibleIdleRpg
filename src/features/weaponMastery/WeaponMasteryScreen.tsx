@@ -37,7 +37,9 @@ export function WeaponMasteryScreen() {
   if (save === null)
     return (
       <ScreenLayout background="weapon-mastery">
-        <p className="text-text-muted">Loading mastery…</p>
+        <p aria-live="polite" className="text-text-muted">
+          Loading mastery…
+        </p>
       </ScreenLayout>
     );
 

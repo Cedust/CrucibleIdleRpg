@@ -1,7 +1,7 @@
-import { Crosshair, Shield, Swords, type LucideIcon } from 'lucide-react';
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
-import type { CharacterId, Role } from '@/game/types';
+import type { CharacterId } from '@/game/types';
 import { cn } from '@/shared/ui/cn';
+import { ROLE_ICON } from '@/shared/ui/roleIcons';
 import { stateAttrs, transitionState } from '@/shared/ui/state';
 import { useRovingFocus } from '@/shared/ui/useRovingFocus';
 
@@ -9,12 +9,6 @@ interface CharacterSwitcherProps {
   activeCharacterId: CharacterId;
   onSelect: (characterId: CharacterId) => void;
 }
-
-const ROLE_ICON: Record<Role, LucideIcon> = {
-  tank: Shield,
-  melee: Swords,
-  ranged: Crosshair,
-};
 
 /** Compact, controlled party context for all character-scoped views. */
 export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwitcherProps) {
@@ -92,7 +86,7 @@ export function CharacterSwitcher({ activeCharacterId, onSelect }: CharacterSwit
             <RoleIcon
               aria-hidden="true"
               data-character-part="role-icon"
-              className="pointer-events-none absolute left-1/2 top-[5.5%] z-20 size-3.5 -translate-x-1/2 text-text-muted drop-shadow-[0_1px_2px_rgba(2,7,13,0.9)] group-data-selected:text-accent-strong"
+              className="pointer-events-none absolute left-1/2 top-[5.5%] z-20 size-3.5 -translate-x-1/2 text-text-muted drop-shadow-text-contrast group-data-selected:text-accent-strong"
             />
 
             <span

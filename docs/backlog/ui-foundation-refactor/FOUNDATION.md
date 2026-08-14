@@ -115,6 +115,7 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
   --text-xs: clamp(0.75rem, …, 0.9375rem);
   --text-sm: clamp(0.875rem, …, 1.09375rem);
   --text-base: clamp(1rem, …, 1.25rem);
+  --text-2xs: clamp(0.65rem, …, 0.8125rem); /* Mikro-Labels (Branch, Rank-Level) */
   --text-display-sm: clamp(0.875rem, …, 1.09375rem);
   /* --text-display / --text-display-lg analog */
 
@@ -137,6 +138,9 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
   --shadow-glow-accent-sm: 0 0 5px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
   --drop-shadow-glow-accent: 0 0 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
   --shadow-glow-ember-inset: inset 0 0 20px color-mix(in srgb, var(--color-ember) 42%, transparent);
+
+  /* — Text-Kontrast auf Bild-Hintergründen — */
+  --drop-shadow-text-contrast: 0 1px 3px rgb(0 0 0 / 0.95);
 }
 
 @utility transition-state {
@@ -145,6 +149,9 @@ Die Caps sind bewusst pro Screen-Typ definiert; ein globales Maximum gibt es nic
   transition-duration: 150ms;
 }
 ```
+
+Schwarz-Literale bleiben Scrims und Schatten vorbehalten (`backdrop:bg-black/70` des Dialogs,
+`--drop-shadow-text-contrast`); alle anderen Farben laufen über Palette-Tokens.
 
 Bewusst ohne Token: Panel-Gap (`gap-5` genügt), Button-Höhen (padding-getrieben), die
 `8rem`-Node-Spalten des Branch-Graphen (lokale TS-Konstante, ein Konsument), komponentenspezifische

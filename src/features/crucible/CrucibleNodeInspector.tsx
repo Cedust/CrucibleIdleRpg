@@ -7,9 +7,11 @@ import {
   type CrucibleNode,
 } from '@/game/crucible/crucible';
 import { Button } from '@/shared/ui/Button';
+import { cn } from '@/shared/ui/cn';
 import { Icon } from '@/shared/ui/Icon';
 import { Panel } from '@/shared/ui/Panel';
 import { RankPips } from '@/shared/ui/NodeMedallion';
+import { focusRing } from '@/shared/ui/state';
 import { Tooltip } from '@/shared/ui/Tooltip';
 import { crucibleNodeIcon } from './cruciblePresentation';
 
@@ -85,7 +87,7 @@ export function CrucibleNodeInspector({
                     {...trigger}
                     type="button"
                     aria-label="How Crucible rank costs work"
-                    className="rounded-full text-text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-state-focus"
+                    className={cn('rounded-full text-text-muted', focusRing)}
                   >
                     <CircleHelp aria-hidden="true" className="size-3.5" />
                   </button>

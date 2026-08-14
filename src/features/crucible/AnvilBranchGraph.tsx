@@ -240,7 +240,7 @@ function CrucibleBranch({
     >
       <h4
         id={headingId}
-        className="text-[0.65rem] font-semibold tracking-[0.16em] text-text-muted @min-[800px]:pt-7"
+        className="text-2xs font-semibold tracking-[0.16em] text-text-muted @min-[800px]:pt-7"
       >
         {branch.label}
       </h4>

@@ -53,7 +53,7 @@ export function CrucibleTreeNavigation({ activeTree, onSelect }: CrucibleTreeNav
               }
               {...rovingProps(tree)}
             >
-              <span className="relative z-20 truncate drop-shadow-[0_1px_3px_rgb(0_0_0/0.95)]">
+              <span className="relative z-20 truncate drop-shadow-text-contrast">
                 {presentation.label}
               </span>
             </OrnateTab>

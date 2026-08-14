@@ -159,7 +159,7 @@ export function MasteryTreeGraph({
                   <h3 className="font-display text-xs tracking-wide text-accent-strong">
                     {rank.label}
                   </h3>
-                  <p className="mt-1 text-[0.65rem] font-semibold uppercase tracking-wide text-text-muted">
+                  <p className="mt-1 text-2xs font-semibold uppercase tracking-wide text-text-muted">
                     Level {rank.level}
                   </p>
                 </header>

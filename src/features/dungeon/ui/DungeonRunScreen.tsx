@@ -165,7 +165,7 @@ export function DungeonRunScreen() {
   if (floorId === null) {
     return (
       <ScreenLayout as="main" scroll={false} className="min-h-0 flex-1 text-text">
-        Preparing dungeon run...
+        Preparing dungeon run…
       </ScreenLayout>
     );
   }
@@ -200,7 +200,7 @@ export function DungeonRunScreen() {
               <Panel as="section" aria-live="polite" className="shrink-0">
                 <h2 className="font-display text-display text-success">Floor complete</h2>
                 {completionStatus === 'saving' && (
-                  <p className="text-sm text-text-muted">Saving reward...</p>
+                  <p className="text-sm text-text-muted">Saving reward…</p>
                 )}
                 {completionStatus === 'saved' && lastReward !== null && (
                   <div className="space-y-3">

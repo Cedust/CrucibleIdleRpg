@@ -1,4 +1,3 @@
-import { Crosshair, Shield, Swords, type LucideIcon } from 'lucide-react';
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { xpRequiredForNextLevel } from '@/game/rewards/xpRewards';
 import type { Role } from '@/game/types';
@@ -6,6 +5,7 @@ import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Panel } from '@/shared/ui/Panel';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { ROLE_ICON } from '@/shared/ui/roleIcons';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { useShallow } from 'zustand/react/shallow';
 import { CombatPortrait } from './CombatPortrait';
@@ -14,12 +14,6 @@ const ROLE_LABEL: Record<Role, string> = {
   tank: 'Tank',
   melee: 'Melee',
   ranged: 'Ranged',
-};
-
-const ROLE_ICON: Record<Role, LucideIcon> = {
-  tank: Shield,
-  melee: Swords,
-  ranged: Crosshair,
 };
 
 interface TeamPanelProps {

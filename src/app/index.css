@@ -55,6 +55,13 @@
     1.09375rem
   );
   --text-base: clamp(1rem, calc(1rem + (min(100vw, 177.78vh) - 1920px) * 0.0020833), 1.25rem);
+  /* Mikro-Label unterhalb von text-xs (Branch-Beschriftung, Rank-Level-Caption) */
+  --text-2xs: clamp(
+    0.65rem,
+    calc(0.65rem + (min(100vw, 177.78vh) - 1920px) * 0.0013542),
+    0.8125rem
+  );
+  --text-2xs--line-height: 1.4;
 
   /* Hintergründe / Flächen (Stein-Töne) */
   --color-background: #02070d;
@@ -161,6 +168,9 @@
   --shadow-glow-accent-sm: 0 0 5px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
   --drop-shadow-glow-accent: 0 0 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
   --shadow-glow-ember-inset: inset 0 0 20px color-mix(in srgb, var(--color-ember) 42%, transparent);
+
+  /* Text-Kontrast auf Bild-Hintergründen (Tab-Labels, Rollen-Icons) */
+  --drop-shadow-text-contrast: 0 1px 3px rgb(0 0 0 / 0.95);
 }
 
 /*

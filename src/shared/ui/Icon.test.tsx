@@ -10,7 +10,7 @@ describe('Icon', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     const icon = container.firstElementChild as HTMLElement;
     expect(icon).toHaveAttribute('aria-hidden', 'true');
-    expect(icon).toHaveClass('bg-accent', 'size-6');
+    expect(icon).toHaveClass('bg-current', 'size-6');
   });
 
   it('wird mit Label zum benannten Bild', () => {

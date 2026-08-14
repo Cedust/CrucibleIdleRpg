@@ -65,7 +65,7 @@ interface IconProps {
  * Icon-Primitive für per CSS eingefärbte Assets aus public/assets/icons/
  * (hybride Asset-Strategie, DESIGN.md §5).
  */
-export function Icon({ name, size = 'md', label, className = 'bg-accent' }: IconProps) {
+export function Icon({ name, size = 'md', label, className = 'bg-current' }: IconProps) {
   return (
     <span
       role={label === undefined ? undefined : 'img'}

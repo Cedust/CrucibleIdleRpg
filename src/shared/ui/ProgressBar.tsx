@@ -1,4 +1,5 @@
 import { formatNumber } from '@/shared/utils/formatNumber';
+import { cn } from './cn';
 
 interface ProgressBarProps {
   label: string;
@@ -8,19 +9,27 @@ interface ProgressBarProps {
   valueText?: string;
   endLabel?: string;
   hideLabel?: boolean;
-  tone?: 'health' | 'barrier' | 'xp';
+  tone?: 'health' | 'barrier' | 'xp' | 'accent';
   size?: 'sm' | 'md';
+  labelSize?: 'xs' | 'sm';
+  className?: string;
 }
 
 const TONE_CLASSES = {
   health: 'from-danger/80 to-danger',
   barrier: 'from-info/80 to-info',
   xp: 'from-arcane/80 to-arcane',
+  accent: 'from-accent/80 to-accent',
 } as const;
 
 const SIZE_CLASSES = {
   sm: 'h-1.5',
   md: 'h-2.5',
+} as const;
+
+const LABEL_SIZE_CLASSES = {
+  xs: 'text-xs',
+  sm: 'text-sm',
 } as const;
 
 function percentage(value: number, max: number): number {
@@ -42,26 +51,29 @@ export function ProgressBar({
   hideLabel = false,
   tone = 'health',
   size = 'md',
+  labelSize = 'xs',
+  className,
 }: ProgressBarProps) {
   const safeValue = Math.min(Math.max(value, 0), Math.max(max, 0));
+  const labelSizeClass = LABEL_SIZE_CLASSES[labelSize];
 
   return (
-    <div className="space-y-1">
+    <div className={cn('space-y-1', className)}>
       {endLabel === undefined && hideLabel ? (
-        <div className="flex justify-center text-xs">
+        <div className={cn('flex justify-center', labelSizeClass)}>
           <span className="tabular-nums text-text-muted">
             {valueText ?? `${formatNumber(safeValue)} / ${formatNumber(max)}`}
           </span>
         </div>
       ) : endLabel === undefined ? (
-        <div className="flex items-baseline justify-between gap-3 text-xs">
+        <div className={cn('flex items-baseline justify-between gap-3', labelSizeClass)}>
           <span className="font-medium text-text">{label}</span>
           <span className="tabular-nums text-text-muted">
             {valueText ?? `${formatNumber(safeValue)} / ${formatNumber(max)}`}
           </span>
         </div>
       ) : (
-        <div className="grid grid-cols-[1fr_auto_1fr] items-baseline gap-2 text-xs">
+        <div className={cn('grid grid-cols-[1fr_auto_1fr] items-baseline gap-2', labelSizeClass)}>
           <span className="font-medium text-text">{label}</span>
           <span className="tabular-nums text-text-muted">
             {valueText ?? `${formatNumber(safeValue)} / ${formatNumber(max)}`}

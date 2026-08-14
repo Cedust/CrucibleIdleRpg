@@ -8,6 +8,7 @@ describe('ProgressBar', () => {
     ['health', 'Korvin health', 'from-danger/80 to-danger'],
     ['barrier', 'Korvin barrier', 'from-info/80 to-info'],
     ['xp', 'Korvin experience', 'from-arcane/80 to-arcane'],
+    ['accent', 'Dungeon progress', 'from-accent/80 to-accent'],
   ] as const)('renders the %s tone as an accessible single bar', (tone, ariaLabel, toneClass) => {
     const { container } = render(
       <ProgressBar
@@ -43,6 +44,24 @@ describe('ProgressBar', () => {
     expect(screen.queryByText('Health')).not.toBeInTheDocument();
     expect(screen.getByText('80 / 100').parentElement).toHaveClass('justify-center');
     expect(screen.getByRole('progressbar', { name: 'Slag Bulwark health' })).toBeInTheDocument();
+  });
+
+  it('skaliert die Label-Zeile über labelSize und erweitert das Root über className', () => {
+    render(
+      <ProgressBar
+        className="w-full @min-[19rem]:flex-1"
+        label="Progress"
+        value={3}
+        max={10}
+        labelSize="sm"
+      />,
+    );
+
+    expect(screen.getByText('Progress').parentElement).toHaveClass('text-sm');
+    expect(screen.getByRole('progressbar', { name: 'Progress' }).parentElement).toHaveClass(
+      'w-full',
+      '@min-[19rem]:flex-1',
+    );
   });
 
   it('supports level labels around a centered XP value', () => {

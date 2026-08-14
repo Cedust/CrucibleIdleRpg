@@ -36,26 +36,31 @@ describe('CrucibleScreen', () => {
     for (const label of ['ANVIL SPARKS', 'SMELTING FLAMES', 'MOLTEN CAST']) {
       expect(within(trees).getByRole('tab', { name: label })).toBeInTheDocument();
     }
-    expect(screen.getByRole('tab', { name: 'ANVIL SPARKS' })).toHaveClass(
+    const anvilTab = screen.getByRole('tab', { name: 'ANVIL SPARKS' });
+    const smeltingTab = screen.getByRole('tab', { name: 'SMELTING FLAMES' });
+    const moltenTab = screen.getByRole('tab', { name: 'MOLTEN CAST' });
+    expect(anvilTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
       'bg-[url(/assets/backgrounds/crucible-tab-anvil-sparks.png)]',
     );
-    expect(screen.getByRole('tab', { name: 'SMELTING FLAMES' })).toHaveClass(
+    expect(smeltingTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
       'bg-[url(/assets/backgrounds/crucible-tab-smelting-flames.png)]',
     );
-    expect(screen.getByRole('tab', { name: 'MOLTEN CAST' })).toHaveClass(
+    expect(moltenTab.querySelector('[data-crucible-tab-surface]')).toHaveClass(
       'bg-[url(/assets/backgrounds/crucible-tab-molten-cast.png)]',
+    );
+    expect(anvilTab).toHaveAttribute('data-state', 'active');
+    expect(smeltingTab).toHaveAttribute('data-state', 'inactive');
+    expect(moltenTab).toHaveAttribute('data-state', 'inactive');
+    expect(anvilTab.querySelector('[data-ornate-tab-frame]')).toHaveClass(
+      'border-image-tab-ornate',
     );
     expect(within(trees).queryByRole('tab', { name: 'MASTERWORK' })).not.toBeInTheDocument();
     const crucibleIntro = screen.getByText(
-      'Beneath the ruined kingdom, the ancient Crucible still burns.',
+      'Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed from conquered depths can be melted down and forged into new strength.',
     );
     expect(crucibleIntro).toBeInTheDocument();
     expect(crucibleIntro.closest('p')).toHaveClass('font-intro');
-    expect(
-      screen.getByText(
-        'Relic Shards reclaimed from conquered depths can be melted down here and forged into new strength.',
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText('0 Relic Shards', { exact: true })).toBeInTheDocument();
     expect(screen.queryByText(/Relic Shards available/)).not.toBeInTheDocument();
 
     const anvil = screen.getByRole('tabpanel', { name: 'ANVIL SPARKS' });
@@ -291,6 +296,14 @@ describe('CrucibleScreen', () => {
     await user.keyboard('{ArrowRight}{ArrowRight}');
 
     const moltenTab = screen.getByRole('tab', { name: 'MOLTEN CAST' });
+    expect(moltenTab).toHaveFocus();
+    expect(moltenTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{Home}');
+    expect(anvilTab).toHaveFocus();
+    expect(anvilTab).toHaveAttribute('aria-selected', 'true');
+
+    await user.keyboard('{End}');
     expect(moltenTab).toHaveFocus();
     expect(moltenTab).toHaveAttribute('aria-selected', 'true');
 

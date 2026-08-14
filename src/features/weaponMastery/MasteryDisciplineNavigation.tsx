@@ -96,13 +96,13 @@ export function MasteryDisciplineNavigation({
               >
                 <span
                   aria-hidden="true"
-                  data-mastery-tab-surface
-                  className={`mastery-tab-surface pointer-events-none z-0 transition-colors motion-reduce:transition-none ${active ? 'bg-linear-to-b from-ember/30 via-ember/20 to-surface/90 shadow-[inset_0_0_20px_rgb(226_88_34/0.42)]' : 'bg-background/85 group-hover:bg-surface/95'}`}
+                  data-ornate-tab-surface
+                  className={`tab-ornate-surface pointer-events-none z-0 transition-colors motion-reduce:transition-none ${active ? 'bg-linear-to-b from-ember/30 via-ember/20 to-surface/90 shadow-[inset_0_0_20px_rgb(226_88_34/0.42)]' : 'bg-background/85 group-hover:bg-surface/95'}`}
                 />
                 <span
                   aria-hidden="true"
-                  data-mastery-tab-frame
-                  className={`border-image-mastery-tab pointer-events-none absolute inset-0 z-10 transition-[opacity,filter] motion-reduce:transition-none ${active ? 'opacity-100 drop-shadow-[0_0_7px_rgb(245_158_11/0.35)]' : 'opacity-50 grayscale-[.25] group-hover:opacity-80'}`}
+                  data-ornate-tab-frame
+                  className={`border-image-tab-ornate pointer-events-none absolute inset-0 z-10 transition-[opacity,filter] motion-reduce:transition-none ${active ? 'opacity-100 drop-shadow-[0_0_7px_rgb(245_158_11/0.35)]' : 'opacity-50 grayscale-[.25] group-hover:opacity-80'}`}
                 />
                 <span
                   aria-hidden="true"

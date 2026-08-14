@@ -1,6 +1,5 @@
 import type { KeyboardEvent } from 'react';
 import { CRUCIBLE_TREES, type CrucibleTreeId } from '@/game/crucible/crucible';
-import { Panel } from '@/shared/ui/Panel';
 import { CRUCIBLE_TREE_PRESENTATION } from './cruciblePresentation';
 
 interface CrucibleTreeNavigationProps {
@@ -8,7 +7,7 @@ interface CrucibleTreeNavigationProps {
   onSelect: (tree: CrucibleTreeId) => void;
 }
 
-/** Horizontal tree tabs with decorative, non-semantic background art. */
+/** Horizontal tree tabs with clipped background art and individual ornamental frames. */
 export function CrucibleTreeNavigation({ activeTree, onSelect }: CrucibleTreeNavigationProps) {
   const handleTreeKeyDown = (event: KeyboardEvent<HTMLButtonElement>, tree: CrucibleTreeId) => {
     const currentIndex = CRUCIBLE_TREES.indexOf(tree);
@@ -33,49 +32,65 @@ export function CrucibleTreeNavigation({ activeTree, onSelect }: CrucibleTreeNav
   };
 
   return (
-    <Panel
-      as="aside"
-      variant="ornateCompact"
-      padding="none"
-      className="min-w-0"
+    <aside
       aria-label="Crucible tree selection"
+      className="min-w-0"
       data-testid="crucible-tree-navigation"
     >
-      <div
-        role="tablist"
-        aria-label="Trees"
-        aria-orientation="horizontal"
-        className="grid h-16 grid-cols-3"
-      >
-        {CRUCIBLE_TREES.map((tree) => {
-          const presentation = CRUCIBLE_TREE_PRESENTATION[tree];
-          const isActive = tree === activeTree;
+      <div className="overflow-x-auto py-1">
+        <div
+          role="tablist"
+          aria-label="Trees"
+          aria-orientation="horizontal"
+          className="grid h-16 min-w-168 grid-cols-3 gap-1"
+        >
+          {CRUCIBLE_TREES.map((tree) => {
+            const presentation = CRUCIBLE_TREE_PRESENTATION[tree];
+            const isActive = tree === activeTree;
 
-          return (
-            <button
-              key={tree}
-              id={`crucible-tree-tab-${tree}`}
-              type="button"
-              role="tab"
-              aria-label={presentation.label}
-              aria-selected={isActive}
-              aria-controls={`crucible-tree-panel-${tree}`}
-              tabIndex={isActive ? 0 : -1}
-              onClick={() => onSelect(tree)}
-              onKeyDown={(event) => handleTreeKeyDown(event, tree)}
-              className={`${presentation.tabBackgroundClass} flex min-w-0 items-center justify-center bg-cover bg-center bg-no-repeat px-2 text-center font-display text-xs tracking-wide bg-blend-multiply transition-colors motion-reduce:transition-none focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
-                tree === CRUCIBLE_TREES[0] ? '' : 'border-l border-border'
-              } ${
-                isActive
-                  ? 'bg-background/20 text-accent-strong shadow-[inset_0_-2px_var(--color-accent)]'
-                  : 'bg-background/65 text-text hover:bg-background/45 hover:text-accent-strong'
-              }`}
-            >
-              <span className="drop-shadow-[0_1px_3px_rgb(0_0_0/0.95)]">{presentation.label}</span>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={tree}
+                id={`crucible-tree-tab-${tree}`}
+                type="button"
+                role="tab"
+                aria-label={presentation.label}
+                aria-selected={isActive}
+                aria-controls={`crucible-tree-panel-${tree}`}
+                tabIndex={isActive ? 0 : -1}
+                data-state={isActive ? 'active' : 'inactive'}
+                onClick={() => onSelect(tree)}
+                onKeyDown={(event) => handleTreeKeyDown(event, tree)}
+                className={`group relative isolate flex min-w-0 items-center justify-center px-5 text-center font-display text-xs tracking-wide transition-colors motion-reduce:transition-none focus-visible:z-30 focus-visible:outline-2 focus-visible:outline-offset-[-5px] focus-visible:outline-accent ${
+                  isActive ? 'text-accent-strong' : 'text-text-muted hover:text-text'
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  data-crucible-tab-surface
+                  className={`${presentation.tabBackgroundClass} tab-ornate-surface pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-[filter,opacity] motion-reduce:transition-none ${
+                    isActive
+                      ? 'opacity-100 brightness-100 saturate-100'
+                      : 'opacity-75 brightness-60 saturate-50 group-hover:opacity-95 group-hover:brightness-85 group-hover:saturate-75'
+                  }`}
+                />
+                <span
+                  aria-hidden="true"
+                  data-ornate-tab-frame
+                  className={`border-image-tab-ornate pointer-events-none absolute inset-0 z-10 transition-[opacity,filter] motion-reduce:transition-none ${
+                    isActive
+                      ? 'opacity-100 drop-shadow-[0_0_7px_rgb(245_158_11/0.35)]'
+                      : 'opacity-50 grayscale-[.25] group-hover:opacity-80'
+                  }`}
+                />
+                <span className="relative z-20 truncate drop-shadow-[0_1px_3px_rgb(0_0_0/0.95)]">
+                  {presentation.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </Panel>
+    </aside>
   );
 }

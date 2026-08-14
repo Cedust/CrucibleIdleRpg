@@ -108,8 +108,9 @@ describe('WeaponMasteryScreen', () => {
 
     const navigation = screen.getByTestId('mastery-discipline-navigation');
     const weapon = screen.getByRole('tab', { name: 'WARHAMMER' });
-    expect(navigation.querySelector('.border-image-tab-ornate')).not.toBeInTheDocument();
-    expect(weapon.querySelector('[data-mastery-tab-surface]')).toHaveClass('mastery-tab-surface');
+    expect(navigation.querySelector(':scope > [data-ornate-tab-frame]')).not.toBeInTheDocument();
+    expect(weapon.querySelector('[data-ornate-tab-frame]')).toHaveClass('border-image-tab-ornate');
+    expect(weapon.querySelector('[data-ornate-tab-surface]')).toHaveClass('tab-ornate-surface');
   });
 
   it('closes an open respec dialog on character change', async () => {

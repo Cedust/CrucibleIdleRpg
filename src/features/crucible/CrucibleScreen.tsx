@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { Stone } from 'lucide-react';
 import {
   CRUCIBLE_NODES,
   crucibleNodeById,
+  formatRelicShards,
   investedRelicShards,
   purchaseFailure,
   RESPECCABLE_TREES,
@@ -60,13 +62,12 @@ export function CrucibleScreen() {
         <header className="mb-6 @min-[900px]:pr-80">
           <h2 className="font-display text-display-lg text-accent-strong">Crucible</h2>
           <p className="mt-1 font-intro text-sm leading-6 text-text-muted">
-            <span className="block">
-              Beneath the ruined kingdom, the ancient Crucible still burns.
-            </span>
-            <span className="block">
-              Relic Shards reclaimed from conquered depths can be melted down here and forged into
-              new strength.
-            </span>
+            Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed
+            from conquered depths can be melted down and forged into new strength.
+          </p>
+          <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-text">
+            <Stone aria-hidden="true" className="size-4 text-info" />
+            {formatRelicShards(save.currencies.relicShards)}
           </p>
         </header>
 
@@ -74,7 +75,7 @@ export function CrucibleScreen() {
           data-testid="crucible-layout"
           className="grid min-w-0 gap-5 @min-[1200px]:grid-cols-[minmax(0,1fr)_19rem] @min-[1200px]:items-start"
         >
-          <div className="min-w-0 space-y-5">
+          <div className="min-w-0 @min-[1200px]:col-start-1">
             <CrucibleTreeNavigation
               activeTree={tree}
               onSelect={(treeId) => {
@@ -82,6 +83,8 @@ export function CrucibleScreen() {
                 setSelectedId(null);
               }}
             />
+          </div>
+          <div className="min-w-0 @min-[1200px]:col-start-1 @min-[1200px]:row-start-2">
             <CrucibleTreeGraph
               tree={tree}
               nodes={nodes}
@@ -95,7 +98,7 @@ export function CrucibleScreen() {
             />
           </div>
           {selected ? (
-            <div className="min-w-0 @min-[1200px]:sticky @min-[1200px]:top-5 @min-[1200px]:mt-[5.25rem]">
+            <div className="min-w-0 @min-[1200px]:col-start-2 @min-[1200px]:row-start-2 @min-[1200px]:sticky @min-[1200px]:top-5">
               <CrucibleNodeInspector
                 node={selected}
                 rank={save.crucible[selected.id] ?? 0}

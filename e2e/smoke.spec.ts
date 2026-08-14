@@ -172,7 +172,7 @@ test('keeps the ornamental mastery tabs inside their own narrow-screen scroller'
     'data-state',
     'active',
   );
-  await expect(page.locator('[data-mastery-tab-frame]').first()).toBeVisible();
+  await expect(page.locator('[data-ornate-tab-frame]').first()).toBeVisible();
 });
 
 test('renders the Crucible graph without horizontal overflow at wide and stacked widths', async ({
@@ -191,18 +191,15 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
     'aria-selected',
     'true',
   );
-  await expect(page.getByRole('tab', { name: 'ANVIL SPARKS' })).toHaveCSS(
-    'background-image',
-    /crucible-tab-anvil-sparks\.png/,
-  );
-  await expect(page.getByRole('tab', { name: 'SMELTING FLAMES' })).toHaveCSS(
-    'background-image',
-    /crucible-tab-smelting-flames\.png/,
-  );
-  await expect(page.getByRole('tab', { name: 'MOLTEN CAST' })).toHaveCSS(
-    'background-image',
-    /crucible-tab-molten-cast\.png/,
-  );
+  await expect(
+    page.getByRole('tab', { name: 'ANVIL SPARKS' }).locator('[data-crucible-tab-surface]'),
+  ).toHaveCSS('background-image', /crucible-tab-anvil-sparks\.png/);
+  await expect(
+    page.getByRole('tab', { name: 'SMELTING FLAMES' }).locator('[data-crucible-tab-surface]'),
+  ).toHaveCSS('background-image', /crucible-tab-smelting-flames\.png/);
+  await expect(
+    page.getByRole('tab', { name: 'MOLTEN CAST' }).locator('[data-crucible-tab-surface]'),
+  ).toHaveCSS('background-image', /crucible-tab-molten-cast\.png/);
   await expect(page.getByRole('tab')).toHaveCount(3);
   await expect(page.getByRole('tab', { name: 'MASTERWORK' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: /^Waystones,/ })).toBeVisible();
@@ -218,12 +215,20 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
   const layout = page.getByTestId('crucible-layout');
   const navigation = page.getByTestId('crucible-tree-navigation');
   const graph = page.getByTestId('crucible-tree-graph');
+  const inspector = page.getByRole('complementary', { name: 'Crucible node inspector' });
   const tablist = page.getByRole('tablist', { name: 'Trees' });
   const wideLayout = await gridMetrics(layout);
   expect(wideLayout.columns).toBe(2);
   expect(wideLayout.scrollWidth).toBeLessThanOrEqual(wideLayout.clientWidth);
   expect((await gridMetrics(tablist)).columns).toBe(3);
   expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+  const [graphBox, inspectorBox] = await Promise.all([
+    graph.boundingBox(),
+    inspector.boundingBox(),
+  ]);
+  if (graphBox === null || inspectorBox === null)
+    throw new Error('Crucible panels are not visible');
+  expect(Math.abs(graphBox.y - inspectorBox.y)).toBeLessThan(1);
 
   await page.setViewportSize({ width: 1180, height: 900 });
   const stackedLayout = await gridMetrics(layout);
@@ -231,6 +236,24 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
   expect(stackedLayout.scrollWidth).toBeLessThanOrEqual(stackedLayout.clientWidth);
   expect((await gridMetrics(tablist)).columns).toBe(3);
   expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+
+  await page.setViewportSize({ width: 768, height: 900 });
+  const scroller = navigation.locator('.overflow-x-auto');
+  const [documentMetrics, navigationMetrics] = await Promise.all([
+    page.locator('html').evaluate((element) => {
+      const html = element as unknown as { clientWidth: number; scrollWidth: number };
+      return { clientWidth: html.clientWidth, scrollWidth: html.scrollWidth };
+    }),
+    scroller.evaluate((element) => {
+      const tabs = element as unknown as { clientWidth: number; scrollWidth: number };
+      return { clientWidth: tabs.clientWidth, scrollWidth: tabs.scrollWidth };
+    }),
+  ]);
+  expect(documentMetrics.scrollWidth).toBeLessThanOrEqual(documentMetrics.clientWidth);
+  expect(navigationMetrics.scrollWidth).toBeGreaterThan(navigationMetrics.clientWidth);
+  await expect(page.locator('[data-ornate-tab-frame]').first()).toBeVisible();
+
+  await page.setViewportSize({ width: 1180, height: 900 });
 
   await page.getByRole('tab', { name: 'MOLTEN CAST' }).click();
   await expect(page.getByRole('button', { name: /^Mitigation,/ })).toBeVisible();

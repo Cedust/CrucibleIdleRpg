@@ -110,30 +110,18 @@
 }
 
 /*
- * Kompakte Overlay-Variante des großen Ornamentrahmens für die flache
- * Crucible-Tree-Navigation. Sie nutzt dasselbe Asset und denselben Slice,
- * beeinflusst als absoluter Layer aber nicht die 64 px hohe Tab-Fläche.
+ * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 2172×724-Asset
+ * hält seine Endstücke innerhalb der äußeren 300 px und die horizontalen Schienen
+ * außerhalb der mittleren 204 px. Die kleine Border-Breite bewahrt bei 64 px
+ * Tab-Höhe genügend Raum für Live-Text und optionale Icons.
  */
 @utility border-image-tab-ornate {
   border-style: solid;
-  border-width: 30px;
-  border-image: url('/assets/frames/panel-ornate.png') 400 / 30px round;
-  border-image-outset: 9px 10.125px 12px 10.125px;
-}
-
-/*
- * Flacher 9-Slice-Rahmen für die fünf Weapon-Mastery-Discipline-Tabs. Das
- * generierte 2172×724-Asset hält seine Endstücke innerhalb der äußeren 300 px
- * und die horizontalen Schienen außerhalb der mittleren 204 px. Die kleine
- * Border-Breite bewahrt bei 64 px Tab-Höhe genügend Raum für Icon und Live-Text.
- */
-@utility border-image-mastery-tab {
-  border-style: solid;
   border-width: 16px 24px;
-  border-image: url('/assets/frames/weapon-mastery-discipline-tab.png') 260 300 / 16px 24px stretch;
+  border-image: url('/assets/frames/tab-ornate.png') 260 300 / 16px 24px stretch;
 }
 
-.mastery-tab-surface {
+.tab-ornate-surface {
   position: absolute;
   inset: 0.75rem 0.5rem;
   clip-path: polygon(

@@ -708,12 +708,12 @@ transparency shown as checkerboard, baked-in dark backdrop, separate active and 
 versions, multiple frames in one image, mockup presentation
 ```
 
-## 24. Weapon-Mastery-Discipline-Tab-Rahmen (9-Slice)
+## 24. Gemeinsamer Ornament-Tabrahmen (9-Slice)
 
-- **Zieldatei:** `public/assets/frames/weapon-mastery-discipline-tab.png`
+- **Zieldatei:** `public/assets/frames/tab-ornate.png`
 - **Format:** sehr breites Querformat 4:1, mindestens 1600×400
-- **Verwendung:** Ein gemeinsamer skalierbarer Ornamentrahmen für alle fünf Discipline-Tabs der
-  Weapon-Mastery-Ansicht. Icon, Discipline-Name, investierte Punkte, Innenfläche und sämtliche
+- **Verwendung:** Ein gemeinsamer skalierbarer Ornamentrahmen für Weapon-Mastery-, Crucible- und
+  vergleichbare Tree-Tabs. Icons, Live-Labels, investierte Punkte, Innenfläche und sämtliche
   Interaktionszustände bleiben Live-UI.
 - **Technik:** Vollständig transparenter Außenbereich und vollständig transparente
   Rahmenöffnung. Die seitlichen Endstücke bleiben beim 9-Slice-Skalieren unverändert; lange,
@@ -727,9 +727,9 @@ versions, multiple frames in one image, mockup presentation
 ```text
 Use case: stylized-concept
 Asset type: reusable horizontal 9-slice ornamental tab frame for a dark fantasy game UI
-Primary request: one shallow imperial metal frame for a Weapon Mastery discipline tab,
-designed to turn live text and a separately rendered icon into a strong game-style tab while
-remaining reusable for five different labels and interaction states
+Primary request: one shallow imperial metal frame for a reusable game UI tree tab,
+designed to turn live text, optional separately rendered icons, and contained background art into
+a strong game-style tab while remaining reusable for different labels and interaction states
 Canvas and transparency: exact 4:1 landscape aspect ratio, at least 1600 by 400 pixels; true
 transparent alpha outside the ornament and throughout the entire inner opening; preserve a
 clear transparent safety margin around every outer point; do not simulate transparency with
@@ -737,8 +737,8 @@ black, white, or a checkerboard
 Structure: strict left-right symmetry; a long shallow frame with stepped, slightly clipped
 corners; bold blackened-iron rails edged with aged gold; one restrained diamond or spear-point
 accent centered on each short end; small matching points may project from the top and bottom
-near the end caps; the silhouette should resemble one segment of the Weapon Mastery tab row in
-the reference concept without copying any text or icon from it
+near the end caps; the silhouette should resemble an imperial dark-fantasy tab segment without
+copying any text or icon from the reference concept
 9-slice requirements: keep all distinctive end-cap construction inside the outer left and
 right quarters of the canvas; make the middle half of the top and bottom rails straight,
 horizontal, continuous, and deliberately low-detail so it can stretch without visible

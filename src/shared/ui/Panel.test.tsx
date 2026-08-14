@@ -17,7 +17,7 @@ describe('Panel', () => {
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 
-  it('unterstützt große, kompakte, dünne und ruhige Rahmenvarianten', () => {
+  it('unterstützt große, dünne und ruhige Rahmenvarianten', () => {
     const { container, rerender } = render(<Panel>Ornate</Panel>);
     const panel = container.firstElementChild as HTMLElement;
     expect(panel.tagName).toBe('DIV');
@@ -31,16 +31,6 @@ describe('Panel', () => {
     expect(panel).toHaveClass('bg-surface/70');
     expect(panel).not.toHaveClass('border-image-ornate', 'bg-surface/90', 'p-4');
     expect(panel.querySelector('.border-image-thin')).toBeInTheDocument();
-
-    rerender(
-      <Panel variant="ornateCompact" padding="none">
-        Compact ornate
-      </Panel>,
-    );
-    expect(panel).toHaveClass('bg-surface/70');
-    expect(panel).not.toHaveClass('border-image-ornate', 'p-4');
-    expect(panel.querySelector('.border-image-tab-ornate')).toBeInTheDocument();
-    expect(panel.querySelector('.border-image-thin')).not.toBeInTheDocument();
 
     rerender(
       <Panel variant="plain" padding="none">

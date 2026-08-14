@@ -144,7 +144,7 @@ export function CrucibleTreeGraph({
                 selectedId={selectedId}
                 layout="branch"
                 tooltipAlign={
-                  slot === 'end' || slot === 'last' || slot === 'lower-last'
+                  slot === 'end' || slot === 'last' || slot === 'lower-end'
                     ? 'end'
                     : slot === 'start' || slot === 'lower-start'
                       ? 'start'

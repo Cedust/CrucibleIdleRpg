@@ -60,7 +60,11 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
 ```
 
 - Bei ≤ 1920px-Äquivalent (alle bestehenden E2E-Viewports, inklusive 2048×785 = vh-limitiert
-  1395px-Äquivalent) rendert alles pixelidentisch zum Stand vor dem Refactor.
+  1395px-Äquivalent) rendern Chrome-Maße und Text-Skala auf ihren Clamp-Minima und damit
+  identisch zum Stand vor dem Refactor. Die von den Screen-Tasks angeordneten
+  Layout-Neuverankerungen (Zentrierung, Screen-Caps, Threshold-Vereinheitlichung auf 1200,
+  Entfall der Dock-Reserve) verändern Positionen auch ≤ 1920 bewusst —
+  Liste: [DECISIONS D-008](DECISIONS.md#d-008--scope-der-pixel-identität-und-sanktionierte-normalisierungen).
 - `clamp()` begrenzt jeden vw/vh-Term; unbegrenzte Viewport-Größen sind ausgeschlossen.
 - Die Tailwind-Default-Tokens `--text-xs/--text-sm/--text-base` und die drei `--text-display-*`
   werden clamp-basiert überschrieben — alle bestehenden Verwendungen werden dadurch fluid,
@@ -224,14 +228,14 @@ dahin).
 Strukturelle Assertions in [e2e/responsive.spec.ts](../../../e2e/responsive.spec.ts);
 Screenshot-Infrastruktur bleibt außen vor.
 
-| Auflösung          | Prüfungen                                                                                           |
-| ------------------ | --------------------------------------------------------------------------------------------------- |
-| 1366×768, 1600×900 | kein `html`-/`main`-Scroll; Tab-Strips und Mastery-Canvas scrollen intern; Hauptcontent vollständig |
-| 1920×1080          | pixelidentisch zum Stand vor dem Refactor (Clamp-Minima aktiv); kein Seiten-Scroll                  |
-| 2560×1440          | Nav ≈ 306 px, `text-sm` ≈ 15,2 px (computed styles); Screens zentriert; Content-Spalten breiter     |
-| 3440×1440          | skaliert wie 1440p (16:9-Normierung); Caps und `mx-auto` greifen                                    |
-| 3840×2160          | Nav ≈ 342 px, `text-sm` ≈ 17,5 px; Arena ≤ `--container-run`-Max, zentriert; Ornamente scharf       |
-| alle               | lokale Scroller funktionieren; Browser-Zoom 80–150 % nutzbar; `bg-cover`-Cropping korrekt           |
+| Auflösung          | Prüfungen                                                                                                       |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| 1366×768, 1600×900 | kein `html`-/`main`-Scroll; Tab-Strips und Mastery-Canvas scrollen intern; Hauptcontent vollständig             |
+| 1920×1080          | pixelidentisch zum Stand vor dem Refactor (Clamp-Minima aktiv); kein Seiten-Scroll                              |
+| 2560×1440          | Nav ≈ 306 px, `text-sm` ≈ 15,2 px (computed styles); Screens zentriert; Content-Spalten breiter                 |
+| 3440×1440          | skaliert wie 1440p (16:9-Normierung); Caps und `mx-auto` greifen                                                |
+| 3840×2160          | Nav ≈ 342 px, `text-sm` ≈ 17,5 px; Arena ≤ `--container-run`-Max, zentriert; Ornamente scharf                   |
+| alle               | lokale Scroller funktionieren; Browser-Zoom 80–150 % nutzbar (manueller Sichtpass); `bg-cover`-Cropping korrekt |
 
 ## 9. State-Validierungsmatrix
 
@@ -256,8 +260,15 @@ Dokumentierte, bleibende Abweichungen:
 - Dungeon-Kachel `h-74 w-40` — gestaltete Kachelgröße.
 - `--shadow-glow-ember-inset` — Ember-Identität der Mastery-Tabs.
 - Ornate-Tab-Focus-Offset `-5px` — der Frame-Überhang würde einen Außen-Ring clippen.
+- CharacterSwitcher-Focus-Offset `1px` — der enge Kachelraster lässt keinen 2-px-Außenring zu.
 - CharacterSwitcher-Prozent-Geometrie — handjustiert auf das Portrait-Frame-Asset.
 - `disabled:opacity-50` ganzheitlich auf Controls — Controls tragen keinen Informationsgehalt.
+- TurnOrder-Akteur kombiniert Selection-Ring und Glow-Fläche — Bestandsschutz der Combat-Optik.
+- Namens-Labels gesperrter Nodes und Karten bleiben `text-text` — Bestandsschutz; nur
+  Medaillon-/Statusebenen sind muted.
+- Die Sidebar-Navigation behält ihre eigene Selektionssprache (Ornament-Asset, Hairlines);
+  ihre Migration auf das State-System liegt außerhalb des UIF-Scopes
+  ([DECISIONS D-009](DECISIONS.md#d-009--offene-reste-außerhalb-des-uif-scopes)).
 
 ## 11. Teststrategie
 

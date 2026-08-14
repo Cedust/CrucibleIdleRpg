@@ -85,7 +85,7 @@ export function CrucibleNodeInspector({
                     {...trigger}
                     type="button"
                     aria-label="How Crucible rank costs work"
-                    className="rounded-full text-text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="rounded-full text-text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-state-focus"
                   >
                     <CircleHelp aria-hidden="true" className="size-3.5" />
                   </button>

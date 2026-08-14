@@ -48,9 +48,11 @@ describe('kanonische Fragmente', () => {
     );
   });
 
-  it('hoverBorder-Fragmente sparen locked aus', () => {
+  it('hoverBorder-Fragmente sparen locked und selektierte Elemente aus', () => {
     expect(hoverBorder).toBe('not-data-[semantic=locked]:hover:border-ornament');
-    expect(groupHoverBorder).toBe('group-[:hover:not([data-semantic=locked])]:border-ornament');
+    expect(groupHoverBorder).toBe(
+      'group-[:hover:not([data-semantic=locked]):not([data-selected])]:border-ornament',
+    );
   });
 
   it('transitionState kombiniert die Utility mit motion-reduce', () => {

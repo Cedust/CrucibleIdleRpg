@@ -56,7 +56,9 @@ export function FramedCard({
         aria-hidden="true"
         className={cn(
           'absolute inset-0 -z-10 rounded-md',
+          transitionState,
           !emphasized && 'bg-linear-to-t from-background/82 to-background/32',
+          interactive && semantic === 'locked' && 'group-hover:bg-surface/50',
         )}
       />
       <div

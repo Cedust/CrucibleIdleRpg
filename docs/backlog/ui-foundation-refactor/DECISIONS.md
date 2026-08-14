@@ -121,3 +121,50 @@ untere Schiene auf ~12 px vor die Kante — die Fläche liegt beidseitig knapp i
 Schienen, unterhalb bleibt nur der schmale Asset-Glow. Die bewusste Abweichung von der
 strikten ≤-1080p-Pixel-Identität (untere Schiene rückt 3,7 px nach außen) ist eine
 nutzerbeauftragte Korrektur einer Alt-Fehlkalibrierung („insgesamt nochmal ausmessen").
+
+## D-008 — Scope der Pixel-Identität und sanktionierte Normalisierungen
+
+**Problem:** FOUNDATION §2 formulierte die ≤-1920px-Pixel-Identität unbeschränkt („rendert
+alles pixelidentisch"), während die Screen-Tasks 006–009 Layout-Neuverankerungen anordnen,
+die auch ≤ 1920 sichtbar sind. Der adversariale Abschluss-Review bestätigte vier solcher
+Stellen als undokumentiert.
+
+**Entscheidung:** Die Identitäts-Zusage gilt für Chrome-Maße und Text-Skala (Clamp-Minima);
+§2 wurde entsprechend gescopet. Bewusst sichtbare, task-angeordnete Änderungen ≤ 1920:
+
+1. Dungeons: Zentrierung (`mx-auto`) und Entfall der `w-220`-Spalte — Screen rückt ab
+   ~1520 px Viewport, Karten-/Panelspalte wird breiter (Task 006).
+2. Crucible/Mastery: `mx-auto` (bis 12 px Shift nahe 1920) und Entfall der Dock-Reserve
+   `pr-80` — die Intro-Zeile bricht breiter um (Tasks 002/007).
+3. Mastery: Threshold-Vereinheitlichung 1280 → 1200 — bei 1560–1639 px Viewport (u. a.
+   1600×900) rendert der Screen jetzt zweispaltig (Task 008).
+4. Dungeon Run: `--container-run`-Minimum 105rem cappt die zuvor ungecappte Arena ab
+   ~1753 px Viewport und zentriert sie (FOUNDATION §4; bei 1920×1080 −168 px Breite).
+
+Sanktionierte Vereinheitlichungen mit kleiner visueller Wirkung: Pips-Glow über
+`shadow-glow-accent-sm` (Accent 60 % statt 100 %), Tab-Frame-Glow über
+`drop-shadow-glow-accent` (6 px/40 % statt 7 px/35 %), De-Emphasis-Werte auf der
+Token-Skala (u. a. locked 0,65 → 0,55 + `grayscale-50`, inaktive Frames 0,5 → 0,75),
+Intro-Absätze einheitlich mit `leading-6` (Dungeons +4 px Zeilenhöhe),
+`SelectedDungeonPanel`-Umbruch nach Umrechnungsrezept auf `@min-[19rem]`. Parity-bewusste
+Abweichungen von der §6-Tabelle: FramedCard nutzt Scrim-Entfall statt
+`bg-state-selected-tint`, TurnOrder kombiniert Ring und Glow, Namens-Labels gesperrter
+Elemente bleiben `text-text` (FOUNDATION §10).
+
+## D-009 — Offene Reste außerhalb des UIF-Scopes
+
+Vom Abschluss-Review benannt, bewusst offen gelassen:
+
+1. **SidebarNavItem** spricht das State-System nicht (Ternary-Styling, eigene
+   Selektionssprache mit Ornament-Asset). Kein UIF-Task adressierte die Nav-Items;
+   Migration gehört in den M6-Politur-Pass. Focus-Token und `motion-reduce` wurden
+   nachgezogen.
+2. **Sidebar-Glow-Freistellung:** Der Nav-Scroller (`overflow-y-auto`) kann den
+   Selection-Glow des CharacterSwitcher-Frames horizontal clippen (Plan-Optional-Punkt) —
+   sichtbar nur bei übervoller Nav; offen für M6.
+3. **Browser-Zoom 80–150 %** bleibt manueller Sichtpass (FOUNDATION §8); Playwright bildet
+   Browser-Zoom nicht verlässlich ab.
+4. **Tooltip-Kollisionslogik** war bereits Task-005-Nicht-Ziel; das `align`-Prop bleibt die
+   Teil-Mitigation.
+5. **`hoverBorder`** hat aktuell keinen Konsumenten — das Fragment bleibt als kanonischer
+   Teil der state.ts-API für kommende Self-Hover-Konsumenten (M3-Slots).

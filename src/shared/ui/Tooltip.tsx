@@ -52,7 +52,7 @@ export function Tooltip({ content, children, className = '', align = 'center' }:
       <span
         role="tooltip"
         id={id}
-        className={`pointer-events-none absolute bottom-full z-10 mb-2 w-max max-w-56 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity ${ALIGN_CLASS[align]} ${
+        className={`pointer-events-none absolute bottom-full z-10 mb-2 w-max max-w-56 rounded-md border border-ornament bg-surface-raised px-2.5 py-1.5 text-xs text-text shadow-panel transition-opacity motion-reduce:transition-none ${ALIGN_CLASS[align]} ${
           open ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       >

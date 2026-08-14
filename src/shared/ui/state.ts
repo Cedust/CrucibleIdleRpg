@@ -51,10 +51,12 @@ export const hoverBorder = 'not-data-[semantic=locked]:hover:border-ornament';
 
 /**
  * Wie `hoverBorder` für Kind-Ebenen einer `group`, deren Group-Element die
- * `data-semantic`-Achse trägt — die einzige Arbitrary-Group-Variant des
- * State-Systems (FOUNDATION §5).
+ * State-Achsen trägt — die einzige Arbitrary-Group-Variant des State-Systems
+ * (FOUNDATION §5). Selektierte Elemente behalten ihre Akzent-Border, weil die
+ * Variant sonst per Spezifität auch die Facetten-Border übersteuern würde.
  */
-export const groupHoverBorder = 'group-[:hover:not([data-semantic=locked])]:border-ornament';
+export const groupHoverBorder =
+  'group-[:hover:not([data-semantic=locked]):not([data-selected])]:border-ornament';
 
 /** State-Übergänge; Property-Liste in `@utility transition-state` (index.css). */
 export const transitionState = 'transition-state motion-reduce:transition-none';

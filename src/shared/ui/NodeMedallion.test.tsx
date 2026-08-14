@@ -26,14 +26,25 @@ describe('NodeMedallion', () => {
     expect(container.querySelector('[data-node-medallion]')).toHaveClass('size-medallion-sm');
   });
 
-  it('färbt investierte Medaillons mit Glut', () => {
+  it('färbt investierte Medaillons über einen eigenen Glut-Layer', () => {
     const { container } = render(
       <NodeMedallion nodeId="a" invested>
         <span>Icon</span>
       </NodeMedallion>,
     );
 
-    expect(container.querySelector('[data-node-medallion]')).toHaveClass('bg-ember/15');
+    const medallion = container.querySelector('[data-node-medallion]');
+    expect(medallion?.querySelector('.bg-ember\\/15')).toBeInTheDocument();
+  });
+
+  it('rendert ohne invested keinen Glut-Layer', () => {
+    const { container } = render(
+      <NodeMedallion nodeId="a">
+        <span>Icon</span>
+      </NodeMedallion>,
+    );
+
+    expect(container.querySelector('.bg-ember\\/15')).not.toBeInTheDocument();
   });
 
   it('rendert Kinder innerhalb des Medaillons', () => {

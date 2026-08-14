@@ -65,11 +65,11 @@ describe('DungeonSelectionScreen', () => {
     const enterButton = within(details).getByRole('button', { name: 'ENTER DUNGEON' });
     expect(enterButton).toBeEnabled();
     expect(enterButton.parentElement).toHaveClass(
-      '@min-[24rem]:flex-row',
-      '@min-[24rem]:items-end',
+      '@min-[19rem]:flex-row',
+      '@min-[19rem]:items-end',
     );
     expect(enterButton.parentElement).toContainElement(progressbar);
-    expect(progressbar.parentElement).toHaveClass('w-full', '@min-[24rem]:flex-1');
+    expect(progressbar.parentElement).toHaveClass('w-full', '@min-[19rem]:flex-1');
   });
 
   it('selects a locked dungeon but keeps its entry action disabled', async () => {

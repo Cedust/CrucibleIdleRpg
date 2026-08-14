@@ -131,7 +131,7 @@ function SidebarNavItem({
         'relative flex w-full items-center gap-3 whitespace-nowrap rounded-r-md py-2 pl-7 pr-3 text-left font-display text-display-sm',
         transitionState,
         focusRing,
-        // Die Selektionssprache der Nav bleibt asset-basiert (FOUNDATION §10);
+        // Die Selektionssprache der Nav bleibt asset-basiert;
         // nav-selection-surface muss literal am Element stehen, damit die
         // ::before/::after-Regeln aus index.css greifen.
         selected

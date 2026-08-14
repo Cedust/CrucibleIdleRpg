@@ -13,8 +13,8 @@ interface DialogProps {
 }
 
 /**
- * Modaler Dialog auf nativem `<dialog>` + `showModal()` mit Panel-thin-Chrome
- * (FOUNDATION §7): Der Fokus wandert hinein, Escape schließt, und beim
+ * Modaler Dialog auf nativem `<dialog>` + `showModal()` mit Panel-thin-Chrome:
+ * Der Fokus wandert hinein, Escape schließt, und beim
  * Schließen kehrt der Fokus zum Auslöser zurück. `overflow-visible` lässt die
  * Ornamentspitzen des 9-Slice-Rahmens über die Fläche ragen.
  */

@@ -35,7 +35,7 @@ describe('stateAttrs', () => {
 });
 
 describe('kanonische Fragmente', () => {
-  it('focusRing nutzt den Focus-Standard aus FOUNDATION §6', () => {
+  it('focusRing bleibt der kanonische Focus-Standard', () => {
     expect(focusRing).toBe(
       'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-state-focus',
     );

@@ -11,7 +11,7 @@ interface ActPanelProps {
 /**
  * Statusanzeige eines Akts in der Dungeon-Auswahl. Solange nur Akt 1 Content hat,
  * ist das Panel bewusst kein Control; mit Akt-2-Content wird die Liste zur Radio-Group.
- * „current" zeigt sich über vollen Frame, Gold-Titel und Glow (FOUNDATION §6);
+ * „current" zeigt sich über vollen Frame, Gold-Titel und Glow;
  * gesperrte Akte tragen ein Lock-Medaillon unten-mittig.
  */
 export function ActPanel({ act }: ActPanelProps) {

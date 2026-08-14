@@ -18,8 +18,8 @@ interface CrucibleBranchGraphProps {
 }
 
 /**
- * 8rem-Node-Spalten der Branch-Layouts — bewusst ohne `@theme`-Token
- * (FOUNDATION §4: lokale TS-Konstante, ein Konsument).
+ * 8rem-Node-Spalten der Branch-Layouts — bewusst ohne `@theme`-Token:
+ * lokale TS-Konstante, ein Konsument.
  */
 const NODE_COLUMNS_GRID =
   '@branch-cols:grid-cols-[8rem_minmax(2rem,1fr)_8rem_minmax(2rem,1fr)_8rem]';

@@ -21,10 +21,10 @@ interface NodeMedallionProps {
 }
 
 /**
- * Medaillon der Node-Buttons (FOUNDATION §7). Der State kommt vollständig vom
+ * Medaillon der Node-Buttons. Der State kommt vollständig vom
  * Group-Element: `data-availability` färbt die Akzente, `data-semantic="locked"`
  * dimmt ausschließlich diesen Art-Layer, `data-selected` trägt den
- * Selection-Ring — auch auf gesperrten Nodes (FOUNDATION §6).
+ * Selection-Ring — auch auf gesperrten Nodes.
  */
 export function NodeMedallion({
   size = 'lg',

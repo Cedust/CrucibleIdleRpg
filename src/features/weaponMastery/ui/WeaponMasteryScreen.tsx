@@ -66,7 +66,7 @@ export function WeaponMasteryScreen() {
           progression.freeMasteryPoints,
         );
   // Bei gesperrten Nodes benennt der Inspector den Sperrgrund statt der fehlenden
-  // Punkte (die Sperr-Achse gewinnt, FOUNDATION §6): ein fiktiver freier Punkt
+  // Punkte (die Sperr-Achse gewinnt): ein fiktiver freier Punkt
   // lässt purchaseFailure am Punkte-Check vorbei zum eigentlichen Grund laufen.
   const lockReason = selected
     ? purchaseFailure(

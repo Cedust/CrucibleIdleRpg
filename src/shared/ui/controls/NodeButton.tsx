@@ -5,7 +5,7 @@ import { NodeMedallion, RankPips } from '../tree/NodeMedallion';
 import { focusRing, stateAttrs } from '../utils/state';
 import { Tooltip } from '../overlay/Tooltip';
 
-/** Kauf-Facette eines Tree-Nodes (FOUNDATION §5, `data-availability`). */
+/** Kauf-Facette eines Tree-Nodes (`data-availability`). */
 export type NodeAvailability = 'available' | 'insufficient' | 'locked' | 'max';
 
 type MedallionSize = 'md' | 'lg';

@@ -10,7 +10,7 @@ interface FramedCardProps extends HTMLAttributes<HTMLElement> {
   semantic?: SemanticState;
   /**
    * Frame in voller Stärke, Scrim aus und Glow an — für nicht-interaktive
-   * „current“-Flächen wie das ActPanel (FOUNDATION §6).
+   * „current“-Flächen wie das ActPanel.
    */
   highlight?: boolean;
   /** `false` entfernt die Hover-Affordance nicht-interaktiver Flächen. */
@@ -19,8 +19,8 @@ interface FramedCardProps extends HTMLAttributes<HTMLElement> {
 }
 
 /**
- * Karten-Layer-Stack Art/Scrim/9-Slice-Frame mit den State-Opacities aus
- * FOUNDATION §6: Locked dimmt ausschließlich den Art-Layer, Selektion trägt
+ * Karten-Layer-Stack Art/Scrim/9-Slice-Frame mit den State-Opacities des
+ * State-Systems: Locked dimmt ausschließlich den Art-Layer, Selektion trägt
  * den Frame in voller Stärke plus Glow. Umgebende Container dürfen die per
  * Outset überstehenden Frame-Spitzen nicht clippen (kein `overflow-hidden`).
  */

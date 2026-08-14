@@ -6,7 +6,7 @@ type ButtonVariant = 'primary' | 'ghost' | 'danger' | 'ornate';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  /** Exklusives Highlight (FOUNDATION §5); sichtbar als Gold-Border/Tint auf `ghost`. */
+  /** Exklusives Highlight; sichtbar als Gold-Border/Tint auf `ghost`. */
   selected?: boolean;
   children: ReactNode;
 }

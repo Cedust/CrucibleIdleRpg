@@ -16,7 +16,7 @@ interface ConfirmDialogProps {
   children: ReactNode;
 }
 
-/** Bestätigungs-Dialog mit Ghost-Abbruch und primärer Bestätigung (FOUNDATION §7). */
+/** Bestätigungs-Dialog mit Ghost-Abbruch und primärer Bestätigung. */
 export function ConfirmDialog({
   label,
   title,

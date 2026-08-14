@@ -52,7 +52,7 @@ export function MasteryTreeGraph({
       className="flex min-w-0 flex-col @tree-cols:h-full @tree-cols:min-h-0"
     >
       <div className="min-h-0 flex-1 overflow-auto p-4 pb-5">
-        {/* min-w-225 ist der Lesbarkeits-Floor des Canvas (FOUNDATION §10). Der Canvas
+        {/* min-w-225 ist der Lesbarkeits-Floor des Canvas. Der Canvas
             bleibt Block-Element: Seine Höhe folgt dem Inhalt, damit das Connector-SVG
             (absolute inset-0) auch beim internen Scrollen alle Pfade abdeckt. */}
         <div ref={ref} className="relative min-w-225">

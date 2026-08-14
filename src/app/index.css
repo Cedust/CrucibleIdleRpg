@@ -14,7 +14,7 @@
  */
 
 /*
- * Gemeinsamer Anker der fluiden Clamp-Tokens (FOUNDATION §2):
+ * Gemeinsamer Anker der fluiden Clamp-Tokens:
  * min(100vw, 177.78vh) normiert Ultrawide auf 16:9 (3440×1440 skaliert wie
  * 1440p); der Anker misst den Abstand zum 1920px-Äquivalent.
  */
@@ -29,7 +29,7 @@
   --font-body: 'Inter Variable', system-ui, sans-serif;
 
   /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking.
-     Fluid nach dem Clamp-Muster unten (FOUNDATION §2); Line-Height und
+     Fluid nach dem Clamp-Muster unten; Line-Height und
      Letter-Spacing sind Ratios/em und skalieren mit. */
   --text-display-sm: clamp(0.875rem, calc(0.875rem + var(--fluid-delta) * 0.0018229), 1.09375rem);
   --text-display-sm--line-height: 1.25;
@@ -87,13 +87,13 @@
   --shadow-panel: 0 12px 32px -16px rgb(0 0 0 / 0.7);
 
   /*
-   * Layout-Clamps (leicht fluid, FOUNDATION §2): MIN bis 1920px-Äquivalent,
+   * Layout-Clamps (leicht fluid): MIN bis 1920px-Äquivalent,
    * linear bis MAX bei 3840px-Äquivalent, gesteuert über --fluid-delta;
    * SLOPE = (MAX − MIN) / 1920, präkomputiert.
    */
   --spacing-nav: clamp(18rem, calc(18rem + var(--fluid-delta) * 0.028125), 21.375rem);
   --spacing-tab-strip: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0208333), 7.5rem);
-  --tab-frame-scale: 0.75; /* Anzeige-Faktor des Tab-Chromes relativ zur natürlichen Asset-Skalierung (D-011) */
+  --tab-frame-scale: 0.75; /* Anzeige-Faktor des Tab-Chromes relativ zur natürlichen Asset-Skalierung */
   --spacing-inspector: clamp(19rem, calc(19rem + var(--fluid-delta) * 0.025), 22rem);
   --spacing-page-pad: clamp(1.5rem, calc(1.5rem + var(--fluid-delta) * 0.0041667), 2rem);
   --spacing-medallion: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0083333), 6rem);
@@ -106,7 +106,7 @@
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;
 
-  /* Screen-Caps pro Screen-Typ (FOUNDATION §3); kein globales Maximum */
+  /* Screen-Caps pro Screen-Typ; kein globales Maximum */
   --container-page: 96rem;
   --container-page-narrow: 80rem;
   --container-run: clamp(105rem, calc(105rem + var(--fluid-delta) * 0.2166667), 131rem);
@@ -118,7 +118,7 @@
   --container-tree-cols: 75rem;
   --container-branch-cols: 50rem;
 
-  /* State: Interaction (FOUNDATION §5) */
+  /* State: Interaction */
   --color-state-selected: var(--color-accent);
   --color-state-selected-tint: color-mix(in srgb, var(--color-accent) 12%, transparent);
   --color-state-focus: var(--color-accent);
@@ -127,7 +127,7 @@
   --color-state-locked-border: var(--color-border);
   --color-state-empty-border: color-mix(in srgb, var(--color-border) 70%, transparent);
 
-  /* De-Emphasis-Skala: Opacity liegt ausschließlich auf Art-Layern (FOUNDATION §6) */
+  /* De-Emphasis-Skala: Opacity liegt ausschließlich auf Art-Layern */
   --state-deemphasis-strong: 0.3;
   --state-deemphasis-medium: 0.55;
   --state-deemphasis-weak: 0.75;
@@ -143,7 +143,7 @@
 }
 
 /*
- * Gemeinsamer Übergang aller state-tragenden Ebenen (FOUNDATION §4);
+ * Gemeinsamer Übergang aller state-tragenden Ebenen;
  * Callsites kombinieren ihn mit motion-reduce:transition-none.
  */
 @utility transition-state {
@@ -197,7 +197,7 @@
 /*
  * Flacher gemeinsamer 9-Slice-Rahmen für Tree-Tabs. Das generierte 1536×424-Asset
  * trägt die Schienen in den Zeilen 84–128 und 297–342, die Endstücke in den
- * äußeren 380 Spalten (per Pixel-Messung, DECISIONS D-011). Das Mittelband
+ * äußeren 380 Spalten (per Pixel-Messung). Das Mittelband
  * 132–294 liegt symmetrisch um die Diamant-Mitte y=213 — die Endstücke bleiben
  * dadurch bei jeder Tab-Höhe vertikal zentriert. Die Border-Breiten sind als
  * Asset-Anteile (y = 132/424, x = 380/424) an --spacing-tab-strip gekoppelt:
@@ -216,7 +216,7 @@
 
 /*
  * Tab-Fläche unter dem Ornamentrahmen. Insets und Notch sind als Asset-Anteile
- * an --spacing-tab-strip gekoppelt (D-011): Die Längskanten liegen in den
+ * an --spacing-tab-strip gekoppelt: Die Längskanten liegen in den
  * Schienen (Asset-Zeile 110 von 424), die Notch-Spitze fasst 12 Asset-Spalten
  * hinter die Bracket-Innenkante der Endstücke (Spalte 235, engster Punkt 247
  * auf Diamant-Höhe), die Notch-Schräge folgt der Bracket-Kurve mit Reserve.
@@ -300,7 +300,7 @@ html {
 }
 
 /* Kein Seiten-Scroll: gescrollt wird ausschließlich in dafür vorgesehenen
-   Containern (FOUNDATION §1); die AppShell füllt den Viewport über h-dvh. */
+   Containern; die AppShell füllt den Viewport über h-dvh. */
 body {
   margin: 0;
   overflow: hidden;

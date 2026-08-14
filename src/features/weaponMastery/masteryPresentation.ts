@@ -45,7 +45,7 @@ export function masteryNodeLane(node: MasteryNode, nodes: readonly MasteryNode[]
 
 /**
  * Strukturelle Kauf-Facette eines Nodes nach den `purchaseFailure`-Regeln;
- * die Sperr-Achse gewinnt gegen fehlende Punkte (FOUNDATION §6).
+ * die Sperr-Achse gewinnt gegen fehlende Punkte.
  */
 export function masteryNodeAvailability(
   characterId: CharacterId,

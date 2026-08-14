@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 /**
- * Strukturelle Responsive-Matrix aus FOUNDATION §8: kein Seiten-Scroll,
+ * Strukturelle Responsive-Matrix: kein Seiten-Scroll,
  * funktionierende lokale Scroller, zentrierte Caps und Clamp-Token-Werte an
  * den Stützstellen 1920 / 2560 / 3840 (3440 = 2560-Äquivalent über die
  * 16:9-Normierung). Screenshot-Infrastruktur bleibt bewusst außen vor.

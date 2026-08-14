@@ -27,8 +27,8 @@ interface CombatPortraitProps {
 
 /**
  * Einheitliche statische Portraits für Team, Gegner-Platzhalter und Zuganzeige.
- * Die Facette `data-defeated` dimmt ausschließlich diesen Art-Layer
- * (FOUNDATION §6); Name und Werte daneben bleiben voll lesbar.
+ * Die Facette `data-defeated` dimmt ausschließlich diesen Art-Layer;
+ * Name und Werte daneben bleiben voll lesbar.
  */
 export function CombatPortrait({
   characterId,

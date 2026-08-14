@@ -11,7 +11,7 @@ interface OrnateTabsProps {
 }
 
 /**
- * Tab-Leiste der Tree-Screens (FOUNDATION §7): eigener X-Scroller als
+ * Tab-Leiste der Tree-Screens: eigener X-Scroller als
  * Fallback schmaler Container, Höhe aus `h-tab-strip`.
  */
 export function OrnateTabs({ label, className, children }: OrnateTabsProps) {
@@ -41,9 +41,9 @@ interface OrnateTabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /**
  * Einzelner Tab mit 9-Slice-Ornamentrahmen. Der Focus-Ring liegt mit
  * Offset -5px innen, weil der Frame-Überhang einen Außen-Ring clippen
- * würde (FOUNDATION §10). Das horizontale Padding ist an die Strip-Höhe
+ * würde. Das horizontale Padding ist an die Strip-Höhe
  * gekoppelt und hält den Inhalt in der Rahmenöffnung zwischen den breiten
- * Endstücken (DECISIONS D-011).
+ * Endstücken.
  */
 export function OrnateTab({
   selected,

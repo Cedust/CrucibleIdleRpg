@@ -28,7 +28,7 @@ interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
   contentClassName?: string;
   /**
    * `true` (Default): der Content-Wrapper ist der Scroller des Screens.
-   * `false`: der Screen managt eigene Scroll-Areas (FOUNDATION §1).
+   * `false`: der Screen managt eigene Scroll-Areas.
    */
   scroll?: boolean;
   children: ReactNode;
@@ -36,7 +36,7 @@ interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
 
 /**
  * Screen-Primitive mit Hintergrund-Layer und Kontrast-Overlay (DESIGN.md §5)
- * nach dem Viewport-Contract aus FOUNDATION §1: full-height, `@container`
+ * nach dem Viewport-Contract: full-height, `@container`
  * am Content-Wrapper, Scrollen nur in dafür vorgesehenen Containern.
  * Die Rand-Vignette auf dem Kontrast-Overlay lässt das Bild zur Kante hin in
  * den Grundton auslaufen; der Screen schließt dadurch nahtlos an das Gutter

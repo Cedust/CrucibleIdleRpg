@@ -19,7 +19,7 @@ interface RovingItemProps {
 }
 
 /**
- * Roving-TabIndex mit Pfeiltasten-Navigation (FOUNDATION §7): genau ein Item
+ * Roving-TabIndex mit Pfeiltasten-Navigation: genau ein Item
  * ist tabbbar, Pfeiltasten bewegen Selektion und Fokus gemeinsam mit Wrap,
  * Home/End springen an die Enden.
  */

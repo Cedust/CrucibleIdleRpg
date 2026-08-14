@@ -10,7 +10,7 @@ interface ScreenHeaderProps {
   children?: ReactNode;
 }
 
-/** Gemeinsames Titel-/Intro-Muster der Screens (FOUNDATION §1). */
+/** Gemeinsames Titel-/Intro-Muster der Screens. */
 export function ScreenHeader({
   title,
   intro,

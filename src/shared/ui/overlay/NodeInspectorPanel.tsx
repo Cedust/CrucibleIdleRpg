@@ -25,7 +25,7 @@ interface NodeInspectorPanelProps {
 
 /**
  * Detailansicht eines gewählten Tree-Nodes: Glut-Roundel, Rang, Effekt,
- * Feature-Details und die explizite Kauf-Aktion (FOUNDATION §7).
+ * Feature-Details und die explizite Kauf-Aktion.
  */
 export function NodeInspectorPanel({
   label,

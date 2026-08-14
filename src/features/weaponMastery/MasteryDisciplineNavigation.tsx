@@ -6,17 +6,18 @@ import { transitionState } from '@/shared/ui/state';
 import { useRovingFocus } from '@/shared/ui/useRovingFocus';
 import { disciplineLabel, MASTERY_TAB_ORDER } from './masteryPresentation';
 
+// Statische Klassen-Strings, damit Tailwind die mask-Utilities beim Scan findet.
 const WEAPON_ICON_CLASS: Record<CharacterId, string> = {
-  korvin: 'mastery-tab-icon-warhammer',
-  rhaya: 'mastery-tab-icon-twin-blades',
-  quinn: 'mastery-tab-icon-longbow',
+  korvin: 'mask-[url(/assets/icons/mastery/weapon-warhammer.png)]',
+  rhaya: 'mask-[url(/assets/icons/mastery/weapon-twin-blades.png)]',
+  quinn: 'mask-[url(/assets/icons/mastery/weapon-longbow.png)]',
 };
 
 const DISCIPLINE_ICON_CLASS: Record<Exclude<DisciplineId, 'weapon'>, string> = {
-  finesse: 'mastery-tab-icon-finesse',
-  tempest: 'mastery-tab-icon-tempest',
-  dominance: 'mastery-tab-icon-dominance',
-  valor: 'mastery-tab-icon-valor',
+  finesse: 'mask-[url(/assets/icons/mastery/discipline-finesse.png)]',
+  tempest: 'mask-[url(/assets/icons/mastery/discipline-tempest.png)]',
+  dominance: 'mask-[url(/assets/icons/mastery/discipline-dominance.png)]',
+  valor: 'mask-[url(/assets/icons/mastery/discipline-valor.png)]',
 };
 
 function iconClass(discipline: DisciplineId, characterId: CharacterId): string {
@@ -89,7 +90,7 @@ export function MasteryDisciplineNavigation({
                 aria-hidden="true"
                 data-mastery-tab-icon={iconName(discipline, characterId)}
                 className={cn(
-                  'mastery-tab-icon relative z-20 size-7 shrink-0 bg-current',
+                  'relative z-20 size-7 shrink-0 bg-current mask-center mask-contain mask-no-repeat',
                   iconClass(discipline, characterId),
                 )}
               />

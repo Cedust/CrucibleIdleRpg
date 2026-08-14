@@ -20,8 +20,8 @@ describe('AppShell', () => {
     const { container } = render(<AppShell />);
 
     expect(screen.getByRole('heading', { name: 'Crucible Idle RPG' })).toBeInTheDocument();
-    expect(screen.getByRole('complementary')).toHaveClass('border-image-sidebar');
-    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
+    expect(screen.getByRole('complementary')).toHaveClass('border-image-frame');
+    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-frame');
     expect(screen.getByText('IDLE RPG')).toBeInTheDocument();
     expect(
       container.querySelector('img[src="/assets/icons/logo/crucible-emblem.png"]'),
@@ -98,7 +98,7 @@ describe('AppShell', () => {
     expect(
       await screen.findByRole('heading', { name: 'The Ashen Depths — Cinder Gate' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-mainview');
+    expect(screen.getByRole('main').parentElement).toHaveClass('border-image-frame');
     expect(screen.queryByRole('heading', { name: 'Crucible Idle RPG' })).not.toBeInTheDocument();
     expect(
       screen.queryByRole('navigation', { name: 'Primary navigation' }),

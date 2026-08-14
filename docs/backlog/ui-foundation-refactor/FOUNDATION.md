@@ -23,7 +23,7 @@ html/body           → overflow: hidden (kein Seiten-Scroll)
 AppShell            → flex h-dvh; Run- und Normal-Branch symmetrisch
                       (min-h-0 / min-w-0 / flex / overflow-hidden)
 ├── AppSidebar      → w-nav (Clamp-Token), Höhe aus Flex-Stretch
-└── Main-Spalte     → flex-1 min-w-0 min-h-0 overflow-hidden, border-image-mainview
+└── Main-Spalte     → flex-1 min-w-0 min-h-0 overflow-hidden, border-image-frame
     └── main        → min-h-0 flex-1 overflow-hidden
         └── ScreenLayout
             ├── @container am Content-Wrapper (Container-Queries für alle Screens)
@@ -53,10 +53,13 @@ AppShell            → flex h-dvh; Run- und Normal-Branch symmetrisch
 Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
 
 ```css
-/* Muster: MIN bis 1920px-Äquivalent, linear bis MAX bei 3840px-Äquivalent.
-   min(100vw, 177.78vh) = 16:9-normierte Breite → Ultrawide (3440×1440) skaliert
-   wie 1440p (Höhenklasse). SLOPE = (MAX − MIN) / 1920 (Zahl, präkomputiert). */
---spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
+/* Gemeinsamer Anker in :root (index.css): 16:9-normierte Breite minus
+   1920px-Äquivalent → Ultrawide (3440×1440) skaliert wie 1440p (Höhenklasse). */
+--fluid-delta: calc(min(100vw, 177.78vh) - 1920px);
+
+/* Muster je Token: MIN bis 1920px-Äquivalent, linear bis MAX bei
+   3840px-Äquivalent. SLOPE = (MAX − MIN) / 1920 (Zahl, präkomputiert). */
+--spacing-nav: clamp(18rem, calc(18rem + var(--fluid-delta) * 0.028125), 21.375rem);
 /* 288px @≤1080p → 306px @1440p → 342px @4K */
 ```
 

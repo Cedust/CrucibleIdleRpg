@@ -67,7 +67,7 @@ async function assertCenteredIn(subject: Locator, container: Locator, tolerance 
   expect(Math.abs(leftGap - rightGap)).toBeLessThanOrEqual(tolerance);
 }
 
-const nav = (page: Page) => page.locator('aside.border-image-sidebar');
+const nav = (page: Page) => page.locator('aside.border-image-frame');
 const intro = (page: Page) => page.locator('p.font-intro').first();
 
 test('hält 1366×768 und 1600×900 ohne Seiten-Scroll mit internen Scrollern', async ({ page }) => {

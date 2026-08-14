@@ -45,7 +45,7 @@ export function AppSidebar() {
   const setActiveCharacterId = useNavigationStore((state) => state.setActiveCharacterId);
 
   return (
-    <aside className="border-image-sidebar flex w-nav shrink-0 flex-col px-4 py-4">
+    <aside className="border-image-frame flex w-nav shrink-0 flex-col px-4 py-4">
       {/* Endet an der sichtbaren Außenkante des Rahmens; vor den Nav-Buttons im DOM, damit deren positionierte Elemente darüber liegen. */}
       <img
         alt=""

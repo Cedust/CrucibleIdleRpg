@@ -100,7 +100,7 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
       masteryBackground.boundingBox(),
       page.getByRole('main').boundingBox(),
       switcher.boundingBox(),
-      page.locator('aside.border-image-sidebar').boundingBox(),
+      page.locator('aside.border-image-frame').boundingBox(),
     ]);
     if (
       backgroundBox === null ||

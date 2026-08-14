@@ -12,6 +12,16 @@
  * Tokens stehen als Utility-Klassen zur Verfügung (z. B. bg-surface,
  * text-accent, border-ornament, font-display).
  */
+
+/*
+ * Gemeinsamer Anker der fluiden Clamp-Tokens (FOUNDATION §2):
+ * min(100vw, 177.78vh) normiert Ultrawide auf 16:9 (3440×1440 skaliert wie
+ * 1440p); der Anker misst den Abstand zum 1920px-Äquivalent.
+ */
+:root {
+  --fluid-delta: calc(min(100vw, 177.78vh) - 1920px);
+}
+
 @theme {
   /* Schriften: Display für Titel und Überschriften, Body für Fließtext */
   --font-display: 'Cinzel Variable', 'Times New Roman', serif;
@@ -21,46 +31,26 @@
   /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking.
      Fluid nach dem Clamp-Muster unten (FOUNDATION §2); Line-Height und
      Letter-Spacing sind Ratios/em und skalieren mit. */
-  --text-display-sm: clamp(
-    0.875rem,
-    calc(0.875rem + (min(100vw, 177.78vh) - 1920px) * 0.0018229),
-    1.09375rem
-  );
+  --text-display-sm: clamp(0.875rem, calc(0.875rem + var(--fluid-delta) * 0.0018229), 1.09375rem);
   --text-display-sm--line-height: 1.25;
   --text-display-sm--letter-spacing: 0.12em;
   --text-display-sm--font-weight: 600;
-  --text-display: clamp(
-    1.25rem,
-    calc(1.25rem + (min(100vw, 177.78vh) - 1920px) * 0.0026042),
-    1.5625rem
-  );
+  --text-display: clamp(1.25rem, calc(1.25rem + var(--fluid-delta) * 0.0026042), 1.5625rem);
   --text-display--line-height: 1.3;
   --text-display--letter-spacing: 0.08em;
   --text-display--font-weight: 600;
-  --text-display-lg: clamp(
-    1.75rem,
-    calc(1.75rem + (min(100vw, 177.78vh) - 1920px) * 0.0036458),
-    2.1875rem
-  );
+  --text-display-lg: clamp(1.75rem, calc(1.75rem + var(--fluid-delta) * 0.0036458), 2.1875rem);
   --text-display-lg--line-height: 1.2;
   --text-display-lg--letter-spacing: 0.06em;
   --text-display-lg--font-weight: 700;
 
   /* Fluide Text-Skala: ersetzt die Tailwind-Defaults; die unitless
      Line-Height-Ratios der Defaults bleiben erhalten und skalieren mit. */
-  --text-xs: clamp(0.75rem, calc(0.75rem + (min(100vw, 177.78vh) - 1920px) * 0.0015625), 0.9375rem);
-  --text-sm: clamp(
-    0.875rem,
-    calc(0.875rem + (min(100vw, 177.78vh) - 1920px) * 0.0018229),
-    1.09375rem
-  );
-  --text-base: clamp(1rem, calc(1rem + (min(100vw, 177.78vh) - 1920px) * 0.0020833), 1.25rem);
+  --text-xs: clamp(0.75rem, calc(0.75rem + var(--fluid-delta) * 0.0015625), 0.9375rem);
+  --text-sm: clamp(0.875rem, calc(0.875rem + var(--fluid-delta) * 0.0018229), 1.09375rem);
+  --text-base: clamp(1rem, calc(1rem + var(--fluid-delta) * 0.0020833), 1.25rem);
   /* Mikro-Label unterhalb von text-xs (Branch-Beschriftung, Rank-Level-Caption) */
-  --text-2xs: clamp(
-    0.65rem,
-    calc(0.65rem + (min(100vw, 177.78vh) - 1920px) * 0.0013542),
-    0.8125rem
-  );
+  --text-2xs: clamp(0.65rem, calc(0.65rem + var(--fluid-delta) * 0.0013542), 0.8125rem);
   --text-2xs--line-height: 1.4;
 
   /* Hintergründe / Flächen (Stein-Töne) */
@@ -98,65 +88,33 @@
 
   /*
    * Layout-Clamps (leicht fluid, FOUNDATION §2): MIN bis 1920px-Äquivalent,
-   * linear bis MAX bei 3840px-Äquivalent. min(100vw, 177.78vh) normiert
-   * Ultrawide auf 16:9 (3440×1440 skaliert wie 1440p);
+   * linear bis MAX bei 3840px-Äquivalent, gesteuert über --fluid-delta;
    * SLOPE = (MAX − MIN) / 1920, präkomputiert.
    */
-  --spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
-  --spacing-tab-strip: clamp(
-    5rem,
-    calc(5rem + (min(100vw, 177.78vh) - 1920px) * 0.0208333),
-    7.5rem
-  );
+  --spacing-nav: clamp(18rem, calc(18rem + var(--fluid-delta) * 0.028125), 21.375rem);
+  --spacing-tab-strip: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0208333), 7.5rem);
   --tab-frame-scale: 0.75; /* Anzeige-Faktor des Tab-Chromes relativ zur natürlichen Asset-Skalierung (D-011) */
-  --spacing-inspector: clamp(19rem, calc(19rem + (min(100vw, 177.78vh) - 1920px) * 0.025), 22rem);
-  --spacing-page-pad: clamp(
-    1.5rem,
-    calc(1.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0041667),
-    2rem
-  );
-  --spacing-medallion: clamp(5rem, calc(5rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333), 6rem);
-  --spacing-medallion-sm: clamp(
-    4rem,
-    calc(4rem + (min(100vw, 177.78vh) - 1920px) * 0.0083333),
-    5rem
-  );
-  --spacing-portrait-sm: clamp(
-    2.25rem,
-    calc(2.25rem + (min(100vw, 177.78vh) - 1920px) * 0.0046875),
-    2.8125rem
-  );
-  --spacing-portrait-md: clamp(
-    3.5rem,
-    calc(3.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0072917),
-    4.375rem
-  );
-  --spacing-portrait-lg: clamp(
-    5.5rem,
-    calc(5.5rem + (min(100vw, 177.78vh) - 1920px) * 0.0114583),
-    6.875rem
-  );
-  --spacing-portrait-xl: clamp(
-    9rem,
-    calc(9rem + (min(100vw, 177.78vh) - 1920px) * 0.01875),
-    11.25rem
-  );
+  --spacing-inspector: clamp(19rem, calc(19rem + var(--fluid-delta) * 0.025), 22rem);
+  --spacing-page-pad: clamp(1.5rem, calc(1.5rem + var(--fluid-delta) * 0.0041667), 2rem);
+  --spacing-medallion: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0083333), 6rem);
+  --spacing-medallion-sm: clamp(4rem, calc(4rem + var(--fluid-delta) * 0.0083333), 5rem);
+  --spacing-portrait-sm: clamp(2.25rem, calc(2.25rem + var(--fluid-delta) * 0.0046875), 2.8125rem);
+  --spacing-portrait-md: clamp(3.5rem, calc(3.5rem + var(--fluid-delta) * 0.0072917), 4.375rem);
+  --spacing-portrait-lg: clamp(5.5rem, calc(5.5rem + var(--fluid-delta) * 0.0114583), 6.875rem);
+  --spacing-portrait-xl: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
 
-  /* Layout (fix): Gutter der Vollrahmen (border-image-sidebar/-mainview) */
+  /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;
 
   /* Screen-Caps pro Screen-Typ (FOUNDATION §3); kein globales Maximum */
   --container-page: 96rem;
   --container-page-narrow: 80rem;
-  --container-run: clamp(
-    105rem,
-    calc(105rem + (min(100vw, 177.78vh) - 1920px) * 0.2166667),
-    131rem
-  );
+  --container-run: clamp(105rem, calc(105rem + var(--fluid-delta) * 0.2166667), 131rem);
 
   /* Container-Query-Thresholds der Tree-Screens: der --container-*-Namespace
      trägt Caps (max-w-*) und Query-Stützstellen (@tree-cols:/@branch-cols:),
-     unterschieden über den Namen. */
+     unterschieden über den Namen. Query-Stützstellen bleiben statische
+     Literale — Tailwind inlined sie build-seitig in die @container-Queries. */
   --container-tree-cols: 75rem;
   --container-branch-cols: 50rem;
 
@@ -279,50 +237,6 @@
   );
 }
 
-.mastery-tab-icon {
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-}
-
-.mastery-tab-icon-warhammer {
-  -webkit-mask-image: url('/assets/icons/mastery/weapon-warhammer.png');
-  mask-image: url('/assets/icons/mastery/weapon-warhammer.png');
-}
-
-.mastery-tab-icon-twin-blades {
-  -webkit-mask-image: url('/assets/icons/mastery/weapon-twin-blades.png');
-  mask-image: url('/assets/icons/mastery/weapon-twin-blades.png');
-}
-
-.mastery-tab-icon-longbow {
-  -webkit-mask-image: url('/assets/icons/mastery/weapon-longbow.png');
-  mask-image: url('/assets/icons/mastery/weapon-longbow.png');
-}
-
-.mastery-tab-icon-finesse {
-  -webkit-mask-image: url('/assets/icons/mastery/discipline-finesse.png');
-  mask-image: url('/assets/icons/mastery/discipline-finesse.png');
-}
-
-.mastery-tab-icon-tempest {
-  -webkit-mask-image: url('/assets/icons/mastery/discipline-tempest.png');
-  mask-image: url('/assets/icons/mastery/discipline-tempest.png');
-}
-
-.mastery-tab-icon-dominance {
-  -webkit-mask-image: url('/assets/icons/mastery/discipline-dominance.png');
-  mask-image: url('/assets/icons/mastery/discipline-dominance.png');
-}
-
-.mastery-tab-icon-valor {
-  -webkit-mask-image: url('/assets/icons/mastery/discipline-valor.png');
-  mask-image: url('/assets/icons/mastery/discipline-valor.png');
-}
-
 /*
  * Schlanker 9-Slice-Rahmen für kleine Panels und Karten (Asset aus
  * concept/PROMPTS.md §7, 1254×1254, Ornamentring im äußeren Sechstel = 209 px).
@@ -362,18 +276,12 @@
  * rechts 3 px über die jeweilige Fläche ragen. Das 12-px-Padding hält
  * Flächenhintergründe und Scrollbalken innerhalb der durchgehenden Goldlinie.
  */
-@utility border-image-sidebar {
+@utility border-image-frame {
   position: relative;
   padding: var(--spacing-frame-pad);
 }
 
-@utility border-image-mainview {
-  position: relative;
-  padding: var(--spacing-frame-pad);
-}
-
-.border-image-sidebar::before,
-.border-image-mainview::before {
+.border-image-frame::before {
   position: absolute;
   z-index: 20;
   inset: 0;

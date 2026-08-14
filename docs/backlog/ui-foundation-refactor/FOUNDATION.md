@@ -55,7 +55,7 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach diesem Muster:
    min(100vw, 177.78vh) = 16:9-normierte Breite → Ultrawide (3440×1440) skaliert
    wie 1440p (Höhenklasse). SLOPE = (MAX − MIN) / 1920 (Zahl, präkomputiert). */
 --spacing-nav: clamp(18rem, calc(18rem + (min(100vw, 177.78vh) - 1920px) * 0.028125), 21.375rem);
-/* 288px @≤1080p → 312px @1440p → 342px @4K */
+/* 288px @≤1080p → 306px @1440p → 342px @4K */
 ```
 
 - Bei ≤ 1920px-Äquivalent (alle bestehenden E2E-Viewports, inklusive 2048×785 = vh-limitiert
@@ -225,7 +225,7 @@ außen vor.
 | ------------------ | --------------------------------------------------------------------------------------------------- |
 | 1366×768, 1600×900 | kein `html`-/`main`-Scroll; Tab-Strips und Mastery-Canvas scrollen intern; Hauptcontent vollständig |
 | 1920×1080          | pixelidentisch zum Stand vor dem Refactor (Clamp-Minima aktiv); kein Seiten-Scroll                  |
-| 2560×1440          | Nav ≈ 312 px, `text-sm` ≈ 15,2 px (computed styles); Screens zentriert; Content-Spalten breiter     |
+| 2560×1440          | Nav ≈ 306 px, `text-sm` ≈ 15,2 px (computed styles); Screens zentriert; Content-Spalten breiter     |
 | 3440×1440          | skaliert wie 1440p (16:9-Normierung); Caps und `mx-auto` greifen                                    |
 | 3840×2160          | Nav ≈ 342 px, `text-sm` ≈ 17,5 px; Arena ≤ `--container-run`-Max, zentriert; Ornamente scharf       |
 | alle               | lokale Scroller funktionieren; Browser-Zoom 80–150 % nutzbar; `bg-cover`-Cropping korrekt           |

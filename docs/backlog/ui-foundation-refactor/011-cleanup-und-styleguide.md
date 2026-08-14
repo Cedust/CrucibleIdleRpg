@@ -1,10 +1,10 @@
 # 011 — Cleanup & Style-Guide
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | UIF       |
-| **Hängt ab von** | 010       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | UIF     |
+| **Hängt ab von** | 010     |
 
 ## Ziel
 

@@ -62,3 +62,13 @@ Stützstellen 288/312/342 liegen auf keiner Geraden; Formel und Kommentar widers
 Spec-Anker (§2), die Matrix-Werte tragen ein „≈" und Task 010 sieht das Nachziehen der
 Token-Werte in FOUNDATION ausdrücklich vor. `e2e/responsive.spec.ts` assertiert die
 Formelwerte (306 px @2560/3440, 342 px @3840); §4-Kommentar und §8-Matrix wurden korrigiert.
+
+## D-004 — Task 010: keine Clamps für die 9-Slice-Frame-Geometrie
+
+**Problem:** Task 010 nennt präkomputierte Clamps für Frame-Geometrie und Icon-Größen als
+Optional-Posten „nur bei sichtbarem Bedarf im Review".
+
+**Entscheidung:** Ausgelassen. Der visuelle Review-Pass (1440p, 3440×1440, 4K; Dungeons,
+Crucible, Mastery, Run) zeigte scharfe Ornamente und stimmige Proportionen der fixen
+Frame-Geometrie; die Startwerte aus Task 001 blieben unverändert. Bei späterem Bedarf bleibt
+das der dokumentierte Anknüpfungspunkt (FOUNDATION §3, Kategorie „Fixed").

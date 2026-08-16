@@ -78,8 +78,10 @@ describe('AppShell', () => {
 
     expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'HEROES' }));
+    expect(screen.getByText('14', { exact: true })).toBeInTheDocument();
     await user.click(screen.getByRole('radio', { name: 'Rhaya' }));
     expect(useNavigationStore.getState().activeCharacterId).toBe('rhaya');
+    expect(screen.getByText('18', { exact: true })).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
     expect(screen.getAllByRole('radiogroup', { name: 'Active character' })).toHaveLength(1);

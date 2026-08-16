@@ -2,6 +2,9 @@ import {
   ATTRIBUTE_BONUS_PER_POINT,
   CORE_POINT_TO_DERIVED_BASE,
 } from '@/game/curves/characterCurves';
+import { CHARACTERS } from '@/game/characters/characters';
+import { smeltingEffects } from '@/game/crucible/crucible';
+import { armorEffects } from '@/game/items/armor';
 import {
   MASTERY_BALANCE,
   MASTERY_IDS,
@@ -9,8 +12,10 @@ import {
   WEAPON_MODE_KEYS,
   WEAPON_MODES,
 } from '@/game/weaponMastery/mastery';
+import type { SaveData } from '@/features/save/saveSchema';
 import type {
   AttributePoints,
+  CharacterId,
   CharacterDefinition,
   CharacterStats,
   CoreStats,
@@ -79,6 +84,33 @@ export function neutralProgression(level: number): CharacterProgression {
     attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
     crucibleBonus: { attack: 0, defense: 0, health: 0 },
   };
+}
+
+/**
+ * Baut die gemeinsame Kampf-Eingabe aus dem persistierten Stand. Dungeon und Heroes lesen damit
+ * exakt dieselbe Armor-, Attribut-, Mastery- und Crucible-Wahrheit.
+ */
+export function progressionFromSave(
+  save: SaveData,
+  characterId: CharacterId,
+): CharacterProgression {
+  const character = save.characters[characterId];
+  const armor = armorEffects(save.armor[characterId]);
+  const smelting = smeltingEffects(save.crucible);
+
+  return {
+    ...neutralProgression(character.level),
+    coreStats: armor.coreStats,
+    attributePoints: character.attributePoints,
+    masteryRanks: character.masteryRanks,
+    crucibleBonus: smelting.crucibleBonus,
+    crucibleInitiative: smelting.initiative + armor.initiative,
+  };
+}
+
+/** Die aktuellen effektiven Gesamtwerte, wie sie auch der Kampf verwendet. */
+export function effectiveStatsFromSave(save: SaveData, characterId: CharacterId): CharacterStats {
+  return deriveCharacterStats(CHARACTERS[characterId], progressionFromSave(save, characterId));
 }
 
 export function deriveCharacterStats(

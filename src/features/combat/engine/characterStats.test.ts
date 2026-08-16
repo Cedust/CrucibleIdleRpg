@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { CHARACTERS, TEAM_ORDER } from '@/game/characters/characters';
+import { CRUCIBLE_IDS } from '@/game/crucible/crucible';
 import { ATTRIBUTE_BONUS_PER_POINT } from '@/game/curves/characterCurves';
+import { createTeamArmor } from '@/game/items/armor';
+import { createDefaultSave } from '@/features/save/saveSchema';
 import type { CharacterDefinition } from '@/game/types';
 import { nodeById } from '@/game/weaponMastery/mastery';
 import {
   deriveCharacterStats,
+  effectiveStatsFromSave,
   neutralProgression,
+  progressionFromSave,
   type CharacterProgression,
 } from './characterStats';
 
@@ -35,6 +40,32 @@ function progression(overrides: Partial<CharacterProgression> = {}): CharacterPr
 }
 
 describe('deriveCharacterStats', () => {
+  it('uses the same persisted progression inputs for Heroes and dungeon combat', () => {
+    const base = createDefaultSave(42);
+    const crucible = {
+      [CRUCIBLE_IDS.armory]: 4,
+      [CRUCIBLE_IDS.overpower]: 1,
+      [CRUCIBLE_IDS.quickStep]: 2,
+    };
+    const save = {
+      ...base,
+      crucible,
+      armor: createTeamArmor(crucible),
+      characters: {
+        ...base.characters,
+        korvin: {
+          ...base.characters.korvin,
+          attributePoints: { ferocity: 2, resilience: 0, vigor: 0 },
+        },
+      },
+    };
+
+    expect(effectiveStatsFromSave(save, 'korvin')).toEqual(
+      deriveCharacterStats(CHARACTERS.korvin, progressionFromSave(save, 'korvin')),
+    );
+    expect(effectiveStatsFromSave(save, 'korvin').utility.initiative).toBe(11);
+  });
+
   it('adds bought mastery stat ranks and caps chance stats', () => {
     const stats = deriveCharacterStats(CHARACTERS.korvin, {
       ...neutralProgression(80),

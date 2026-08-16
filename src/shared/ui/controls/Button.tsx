@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
 import { focusRing, stateAttrs, transitionState } from '../utils/state';
 
-type ButtonVariant = 'primary' | 'ghost' | 'danger' | 'ornate';
+type ButtonVariant = 'primary' | 'ghost' | 'icon' | 'danger' | 'ornate';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -22,6 +22,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     'rounded-md px-4 py-2 font-medium border border-ornament bg-linear-to-b from-accent-strong to-accent text-background hover:to-accent-strong',
   ghost:
     'rounded-md px-4 py-2 font-medium border border-border bg-transparent text-text hover:border-ornament hover:bg-surface-raised data-selected:border-accent data-selected:bg-state-selected-tint',
+  icon: 'flex size-8 items-center justify-center rounded-md border border-border bg-transparent p-0 font-medium text-text hover:border-ornament hover:bg-surface-raised',
   danger:
     'rounded-md px-4 py-2 font-medium border border-danger/50 bg-danger/10 text-danger hover:bg-danger/20',
   ornate:

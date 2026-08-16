@@ -61,6 +61,32 @@ export type Lane = 'frontline' | 'backline';
  */
 export type Rarity = 'common' | 'magic' | 'rare' | 'epic' | 'legendary';
 
+/** Die vier dauerhaften Armor-Slots (ITEMS §1); nur diese Slots können persistieren. */
+export const ARMOR_SLOTS = ['chest', 'legs', 'head', 'feet'] as const;
+export type ArmorSlot = (typeof ARMOR_SLOTS)[number];
+
+/** Feste Item-Typen der Slot-Basen; Armor wird weder gedroppt noch getauscht. */
+export type ArmorItemType = 'armor' | 'legguards' | 'helmet' | 'boots';
+
+/** Die einzigen M3-Innates: Core-Stats oder flache Initiative. */
+export type ArmorInnateStat = 'toughness' | 'vitality' | 'initiative';
+
+/**
+ * Persistierte M3-Form eines permanenten Armor-Items. Spätere Item-Schichten werden bewusst
+ * noch nicht modelliert: Common +1 hat weder Sockel noch Gems, Implicit oder Handwerkszustand.
+ */
+export interface ArmorItem {
+  slot: ArmorSlot;
+  itemType: ArmorItemType;
+  rarity: 'common';
+  itemLevel: 1;
+  innate: ArmorInnateStat;
+}
+
+/** Pro Charakter existieren nur die aus Armory-Rängen abgeleiteten permanenten Slot-Items. */
+export type ArmorLoadout = Readonly<Partial<Record<ArmorSlot, ArmorItem>>>;
+export type TeamArmor = Readonly<Record<CharacterId, ArmorLoadout>>;
+
 /** Geschlossenes Intervall, beide Grenzen inklusive. */
 export interface Range {
   min: number;

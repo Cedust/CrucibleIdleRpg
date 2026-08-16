@@ -78,6 +78,9 @@ characters:
 currencies:
   gold: nichtnegative Ganzzahl
   relicShards: nichtnegative Ganzzahl
+armor:
+  korvin | rhaya | quinn:
+    Chest | Legs | Head | Feet: nur kanonische Common-+1-Basen der aus anvil.armory abgeleiteten Slots
 firstVictories: FloorId[]
 crucible: Node-ID → Rang 1–5, gegen den Crucible-Katalog validiert
 completedDungeons:

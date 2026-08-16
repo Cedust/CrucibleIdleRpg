@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
 import type { Act1DungeonId } from '@/game/encounters/act1';
+import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
 import type { CharacterProgressionState } from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
@@ -70,6 +71,34 @@ const completedDungeonsSchema = z
   })
   .strict();
 
+/** M3 speichert nur kanonische Common-+1-Basen; der Armory-Rang bestimmt ihre Menge. */
+const armorItemSchema = z
+  .object({
+    slot: z.enum(['chest', 'legs', 'head', 'feet']),
+    itemType: z.enum(['armor', 'legguards', 'helmet', 'boots']),
+    rarity: z.literal('common'),
+    itemLevel: z.literal(1),
+    innate: z.enum(['toughness', 'vitality', 'initiative']),
+  })
+  .strict();
+
+const armorLoadoutSchema = z
+  .object({
+    chest: armorItemSchema.optional(),
+    legs: armorItemSchema.optional(),
+    head: armorItemSchema.optional(),
+    feet: armorItemSchema.optional(),
+  })
+  .strict();
+
+const teamArmorSchema = z
+  .object({
+    korvin: armorLoadoutSchema,
+    rhaya: armorLoadoutSchema,
+    quinn: armorLoadoutSchema,
+  })
+  .strict();
+
 export const saveSchema = z
   .object({
     version: z.literal(SAVE_VERSION),
@@ -95,6 +124,7 @@ export const saveSchema = z
       .readonly(),
     /** Crucible-Node-Ränge über alle drei Trees — die alleinige Wahrheit (PERSISTENCE §2.3). */
     crucible: z.record(z.string(), z.number().int().min(1).max(5)).readonly(),
+    armor: teamArmorSchema,
     completedDungeons: completedDungeonsSchema,
   })
   .strict()
@@ -108,6 +138,9 @@ export const saveSchema = z
       if (!meetsPrerequisites(save.crucible, save.completedDungeons, node, rank)) {
         context.addIssue({ code: 'custom', message: 'Crucible-Voraussetzung verletzt.' });
       }
+    }
+    if (!hasArmorForUnlockedSlots(save.armor, save.crucible)) {
+      context.addIssue({ code: 'custom', message: 'Ungültige Armory-Items.' });
     }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,
@@ -185,6 +218,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     currencies: { gold: 0, relicShards: 0 },
     firstVictories: [],
     crucible: {},
+    armor: createTeamArmor({}),
     completedDungeons: createDefaultCompletedDungeons(),
   };
 }

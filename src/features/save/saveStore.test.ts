@@ -149,6 +149,74 @@ describe('createSaveStore', () => {
     ]);
   });
 
+  it('creates all three permanent Common +1 Armor bases atomically with each Armory rank and reloads them', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({ data: { ...base, currencies: { ...base.currencies, relicShards: 3 } } });
+
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
+    expect(store.getState().data?.armor).toEqual({
+      korvin: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+      rhaya: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+      quinn: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+    });
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.armor).toEqual(store.getState().data?.armor);
+  });
+
   it('erstattet beim Tree-Respec exakt die investierten Relic Shards und lässt Anvil unberührt', async () => {
     const port = memoryPort();
     const service = createSaveService(port, () => createDefaultSave(7));
@@ -198,8 +266,10 @@ describe('createSaveStore', () => {
     });
 
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(false);
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(false);
     await expect(store.getState().respecCrucible('molten')).resolves.toBe(false);
     expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 1 });
+    expect(store.getState().data?.armor.korvin).toEqual({});
 
     allowed = true;
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(true);

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave, saveSchema } from './saveSchema';
 
 describe('saveSchema', () => {
@@ -37,6 +38,11 @@ describe('saveSchema', () => {
       currencies: { gold: 0, relicShards: 0 },
       firstVictories: [],
       crucible: {},
+      armor: {
+        korvin: {},
+        rhaya: {},
+        quinn: {},
+      },
       completedDungeons: {
         'A1-D1': false,
         'A1-D2': false,
@@ -172,7 +178,36 @@ describe('saveSchema', () => {
     );
     // Ambush verlangt Sunder Rang 1 (PROGRESSION §3.3).
     expect(saveSchema.safeParse({ ...save, crucible: { 'molten.ambush': 1 } }).success).toBe(false);
-    expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.armory': 1 } }).success).toBe(false);
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        crucible: { 'anvil.armory': 1 },
+        armor: createTeamArmor({ 'anvil.armory': 1 }),
+      }).success,
+    ).toBe(true);
+  });
+
+  it('accepts only the Common +1 items exactly derived from the Armory rank', () => {
+    const save = createDefaultSave(123);
+    const armed = {
+      ...save,
+      crucible: { 'anvil.armory': 2 },
+      armor: createTeamArmor({ 'anvil.armory': 2 }),
+    };
+
+    expect(saveSchema.safeParse(armed).success).toBe(true);
+    expect(
+      saveSchema.safeParse({
+        ...armed,
+        armor: {
+          ...armed.armor,
+          korvin: { ...armed.armor.korvin, head: armed.armor.korvin.chest },
+        },
+      }).success,
+    ).toBe(false);
+    expect(
+      saveSchema.safeParse({ ...armed, armor: createTeamArmor({ 'anvil.armory': 1 }) }).success,
+    ).toBe(false);
   });
 
   it('lehnt Waystone-Ränge ohne die Vollendet-Flags der vorherigen Dungeons ab', () => {

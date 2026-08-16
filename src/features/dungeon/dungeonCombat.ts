@@ -1,5 +1,6 @@
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { rallyShare, smeltingEffects } from '@/game/crucible/crucible';
+import { armorEffects } from '@/game/items/armor';
 import {
   getAct1DungeonEntry,
   getNextAct1DungeonEncounter,
@@ -71,17 +72,21 @@ function createDungeonCombat(
       encounter.floorIndex,
     ),
     formation,
-    team: TEAM_ORDER.map((id) => ({
-      id,
-      progression: {
-        ...neutralProgression(save.characters[id].level),
-        attributePoints: save.characters[id].attributePoints,
-        masteryRanks: save.characters[id].masteryRanks,
-        crucibleBonus: smelting.crucibleBonus,
-        crucibleInitiative: smelting.initiative,
-      },
-      carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
-    })),
+    team: TEAM_ORDER.map((id) => {
+      const armor = armorEffects(save.armor[id]);
+      return {
+        id,
+        progression: {
+          ...neutralProgression(save.characters[id].level),
+          coreStats: armor.coreStats,
+          attributePoints: save.characters[id].attributePoints,
+          masteryRanks: save.characters[id].masteryRanks,
+          crucibleBonus: smelting.crucibleBonus,
+          crucibleInitiative: smelting.initiative + armor.initiative,
+        },
+        carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
+      };
+    }),
     secondWindConsumed,
   });
 }

@@ -1,10 +1,10 @@
 # 022 — Armory & Armor-Fundament
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M3      |
-| **Hängt ab von** | 016     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M3     |
+| **Hängt ab von** | 016    |
 
 ## Ziel
 

@@ -155,9 +155,8 @@ describe('CrucibleScreen', () => {
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    const armory = screen.getByRole('button', { name: /Armory, rank 0 of 4, Locked/ });
-    expect(armory).toHaveAttribute('data-semantic', 'locked');
-    expect(armory).not.toHaveAttribute('data-availability');
+    const armory = screen.getByRole('button', { name: /Armory, rank 0 of 4, Available/ });
+    expect(armory).toHaveAttribute('data-availability', 'available');
 
     await user.click(screen.getByRole('tab', { name: 'SMELTING FLAMES' }));
     expect(
@@ -207,17 +206,89 @@ describe('CrucibleScreen', () => {
     ).toHaveAttribute('data-state', 'locked');
   });
 
-  it('selects locked nodes without mutating the save and names their lock reason', async () => {
+  it('selects locked future nodes without mutating the save and names their lock reason', async () => {
     const before = saveStore.getState().data;
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    await user.click(screen.getByRole('button', { name: /Armory, rank 0 of 4, Locked/ }));
+    await user.click(screen.getByRole('button', { name: /Blacksmith, rank 0 of 1, Locked/ }));
 
-    expect(screen.getByRole('heading', { name: 'Armory' })).toBeInTheDocument();
-    expect(screen.getByText('Locked until Equipment (M3).')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Blacksmith' })).toBeInTheDocument();
+    expect(screen.getByText('Locked until Crafting (M4).')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
     expect(saveStore.getState().data).toEqual(before);
+  });
+
+  it('names the next team-wide Armory slot and its rank cost in the inspector', async () => {
+    const base = createDefaultSave(4242);
+    saveStore.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, relicShards: 10 },
+        crucible: { 'anvil.armory': 2 },
+        armor: {
+          korvin: {
+            chest: {
+              slot: 'chest',
+              itemType: 'armor',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+            legs: {
+              slot: 'legs',
+              itemType: 'legguards',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+          },
+          rhaya: {
+            chest: {
+              slot: 'chest',
+              itemType: 'armor',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+            legs: {
+              slot: 'legs',
+              itemType: 'legguards',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+          },
+          quinn: {
+            chest: {
+              slot: 'chest',
+              itemType: 'armor',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+            legs: {
+              slot: 'legs',
+              itemType: 'legguards',
+              rarity: 'common',
+              itemLevel: 1,
+              innate: 'toughness',
+            },
+          },
+        },
+      },
+      status: 'ready',
+    });
+    const user = userEvent.setup();
+    render(<CrucibleScreen />);
+
+    await user.click(
+      screen.getByRole('button', { name: /Armory, rank 2 of 4, Next rank available/ }),
+    );
+
+    expect(screen.getByText('Next unlock')).toBeInTheDocument();
+    expect(screen.getByText('Head for all characters')).toBeInTheDocument();
+    expect(screen.getByText('3 Relic Shards')).toBeInTheDocument();
   });
 
   it('purchases an affordable node only through the inspector action', async () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createDefaultSave } from '@/features/save/saveSchema';
+import { createTeamArmor } from '@/game/items/armor';
 import { DEFAULT_COMBAT_CONTEXT, runCombat } from '@/features/combat/engine/combatEngine';
 import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat, createNextDungeonCombat } from './dungeonCombat';
@@ -122,6 +123,39 @@ describe('createDungeonEntryCombat', () => {
       );
       expect(character.maxHealth).toBeCloseTo(reference.maxHealth * 1.03, 8);
       expect(character.stats.utility.initiative).toBe(reference.stats.utility.initiative + 4);
+    });
+  });
+
+  it('uses every unlocked Armor innate in the battle setup and excludes later changes from a running combat', () => {
+    const base = createDungeonEntryCombat(createDefaultSave(4242), 'A1-D1');
+    const expectedEffects = [
+      { defense: 1, health: 0, initiative: 0 },
+      { defense: 2, health: 0, initiative: 0 },
+      { defense: 2, health: 1, initiative: 0 },
+      { defense: 2, health: 1, initiative: 1 },
+    ];
+
+    expectedEffects.forEach((expected, index) => {
+      const rank = index + 1;
+      const save = {
+        ...createDefaultSave(4242),
+        crucible: { 'anvil.armory': rank },
+        armor: createTeamArmor({ 'anvil.armory': rank }),
+      };
+      const armored = createDungeonEntryCombat(save, 'A1-D1');
+
+      armored.characters.forEach((character, characterIndex) => {
+        const reference = base.characters[characterIndex];
+        if (reference === undefined) throw new Error('Charakter fehlt');
+        expect(character.stats.derived.attack).toBe(reference.stats.derived.attack);
+        expect(character.stats.derived.defense).toBe(
+          reference.stats.derived.defense + expected.defense,
+        );
+        expect(character.maxHealth).toBe(reference.maxHealth + expected.health);
+        expect(character.stats.utility.initiative).toBe(
+          reference.stats.utility.initiative + expected.initiative,
+        );
+      });
     });
   });
 });

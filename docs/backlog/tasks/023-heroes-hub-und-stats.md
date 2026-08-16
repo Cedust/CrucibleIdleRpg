@@ -1,10 +1,10 @@
 # 023 — Heroes-Hub & Stats
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M3        |
-| **Hängt ab von** | 022       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M3      |
+| **Hängt ab von** | 022     |
 
 ## Ziel
 

@@ -229,7 +229,7 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
 
           const purchase = purchaseCrucibleNode(
             current.crucible,
-            current.currencies.crystals,
+            current.currencies.relicShards,
             current.completedDungeons,
             nodeId,
           );
@@ -241,7 +241,7 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               crucible: purchase.ranks,
-              currencies: { ...current.currencies, crystals: purchase.crystals },
+              currencies: { ...current.currencies, relicShards: purchase.relicShards },
             },
             result: true,
           };
@@ -253,7 +253,7 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             return { next: null, result: false };
           }
 
-          const respec = respecCrucibleTree(current.crucible, current.currencies.crystals, tree);
+          const respec = respecCrucibleTree(current.crucible, current.currencies.relicShards, tree);
           if (respec === null) {
             return { next: null, result: false };
           }
@@ -262,7 +262,7 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               crucible: respec.ranks,
-              currencies: { ...current.currencies, crystals: respec.crystals },
+              currencies: { ...current.currencies, relicShards: respec.relicShards },
             },
             result: true,
           };

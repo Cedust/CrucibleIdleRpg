@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATIONS } from '@/game/encounters/formations';
 import {
+  ACT_1_DUNGEON_IDS,
   ACT_1_ENCOUNTERS,
+  act1FinalFloorClass,
   getAct1DungeonEntry,
   resolveAct1Encounter,
   validateAct1Encounters,
@@ -34,5 +36,15 @@ describe('ACT_1_ENCOUNTERS', () => {
       ACT_1_ENCOUNTERS.filter((encounter) => encounter.classification === 'elite'),
     ).toHaveLength(4);
     expect(resolveAct1Encounter('A1-D5-20').classification).toBe('boss');
+  });
+
+  it('reports the final-floor class per dungeon: boss only for A1-D5', () => {
+    expect(ACT_1_DUNGEON_IDS.map((dungeonId) => act1FinalFloorClass(dungeonId))).toEqual([
+      'elite',
+      'elite',
+      'elite',
+      'elite',
+      'boss',
+    ]);
   });
 });

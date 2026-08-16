@@ -1,12 +1,13 @@
 # SPECIFICATIONS
 
 Diese Dateien beschreiben, **wie sich das Spiel verhält**: Regeln, Zustände, Formeln und
-Persistenz. Für eine Implementierung wird die direkt betroffene Datei gelesen, nicht diese
-Übersicht vollständig wiederholt.
+Persistenz, dazu die Architekturregeln der Oberfläche. Für eine Implementierung wird die direkt
+betroffene Datei gelesen, nicht diese Übersicht vollständig wiederholt.
 
 | Frage                                  | Verbindlicher Wohnort                 |
 | -------------------------------------- | ------------------------------------- |
 | Spielregel oder Formel                 | passende Datei in `spec/`             |
+| Layout, State-System oder UI-Primitive | [UI.md](UI.md)                        |
 | Balancing-Leitplanke oder Zielkorridor | [BALANCE.md](BALANCE.md)              |
 | konkrete Kurve, Kosten oder Drop-Rate  | typisierter Content unter `src/game/` |
 | Produktabsicht und Spielerlebnis       | [../DESIGN.md](../DESIGN.md)          |
@@ -14,18 +15,19 @@ Persistenz. Für eine Implementierung wird die direkt betroffene Datei gelesen, 
 
 ## Regeldateien
 
-| Datei                                  | Inhalt                                                        |
-| -------------------------------------- | ------------------------------------------------------------- |
-| [COMBAT-RUN.md](COMBAT-RUN.md)         | Kampfablauf, Initiative, Zielauswahl und Formation            |
-| [DAMAGE-SYSTEM.md](DAMAGE-SYSTEM.md)   | Angriffe, Procs, Schadenspipeline, Bulwark und Heilung        |
-| [WEAPON-MASTERY.md](WEAPON-MASTERY.md) | Waffen, Mastery Points, Disciplines, Nodes und Bedienung      |
-| [SIGNATURES.md](SIGNATURES.md)         | Mitigation, Sunder und Suppression                            |
-| [CHARACTERS.md](CHARACTERS.md)         | Team, Stats, Attribute, Level und Armor                       |
-| [PROGRESSION.md](PROGRESSION.md)       | Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige |
-| [ITEMS.md](ITEMS.md)                   | Items, Loot und Handwerk                                      |
-| [RUNES.md](RUNES.md)                   | Rune Grimoire, Talismane, Rites und Masterwork                |
-| [SIMULATION.md](SIMULATION.md)         | Simulation, Playback, Catch-up, Seeds und Reload              |
-| [PERSISTENCE.md](PERSISTENCE.md)       | Speicherzeitpunkte und Save-Inhalt                            |
+| Datei                                  | Inhalt                                                           |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| [COMBAT-RUN.md](COMBAT-RUN.md)         | Kampfablauf, Initiative, Zielauswahl und Formation               |
+| [DAMAGE-SYSTEM.md](DAMAGE-SYSTEM.md)   | Angriffe, Procs, Schadenspipeline, Bulwark und Heilung           |
+| [WEAPON-MASTERY.md](WEAPON-MASTERY.md) | Waffen, Mastery Points, Disciplines, Nodes und Bedienung         |
+| [SIGNATURES.md](SIGNATURES.md)         | Mitigation, Sunder und Suppression                               |
+| [CHARACTERS.md](CHARACTERS.md)         | Team, Stats, Attribute, Level und Armor                          |
+| [PROGRESSION.md](PROGRESSION.md)       | Weltstruktur, Belohnungen, Crucible, Checkpoints und Prestige    |
+| [ITEMS.md](ITEMS.md)                   | Items, Loot und Handwerk                                         |
+| [RUNES.md](RUNES.md)                   | Runescribe, Grimoire, Talismane, Rites und Anvil-Nodes           |
+| [SIMULATION.md](SIMULATION.md)         | Simulation, Playback, Catch-up, Seeds und Reload                 |
+| [PERSISTENCE.md](PERSISTENCE.md)       | Speicherzeitpunkte und Save-Inhalt                               |
+| [UI.md](UI.md)                         | Viewport-Contract, Responsive-Mechanik, State-System, Primitives |
 
 Dateiübergreifende Regeln werden an ihrem fachlichen Wohnort formuliert und von dort verlinkt.
 Ein Invarianten-Index ist bewusst nicht vorhanden: Er wäre eine zweite, pflegeintensive

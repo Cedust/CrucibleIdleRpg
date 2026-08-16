@@ -38,6 +38,7 @@ Crucible Idle RPG is a React 19, TypeScript, and Vite single-page app. Read [REA
 - Use the `@/` import alias for `src/` modules (for example, `@/game/types`).
 - Do not use default exports; use named exports for all modules, functions, and types.
 - Use Tailwind tokens from `@theme` and `src/shared/ui/` primitives. Write semantic, keyboard-accessible HTML. Do not use inline styles, `!important` or CSS-in-JS. The only exception is for dynamic styles that cannot be expressed with Tailwind.
+- Follow [UI.md](docs/spec/UI.md) for the viewport contract, responsive mechanics, token catalogue, visual state system, and the shared primitives.
 
 ## Build, Test, and Development Commands
 

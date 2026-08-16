@@ -1,8 +1,19 @@
+import { useEffect, useRef, type ReactNode } from 'react';
+import { cn } from '@/shared/ui/utils/cn';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import type { CombatEvent } from '@/features/combat/engine/combatEvents';
 import type { ActorRef, CombatState } from '@/features/combat/engine/combatState';
+import type { TickResult } from '@/features/combat/engine/combatEngine';
+import type { HitKind } from '@/features/combat/engine/damage/outgoingDamage';
 import { useCombatStore } from '@/features/combat/state/combatStore';
-import type { HitKind } from '@/features/combat/engine/outgoingDamage';
+import { CombatPortrait } from './CombatPortrait';
+
+interface CombatLogProps {
+  className?: string;
+  heading?: ReactNode;
+}
 
 function actorName(state: CombatState, actor: ActorRef): string {
   const participant =
@@ -58,48 +69,87 @@ function eventText(state: CombatState, event: CombatEvent): string {
   }
 }
 
-/** Gedeckeltes Kampf-Log: ein Listeneintrag entspricht genau einem vollständigen Zugblock. */
-export function CombatLog() {
-  const ticks = useCombatStore((state) => state.tickLog);
+function LogActor({ tick }: { tick: TickResult }) {
+  if (tick.actor === undefined) {
+    return <CombatPortrait size="sm" label="Combat event" />;
+  }
+
+  const actor = tick.actor;
+  const participant =
+    actor.side === 'character'
+      ? tick.state.characters[actor.index]
+      : tick.state.enemies[actor.index];
+  const characterId =
+    actor.side === 'character' ? tick.state.characters[actor.index]?.id : undefined;
 
   return (
-    <section
-      aria-labelledby="combat-log-heading"
-      className="rounded-xl border border-border bg-surface p-4"
-    >
-      <h3
-        id="combat-log-heading"
-        className="text-sm font-semibold uppercase tracking-wider text-text-muted"
+    <CombatPortrait
+      characterId={characterId}
+      size="sm"
+      isDefeated={(participant?.health ?? 0) <= 0}
+      label={`${participant?.name ?? 'Unknown actor'} portrait`}
+    />
+  );
+}
+
+/** Gedeckeltes Kampf-Log: ein Listeneintrag entspricht genau einem vollständigen Zugblock. */
+export function CombatLog({ className = '', heading = 'Combat Log' }: CombatLogProps) {
+  const ticks = useCombatStore((state) => state.tickLog);
+  const scroller = useRef<HTMLOListElement>(null);
+  const followsLatest = useRef(true);
+
+  useEffect(() => {
+    const element = scroller.current;
+    if (element === null || !followsLatest.current) {
+      return;
+    }
+
+    element.scrollTop = element.scrollHeight;
+  }, [ticks.length]);
+
+  const updateFollowLatest = () => {
+    const element = scroller.current;
+    if (element === null) return;
+    followsLatest.current = element.scrollTop + element.clientHeight >= element.scrollHeight - 8;
+  };
+
+  return (
+    <section aria-label="Combat Log" className={cn('flex min-h-0 flex-col', className)}>
+      <SectionTitle className="mb-3">{heading}</SectionTitle>
+      <Panel
+        variant="plain"
+        data-testid="combat-log-panel"
+        className="flex min-h-0 flex-1 flex-col"
       >
-        Combat Log
-      </h3>
-      {ticks.length === 0 ? (
-        <p className="mt-3 text-sm text-text-muted">No turns resolved yet.</p>
-      ) : null}
-      <ol
-        aria-label="Combat log"
-        aria-live="polite"
-        className={ticks.length === 0 ? 'sr-only' : 'mt-3 max-h-80 space-y-2 overflow-y-auto'}
-      >
-        {[...ticks].reverse().map((entry) => (
-          <li
-            key={entry.id}
-            className="rounded-lg border border-border bg-background/40 px-3 py-2 text-sm"
-          >
-            <div className="flex flex-wrap gap-x-2 gap-y-1">
-              {entry.tick.events.map((event, eventIndex) => (
-                <span
-                  key={`${event.type}-${eventIndex}`}
-                  data-event-type={event.type}
-                  className="after:ml-2 after:text-border after:content-['•'] last:after:content-none"
-                >
-                  {eventText(entry.tick.state, event)}
-                </span>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
+        {ticks.length === 0 ? (
+          <p className="text-sm text-text-muted">No turns resolved yet.</p>
+        ) : null}
+        <ol
+          ref={scroller}
+          aria-label="Combat log"
+          aria-live="polite"
+          onScroll={updateFollowLatest}
+          className={
+            ticks.length === 0 ? 'sr-only' : 'min-h-0 flex-1 space-y-2 overflow-y-auto pr-2'
+          }
+        >
+          {ticks.map((entry) => (
+            <li
+              key={entry.id}
+              className="flex gap-3 rounded-lg border border-border bg-background/40 p-2.5 text-sm"
+            >
+              <LogActor tick={entry.tick} />
+              <div className="min-w-0 flex-1 space-y-1.5">
+                {entry.tick.events.map((event, eventIndex) => (
+                  <p key={`${event.type}-${eventIndex}`} data-event-type={event.type}>
+                    {eventText(entry.tick.state, event)}
+                  </p>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Panel>
     </section>
   );
 }

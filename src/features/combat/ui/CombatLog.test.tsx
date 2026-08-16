@@ -102,6 +102,7 @@ describe('CombatLog', () => {
 
     const entries = screen.getAllByRole('listitem');
     expect(entries).toHaveLength(1);
+    expect(screen.getByTestId('character-portrait-korvin')).toBeInTheDocument();
     const entry = entries[0] as HTMLElement;
     expect(entry).toHaveTextContent('Critical');
     expect(entry).toHaveTextContent('Multi Hit');
@@ -139,7 +140,7 @@ describe('CombatLog', () => {
     expect(entry).toHaveTextContent('Twin Echo: 6 damage');
   });
 
-  it('zeigt den neuesten Zugblock im gedeckelten Log zuerst', () => {
+  it('zeigt Zugblöcke chronologisch von alt nach neu', () => {
     const state = combat();
     const first: TickResult = {
       state,
@@ -167,8 +168,24 @@ describe('CombatLog', () => {
     );
 
     const entries = screen.getAllByRole('listitem');
-    expect(entries[0]).toHaveTextContent('Round 2 begins');
-    expect(entries[1]).toHaveTextContent('Round 1 begins');
-    expect(entries[1]).toBe(originalFirstEntry);
+    expect(entries[0]).toHaveTextContent('Round 1 begins');
+    expect(entries[1]).toHaveTextContent('Round 2 begins');
+    expect(entries[0]).toBe(originalFirstEntry);
+  });
+
+  it('lässt den Scrollbereich die volle verfügbare Höhe nutzen', () => {
+    const state = combat();
+    const tick: TickResult = {
+      state,
+      actor: { side: 'character', index: 0 },
+      events: [{ type: 'roundStart', round: 1 }],
+      outcome: 'ongoing',
+    };
+    useCombatStore.setState({ combat: state, tickLog: [{ id: 0, tick }] });
+    render(<CombatLog />);
+
+    const log = screen.getByRole('list', { name: 'Combat log' });
+    expect(log).toHaveClass('flex-1');
+    expect(log).not.toHaveClass('max-h-96');
   });
 });

@@ -49,11 +49,17 @@ describe('TurnOrderBar', () => {
     }
 
     expect(items).toHaveLength(initialOrder.length);
-    expect(items.map((item) => item.textContent?.replace('Active: ', '').trim())).toEqual(
+    expect(screen.queryByRole('heading', { name: 'Turn Order' })).not.toBeInTheDocument();
+    expect(screen.getAllByTestId('character-portrait-korvin')).not.toHaveLength(0);
+    expect(screen.getAllByTestId('enemy-portrait-placeholder')).not.toHaveLength(0);
+    expect(items.map((item) => item.getAttribute('aria-label')?.replace(', active', ''))).toEqual(
       initialOrder.map((actor) => actorName(initialCombat, actor)),
     );
     expect(items[0]).toHaveAttribute('aria-current', 'step');
-    const initialActive = items[0]?.textContent ?? '';
+    expect(items[0]).toHaveAttribute('data-selected');
+    expect(items[1]).not.toHaveAttribute('data-selected');
+    expect(items[0]).toHaveClass('after:w-3');
+    const initialActive = items[0]?.getAttribute('aria-label') ?? '';
 
     act(() => {
       useCombatStore.getState().advanceTick();
@@ -68,8 +74,8 @@ describe('TurnOrderBar', () => {
     }
 
     const activeItem = within(order).getByRole('listitem', { current: 'step' });
-    expect(activeItem).toHaveTextContent(actorName(currentCombat, nextActive));
-    expect(activeItem).not.toHaveTextContent(initialActive);
+    expect(activeItem).toHaveAccessibleName(`${actorName(currentCombat, nextActive)}, active`);
+    expect(activeItem).not.toHaveAccessibleName(initialActive);
   });
 
   it('hält Quinn nach ihrem Zug dauerhaft in der stabilen Reihenfolge sichtbar', () => {
@@ -93,7 +99,8 @@ describe('TurnOrderBar', () => {
     render(<TurnOrderBar />);
 
     const order = screen.getByRole('list', { name: 'Combat turn order' });
-    expect(within(order).getByText('Quinn')).toBeInTheDocument();
+    expect(within(order).getByRole('listitem', { name: /^Quinn/ })).toBeInTheDocument();
+    expect(within(order).queryByText('Quinn')).not.toBeInTheDocument();
     expect(within(order).getAllByRole('listitem')).toHaveLength(turnOrder.length);
   });
 

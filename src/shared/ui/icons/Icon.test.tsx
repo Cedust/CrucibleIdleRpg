@@ -1,0 +1,27 @@
+// @vitest-environment jsdom
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { Icon } from './Icon';
+
+describe('Icon', () => {
+  it('ist ohne Label dekorativ und für Screenreader verborgen', () => {
+    const { container } = render(<Icon name="crucible-waystones" />);
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    const icon = container.firstElementChild as HTMLElement;
+    expect(icon).toHaveAttribute('aria-hidden', 'true');
+    expect(icon).toHaveClass('bg-current', 'size-6');
+  });
+
+  it('wird mit Label zum benannten Bild', () => {
+    render(<Icon name="crucible-waystones" size="xl" label="Waystones" className="bg-ember" />);
+
+    const icon = screen.getByRole('img', { name: 'Waystones' });
+    expect(icon).not.toHaveAttribute('aria-hidden');
+    expect(icon).toHaveClass(
+      'bg-ember',
+      'size-11',
+      'mask-[url(/assets/icons/crucible/crucible-waystones.svg)]',
+    );
+  });
+});

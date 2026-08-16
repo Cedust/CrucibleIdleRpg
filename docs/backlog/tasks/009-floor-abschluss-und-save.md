@@ -14,13 +14,13 @@ Ein Sieg committet seine Belohnung in den Speicherstand, ein Wipe beendet den Ru
 ## Nicht-Ziel
 
 Die Floor-**Kette** (Attrition über mehrere Floors, Auto-Progression, Checkpoints, Rally) und
-Loot-Drops folgen in M2/M3. M1 committet den Sieg **eines** Floors: XP, Gold und die Crystals
+Loot-Drops folgen in M2/M3. M1 committet den Sieg **eines** Floors: XP, Gold und die Relic Shards
 des Erstsiegs.
 
 ## Verbindliche Spec-Anker
 
 - [Belohnungen aus einem Sieg](../../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg) —
-  Commit **pro Floor-Sieg**, nicht am Run-Ende; Crystals nur beim Erstsieg (Normal 1,
+  Commit **pro Floor-Sieg**, nicht am Run-Ende; Relic Shards nur beim Erstsieg (Normal 1,
   Elite 3, Boss 10)
 - [Speicher-Auslöser](../../spec/PERSISTENCE.md#1-speicher-auslöser) — nach jedem Floor-Sieg
   und **beim Run-Start** (der `runCounter` muss vor dem ersten Kampf persistiert sein)

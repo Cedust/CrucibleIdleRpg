@@ -34,7 +34,7 @@ describe('saveSchema', () => {
           masteryRanks: {},
         },
       },
-      currencies: { gold: 0, crystals: 0 },
+      currencies: { gold: 0, relicShards: 0 },
       firstVictories: [],
       crucible: {},
       completedDungeons: {
@@ -64,6 +64,24 @@ describe('saveSchema', () => {
     const save = createDefaultSave(123);
 
     expect(saveSchema.safeParse({ ...save, version: 2 }).success).toBe(false);
+  });
+
+  it('accepts Relic Shards and rejects the removed legacy currency field', () => {
+    const save = createDefaultSave(123);
+    const legacyCurrencyKey = ['crys', 'tals'].join('');
+
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        currencies: { gold: 0, relicShards: 7 },
+      }).success,
+    ).toBe(true);
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        currencies: { gold: 0, [legacyCurrencyKey]: 7 },
+      }).success,
+    ).toBe(false);
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {
@@ -146,6 +164,9 @@ describe('saveSchema', () => {
     const save = createDefaultSave(123);
 
     expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.unknown': 1 } }).success).toBe(false);
+    expect(
+      saveSchema.safeParse({ ...save, crucible: { 'masterwork.rune-grimoire': 1 } }).success,
+    ).toBe(false);
     expect(saveSchema.safeParse({ ...save, crucible: { 'anvil.waystones': 5 } }).success).toBe(
       false,
     );

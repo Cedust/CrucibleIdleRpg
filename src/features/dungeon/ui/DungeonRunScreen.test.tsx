@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
@@ -21,7 +21,7 @@ describe('DungeonRunScreen', () => {
     render(<DungeonRunScreen />);
 
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Leave Dungeon' }));
+    await user.click(screen.getByRole('button', { name: 'LEAVE DUNGEON' }));
     expect(screen.getByRole('button', { name: 'Confirm Leave Dungeon' })).toBeInTheDocument();
     expect(useDungeonRunStore.getState().mode).toBe('run');
 
@@ -38,14 +38,14 @@ describe('DungeonRunScreen', () => {
     expect(useDungeonRunStore.getState().mode).toBe('run');
   });
 
-  it('explains the locked 2× playback control and enables it for a completed dungeon', async () => {
+  it('keeps 2× playback locked without helper copy and enables it after completion', async () => {
     const user = userEvent.setup();
     render(<DungeonRunScreen />);
 
-    expect(screen.getByRole('button', { name: '2× Playback' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '2×' })).toBeDisabled();
     expect(
-      screen.getByText('Complete this dungeon once to unlock 2× playback.'),
-    ).toBeInTheDocument();
+      screen.queryByText('Complete this dungeon once to unlock 2× playback.'),
+    ).not.toBeInTheDocument();
 
     const save = saveStore.getState().data;
     if (save === null) throw new Error('expected save data');
@@ -55,7 +55,7 @@ describe('DungeonRunScreen', () => {
       }),
     );
 
-    await user.click(screen.getByRole('button', { name: '2× Playback' }));
+    await user.click(screen.getByRole('button', { name: '2×' }));
 
     await waitFor(() => expect(useCombatStore.getState().playbackSpeed).toBe(2));
   });
@@ -67,12 +67,55 @@ describe('DungeonRunScreen', () => {
       combat: { ...combat, floorId: 'A1-D1-20' },
       outcome: 'victory',
       completionStatus: 'saved',
-      lastReward: { gold: 10, xp: 15, crystals: 1 },
+      lastReward: { gold: 10, xp: 15, relicShards: 1 },
     });
 
     render(<DungeonRunScreen />);
 
     expect(screen.getByRole('button', { name: 'Complete Dungeon' })).toBeInTheDocument();
     expect(useDungeonRunStore.getState().mode).toBe('run');
+  });
+
+  it('shows the dungeon title and successfully committed rewards from this run', () => {
+    const { container } = render(<DungeonRunScreen />);
+
+    expect(
+      screen.getByRole('heading', { name: 'The Ashen Depths — Cinder Gate' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Floor 1, Round 1')).toHaveTextContent('Floor 1 · Round 1');
+    expect(screen.getByLabelText('Floor 1, Round 1').closest('h2')).not.toBeNull();
+    expect(screen.getByTestId('combat-main-area')).toHaveClass(
+      '-mx-2',
+      'overflow-y-auto',
+      'px-2',
+      'py-2',
+    );
+    expect(screen.getByTestId('run-status-bar')).toBeInTheDocument();
+    const rewards = within(screen.getByLabelText('Run rewards'));
+    expect(rewards.getAllByText('0')).toHaveLength(2);
+    expect(rewards.getByLabelText('Gold amount')).toHaveTextContent('0');
+    expect(rewards.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
+    expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
+    expect(rewards.getByText('Gold')).toHaveClass('sr-only');
+    expect(rewards.getByText('Relic Shards')).toHaveClass('sr-only');
+    expect(rewards.getByText('Runedust')).toHaveClass('sr-only');
+    expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
+
+    const save = saveStore.getState().data;
+    if (save === null) throw new Error('expected save data');
+    act(() =>
+      saveStore.setState({
+        data: {
+          ...save,
+          currencies: {
+            gold: save.currencies.gold + 12,
+            relicShards: save.currencies.relicShards + 3,
+          },
+        },
+      }),
+    );
+
+    expect(rewards.getByText('12')).toBeInTheDocument();
+    expect(rewards.getByText('3')).toBeInTheDocument();
   });
 });

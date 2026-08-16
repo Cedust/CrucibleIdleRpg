@@ -29,18 +29,18 @@
   gesockelte Gems inkl. Level/Value + gebrandetes Sigil). Es existieren ausschließlich die vier
   Armor-Slots Head, Chest, Legs und Feet
   ([Slots, Basen & Innate-Affixe](ITEMS.md#1-slots-basen--innate-affixe)).
-- **Crucible-Node-Ränge** je Node-ID über alle vier Trees hinweg, einschließlich der
+- **Crucible-Node-Ränge** je Node-ID über alle drei Trees hinweg, einschließlich der
   charaktergebundenen Signatur-Skills ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree)).
   Die Ränge sind die alleinige Wahrheit: freigeschaltete Dungeon-Einstiege, Ausrüstungsslots und
   Systeme werden aus `anvil.*` abgeleitet, nicht getrennt gespeichert. Ein Respec ändert nur diese
-  Ränge und den Crystal-Bestand.
+  Ränge und den Relic-Shard-Bestand.
 - Gold, Cinder, Gem-Bestände (Amber/Ruby/Sapphire/Emerald/Diamond).
 - **Sigil Codex** (bekannte Sigils mit Level).
 - Runedust, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
   dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, [Runen](RUNES.md)).
 - **Pro Dungeon ein Vollendet-Flag** (schaltet 2× frei und ist Kaufvoraussetzung der Waystones,
   [Checkpoints, Wipe & Abbruch](PROGRESSION.md#4-checkpoints-wipe--abbruch)), höchster
-  erreichter Floor, **Erstsieg-Flags** je Floor (Crystals,
+  erreichter Floor, **Erstsieg-Flags** je Floor (Relic Shards,
   [Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg)). Die Menge der
   freigeschalteten Checkpoints selbst ist abgeleitet: `A1-D1` plus ein Einstieg je Rang von
   `anvil.waystones`.
@@ -77,7 +77,7 @@ characters:
     masteryRanks: Node-ID → Rang 1–5
 currencies:
   gold: nichtnegative Ganzzahl
-  crystals: nichtnegative Ganzzahl
+  relicShards: nichtnegative Ganzzahl
 firstVictories: FloorId[]
 crucible: Node-ID → Rang 1–5, gegen den Crucible-Katalog validiert
 completedDungeons:

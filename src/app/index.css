@@ -1,47 +1,392 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/cinzel';
+@import '@fontsource-variable/inter';
+@import '@fontsource/medievalsharp';
 
 /*
  * Tailwind v4 CSS-first-Konfiguration.
  * Nur Dark Mode (fest) — keine Light-/System-Variante.
- * Design-Tokens werden hier als Theme-Variablen definiert und stehen als
- * Utility-Klassen zur Verfügung (z. B. bg-surface, text-accent).
+ * Design-Tokens des „Gilded Ruins“-Design-Systems (DESIGN.md §5): dunkler
+ * Blau-Slate-Stein, Gold als Strukturfarbe, Glut- und Arkan-Akzente.
+ * Visuelle Referenz: concept/ui-draft-2/.
+ * Tokens stehen als Utility-Klassen zur Verfügung (z. B. bg-surface,
+ * text-accent, border-ornament, font-display).
  */
+
+/*
+ * Gemeinsamer Anker der fluiden Clamp-Tokens:
+ * min(100vw, 177.78vh) normiert Ultrawide auf 16:9 (3440×1440 skaliert wie
+ * 1440p); der Anker misst den Abstand zum 1920px-Äquivalent.
+ */
+:root {
+  --fluid-delta: calc(min(100vw, 177.78vh) - 1920px);
+}
+
 @theme {
-  /* Hintergründe / Flächen */
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-raised: #334155;
-  --color-border: #334155;
+  /* Schriften: Display für Titel und Überschriften, Body für Fließtext */
+  --font-display: 'Cinzel Variable', 'Times New Roman', serif;
+  --font-intro: 'MedievalSharp', 'Times New Roman', serif;
+  --font-body: 'Inter Variable', system-ui, sans-serif;
+
+  /* Display-Typo-Skala: Gold-Kapitälchen-Optik mit weitem Tracking.
+     Fluid nach dem Clamp-Muster unten; Line-Height und
+     Letter-Spacing sind Ratios/em und skalieren mit. */
+  --text-display-sm: clamp(0.875rem, calc(0.875rem + var(--fluid-delta) * 0.0018229), 1.09375rem);
+  --text-display-sm--line-height: 1.25;
+  --text-display-sm--letter-spacing: 0.12em;
+  --text-display-sm--font-weight: 600;
+  --text-display: clamp(1.25rem, calc(1.25rem + var(--fluid-delta) * 0.0026042), 1.5625rem);
+  --text-display--line-height: 1.3;
+  --text-display--letter-spacing: 0.08em;
+  --text-display--font-weight: 600;
+  --text-display-lg: clamp(1.75rem, calc(1.75rem + var(--fluid-delta) * 0.0036458), 2.1875rem);
+  --text-display-lg--line-height: 1.2;
+  --text-display-lg--letter-spacing: 0.06em;
+  --text-display-lg--font-weight: 700;
+
+  /* Fluide Text-Skala: ersetzt die Tailwind-Defaults; die unitless
+     Line-Height-Ratios der Defaults bleiben erhalten und skalieren mit. */
+  --text-xs: clamp(0.75rem, calc(0.75rem + var(--fluid-delta) * 0.0015625), 0.9375rem);
+  --text-sm: clamp(0.875rem, calc(0.875rem + var(--fluid-delta) * 0.0018229), 1.09375rem);
+  --text-base: clamp(1rem, calc(1rem + var(--fluid-delta) * 0.0020833), 1.25rem);
+  /* Mikro-Label unterhalb von text-xs (Branch-Beschriftung, Rank-Level-Caption) */
+  --text-2xs: clamp(0.65rem, calc(0.65rem + var(--fluid-delta) * 0.0013542), 0.8125rem);
+  --text-2xs--line-height: 1.4;
+
+  /* Hintergründe / Flächen (Stein-Töne) */
+  --color-background: #02070d;
+  --color-surface: #0a141f;
+  --color-surface-raised: #152536;
+  --color-border: #314457;
+
+  /* Ornamentrahmen: Messing-Linien um Panels und Buttons */
+  --color-ornament: #8a6d3b;
 
   /* Text */
   --color-text: #e2e8f0;
   --color-text-muted: #94a3b8;
 
-  /* Akzent (Fantasy-Glut/Crucible-Thema) */
+  /* Akzent (Gold-Töne) */
   --color-accent: #f59e0b;
   --color-accent-strong: #fbbf24;
+
+  /* Glut-Töne (Crucible, Feuer, Molten Cast) */
+  --color-ember: #e25822;
+  --color-ember-bright: #ff8a4d;
+
+  /* Arkan (XP, Magie, Schatten-Gegner) */
+  --color-arcane: #8b5cf6;
 
   /* Statusfarben (Kampf) */
   --color-danger: #ef4444;
   --color-success: #22c55e;
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
+
+  /* Flächen-Tiefe für Panels */
+  --shadow-panel: 0 12px 32px -16px rgb(0 0 0 / 0.7);
+
+  /*
+   * Layout-Clamps (leicht fluid): MIN bis 1920px-Äquivalent,
+   * linear bis MAX bei 3840px-Äquivalent, gesteuert über --fluid-delta;
+   * SLOPE = (MAX − MIN) / 1920, präkomputiert.
+   */
+  --spacing-nav: clamp(18rem, calc(18rem + var(--fluid-delta) * 0.028125), 21.375rem);
+  --spacing-tab-strip: clamp(3.25rem, calc(3.25rem + var(--fluid-delta) * 0.00625), 4rem);
+  --spacing-inspector: clamp(19rem, calc(19rem + var(--fluid-delta) * 0.025), 22rem);
+  --spacing-page-pad: clamp(1.5rem, calc(1.5rem + var(--fluid-delta) * 0.0041667), 2rem);
+  --spacing-medallion: clamp(5rem, calc(5rem + var(--fluid-delta) * 0.0083333), 6rem);
+  --spacing-medallion-sm: clamp(4rem, calc(4rem + var(--fluid-delta) * 0.0083333), 5rem);
+  --spacing-portrait-sm: clamp(2.25rem, calc(2.25rem + var(--fluid-delta) * 0.0046875), 2.8125rem);
+  --spacing-portrait-md: clamp(3.5rem, calc(3.5rem + var(--fluid-delta) * 0.0072917), 4.375rem);
+  --spacing-portrait-lg: clamp(5.5rem, calc(5.5rem + var(--fluid-delta) * 0.0114583), 6.875rem);
+  --spacing-portrait-xl: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
+  /* Akt-Banner-Breite; Rahmen-, Flächen- und Höhengeometrie hängen als
+     Anteile daran (border-image-banner, .banner-act-surface, ActBanner.tsx) */
+  --spacing-banner: clamp(14.5rem, calc(14.5rem + var(--fluid-delta) * 0.0302083), 18.125rem);
+
+  /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
+  --spacing-frame-pad: 0.75rem;
+
+  /* Screen-Caps pro Screen-Typ; kein globales Maximum */
+  --container-page: 96rem;
+  --container-page-narrow: 80rem;
+  --container-run: clamp(105rem, calc(105rem + var(--fluid-delta) * 0.2166667), 131rem);
+
+  /* Container-Query-Thresholds der Tree-Screens: der --container-*-Namespace
+     trägt Caps (max-w-*) und Query-Stützstellen (@tree-cols:/@branch-cols:),
+     unterschieden über den Namen. Query-Stützstellen bleiben statische
+     Literale — Tailwind inlined sie build-seitig in die @container-Queries. */
+  --container-tree-cols: 75rem;
+  --container-branch-cols: 50rem;
+
+  /* State: Interaction */
+  --color-state-selected: var(--color-accent);
+  --color-state-selected-tint: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-state-focus: var(--color-accent);
+
+  /* State: Semantic */
+  --color-state-locked-border: var(--color-border);
+  --color-state-empty-border: color-mix(in srgb, var(--color-border) 70%, transparent);
+
+  /* De-Emphasis-Skala: Opacity liegt ausschließlich auf Art-Layern */
+  --state-deemphasis-strong: 0.3;
+  --state-deemphasis-medium: 0.55;
+  --state-deemphasis-weak: 0.75;
+
+  /* Glows, palette-gebunden über color-mix, kontrollierter Radius */
+  --shadow-glow-accent: 0 0 16px 0 color-mix(in srgb, var(--color-accent) 25%, transparent);
+  --shadow-glow-accent-sm: 0 0 5px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
+  --drop-shadow-glow-accent: 0 0 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  --shadow-glow-ember-inset: inset 0 0 20px color-mix(in srgb, var(--color-ember) 42%, transparent);
+
+  /* Text-Kontrast auf Bild-Hintergründen (Tab-Labels, Rollen-Icons) */
+  --drop-shadow-text-contrast: 0 1px 3px rgb(0 0 0 / 0.95);
+}
+
+/*
+ * Gemeinsamer Übergang aller state-tragenden Ebenen;
+ * Callsites kombinieren ihn mit motion-reduce:transition-none.
+ */
+@utility transition-state {
+  transition-property:
+    color, background-color, border-color, outline-color, opacity, box-shadow, filter;
+  transition-duration: 150ms;
+}
+
+/*
+ * Aktive Navigation: Die Fläche beginnt erst an den Spitzen des linken
+ * Selektionsornaments. Die 3 px entsprechen dessen sichtbarer Position nach
+ * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx.
+ */
+@utility nav-selection-surface {
+  background-image: linear-gradient(
+    to right,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-surface) 70%, transparent) 3px
+  );
+}
+
+.nav-selection-surface::before,
+.nav-selection-surface::after {
+  clip-path: inset(-12px -12px -12px 0);
+}
+
+.nav-selection-surface::before {
+  filter: drop-shadow(0 -4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+.nav-selection-surface::after {
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+/*
+ * 9-Slice-Ornamentrahmen für Panels (DESIGN.md §5). Tailwind hat keine
+ * border-image-Utilities; das Asset stammt aus concept/PROMPTS.md §5.
+ * Solange das Bild nicht lädt, greift die border-color der Panel-Klassen.
+ * Das Outset schiebt den Rahmen so weit nach außen, dass die Goldlinie
+ * (Bandmitte oben/rechts/unten/links ~122/136/161/136 px vom Asset-Rand,
+ * Skalierung 40/400) auf der Kante der Hintergrundfläche liegt; nur die
+ * Ornamentspitzen ragen über das Panel.
+ */
+@utility border-image-ornate {
+  border-style: solid;
+  border-width: 30px;
+  border-image: url('/assets/frames/panel-ornate.png') 400 / 30px round;
+  border-image-outset: 9px 10.125px 12px 10.125px;
+}
+
+/*
+ * Tab-Leiste der Tree-Screens: eine durchgehende, flache Fläche mit
+ * Haarlinien-Rahmen. Gold trägt allein das aktive Segment (UI.md §6); die
+ * Segmentgrenzen kommen als Trennlinie aus dem Tab selbst.
+ */
+@utility ornate-tab-bar {
+  border: 1px solid color-mix(in srgb, var(--color-ornament) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-background) 78%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-ornament) 16%, transparent);
+}
+
+/*
+ * Aktive Tab-Fläche: Goldkante über einem Glut-Verlauf mit Inset-Glow und
+ * Akzent-Halo, in die Leiste eingesetzt. Trägt die Selektion beider
+ * Tree-Screens.
+ */
+@utility ornate-tab-selection {
+  border: 1px solid var(--color-accent);
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-ember) 22%, transparent),
+    color-mix(in srgb, var(--color-surface) 92%, transparent) 55%,
+    color-mix(in srgb, var(--color-surface) 96%, transparent)
+  );
+  box-shadow:
+    var(--shadow-glow-ember-inset),
+    0 0 14px -2px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/*
+ * Eckwinkel als Ornament flacher Chrome-Flächen, wo ein 9-Slice-Rahmen zu
+ * schwer trägt: vier Markenpaare (waagerecht und senkrecht) aus
+ * Linear-Gradients auf einem Overlay-Pseudoelement. Konsumenten justieren
+ * Farbe, Länge, Stärke und Kantenabstand über die --corner-*-Variablen und
+ * setzen die Positionierungsbasis selbst.
+ */
+.ornate-corners::after {
+  --corner-color: color-mix(in srgb, var(--color-ornament) 85%, transparent);
+  --corner-length: 0.625rem;
+  --corner-weight: 1px;
+  position: absolute;
+  inset: var(--corner-inset, 0.1875rem);
+  background-image:
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0),
+    linear-gradient(var(--corner-color) 0 0), linear-gradient(var(--corner-color) 0 0);
+  background-repeat: no-repeat;
+  background-position:
+    top left,
+    top left,
+    top right,
+    top right,
+    bottom left,
+    bottom left,
+    bottom right,
+    bottom right;
+  background-size:
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length),
+    var(--corner-length) var(--corner-weight),
+    var(--corner-weight) var(--corner-length);
+  pointer-events: none;
+  content: '';
+}
+
+/*
+ * Schlanker 9-Slice-Rahmen für kleine Panels und Karten (Asset aus
+ * concept/PROMPTS.md §7, 1254×1254, Ornamentring im äußeren Sechstel = 209 px).
+ * Das Outset legt die Goldlinie (Bandmitte je Seite ~59–67 px vom Asset-Rand,
+ * Skalierung 18/209) auf die Kante der Elementfläche; nur die Stern-Ecken
+ * ragen leicht hinaus. Umgebende Elemente dürfen daher kein overflow-hidden
+ * clippen. Die 18 px halten die skalierte Linie über einem CSS-Pixel, sonst
+ * rastert der Browser sie auf manchen Zoomstufen fast unsichtbar.
+ */
+@utility border-image-thin {
+  border-style: solid;
+  border-width: 30px;
+  border-image: url('/assets/frames/panel-thin.png') 209 / 30px round;
+  border-image-outset: 9px 8.25px 9.75px 9px;
+}
+
+/*
+ * Ornamentrahmen der Button-Variante `ornate` (Asset aus concept/PROMPTS.md
+ * §28, vertikal zugeschnitten: 2172×423). Vermessung: Schienen in Zeilen
+ * 51–111 und 312–373, Endkappen in Spalten 35–263 bzw. 1909–2137, Öffnung in
+ * Zeilen 112–311. Die Slices liegen exakt auf den gezeichneten Innenkanten
+ * (oben/unten 112, seitlich 264), damit die Padding-Kante die Rahmenlinie
+ * berührt und die CSS-Füllung (bg-clip-padding) bündig anschließt; die
+ * Border-Widths 10 px / 36 px halten den bisherigen Zeichnungsmaßstab.
+ */
+@utility border-image-button {
+  border-style: solid;
+  border-width: 10px 36px;
+  border-image: url('/assets/frames/button-ornate.png') 112 264 112 264 / 10px 36px stretch;
+}
+
+/*
+ * Vertikaler 9-Slice-Bannerrahmen der Akt-Banner (Asset aus
+ * concept/PROMPTS.md §29, 1024×1536). Vermessung: Kopfschiene samt Finials
+ * und Schienen-Nieten in den Zeilen 0–305, Schwanzspitze ab Zeile 1148,
+ * Schienen in den Spalten 136–189 und 833–886 mit pixelkonstantem Profil von
+ * Zeile 306 bis 1148. Kopf-Krone und Spitzen-Diamant liegen im horizontal
+ * gestreckten Mittelband; alle Border-Widths sind deshalb Anteile der
+ * Elementbreite --spacing-banner (306/1024, 304/1024, 388/1024) — der
+ * horizontale Maßstab bleibt exakt 1, und nur das Schienenband streckt
+ * vertikal. Die Elementhöhe ist dadurch frei; unter der Chrome-Mindesthöhe
+ * von 0.678 Breiten skaliert der Browser die Border-Widths proportional.
+ */
+@utility border-image-banner {
+  --banner-frame-top: calc(var(--spacing-banner) * 0.2988);
+  --banner-frame-x: calc(var(--spacing-banner) * 0.2969);
+  --banner-frame-bottom: calc(var(--spacing-banner) * 0.3789);
+  border-style: solid;
+  border-width: var(--banner-frame-top) var(--banner-frame-x) var(--banner-frame-bottom);
+  border-image: url('/assets/frames/banner-act.png') 306 304 388 304 / var(--banner-frame-top)
+    var(--banner-frame-x) var(--banner-frame-bottom) stretch;
+}
+
+/*
+ * Bild- und Scrim-Fläche unter dem Bannerrahmen. Die Insets fassen die Fläche
+ * rund 25 Asset-Pixel hinter die gezeichneten Innenkanten des Rahmens
+ * (Schienen-Innenkanten Asset-Spalten 190/833, Kopfschienen-Unterkante Zeile
+ * 154, V-Schulter Zeile 1224): Die painterly Kanten laufen über mehrere Pixel
+ * weich aus, und erst diese Reserve schließt die Fläche sichtbar an die
+ * Rahmenzeichnung an. Die V-Zone endet als flacher Boden statt als Spitze:
+ * Neben dem Spitzen-Diamanten liegen transparente Taschen (Spalten 468–556
+ * bis Zeile ~1400), die der Boden auf Zeile 1408 vollständig unterfasst —
+ * dort deckt das massive Spitzen-Ornament (Zeilen 1359–1470) die Fläche ab.
+ * Alle Maße sind Anteile von --spacing-banner wie beim Rahmen.
+ */
+.banner-act-surface {
+  --banner-surface-inset-x: calc(var(--spacing-banner) * 0.18);
+  --banner-surface-inset-top: calc(var(--spacing-banner) * 0.14);
+  --banner-surface-inset-bottom: calc(var(--spacing-banner) * 0.125);
+  --banner-surface-notch: calc(var(--spacing-banner) * 0.18);
+  position: absolute;
+  inset: var(--banner-surface-inset-top) var(--banner-surface-inset-x)
+    var(--banner-surface-inset-bottom);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--banner-surface-notch)),
+    60% 100%,
+    40% 100%,
+    0 calc(100% - var(--banner-surface-notch))
+  );
+}
+
+/*
+ * Vollhöhen-Rahmen für Sidebar und Main-Area. Die generierten Assets sind
+ * 1024×1536; 275 px enthalten die nach innen reichenden Eckornamente
+ * vollständig. Das Pseudoelement vermeidet, dass die 40 px Border den Inhalt
+ * verengt. Das Outset lässt den Rahmen oben und unten 4 px sowie links und
+ * rechts 3 px über die jeweilige Fläche ragen. Das 12-px-Padding hält
+ * Flächenhintergründe und Scrollbalken innerhalb der durchgehenden Goldlinie.
+ */
+@utility border-image-frame {
+  position: relative;
+  padding: var(--spacing-frame-pad);
+}
+
+.border-image-frame::before {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  border-style: solid;
+  border-width: 40px;
+  border-image: url('/assets/frames/mainview-ornate.png') 275 / 40px round;
+  border-image-outset: 4px 3px;
+  opacity: 0.8;
+  pointer-events: none;
+  content: '';
 }
 
 html {
+  overflow: hidden;
   color-scheme: dark;
 }
 
+/* Kein Seiten-Scroll: gescrollt wird ausschließlich in dafür vorgesehenen
+   Containern; die AppShell füllt den Viewport über h-dvh. */
 body {
   margin: 0;
-  min-height: 100vh;
+  overflow: hidden;
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }

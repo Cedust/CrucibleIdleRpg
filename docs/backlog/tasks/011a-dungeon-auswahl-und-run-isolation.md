@@ -10,14 +10,13 @@
 ## Kontext
 
 [011](011-dungeon-run-und-attrition.md) ist blockiert, weil pro Floor bereits in den Save
-committete XP, Gold und Crystals bis zum Ende eines Runs nicht ausgebbar sein dürfen. Die
+committete XP, Gold und Relic Shards bis zum Ende eines Runs nicht ausgebbar sein dürfen. Die
 Entscheidung hierfür ist eine UX- und Bildschirmgrenze: Ein aktiver Dungeon-Run wird nicht in der
 normalen Dungeon-View fortgesetzt. Er hat eine eigene, vollständige Ansicht ohne
 Primärnavigation und ohne Progressions- oder Ausgabefunktionen; die lesende Kopfzeile bleibt
 sichtbar.
 
-Der verbindliche visuelle Ausgangspunkt ist der UI-Draft
-[Crucible Idle RPG.dc.html](../../../concept/ui-draft/Crucible%20Idle%20RPG.dc.html): Die
+Der verbindliche visuelle Ausgangspunkt ist der UI-Draft: Die
 Overview-Karte **DUNGEONS** führt zur Akt-/Dungeon-Auswahl; **ENTER DUNGEON** wechselt in die
 separate Battle-Arena. Die Draft-Arena hat bewusst keine Seitenleiste. Ihre kompakte Kopfzeile
 zeigt Ressourcen nur lesend an; sie ist keine App-Navigation.

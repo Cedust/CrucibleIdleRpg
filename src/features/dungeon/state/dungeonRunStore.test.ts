@@ -188,7 +188,10 @@ async function unlockSecondDungeon(): Promise<void> {
   const data = saveStore.getState().data;
   if (data === null) throw new Error('Save fehlt');
   saveStore.setState({
-    data: { ...data, currencies: { ...data.currencies, crystals: data.currencies.crystals + 1 } },
+    data: {
+      ...data,
+      currencies: { ...data.currencies, relicShards: data.currencies.relicShards + 1 },
+    },
   });
   if (!(await saveStore.getState().buyCrucibleNode('anvil.waystones'))) {
     throw new Error('Waystone-Kauf fehlgeschlagen');

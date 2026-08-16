@@ -3,16 +3,16 @@ import { ACT_1_DUNGEON_IDS } from '@/game/encounters/act1';
 import type { CharacterId, DerivedStatPercent } from '@/game/types';
 
 /**
- * Crucible — Node-Katalog, Rangwerte und Kostenfunktion der vier Trees
+ * Crucible — Node-Katalog, Rangwerte und Kostenfunktion der drei Trees
  * (docs/spec/PROGRESSION.md#3-crucible-globaler-skilltree). Deklarativer, typisierter
  * Balancing-Content getrennt von Logik und Stores (AGENTS.md); die Kampfwirkungen der
  * Molten-Nodes stehen in docs/spec/SIGNATURES.md.
  */
 
-export const CRUCIBLE_TREES = ['anvil', 'smelting', 'molten', 'masterwork'] as const;
+export const CRUCIBLE_TREES = ['anvil', 'smelting', 'molten'] as const;
 export type CrucibleTreeId = (typeof CRUCIBLE_TREES)[number];
 
-/** Nur Smelting und Molten sind flexibel; Anvil ist permanent, Masterwork folgt in M5. */
+/** Nur Smelting und Molten sind flexibel; alle Anvil-Freischaltungen sind permanent. */
 export const RESPECCABLE_TREES = ['smelting', 'molten'] as const;
 export type RespeccableTreeId = (typeof RESPECCABLE_TREES)[number];
 
@@ -37,10 +37,10 @@ export const CRUCIBLE_IDS = {
   menace: 'molten.menace',
   momentum: 'molten.momentum',
   secondWind: 'molten.second-wind',
-  runeGrimoire: 'masterwork.rune-grimoire',
-  talisman: 'masterwork.talisman',
-  runicFocus: 'masterwork.runic-focus',
-  runeMastery: 'masterwork.rune-mastery',
+  runeGrimoire: 'anvil.rune-grimoire',
+  talisman: 'anvil.talisman',
+  runicFocus: 'anvil.runic-focus',
+  runeMastery: 'anvil.rune-mastery',
 } as const;
 
 /** Gekaufte Node-Ränge — die alleinige Wahrheit des Crucible-Standes im Save. */
@@ -81,9 +81,9 @@ const node = (
 });
 
 /**
- * Der vollständige Katalog (PROGRESSION §3.1–§3.4). Gesperrte Nodes erscheinen sichtbar als
+ * Der vollständige Katalog (PROGRESSION §3.1–§3.3). Gesperrte Nodes erscheinen sichtbar als
  * Voraussetzungen späterer Systeme; kaufbar sind in M2 Waystones, Smelting und der komplette
- * Molten-Tree — zusammen 190 aktive Crystal-Kosten (PROGRESSION §3.5).
+ * Molten-Tree — zusammen 190 aktive Relic-Shard-Kosten (PROGRESSION §3.4).
  */
 export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   node(
@@ -108,7 +108,7 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     lockedUntil: 'Crafting (M4)',
   }),
   node(CRUCIBLE_IDS.jeweler, 'anvil', 'Jeweler', 1, 'Unlocks the Jeweler system.', {
-    prerequisites: [{ nodeId: CRUCIBLE_IDS.armory, rank: 1 }],
+    prerequisites: [{ nodeId: CRUCIBLE_IDS.blacksmith, rank: 1 }],
     lockedUntil: 'Crafting (M4)',
   }),
   node(CRUCIBLE_IDS.overpower, 'smelting', 'Overpower', 5, '+3% Attack per rank.'),
@@ -178,7 +178,7 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   ),
   node(
     CRUCIBLE_IDS.runeGrimoire,
-    'masterwork',
+    'anvil',
     'Rune Grimoire',
     1,
     'Unlocks the Rune system and Rune level cap 1.',
@@ -186,20 +186,13 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
       lockedUntil: 'Runes (M5)',
     },
   ),
-  node(
-    CRUCIBLE_IDS.talisman,
-    'masterwork',
-    'Talisman',
-    3,
-    'Unlocks the Rite for character 1 / 2 / 3.',
-    {
-      prerequisites: [{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }],
-      lockedUntil: 'Runes (M5)',
-    },
-  ),
+  node(CRUCIBLE_IDS.talisman, 'anvil', 'Talisman', 3, 'Unlocks the Rite for character 1 / 2 / 3.', {
+    prerequisites: [{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }],
+    lockedUntil: 'Runes (M5)',
+  }),
   node(
     CRUCIBLE_IDS.runicFocus,
-    'masterwork',
+    'anvil',
     'Runic Focus',
     3,
     'Unlocks the Modifier for character 1 / 2 / 3.',
@@ -210,7 +203,7 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   ),
   node(
     CRUCIBLE_IDS.runeMastery,
-    'masterwork',
+    'anvil',
     'Rune Mastery',
     4,
     'Raises the Rune level cap to 2 / 3 / 4 / 5.',
@@ -229,9 +222,14 @@ export function crucibleNodeById(nodeId: string): CrucibleNode | undefined {
 
 /* ------------------------------------------------------------------ Kosten */
 
-/** Ein neuer Rang kostet genau seine Rangnummer in Crystals (PROGRESSION §3). */
+/** Ein neuer Rang kostet genau seine Rangnummer in Relic Shards (PROGRESSION §3). */
 export function rankCost(nextRank: number): number {
   return nextRank;
+}
+
+/** Formatiert einen Relic-Shard-Betrag mit korrektem englischen Numerus. */
+export function formatRelicShards(amount: number): string {
+  return `${amount} ${amount === 1 ? 'Relic Shard' : 'Relic Shards'}`;
 }
 
 /** Gesamtkosten der Ränge 1..rank: `rank × (rank + 1) / 2` — fünf Ränge kosten 15. */
@@ -240,8 +238,8 @@ export function totalRankCost(rank: number): number {
   return (clamped * (clamped + 1)) / 2;
 }
 
-/** In einen Tree investierte Crystals — die exakte Erstattung seines Respecs. */
-export function investedCrystals(ranks: CrucibleRanks, tree?: CrucibleTreeId): number {
+/** In einen Tree investierte Relic Shards — die exakte Erstattung seines Respecs. */
+export function investedRelicShards(ranks: CrucibleRanks, tree?: CrucibleTreeId): number {
   return Object.entries(ranks).reduce((total, [id, rank]) => {
     const entry = crucibleNodeById(id);
     return entry !== undefined && (tree === undefined || entry.tree === tree)
@@ -258,7 +256,7 @@ export type CompletedDungeons = Readonly<Record<Act1DungeonId, boolean>>;
 /**
  * Erfüllt der Stand die Voraussetzungen für `rank` des Nodes? Waystone-Rang `n` verlangt das
  * Vollendet-Flag von `A1-D<n>`; Node-Voraussetzungen verlangen ihren Mindestrang bzw. bei
- * `matching` den Zielrang (PROGRESSION §3.1, §3.4).
+ * `matching` den Zielrang (PROGRESSION §3.1).
  */
 export function meetsPrerequisites(
   ranks: CrucibleRanks,
@@ -285,7 +283,7 @@ export function meetsPrerequisites(
 /** Der Sperrgrund eines Kaufs oder `null`, wenn der nächste Rang kaufbar ist. Spieltext, Englisch. */
 export function purchaseFailure(
   ranks: CrucibleRanks,
-  crystals: number,
+  relicShards: number,
   completedDungeons: CompletedDungeons,
   nodeId: string,
 ): string | null {
@@ -300,30 +298,30 @@ export function purchaseFailure(
       ? `Requires completing ${ACT_1_DUNGEON_IDS[currentRank] ?? ''}.`
       : 'A prerequisite node is missing.';
   }
-  if (crystals < rankCost(currentRank + 1)) {
-    return `Requires ${rankCost(currentRank + 1)} Crystals.`;
+  if (relicShards < rankCost(currentRank + 1)) {
+    return `Requires ${formatRelicShards(rankCost(currentRank + 1))}.`;
   }
   return null;
 }
 
 /**
- * Wendet den Kauf des nächsten Rangs an: die Rangnummer wird in Crystals bezahlt, der Rang
+ * Wendet den Kauf des nächsten Rangs an: die Rangnummer wird in Relic Shards bezahlt, der Rang
  * steigt um eins. `null`, wenn `purchaseFailure` den Kauf ablehnt.
  */
 export function purchaseCrucibleNode(
   ranks: CrucibleRanks,
-  crystals: number,
+  relicShards: number,
   completedDungeons: CompletedDungeons,
   nodeId: string,
-): { ranks: CrucibleRanks; crystals: number } | null {
-  if (purchaseFailure(ranks, crystals, completedDungeons, nodeId) !== null) {
+): { ranks: CrucibleRanks; relicShards: number } | null {
+  if (purchaseFailure(ranks, relicShards, completedDungeons, nodeId) !== null) {
     return null;
   }
 
   const nextRank = (ranks[nodeId] ?? 0) + 1;
   return {
     ranks: { ...ranks, [nodeId]: nextRank },
-    crystals: crystals - rankCost(nextRank),
+    relicShards: relicShards - rankCost(nextRank),
   };
 }
 
@@ -331,15 +329,15 @@ export function purchaseCrucibleNode(
 
 /**
  * Kostenloser Tree-Respec (PROGRESSION §3): entfernt atomar alle Ränge des flexiblen Trees und
- * erstattet exakt die investierten Crystals. `null` ohne Investition; Anvil und Masterwork
- * sind nie respecbar.
+ * erstattet exakt die investierten Relic Shards. `null` ohne Investition; Anvil ist nie
+ * respecbar.
  */
 export function respecCrucibleTree(
   ranks: CrucibleRanks,
-  crystals: number,
+  relicShards: number,
   tree: RespeccableTreeId,
-): { ranks: CrucibleRanks; crystals: number } | null {
-  const refunded = investedCrystals(ranks, tree);
+): { ranks: CrucibleRanks; relicShards: number } | null {
+  const refunded = investedRelicShards(ranks, tree);
   if (refunded === 0) {
     return null;
   }
@@ -348,7 +346,7 @@ export function respecCrucibleTree(
     ranks: Object.fromEntries(
       Object.entries(ranks).filter(([id]) => crucibleNodeById(id)?.tree !== tree),
     ),
-    crystals: crystals + refunded,
+    relicShards: relicShards + refunded,
   };
 }
 

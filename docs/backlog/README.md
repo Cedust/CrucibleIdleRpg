@@ -3,12 +3,11 @@
 > **Zweck:** Dieser Ordner beantwortet zwei getrennte Fragen. Einordnung aller Doku-Dateien:
 > [../README.md](../README.md#1-landkarte).
 
-| Datei / Ordner                                | Frage                                     | Verbindlichkeit                                            |
-| --------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------- |
-| [OPEN_ISSUES.md](OPEN_ISSUES.md)              | „Was ist noch **nicht entschieden**?"     | **Nichts davon wird implementiert.**                       |
-| [ROADMAP.md](ROADMAP.md)                      | „In welcher **Reihenfolge** wird gebaut?" | Gibt die Reihenfolge vor, enthält keine Regeln.            |
-| [tasks/](tasks/)                              | „Was genau ist zu tun?"                   | **Arbeitsauftrag** — ein Task = eine Agenten-Session.      |
-| [review-findings/](review-findings/README.md) | „Was hat das Code-Review ergeben?"        | **Arbeitsauftrag** — gleiches Format, eigene Nummerierung. |
+| Datei / Ordner                   | Frage                                     | Verbindlichkeit                                       |
+| -------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| [OPEN_ISSUES.md](OPEN_ISSUES.md) | „Was ist noch **nicht entschieden**?"     | **Nichts davon wird implementiert.**                  |
+| [ROADMAP.md](ROADMAP.md)         | „In welcher **Reihenfolge** wird gebaut?" | Gibt die Reihenfolge vor, enthält keine Regeln.       |
+| [tasks/](tasks/)                 | „Was genau ist zu tun?"                   | **Arbeitsauftrag** — ein Task = eine Agenten-Session. |
 
 Die Trennung ist der Kern dieses Ordners: OPEN_ISSUES sammelt Fragen, `tasks/` sammelt
 Aufträge. Ein Task, dessen Ausführung eine offene Frage entscheiden würde, ist falsch

@@ -5,8 +5,8 @@ import { nextTick, runCombat, type CombatContext, type TickResult } from './comb
 import type { ActorRef, CombatState } from './combatState';
 import type { HitEvent } from './combatEvents';
 import { crucibleCombatContext } from './crucibleCombat';
-import { distributeTeamDamage, menacedAccuracy, resolveEnemyAttack } from './damagePipeline';
-import { NO_CRIT_NODES, type MasteryEffects } from './outgoingDamage';
+import { distributeTeamDamage, menacedAccuracy, resolveEnemyAttack } from './damage/damagePipeline';
+import { NO_CRIT_NODES, type MasteryEffects } from './damage/outgoingDamage';
 import { momentumBonus } from './turnOrder';
 import { characterFixture, combatStateFixture, enemyFixture, scriptedPrng } from './testFixtures';
 

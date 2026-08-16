@@ -10,7 +10,7 @@ ein mehrtägiger Grind-Wall nicht. Ein Durchlauf ohne Build-Entscheidungen soll 
 funktionieren wie ein einzelner dominanter Ausbaupfad.
 
 Der Zahlenraum bleibt lesbar. Fortschritt fühlt sich vor allem über diskrete Power-Spikes an:
-Refine-Stufen, Mastery Ranks und Verhaltens-Nodes, Signatur-Skills und Runen. Flache Werte wie
+Masterwork-Stufen, Mastery Ranks und Verhaltens-Nodes, Signatur-Skills und Runen. Flache Werte wie
 Barrier und Regeneration bleiben dadurch über mehrere Akte autorierbar und die Attrition relevant.
 
 ## 2. Warum zwei Wachstumsachsen

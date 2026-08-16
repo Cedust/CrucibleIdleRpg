@@ -107,65 +107,66 @@
 
 ## Welt & Fortschritt
 
-| Begriff                      | EN / Code    | Abgrenzung                                                                                                                                                                                        |
-| ---------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Akt / Dungeon / Floor**    | —            | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                                                                                                     |
-| **Elite-Floor / Boss-Floor** | —            | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                                                                                                 |
-| **Ramp-Up**                  | —            | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                                                                                            |
-| **Run**                      | —            | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                                                                                                |
-| **Wipe**                     | —            | Alle Charaktere besiegt                                                                                                                                                                           |
-| **Attrition**                | —            | Der über einen **Run** mitgeschleppte Health-Verlust                                                                                                                                              |
-| **Rally**                    | _Rally_      | Molten-Cast-Node, der alle Gefallenen am erfolgreichen Floor-Übergang aufstehen lässt                                                                                                             |
-| **Checkpoint**               | —            | Menge freigeschalteter **Dungeon-Einstiege**; folgt aus den **Waystones**                                                                                                                         |
-| **Waystone**                 | _Waystone_   | Anvil-Sparks-Node, der einen späteren Dungeon-Einstieg dauerhaft freischaltet                                                                                                                     |
-| **Belohnung**                | _Reward_     | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                                                                                                    |
-| **XP**                       | _Experience_ | Belohnung → **Charakterlevel**                                                                                                                                                                    |
-| **Gold**                     | _Gold_       | Laufende globale Währung. Abzugrenzen von **Crystal**, **Cinder**, **Runedust**                                                                                                                   |
-| **Crystal**                  | _Crystal_    | Währung für den **Crucible**. Abzugrenzen von **Cinder** und **Runedust**                                                                                                                         |
-| **Crucible**                 | _Crucible_   | Der **globale** Skilltree: **Anvil Sparks** (permanente Zugänge), **Smelting Flames** (Charakterwerte), **Molten Cast** (Kampfregeln), **Masterwork** (Runen). Abzugrenzen von **Weapon Mastery** |
-| **Respec**                   | _Respec_     | Vollständiger Rücksetzer eines flexiblen Crucible-Trees gegen volle Crystal-Erstattung; Anvil ist permanent                                                                                       |
-| **Prestige**                 | —            | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                                                                                                |
+| Begriff                      | EN / Code     | Abgrenzung                                                                                                                                                                                               |
+| ---------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Akt / Dungeon / Floor**    | —             | Die dreistufige Weltstruktur; ein **Floor** = ein Kampf. Notation `A<Akt>-D<Dungeon>-<Floor>`                                                                                                            |
+| **Elite-Floor / Boss-Floor** | —             | Die Sonder-Floors am Dungeon-Ende. Abzugrenzen vom normalen Floor                                                                                                                                        |
+| **Ramp-Up**                  | —             | Gestaffelte Einführung der Gegnervielfalt im ersten Dungeon eines Akts                                                                                                                                   |
+| **Run**                      | —             | Ein Dungeon-Durchlauf bis Sieg, **Wipe** oder Verlassen. Abzugrenzen vom **Floor**                                                                                                                       |
+| **Wipe**                     | —             | Alle Charaktere besiegt                                                                                                                                                                                  |
+| **Attrition**                | —             | Der über einen **Run** mitgeschleppte Health-Verlust                                                                                                                                                     |
+| **Rally**                    | _Rally_       | Molten-Cast-Node, der alle Gefallenen am erfolgreichen Floor-Übergang aufstehen lässt                                                                                                                    |
+| **Checkpoint**               | —             | Menge freigeschalteter **Dungeon-Einstiege**; folgt aus den **Waystones**                                                                                                                                |
+| **Waystone**                 | _Waystone_    | Anvil-Sparks-Node, der einen späteren Dungeon-Einstieg dauerhaft freischaltet                                                                                                                            |
+| **Belohnung**                | _Reward_      | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                                                                                                           |
+| **XP**                       | _Experience_  | Belohnung → **Charakterlevel**                                                                                                                                                                           |
+| **Gold**                     | _Gold_        | Laufende globale Währung. Abzugrenzen von **Relic Shard**, **Cinder**, **Runedust**                                                                                                                      |
+| **Relic Shard**              | _Relic Shard_ | Fragment alter Waffen, Siegel oder Schmiedewerke des gefallenen Reiches; Erstsieg-Währung für den **Crucible**. Abzugrenzen von **Gems**, **Cinder** und **Runedust**                                    |
+| **Crucible**                 | _Crucible_    | Der **globale** Skilltree: **Anvil Sparks** (permanente Zugänge und alle Systemfreischaltungen), **Smelting Flames** (Charakterwerte), **Molten Cast** (Kampfregeln). Abzugrenzen von **Weapon Mastery** |
+| **Respec**                   | _Respec_      | Vollständiger Rücksetzer eines flexiblen Crucible-Trees gegen volle Relic-Shard-Erstattung; Anvil ist permanent                                                                                          |
+| **Prestige**                 | —             | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                                                                                                       |
 
 ---
 
 ## Ausrüstung, Loot & Handwerk
 
-| Begriff                                         | EN / Code           | Abgrenzung                                                                                                     |
-| ----------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Ausrüstung / Armor**                          | _Equipment / Armor_ | Items in **vier Slots**: Head, Chest, Legs, Feet. **Das Item ist der Slot** — kein Inventar, kein Tausch       |
-| **Item-Basis**                                  | _Base_              | Item-Typ + Slot; legt den **Innate**-Affix fest. **Item-Basen droppen nicht**                                  |
-| **Innate**                                      | _Innate_            | Der feste Basis-Stat eines Slots. Abzugrenzen vom **Gem**-Affix und vom **Implicit**                           |
-| **Item-Level**                                  | _Item Level_ (`+n`) | **Stamm** des Ausbaus, gehoben per **Temper**. Abzugrenzen von der **Seltenheit**                              |
-| **Seltenheit**                                  | _Rarity_            | **Master-Regler** eines Armor-Items, gehoben per **Refine**. Abzugrenzen von **Mastery Rank** und Item-Level   |
-| **Sockel**                                      | _Socket_            | Steckplatz für einen **Gem**                                                                                   |
-| **Prismatic-Sockel**                            | _Prismatic Socket_  | Sonder-Sockel nur für **Diamond**-Gems                                                                         |
-| **Gem**                                         | _Gem_               | Affix-Träger. Un-gesockelt eine **Ressource** (Bestands-Zähler), gesockelt **am Item gebunden**                |
-| **Amber / Ruby / Sapphire / Emerald / Diamond** | —                   | Die fünf **Gem-Farben** mit je eigenem Affix-Pool                                                              |
-| **Sigil**                                       | _Sigil_             | Codex-Eintrag mit vordefinierter **Implicit**-Identität und Slot(-Typ)-Bindung                                 |
-| **Sigil Codex**                                 | —                   | Sammlung der bekannten Sigils — reiner **Wissensstand**, keine Ressource. Modellform wie das **Rune Grimoire** |
-| **Implicit**                                    | _Implicit_          | Affix aus einem **Sigil**, per **Brand** auf dem Item. Abzugrenzen von **Innate** und **Gem**-Affix            |
-| **Cinder**                                      | _Cinder_            | Boss-/Elite-Währung für **Refine** und **Brand**. Abzugrenzen von **Crystal** und **Runedust**                 |
-| **Drop / Loot**                                 | —                   | Was ein Sieg ausschüttet. Wohnort ist die **Ressource**, nicht der Sieg                                        |
-| **Blacksmith**                                  | _Blacksmith_        | Station für **Temper**, **Refine**, **Brand** — **RNG-frei**. Abzugrenzen vom **Jeweler**                      |
-| **Temper**                                      | _Temper_            | Blacksmith-Aktion auf dem **Item-Level**                                                                       |
-| **Refine**                                      | _Refine_            | Blacksmith-Aktion auf der **Seltenheit**                                                                       |
-| **Brand / Re-Brand**                            | _Brand_             | Blacksmith-Aktion auf dem **Implicit**; **Re-Brand** überschreibt                                              |
-| **Jeweler**                                     | _Jeweler_           | Station für **Inlay**, **Attune**, **Recut** — der **einzige Zufall im Handwerk**                              |
-| **Inlay**                                       | _Inlay_             | Jeweler-Aktion: Gem sockeln, Affix rollen                                                                      |
-| **Attune**                                      | _Attune_            | Jeweler-Aktion: gesockelten Gem aufleveln                                                                      |
-| **Recut**                                       | _Recut_             | Jeweler-Aktion: **Value** eines gesockelten Gems neu würfeln                                                   |
+| Begriff                                         | EN / Code           | Abgrenzung                                                                                                       |
+| ----------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Ausrüstung / Armor**                          | _Equipment / Armor_ | Items in **vier Slots**: Head, Chest, Legs, Feet. **Das Item ist der Slot** — kein Inventar, kein Tausch         |
+| **Item-Basis**                                  | _Base_              | Item-Typ + Slot; legt den **Innate**-Affix fest. **Item-Basen droppen nicht**                                    |
+| **Innate**                                      | _Innate_            | Der feste Basis-Stat eines Slots. Abzugrenzen vom **Gem**-Affix und vom **Implicit**                             |
+| **Item-Level**                                  | _Item Level_ (`+n`) | **Stamm** des Ausbaus, gehoben per **Temper**. Abzugrenzen von der **Seltenheit**                                |
+| **Seltenheit**                                  | _Rarity_            | **Master-Regler** eines Armor-Items, gehoben per **Masterwork**. Abzugrenzen von **Mastery Rank** und Item-Level |
+| **Sockel**                                      | _Socket_            | Steckplatz für einen **Gem**                                                                                     |
+| **Prismatic-Sockel**                            | _Prismatic Socket_  | Sonder-Sockel nur für **Diamond**-Gems                                                                           |
+| **Gem**                                         | _Gem_               | Affix-Träger. Un-gesockelt eine **Ressource** (Bestands-Zähler), gesockelt **am Item gebunden**                  |
+| **Amber / Ruby / Sapphire / Emerald / Diamond** | —                   | Die fünf **Gem-Farben** mit je eigenem Affix-Pool                                                                |
+| **Sigil**                                       | _Sigil_             | Codex-Eintrag mit vordefinierter **Implicit**-Identität und Slot(-Typ)-Bindung                                   |
+| **Sigil Codex**                                 | —                   | Sammlung der bekannten Sigils — reiner **Wissensstand**, keine Ressource. Modellform wie das **Rune Grimoire**   |
+| **Implicit**                                    | _Implicit_          | Affix aus einem **Sigil**, per **Brand** auf dem Item. Abzugrenzen von **Innate** und **Gem**-Affix              |
+| **Cinder**                                      | _Cinder_            | Boss-/Elite-Währung für **Masterwork** und **Brand**. Abzugrenzen von **Relic Shard** und **Runedust**           |
+| **Drop / Loot**                                 | —                   | Was ein Sieg ausschüttet. Wohnort ist die **Ressource**, nicht der Sieg                                          |
+| **Blacksmith**                                  | _Blacksmith_        | Station für **Temper**, **Masterwork**, **Brand** — **RNG-frei**. Abzugrenzen vom **Jeweler**                    |
+| **Temper**                                      | _Temper_            | Blacksmith-Aktion auf dem **Item-Level**                                                                         |
+| **Masterwork**                                  | _Masterwork_        | Blacksmith-Aktion auf der **Seltenheit**. Abzugrenzen von **Weapon Mastery**                                     |
+| **Brand / Re-Brand**                            | _Brand_             | Blacksmith-Aktion auf dem **Implicit**; **Re-Brand** überschreibt                                                |
+| **Jeweler**                                     | _Jeweler_           | Station für **Inlay**, **Attune**, **Recut** — der **einzige Zufall im Handwerk**                                |
+| **Inlay**                                       | _Inlay_             | Jeweler-Aktion: Gem sockeln, Affix rollen                                                                        |
+| **Attune**                                      | _Attune_            | Jeweler-Aktion: gesockelten Gem aufleveln                                                                        |
+| **Recut**                                       | _Recut_             | Jeweler-Aktion: **Value** eines gesockelten Gems neu würfeln                                                     |
 
 ---
 
 ## Runen (Endgame)
 
-| Begriff                         | EN / Code  | Abgrenzung                                                                                        |
-| ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| **Rune**                        | _Rune_     | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse |
-| **Trigger / Effect / Modifier** | —          | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                              |
-| **Rune Grimoire**               | —          | Katalog aller Runen; zugleich Station für **Inscribe** und **Etch**. Kein Bestand, kein Inventar  |
-| **Talisman**                    | _Talisman_ | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**          |
-| **Rite**                        | _Rite_     | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                       |
-| **Runedust**                    | _Runedust_ | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Crystal**           |
-| **Inscribe**                    | _Inscribe_ | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                  |
-| **Etch**                        | _Etch_     | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                          |
+| Begriff                         | EN / Code    | Abgrenzung                                                                                                  |
+| ------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Rune**                        | _Rune_       | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse           |
+| **Trigger / Effect / Modifier** | —            | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                                        |
+| **Runescribe**                  | _Runescribe_ | Station/Persona für **Rune Grimoire**, **Talisman/Rites**, **Inscribe** und **Etch**; nicht das Rune-System |
+| **Rune Grimoire**               | —            | Katalog aller Runen; in Runescribe für **Inscribe** und **Etch**. Kein Bestand, kein Inventar               |
+| **Talisman**                    | _Talisman_   | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**                    |
+| **Rite**                        | _Rite_       | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                                 |
+| **Runedust**                    | _Runedust_   | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Relic Shard**                 |
+| **Inscribe**                    | _Inscribe_   | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                            |
+| **Etch**                        | _Etch_       | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                                    |

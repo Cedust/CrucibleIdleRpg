@@ -1,13 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-
-import { ProgressBar } from '@/shared/ui/ProgressBar';
+import { CombatPortrait } from './CombatPortrait';
+import { cn } from '@/shared/ui/utils/cn';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { ProgressBar } from '@/shared/ui/feedback/ProgressBar';
+import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
+import { stateAttrs } from '@/shared/ui/utils/state';
+import { bulwarkDamageFactor } from '@/features/combat/engine/damage/bulwark';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useShallow } from 'zustand/react/shallow';
 
 const LANES = [
-  { id: 'backline', label: 'Backline', offset: 3 },
   { id: 'frontline', label: 'Frontline', offset: 0 },
+  { id: 'backline', label: 'Backline', offset: 3 },
 ] as const;
+
+const PERCENT_FORMAT = new Intl.NumberFormat('en-US', {
+  style: 'percent',
+  maximumFractionDigits: 2,
+});
+
+interface EnemyFormationProps {
+  className?: string;
+}
 
 interface EnemySlotProps {
   formationIndex: number;
@@ -24,129 +37,112 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
       );
       return enemy === undefined
         ? null
-        : { name: enemy.name, health: enemy.health, maxHealth: enemy.maxHealth };
+        : {
+            name: enemy.name,
+            health: enemy.health,
+            maxHealth: enemy.maxHealth,
+            bulwarkValue:
+              lane === 'frontline'
+                ? enemy.bulwarkContribution
+                : 1 - bulwarkDamageFactor(state.combat?.enemies ?? [], enemy),
+          };
     }),
   );
-  const name = slot?.name ?? null;
-  const health = slot?.health ?? 0;
-  const maxHealth = slot?.maxHealth ?? 0;
+  const isDefeated = (slot?.health ?? 0) <= 0;
+
+  if (slot === null) {
+    return (
+      <article
+        data-testid="formation-slot"
+        aria-label={`Empty ${lane} slot ${slotIndex + 1}`}
+        {...stateAttrs({ semantic: 'empty' })}
+        className="flex min-h-44 min-w-0 flex-col gap-2 rounded-lg border border-dashed border-state-empty-border bg-surface/40 p-2 shadow-panel @min-[36rem]:p-3"
+      >
+        <div className="flex flex-1 items-center justify-center gap-3">
+          <span className="text-xs text-text-muted">Empty</span>
+        </div>
+      </article>
+    );
+  }
 
   return (
-    <div
+    <Panel
+      as="article"
+      variant="thin"
+      padding="none"
       data-testid="formation-slot"
-      aria-label={name === null ? `Empty ${lane} slot ${slotIndex + 1}` : undefined}
-      className="min-h-28 rounded-lg border border-border bg-surface-raised p-3"
+      aria-label={`${slot.name} ${lane} slot ${slotIndex + 1}`}
+      className="flex min-h-44 min-w-0 flex-col gap-2 p-2 @min-[36rem]:p-3"
     >
-      {name === null ? (
-        <div className="flex min-h-20 items-center justify-center text-xs text-text-muted">
-          Empty
-        </div>
-      ) : (
-        <article>
-          <h5 className="mb-3 min-h-10 text-sm font-semibold leading-tight">{name}</h5>
-          <ProgressBar label={name} value={health} max={maxHealth} />
-        </article>
-      )}
-    </div>
+      <h4 className="w-full text-left text-sm font-semibold leading-tight text-text">
+        {slot.name}
+      </h4>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <CombatPortrait size="lg" isDefeated={isDefeated} label={`${slot.name} portrait`} />
+        <dl className="min-w-0 flex-1 text-xs">
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="text-text-muted">{lane === 'frontline' ? 'Bulwark' : 'Bulwark DR'}</dt>
+            <dd
+              aria-label={
+                lane === 'frontline'
+                  ? `${slot.name} Bulwark`
+                  : `${slot.name} Bulwark damage reduction`
+              }
+              className="font-semibold tabular-nums text-text"
+            >
+              {PERCENT_FORMAT.format(slot.bulwarkValue)}
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <div data-testid="enemy-health" className="w-full">
+        <ProgressBar
+          label="Health"
+          ariaLabel={`${slot.name} health`}
+          value={slot.health}
+          max={slot.maxHealth}
+          valueText={isDefeated ? 'FALLEN' : undefined}
+          hideLabel
+          tone="health"
+          size="sm"
+        />
+      </div>
+    </Panel>
   );
 }
 
-/** Gegneranzeige als verbindliche 2×3-Formation mit getrennten Lanes. */
-export function EnemyFormation() {
-  const scroller = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  useEffect(() => {
-    const element = scroller.current;
-    if (element === null) {
-      return;
-    }
-
-    const updateScrollState = () => {
-      setCanScrollLeft(element.scrollLeft > 0);
-      setCanScrollRight(element.scrollLeft + element.clientWidth < element.scrollWidth - 1);
-    };
-
-    updateScrollState();
-    element.addEventListener('scroll', updateScrollState);
-    window.addEventListener('resize', updateScrollState);
-
-    return () => {
-      element.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
-    };
-  }, []);
-
-  const scrollFormation = (direction: -1 | 1) => {
-    scroller.current?.scrollBy({ left: direction * 240 });
-  };
-
+/** Gegneranzeige als verbindliche, ohne horizontalen Scrollbereich schrumpfende 2×3-Formation. */
+export function EnemyFormation({ className = '' }: EnemyFormationProps) {
   return (
-    <section
-      aria-labelledby="enemy-formation-heading"
-      className="min-w-0 rounded-xl border border-border bg-surface p-4"
-    >
-      <h3
-        id="enemy-formation-heading"
-        className="text-sm font-semibold uppercase tracking-wider text-text-muted"
-      >
-        Enemy Formation
-      </h3>
-
-      <div className="mt-2 flex justify-end gap-2">
-        <button
-          type="button"
-          aria-label="Scroll formation left"
-          aria-controls="enemy-formation-scroll"
-          disabled={!canScrollLeft}
-          onClick={() => scrollFormation(-1)}
-          className="rounded-md border border-border bg-surface-raised px-3 py-1 text-text-muted hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          ←
-        </button>
-        <button
-          type="button"
-          aria-label="Scroll formation right"
-          aria-controls="enemy-formation-scroll"
-          disabled={!canScrollRight}
-          onClick={() => scrollFormation(1)}
-          className="rounded-md border border-border bg-surface-raised px-3 py-1 text-text-muted hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          →
-        </button>
-      </div>
+    <section aria-label="Enemy Formation" className={cn('min-h-0 min-w-0', className)}>
+      <h2 className="sr-only">Enemies</h2>
       <div
-        id="enemy-formation-scroll"
-        ref={scroller}
-        role="region"
-        aria-label="Scrollable enemy formation"
-        data-testid="enemy-formation-scroll"
-        className="mt-2 overflow-x-auto pb-2"
+        data-testid="enemy-formation-grid"
+        className="grid min-w-0 grid-cols-2 gap-2 @min-[36rem]:gap-3"
       >
-        <div className="min-w-120 space-y-4">
-          {LANES.map((lane) => (
-            <section key={lane.id} aria-labelledby={`${lane.id}-heading`}>
-              <h4 id={`${lane.id}-heading`} className="mb-2 text-xs font-semibold text-text-muted">
-                {lane.label}
-              </h4>
-              <div className="grid grid-cols-3 gap-2">
-                {[0, 1, 2].map((slotIndex) => {
-                  const formationIndex = lane.offset + slotIndex;
+        {LANES.map((lane) => (
+          <section
+            key={lane.id}
+            aria-labelledby={`${lane.id}-heading`}
+            className="min-w-0 space-y-3"
+          >
+            <SectionTitle as="h3" id={`${lane.id}-heading`}>
+              {lane.label}
+            </SectionTitle>
+            {[0, 1, 2].map((slotIndex) => {
+              const formationIndex = lane.offset + slotIndex;
 
-                  return (
-                    <EnemySlot
-                      key={formationIndex}
-                      formationIndex={formationIndex}
-                      lane={lane.id}
-                      slotIndex={slotIndex}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
+              return (
+                <EnemySlot
+                  key={formationIndex}
+                  formationIndex={formationIndex}
+                  lane={lane.id}
+                  slotIndex={slotIndex}
+                />
+              );
+            })}
+          </section>
+        ))}
       </div>
     </section>
   );

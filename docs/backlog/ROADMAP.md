@@ -109,18 +109,30 @@ auf.
 
 ## M3 — Ausrüstung
 
-Vier Armor-Slots, Innate-Affixe, Item-Level, Seltenheit, Item-Drops, Equip-Ansicht
-([Items, Loot & Handwerk](../spec/ITEMS.md)).
+**Fertig, wenn:** Alle Charaktere können über Armory-Ränge ihre vier dauerhaften Armor-Slots
+freischalten, deren Innate-Werte in den Kampf einfließen. Heroes bündelt effektive Stats und das
+Loadout aus Signaturwaffe und Armor; Gem- und Cinder-Drops speisen den späteren Handwerk-Loop.
+
+| Reihenfolge | Task                                                                      | Status | Hängt ab von |
+| ----------- | ------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [022 — Armory & Armor-Fundament](tasks/022-armory-und-armor-fundament.md) | done   | 016          |
+| 2           | [023 — Heroes-Hub & Stats](tasks/023-heroes-hub-und-stats.md)             | done   | 022          |
+| 3           | [024 — Loadout-Ansicht](tasks/024-loadout-ansicht.md)                     | done   | 022, 023     |
+| 4           | [025 — Gem- & Cinder-Drops](tasks/025-gem-und-cinder-drops.md)            | done   | 022, 024     |
+
+**022 → 023 → 024 → 025** ist eine absichtliche Kette: Das persistierte Armor-Fundament steht vor
+der Heroes-Struktur, diese vor der Loadout-Darstellung und diese vor den erst in M4 nutzbaren
+Materialien.
 
 ## M4 — Handwerk
 
-Blacksmith (Temper, Masterwork, Brand), Jeweler (Inlay, Attune, Recut), Gems, Cinder-Ökonomie
+Sigil-Katalog und Sigil Codex vor Blacksmith-Brand; Blacksmith (Temper, Masterwork, Brand),
+Jeweler (Inlay, Attune, Recut), Gems, Cinder-Ökonomie
 ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
 ## M5 — Runen & Sigils
 
-Talisman, Rite, Rune Grimoire, Runedust, Etch/Inscribe ([Runen](../spec/RUNES.md)); Sigils und
-Sigil Codex ([Items, Loot & Handwerk](../spec/ITEMS.md)).
+Talisman, Rite, Rune Grimoire, Runedust, Etch/Inscribe ([Runen](../spec/RUNES.md)).
 
 ## M6 — Endgame & Politur
 

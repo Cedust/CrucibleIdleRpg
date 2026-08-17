@@ -5,39 +5,62 @@ import {
   WEAPON_MODE_KEYS,
   WEAPON_MODES,
 } from '@/game/weaponMastery/mastery';
+import type { CharacterId, DamageRange } from '@/game/types';
 import type { CombatCharacter } from './combatState';
 import { NO_CRIT_NODES, type AttackContext, type MasteryEffects } from './damage/outgoingDamage';
+
+type MasteryRanks = Readonly<Record<string, number>>;
 
 function has(character: CombatCharacter, id: string): boolean {
   return (character.masteryRanks?.[id] ?? 0) > 0;
 }
 
-function weaponBonus(character: CombatCharacter, stat: 'precision' | 'minRng' | 'maxRng'): number {
-  return Object.entries(character.masteryRanks ?? {}).reduce((total, [id, rank]) => {
-    const node = nodeById(character.id, id);
+function weaponBonus(
+  characterId: CharacterId,
+  ranks: MasteryRanks,
+  stat: 'precision' | 'minRng' | 'maxRng',
+): number {
+  return Object.entries(ranks).reduce((total, [id, rank]) => {
+    const node = nodeById(characterId, id);
     return node?.stat === stat && node.perRank !== undefined ? total + node.perRank * rank : total;
   }, 0);
 }
 
-/** Builds the complete, save-derived combat context for one character. */
-export function masteryContextFor(character: CombatCharacter): AttackContext {
-  const weapon = CHARACTERS[character.id].weapon;
-  const minBonus = weaponBonus(character, 'minRng');
-  const maxBonus = weaponBonus(character, 'maxRng');
-  const precisionBonus = weaponBonus(character, 'precision');
+/** Effektive Waffenwerte nach allen Mastery-Effekten — Range und Precision (SPEC §5). */
+export interface EffectiveWeaponValues {
+  damageRange: DamageRange;
+  precision: number;
+}
 
-  let min = weapon.damageRange.min + minBonus;
-  let max = weapon.damageRange.max + maxBonus;
-  let precision = weapon.precision + precisionBonus;
+/**
+ * Die aktuell wirksamen Waffenwerte eines Charakters aus Signaturwaffe plus gekauften
+ * Mastery-Rängen. Kampf-Kontext (masteryContextFor) und Loadout lesen dieselbe Herleitung.
+ */
+export function effectiveWeaponValues(
+  characterId: CharacterId,
+  ranks: MasteryRanks = {},
+): EffectiveWeaponValues {
+  const weapon = CHARACTERS[characterId].weapon;
+
+  let min = weapon.damageRange.min + weaponBonus(characterId, ranks, 'minRng');
+  let max = weapon.damageRange.max + weaponBonus(characterId, ranks, 'maxRng');
+  let precision = weapon.precision + weaponBonus(characterId, ranks, 'precision');
 
   // Exklusive Weapon-Mode-Kette: Der erste aktive Mode in Präzedenz-Reihenfolge gilt.
-  const modeKey = WEAPON_MODE_KEYS.find((key) => has(character, MASTERY_IDS[key]));
+  const modeKey = WEAPON_MODE_KEYS.find((key) => (ranks[MASTERY_IDS[key]] ?? 0) > 0);
   if (modeKey !== undefined) {
     const mode = WEAPON_MODES[modeKey];
     min += mode.minRngDelta;
     max += mode.maxRngDelta;
     precision += mode.precisionDelta;
   }
+
+  return { damageRange: { min, max: Math.max(min, max) }, precision };
+}
+
+/** Builds the complete, save-derived combat context for one character. */
+export function masteryContextFor(character: CombatCharacter): AttackContext {
+  const { damageRange, precision } = effectiveWeaponValues(character.id, character.masteryRanks);
 
   const mastery: MasteryEffects = {
     executioner: has(character, MASTERY_IDS.executioner),
@@ -66,7 +89,7 @@ export function masteryContextFor(character: CombatCharacter): AttackContext {
   };
 
   return {
-    damageRange: { min, max: Math.max(min, max) },
+    damageRange,
     precision,
     critNodes: {
       ...NO_CRIT_NODES,

@@ -1,6 +1,7 @@
 import type { Act1DungeonId } from '@/game/encounters/act1';
 import { ACT_1_DUNGEON_IDS } from '@/game/encounters/act1';
 import type { CharacterId, DerivedStatPercent } from '@/game/types';
+import type { ArmorSlot } from '@/game/types';
 
 /**
  * Crucible — Node-Katalog, Rangwerte und Kostenfunktion der drei Trees
@@ -42,6 +43,9 @@ export const CRUCIBLE_IDS = {
   runicFocus: 'anvil.runic-focus',
   runeMastery: 'anvil.rune-mastery',
 } as const;
+
+/** Feste Armory-Reihenfolge aus PROGRESSION §3.1 — keine Spielerentscheidung. */
+export const ARMORY_SLOT_ORDER: readonly ArmorSlot[] = ['chest', 'legs', 'head', 'feet'];
 
 /** Gekaufte Node-Ränge — die alleinige Wahrheit des Crucible-Standes im Save. */
 export type CrucibleRanks = Readonly<Record<string, number>>;
@@ -98,10 +102,7 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'anvil',
     'Armory',
     4,
-    'Unlocks Head / Chest / Legs / Feet for all characters.',
-    {
-      lockedUntil: 'Equipment (M3)',
-    },
+    'Unlocks Chest / Legs / Head / Feet for all characters.',
   ),
   node(CRUCIBLE_IDS.blacksmith, 'anvil', 'Blacksmith', 1, 'Unlocks the Blacksmith system.', {
     prerequisites: [{ nodeId: CRUCIBLE_IDS.armory, rank: 1 }],
@@ -360,6 +361,20 @@ export function respecCrucibleTree(
 export function deriveUnlockedDungeonIds(ranks: CrucibleRanks): readonly Act1DungeonId[] {
   const waystoneRank = Math.min(ranks[CRUCIBLE_IDS.waystones] ?? 0, ACT_1_DUNGEON_IDS.length - 1);
   return ACT_1_DUNGEON_IDS.slice(0, waystoneRank + 1);
+}
+
+/**
+ * Die aus `anvil.armory` abgeleiteten permanenten Slots. Der Save speichert die Items, aber
+ * ihre zulässige Menge folgt ausschließlich dem Rang (PERSISTENCE §2).
+ */
+export function deriveUnlockedArmorSlots(ranks: CrucibleRanks): readonly ArmorSlot[] {
+  const armoryRank = Math.min(ranks[CRUCIBLE_IDS.armory] ?? 0, ARMORY_SLOT_ORDER.length);
+  return ARMORY_SLOT_ORDER.slice(0, armoryRank);
+}
+
+/** Der nächste teamweite Slot eines kaufbaren Armory-Rangs, sonst `undefined` bei Rang 4. */
+export function nextArmorySlot(ranks: CrucibleRanks): ArmorSlot | undefined {
+  return ARMORY_SLOT_ORDER[ranks[CRUCIBLE_IDS.armory] ?? 0];
 }
 
 /* ------------------------------------------------------------------ Rangwerte */

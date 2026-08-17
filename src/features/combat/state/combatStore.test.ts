@@ -12,6 +12,14 @@ import {
 } from '@/features/combat/engine/combatState';
 import { COMBAT_LOG_LIMIT, useCombatStore } from './combatStore';
 import { buildPendingQueue } from '@/features/combat/engine/turnOrder';
+import type { RewardSummary } from '@/features/dungeon/rewards';
+
+const SAVED_REWARD: RewardSummary = {
+  gold: 10,
+  xp: 15,
+  relicShards: 1,
+  loot: { gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+};
 
 function combat(): CombatState {
   return buildCombatState({
@@ -108,9 +116,7 @@ describe('useCombatStore', () => {
       ...start,
       enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
     };
-    const commitVictory = vi
-      .fn<() => Promise<{ gold: number; xp: number; relicShards: number }>>()
-      .mockResolvedValue({ gold: 10, xp: 15, relicShards: 1 });
+    const commitVictory = vi.fn<() => Promise<RewardSummary>>().mockResolvedValue(SAVED_REWARD);
 
     useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
@@ -118,7 +124,7 @@ describe('useCombatStore', () => {
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
 
     expect(commitVictory).toHaveBeenCalledOnce();
-    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, relicShards: 1 });
+    expect(useCombatStore.getState().lastReward).toEqual(SAVED_REWARD);
     expect(useCombatStore.getState().advanceTick()).toBeUndefined();
     expect(commitVictory).toHaveBeenCalledOnce();
   });
@@ -130,9 +136,9 @@ describe('useCombatStore', () => {
       enemies: start.enemies.map((enemy) => ({ ...enemy, health: 0 })),
     };
     const commitVictory = vi
-      .fn<() => Promise<{ gold: number; xp: number; relicShards: number }>>()
+      .fn<() => Promise<RewardSummary>>()
       .mockRejectedValueOnce(new Error('Speichern fehlgeschlagen'))
-      .mockResolvedValueOnce({ gold: 10, xp: 15, relicShards: 1 });
+      .mockResolvedValueOnce(SAVED_REWARD);
 
     useCombatStore.getState().startCombat(winning, DEFAULT_COMBAT_CONTEXT, commitVictory);
     useCombatStore.setState({ outcome: 'ongoing' });
@@ -143,6 +149,6 @@ describe('useCombatStore', () => {
     await vi.waitFor(() => expect(useCombatStore.getState().completionStatus).toBe('saved'));
 
     expect(commitVictory).toHaveBeenCalledTimes(2);
-    expect(useCombatStore.getState().lastReward).toEqual({ gold: 10, xp: 15, relicShards: 1 });
+    expect(useCombatStore.getState().lastReward).toEqual(SAVED_REWARD);
   });
 });

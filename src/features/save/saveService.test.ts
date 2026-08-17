@@ -52,6 +52,17 @@ describe('createSaveService', () => {
     expect(console.warn).toHaveBeenCalledOnce();
   });
 
+  it('setzt einen Save vor dem Armory-Schema vollständig auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const oldSave = JSON.parse(JSON.stringify(createDefaultSave(42))) as Record<string, unknown>;
+    delete oldSave.armor;
+    const fallback = createDefaultSave(777);
+    const service = createSaveService(memoryPort(JSON.stringify(oldSave)), () => fallback);
+
+    await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
   it('serialisiert validierte Daten ausschließlich über den SavePort', async () => {
     const port = memoryPort(null);
     const service = createSaveService(port, () => createDefaultSave(1));

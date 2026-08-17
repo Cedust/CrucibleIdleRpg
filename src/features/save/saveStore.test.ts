@@ -7,6 +7,11 @@ import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
 import { createSaveStore } from './saveStore';
 
+const NO_LOOT = {
+  gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+  cinder: 0,
+} as const;
+
 function memoryPort(): SavePort {
   let raw: string | null = null;
 
@@ -64,12 +69,20 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-01',
       gold: 10,
       characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
+      loot: { gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 2, diamond: 0 }, cinder: 1 },
     });
 
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
 
-    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, relicShards: 1 });
+    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(reloaded.getState().data?.gems).toEqual({
+      amber: 1,
+      ruby: 0,
+      sapphire: 0,
+      emerald: 2,
+      diamond: 0,
+    });
     expect(reloaded.getState().data?.characters.korvin.xp).toBe(5);
     expect(reloaded.getState().data).not.toHaveProperty('combat');
   });
@@ -83,6 +96,7 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-01',
       gold: 10,
       characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
+      loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
     });
 
     await expect(store.getState().spendAttributePoint('korvin', 'ferocity')).resolves.toBe(true);
@@ -128,6 +142,7 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-20',
       gold: 0,
       characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
+      loot: NO_LOOT,
     });
     await expect(store.getState().buyCrucibleNode('anvil.waystones')).resolves.toBe(false);
 
@@ -147,6 +162,74 @@ describe('createSaveStore', () => {
       'A1-D1',
       'A1-D2',
     ]);
+  });
+
+  it('creates all three permanent Common +1 Armor bases atomically with each Armory rank and reloads them', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({ data: { ...base, currencies: { ...base.currencies, relicShards: 3 } } });
+
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
+    expect(store.getState().data?.armor).toEqual({
+      korvin: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+      rhaya: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+      quinn: {
+        chest: {
+          slot: 'chest',
+          itemType: 'armor',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+        legs: {
+          slot: 'legs',
+          itemType: 'legguards',
+          rarity: 'common',
+          itemLevel: 1,
+          innate: 'toughness',
+        },
+      },
+    });
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.armor).toEqual(store.getState().data?.armor);
   });
 
   it('erstattet beim Tree-Respec exakt die investierten Relic Shards und lässt Anvil unberührt', async () => {
@@ -198,8 +281,10 @@ describe('createSaveStore', () => {
     });
 
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(false);
+    await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(false);
     await expect(store.getState().respecCrucible('molten')).resolves.toBe(false);
     expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 1 });
+    expect(store.getState().data?.armor.korvin).toEqual({});
 
     allowed = true;
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(true);
@@ -219,6 +304,7 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-01',
       gold: 10,
       characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
+      loot: NO_LOOT,
     });
     const speed = store.getState().setPlaybackSpeed(2);
     await Promise.all([victory, speed]);
@@ -308,10 +394,11 @@ describe('createSaveStore', () => {
         floorId: 'A1-D1-01',
         gold: 10,
         characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
+        loot: NO_LOOT,
       }),
     ).rejects.toThrow('Reward-Save fehlgeschlagen');
 
-    expect(store.getState().data?.currencies).toEqual({ gold: 0, relicShards: 0 });
+    expect(store.getState().data?.currencies).toEqual({ gold: 0, relicShards: 0, cinder: 0 });
     expect(store.getState().data?.characters.korvin.xp).toBe(0);
     expect(store.getState().status).toBe('error');
   });

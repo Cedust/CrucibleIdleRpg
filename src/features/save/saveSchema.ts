@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
 import type { Act1DungeonId } from '@/game/encounters/act1';
+import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
+import { createEmptyGemStock } from '@/game/rewards/lootRewards';
 import type { CharacterProgressionState } from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
@@ -70,6 +72,34 @@ const completedDungeonsSchema = z
   })
   .strict();
 
+/** M3 speichert nur kanonische Common-+1-Basen; der Armory-Rang bestimmt ihre Menge. */
+const armorItemSchema = z
+  .object({
+    slot: z.enum(['chest', 'legs', 'head', 'feet']),
+    itemType: z.enum(['armor', 'legguards', 'helmet', 'boots']),
+    rarity: z.literal('common'),
+    itemLevel: z.literal(1),
+    innate: z.enum(['toughness', 'vitality', 'initiative']),
+  })
+  .strict();
+
+const armorLoadoutSchema = z
+  .object({
+    chest: armorItemSchema.optional(),
+    legs: armorItemSchema.optional(),
+    head: armorItemSchema.optional(),
+    feet: armorItemSchema.optional(),
+  })
+  .strict();
+
+const teamArmorSchema = z
+  .object({
+    korvin: armorLoadoutSchema,
+    rhaya: armorLoadoutSchema,
+    quinn: armorLoadoutSchema,
+  })
+  .strict();
+
 export const saveSchema = z
   .object({
     version: z.literal(SAVE_VERSION),
@@ -87,6 +117,17 @@ export const saveSchema = z
       .object({
         gold: z.number().int().nonnegative(),
         relicShards: z.number().int().nonnegative(),
+        cinder: z.number().int().nonnegative(),
+      })
+      .strict(),
+    /** Globale Gem-Bestände als Zähler, kein Inventar (PERSISTENCE §2). */
+    gems: z
+      .object({
+        amber: z.number().int().nonnegative(),
+        ruby: z.number().int().nonnegative(),
+        sapphire: z.number().int().nonnegative(),
+        emerald: z.number().int().nonnegative(),
+        diamond: z.number().int().nonnegative(),
       })
       .strict(),
     firstVictories: z
@@ -95,6 +136,7 @@ export const saveSchema = z
       .readonly(),
     /** Crucible-Node-Ränge über alle drei Trees — die alleinige Wahrheit (PERSISTENCE §2.3). */
     crucible: z.record(z.string(), z.number().int().min(1).max(5)).readonly(),
+    armor: teamArmorSchema,
     completedDungeons: completedDungeonsSchema,
   })
   .strict()
@@ -108,6 +150,9 @@ export const saveSchema = z
       if (!meetsPrerequisites(save.crucible, save.completedDungeons, node, rank)) {
         context.addIssue({ code: 'custom', message: 'Crucible-Voraussetzung verletzt.' });
       }
+    }
+    if (!hasArmorForUnlockedSlots(save.armor, save.crucible)) {
+      context.addIssue({ code: 'custom', message: 'Ungültige Armory-Items.' });
     }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,
@@ -182,9 +227,11 @@ export function createDefaultSave(saveSeed: number): SaveData {
       rhaya: createLevelOneProgression(),
       quinn: createLevelOneProgression(),
     },
-    currencies: { gold: 0, relicShards: 0 },
+    currencies: { gold: 0, relicShards: 0, cinder: 0 },
+    gems: createEmptyGemStock(),
     firstVictories: [],
     crucible: {},
+    armor: createTeamArmor({}),
     completedDungeons: createDefaultCompletedDungeons(),
   };
 }

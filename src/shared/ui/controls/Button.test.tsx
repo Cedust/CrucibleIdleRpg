@@ -32,12 +32,15 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Invest' })).toHaveClass('mt-4', 'w-full');
   });
 
-  it('unterstützt die Varianten primary, ghost, danger und ornate', () => {
+  it('unterstützt die Varianten primary, ghost, icon, danger und ornate', () => {
     const { rerender } = render(<Button>Enter</Button>);
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('border-ornament');
 
     rerender(<Button variant="ghost">Enter</Button>);
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('bg-transparent');
+
+    rerender(<Button variant="icon">+</Button>);
+    expect(screen.getByRole('button', { name: '+' })).toHaveClass('size-8', 'p-0');
 
     rerender(<Button variant="danger">Enter</Button>);
     expect(screen.getByRole('button', { name: 'Enter' })).toHaveClass('text-danger');

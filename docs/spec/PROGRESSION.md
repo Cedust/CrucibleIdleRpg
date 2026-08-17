@@ -83,7 +83,7 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 | ID                 | Ränge | Wirkung                                        | Voraussetzung                | Verfügbarkeit |
 | ------------------ | ----: | ---------------------------------------------- | ---------------------------- | ------------- |
 | `anvil.waystones`  |     4 | A1-D2 / A1-D3 / A1-D4 / A1-D5                  | vorheriger Dungeon vollendet | M2            |
-| `anvil.armory`     |     4 | Head / Chest / Legs / Feet für alle Charaktere | —                            | gesperrt, M3  |
+| `anvil.armory`     |     4 | Chest / Legs / Head / Feet für alle Charaktere | —                            | gesperrt, M3  |
 | `anvil.blacksmith` |     1 | Blacksmith-System                              | Armory Rang 1                | gesperrt, M4  |
 | `anvil.jeweler`    |     1 | Jeweler-System                                 | Blacksmith Rang 1            | gesperrt, M4  |
 
@@ -91,6 +91,11 @@ Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten
 vollständigen Abschluss von `A1-D<n>`; der vorherige Waystone-Rang folgt bereits aus der
 Rangfolge desselben Nodes. Ein neuer Einstieg entsteht ausschließlich über diesen Kauf: der
 Dungeon-Abschluss ist die Voraussetzung, der Rang die Freischaltung.
+
+`anvil.armory` Rang `n` schaltet für alle Charaktere genau einen dauerhaften Armor-Slot in der
+festen Reihenfolge Chest, Legs, Head, Feet frei. Die Rangkosten folgen dem allgemeinen
+Crucible-Modell und betragen damit `1 / 2 / 3 / 4` Relic Shards; die Slot-Wahl ist keine
+Spielerentscheidung.
 
 Die Runen-Freischaltungen bilden innerhalb von Anvil Sparks einen eigenen, von Armory und
 Handwerk unabhängigen Ast. Der komplette Ast bleibt bis M5 gesperrt. `Rune Grimoire` ist der

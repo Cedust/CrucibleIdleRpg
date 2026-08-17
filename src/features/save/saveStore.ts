@@ -6,6 +6,7 @@ import {
   respecCrucibleTree,
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
+import { createTeamArmor } from '@/game/items/armor';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import {
@@ -241,6 +242,8 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               crucible: purchase.ranks,
+              // Armor-Menge und -Basis folgen atomar dem neuen Armory-Rang.
+              armor: createTeamArmor(purchase.ranks),
               currencies: { ...current.currencies, relicShards: purchase.relicShards },
             },
             result: true,

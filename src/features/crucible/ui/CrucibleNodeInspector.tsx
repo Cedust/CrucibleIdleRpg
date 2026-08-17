@@ -4,6 +4,7 @@ import {
   crucibleNodeById,
   formatRelicShards,
   rankCost,
+  nextArmorySlot,
   type CrucibleNode,
 } from '@/game/crucible/crucible';
 import { cn } from '@/shared/ui/utils/cn';
@@ -45,6 +46,8 @@ export function CrucibleNodeInspector({
 }: CrucibleNodeInspectorProps) {
   const atMaxRank = rank >= node.maxRank;
   const icon = crucibleNodeIcon(node.id);
+  const nextSlot =
+    node.id === CRUCIBLE_IDS.armory ? nextArmorySlot({ [node.id]: rank }) : undefined;
 
   return (
     <NodeInspectorPanel
@@ -64,6 +67,14 @@ export function CrucibleNodeInspector({
           <dt className="text-xs font-semibold uppercase tracking-wide text-accent">Requires</dt>
           <dd className="mt-1 text-text">{requirementText(node)}</dd>
         </div>
+        {nextSlot !== undefined ? (
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-accent">
+              Next unlock
+            </dt>
+            <dd className="mt-1 text-text">{`${nextSlot[0]?.toUpperCase() ?? ''}${nextSlot.slice(1)} for all characters`}</dd>
+          </div>
+        ) : null}
         <div>
           <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-accent">
             Cost

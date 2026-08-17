@@ -3,7 +3,7 @@ import { CHARACTERS } from '@/game/characters/characters';
 import type { CharacterId } from '@/game/types';
 import { MASTERY_IDS, nodeById } from '@/game/weaponMastery/mastery';
 import type { CombatCharacter } from './combatState';
-import { masteryContextFor } from './masteryCombat';
+import { effectiveWeaponValues, masteryContextFor } from './masteryCombat';
 
 /**
  * Geprüft wird die Übersetzung gekaufter `masteryRanks` in den Kampf-Kontext — ID→Effekt-
@@ -171,6 +171,32 @@ describe('masteryContextFor — Weapon-Boni', () => {
 
     expect(kontext.damageRange).toEqual(CHARACTERS.korvin.weapon.damageRange);
     expect(kontext.precision).toBe(CHARACTERS.korvin.weapon.precision);
+  });
+});
+
+describe('effectiveWeaponValues — geteilte Waffen-Herleitung', () => {
+  it('liefert ohne Ränge die unveränderte Signaturwaffe', () => {
+    expect(effectiveWeaponValues('quinn')).toEqual({
+      damageRange: CHARACTERS.quinn.weapon.damageRange,
+      precision: CHARACTERS.quinn.weapon.precision,
+    });
+  });
+
+  it('stimmt für jeden Rang-Stand mit dem Kampf-Kontext überein', () => {
+    const staende: readonly Readonly<Record<string, number>>[] = [
+      {},
+      { 'weapon.prc-i': 3, 'weapon.max-rng-i': 2 },
+      { [MASTERY_IDS.titansArc]: 1, 'weapon.min-rng': 5 },
+    ];
+
+    for (const ranks of staende) {
+      const kontext = masteryContextFor(character('korvin', ranks));
+
+      expect(effectiveWeaponValues('korvin', ranks)).toEqual({
+        damageRange: kontext.damageRange,
+        precision: kontext.precision,
+      });
+    }
   });
 });
 

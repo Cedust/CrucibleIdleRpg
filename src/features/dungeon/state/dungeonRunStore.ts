@@ -17,16 +17,16 @@ export type DungeonRunMode = 'selection' | 'starting' | 'run';
 
 /** Gemeinsamer Sieg-Commit jedes Floors: Reward erzeugen, persistieren, Summary melden. */
 async function commitFloorReward(result: CombatState): Promise<RewardSummary> {
-  const commit = await saveStore
-    .getState()
-    .commitVictory(
-      createFloorReward(
-        result.floorId,
-        result.floorIndex,
-        result.enemies.length,
-        result.effectiveDamage,
-      ),
-    );
+  const commit = await saveStore.getState().commitVictory(
+    createFloorReward({
+      floorId: result.floorId,
+      floorIndex: result.floorIndex,
+      floorSeed: result.floorSeed,
+      classification: resolveAct1Encounter(result.floorId).classification,
+      enemyCount: result.enemies.length,
+      effectiveDamage: result.effectiveDamage,
+    }),
+  );
   return commit.reward;
 }
 

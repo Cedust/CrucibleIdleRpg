@@ -6,11 +6,13 @@ import {
   CRUCIBLE_TREES,
   crucibleNodeById,
   deriveUnlockedDungeonIds,
+  deriveUnlockedArmorSlots,
   formatRelicShards,
   investedRelicShards,
   meetsPrerequisites,
   menaceReduction,
   mitigationShare,
+  nextArmorySlot,
   momentumCap,
   purchaseCrucibleNode,
   purchaseFailure,
@@ -79,13 +81,12 @@ describe('crucible node catalog', () => {
     );
   });
 
-  it('keeps the future equipment, crafting and rune unlocks locked', () => {
+  it('keeps future crafting and rune unlocks locked while Armory is available in M3', () => {
     const lockedIds = CRUCIBLE_NODES.filter((node) => node.lockedUntil !== undefined).map(
       (node) => node.id,
     );
     expect(lockedIds.sort()).toEqual(
       [
-        CRUCIBLE_IDS.armory,
         CRUCIBLE_IDS.blacksmith,
         CRUCIBLE_IDS.jeweler,
         CRUCIBLE_IDS.runeGrimoire,
@@ -120,14 +121,14 @@ describe('crucible node catalog', () => {
     expect(runeMastery?.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }]);
   });
 
-  it('offers exactly 190 active relic shard costs: 10 anvil, 60 smelting, 120 molten (PROGRESSION §3.4)', () => {
+  it('offers exactly 200 active relic shard costs: 20 anvil, 60 smelting, 120 molten', () => {
     const active = CRUCIBLE_NODES.filter((node) => node.lockedUntil === undefined);
     const costOf = (tree: string): number =>
       active
         .filter((node) => node.tree === tree)
         .reduce((total, node) => total + totalRankCost(node.maxRank), 0);
 
-    expect(costOf('anvil')).toBe(10);
+    expect(costOf('anvil')).toBe(20);
     expect(costOf('smelting')).toBe(60);
     expect(costOf('molten')).toBe(120);
   });
@@ -193,12 +194,7 @@ describe('purchase rules', () => {
     expect(purchaseFailure({}, 0, NO_DUNGEONS, CRUCIBLE_IDS.overpower)).toBe(
       'Requires 1 Relic Shard.',
     );
-    for (const id of [
-      CRUCIBLE_IDS.armory,
-      CRUCIBLE_IDS.blacksmith,
-      CRUCIBLE_IDS.jeweler,
-      CRUCIBLE_IDS.runeGrimoire,
-    ]) {
+    for (const id of [CRUCIBLE_IDS.blacksmith, CRUCIBLE_IDS.jeweler, CRUCIBLE_IDS.runeGrimoire]) {
       expect(purchaseFailure({}, 100, ALL_DUNGEONS, id)).toMatch(/^Locked until /);
     }
   });
@@ -239,6 +235,24 @@ describe('purchase rules', () => {
     const talismanOne = { [CRUCIBLE_IDS.talisman]: 1 };
     expect(meetsPrerequisites(talismanOne, ALL_DUNGEONS, runicFocus, 1)).toBe(true);
     expect(meetsPrerequisites(talismanOne, ALL_DUNGEONS, runicFocus, 2)).toBe(false);
+  });
+});
+
+describe('derived Armor slots (PROGRESSION §3.1)', () => {
+  it('derives Chest, Legs, Head, Feet from Armory ranks and names each next team-wide slot', () => {
+    expect(deriveUnlockedArmorSlots({})).toEqual([]);
+    expect(deriveUnlockedArmorSlots({ [CRUCIBLE_IDS.armory]: 2 })).toEqual(['chest', 'legs']);
+    expect(deriveUnlockedArmorSlots({ [CRUCIBLE_IDS.armory]: 4 })).toEqual([
+      'chest',
+      'legs',
+      'head',
+      'feet',
+    ]);
+    expect(nextArmorySlot({})).toBe('chest');
+    expect(nextArmorySlot({ [CRUCIBLE_IDS.armory]: 1 })).toBe('legs');
+    expect(nextArmorySlot({ [CRUCIBLE_IDS.armory]: 2 })).toBe('head');
+    expect(nextArmorySlot({ [CRUCIBLE_IDS.armory]: 3 })).toBe('feet');
+    expect(nextArmorySlot({ [CRUCIBLE_IDS.armory]: 4 })).toBeUndefined();
   });
 });
 

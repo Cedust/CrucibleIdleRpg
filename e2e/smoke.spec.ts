@@ -124,6 +124,138 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
   }
 });
 
+test('keeps Heroes local to the shared character context and its own scroll area', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'HEROES', exact: true }).click();
+
+  await expect(page.getByRole('heading', { name: 'Heroes', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Stats' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('Attack', { exact: true })).toBeVisible();
+  await expect(page.getByAltText('Korvin portrait')).toBeVisible();
+  await expect(page.getByText('Role', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('img', { name: 'tank role' })).toBeVisible();
+  await expect(page.getByTestId('heroes-portrait-frame').getByText('Korvin')).toBeVisible();
+  await expect(page.getByTestId('heroes-identity')).not.toHaveClass(/border-image-ornate/);
+  await expect(page.getByText('XP', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Derived', exact: true })).toHaveCount(0);
+  const progressionPanel = page.getByTestId('heroes-progression');
+  const progressionContent = progressionPanel.locator(':scope > div').last();
+  const [progressionBox, progressionContentBox] = await Promise.all([
+    progressionPanel.boundingBox(),
+    progressionContent.boundingBox(),
+  ]);
+  if (progressionBox === null || progressionContentBox === null) {
+    throw new Error('Heroes progression panel must be visible');
+  }
+  const progressionTopGap = progressionContentBox.y - progressionBox.y;
+  const progressionBottomGap =
+    progressionBox.y +
+    progressionBox.height -
+    (progressionContentBox.y + progressionContentBox.height);
+  expect(Math.abs(progressionTopGap - progressionBottomGap)).toBeLessThanOrEqual(1);
+  const corePanel = page.getByRole('heading', { name: 'Core', exact: true }).locator('..');
+  await expect(corePanel).not.toHaveClass(/border-image-ornate/);
+  await expect(corePanel.locator('.border-image-thin')).toHaveCSS(
+    'border-image-source',
+    /panel-thin\.png/,
+  );
+  const attributePanel = page.getByTestId('heroes-attributes');
+  const specializedStats = page.getByTestId('heroes-specialized-stats');
+  const offensivePanel = page
+    .getByRole('heading', { name: 'Offensive', exact: true })
+    .locator('..');
+  const defensivePanel = page
+    .getByRole('heading', { name: 'Defensive', exact: true })
+    .locator('..');
+  const utilityPanel = page.getByRole('heading', { name: 'Utility', exact: true }).locator('..');
+  const [
+    identityBox,
+    attributeBox,
+    coreBox,
+    specializedBox,
+    offensiveBox,
+    defensiveBox,
+    utilityBox,
+  ] = await Promise.all([
+    page.getByTestId('heroes-identity').boundingBox(),
+    attributePanel.boundingBox(),
+    corePanel.boundingBox(),
+    specializedStats.boundingBox(),
+    offensivePanel.boundingBox(),
+    defensivePanel.boundingBox(),
+    utilityPanel.boundingBox(),
+  ]);
+  if (
+    identityBox === null ||
+    attributeBox === null ||
+    coreBox === null ||
+    specializedBox === null ||
+    offensiveBox === null ||
+    defensiveBox === null ||
+    utilityBox === null
+  ) {
+    throw new Error('Heroes stat layout must be visible');
+  }
+  expect(attributeBox.y).toBeGreaterThanOrEqual(identityBox.y + identityBox.height);
+  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(offensiveBox.y);
+  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(defensiveBox.y);
+  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(utilityBox.y);
+  expect(Math.abs(coreBox.x - specializedBox.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(coreBox.width - specializedBox.width)).toBeLessThanOrEqual(1);
+  await expect(page.getByText('1 Point Available')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Respec attributes' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Increase Ferocity' }).click();
+  await expect(page.getByText('14.17', { exact: true })).toBeVisible();
+  await expect(page.getByText('1 Point Available')).toHaveCount(0);
+  for (const viewport of [
+    { width: 1536, height: 864 },
+    { width: 1600, height: 900 },
+    { width: 1920, height: 1080 },
+    { width: 2560, height: 1440 },
+  ]) {
+    await page.setViewportSize(viewport);
+    expect(await scrollState(page.locator('#heroes-panel-stats'))).toEqual({
+      scrollsX: false,
+      scrollsY: false,
+    });
+    const alignedPanels = await Promise.all(
+      [attributePanel, offensivePanel, defensivePanel, utilityPanel].map((panel) =>
+        panel.boundingBox(),
+      ),
+    );
+    const panelBottoms = alignedPanels.map((box) => {
+      if (box === null) throw new Error('Aligned Heroes panels must be visible');
+      return box.y + box.height;
+    });
+    expect(Math.max(...panelBottoms) - Math.min(...panelBottoms)).toBeLessThanOrEqual(1);
+  }
+  await page.getByRole('radio', { name: 'Rhaya' }).click();
+  await expect(
+    page.getByText("Review Rhaya's current combat capabilities and prepare for the depths."),
+  ).toBeVisible();
+  await expect(page.getByText('18', { exact: true })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'melee role' })).toBeVisible();
+
+  const stats = page.getByRole('tab', { name: 'Stats' });
+  await stats.focus();
+  await stats.press('ArrowRight');
+  await expect(page.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tabpanel')).toContainText('Signature Weapon');
+
+  await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
+  await page.getByRole('button', { name: 'HEROES', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
+  expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
+  expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+
+  await page.reload();
+  await page.getByRole('button', { name: 'HEROES', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Stats' })).toHaveAttribute('aria-selected', 'true');
+});
+
 test('keeps mastery tab focus ornaments visible and scrolls tall trees within their panel', async ({
   page,
 }) => {

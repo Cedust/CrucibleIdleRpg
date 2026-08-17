@@ -42,11 +42,32 @@ export interface FloorEncounterDefinition {
   formationId: FormationId;
 }
 
+/**
+ * Die fünf Gem-Farben (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut). Amber–Emerald sind
+ * die regulär gefarmten Fodder-Farben, Diamond der seltene Elite/Boss-Chase.
+ */
+export const GEM_COLORS = ['amber', 'ruby', 'sapphire', 'emerald', 'diamond'] as const;
+export type GemColor = (typeof GEM_COLORS)[number];
+
+/** Die vier von allen Gegnern droppenden Farben (docs/spec/ITEMS.md#6-drops-gems-cinder--sigils). */
+export const REGULAR_GEM_COLORS = ['amber', 'ruby', 'sapphire', 'emerald'] as const;
+export type RegularGemColor = (typeof REGULAR_GEM_COLORS)[number];
+
+/** Globale Gem-Zähler — als Bestand persistiert und als Gewinn eines Floor-Siegs gemeldet. */
+export type GemStock = Readonly<Record<GemColor, number>>;
+
+/** Loot eines Floor-Siegs (docs/spec/ITEMS.md#6-drops-gems-cinder--sigils). */
+export interface FloorLoot {
+  gems: GemStock;
+  cinder: number;
+}
+
 /** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */
 export interface FloorRewardDefinition {
   floorId: FloorId;
   gold: number;
   characterXp: Readonly<Record<CharacterId, number>>;
+  loot: FloorLoot;
 }
 
 /** Rolle bestimmt Zielregeln und Formationsplatz (SPEC §1.2/§1.3). */
@@ -60,6 +81,32 @@ export type Lane = 'frontline' | 'backline';
  * (docs/spec/ITEMS.md#3-seltenheit-sockel--level-cap).
  */
 export type Rarity = 'common' | 'magic' | 'rare' | 'epic' | 'legendary';
+
+/** Die vier dauerhaften Armor-Slots (ITEMS §1); nur diese Slots können persistieren. */
+export const ARMOR_SLOTS = ['chest', 'legs', 'head', 'feet'] as const;
+export type ArmorSlot = (typeof ARMOR_SLOTS)[number];
+
+/** Feste Item-Typen der Slot-Basen; Armor wird weder gedroppt noch getauscht. */
+export type ArmorItemType = 'armor' | 'legguards' | 'helmet' | 'boots';
+
+/** Die einzigen M3-Innates: Core-Stats oder flache Initiative. */
+export type ArmorInnateStat = 'toughness' | 'vitality' | 'initiative';
+
+/**
+ * Persistierte M3-Form eines permanenten Armor-Items. Spätere Item-Schichten werden bewusst
+ * noch nicht modelliert: Common +1 hat weder Sockel noch Gems, Implicit oder Handwerkszustand.
+ */
+export interface ArmorItem {
+  slot: ArmorSlot;
+  itemType: ArmorItemType;
+  rarity: 'common';
+  itemLevel: 1;
+  innate: ArmorInnateStat;
+}
+
+/** Pro Charakter existieren nur die aus Armory-Rängen abgeleiteten permanenten Slot-Items. */
+export type ArmorLoadout = Readonly<Partial<Record<ArmorSlot, ArmorItem>>>;
+export type TeamArmor = Readonly<Record<CharacterId, ArmorLoadout>>;
 
 /** Geschlossenes Intervall, beide Grenzen inklusive. */
 export interface Range {

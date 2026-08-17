@@ -17,6 +17,7 @@ import { MasteryTreeGraph } from './MasteryTreeGraph';
 import { disciplineLabel, masteryNodeAvailability } from '../masteryPresentation';
 import { NodeInspector } from './NodeInspector';
 import { RespecDialog } from './RespecDialog';
+import { RotateCcw } from 'lucide-react';
 
 /** Browser-facing Mastery tree. Purchases remain explicit inspector actions. */
 export function WeaponMasteryScreen() {
@@ -104,12 +105,13 @@ export function WeaponMasteryScreen() {
               </p>
               <Button
                 variant="ghost"
-                className="shrink-0 px-3 py-1.5 text-sm"
-                aria-label={`Respec ${label} for ${cost} Gold`}
+                className="flex shrink-0 items-center justify-center gap-2 text-sm"
+                aria-label={`Respec ${label}`}
                 disabled={refunded === 0 || save.currencies.gold < cost}
                 onClick={() => setConfirmRespec(true)}
               >
-                Respec <span aria-hidden="true">&middot;</span> {cost} Gold
+                <RotateCcw aria-hidden="true" className="size-4" />
+                RESPEC
               </Button>
             </div>
           </ScreenHeader>

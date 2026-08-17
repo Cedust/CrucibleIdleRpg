@@ -1,6 +1,7 @@
 import { useNavigationStore, VIEW_LABELS } from '../navigationStore';
 import { CrucibleScreen } from '@/features/crucible/ui/CrucibleScreen';
 import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
+import { HeroesScreen } from '@/features/heroes/ui/HeroesScreen';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/ui/WeaponMasteryScreen';
@@ -14,6 +15,8 @@ export function ActiveView() {
       return <DungeonSelectionScreen />;
     case 'crucible':
       return <CrucibleScreen />;
+    case 'heroes':
+      return <HeroesScreen />;
     case 'weapon-mastery':
       return <WeaponMasteryScreen />;
     default:

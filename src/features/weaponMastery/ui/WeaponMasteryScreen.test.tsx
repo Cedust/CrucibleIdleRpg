@@ -183,7 +183,7 @@ describe('WeaponMasteryScreen', () => {
     render(<WeaponMasteryScreen />);
 
     await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
-    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE' }));
     expect(screen.getByRole('dialog', { name: 'Confirm Discipline Respec' })).toBeInTheDocument();
 
     act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
@@ -198,11 +198,11 @@ describe('WeaponMasteryScreen', () => {
     const user = userEvent.setup();
     render(<WeaponMasteryScreen />);
     await user.click(screen.getByRole('tab', { name: /^FINESSE/ }));
-    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE' }));
     const dialog = screen.getByRole('dialog', { name: 'Confirm Discipline Respec' });
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(saveStore.getState().data?.characters.korvin.masteryRanks['finesse.chc-i']).toBe(2);
-    await user.click(screen.getByRole('button', { name: 'Respec FINESSE for 150 Gold' }));
+    await user.click(screen.getByRole('button', { name: 'Respec FINESSE' }));
     await user.click(screen.getByRole('button', { name: 'Confirm Respec' }));
     await vi.waitFor(() =>
       expect(saveStore.getState().data?.characters.korvin.masteryRanks).toEqual({}),

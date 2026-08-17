@@ -6,16 +6,26 @@ const M1_REWARD = {
   floorId: 'A1-D1-01',
   gold: 10,
   characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
+  loot: {
+    gems: { amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 },
+    cinder: 1,
+  },
 } as const;
 
 describe('commitFloorVictory', () => {
-  it('committet Gold, Charakter-XP und Relic Shards des Erstsiegs atomar', () => {
+  it('committet Gold, Charakter-XP, Relic Shards und Loot des Erstsiegs atomar', () => {
     const before = createDefaultSave(1);
 
     const result = commitFloorVictory(before, M1_REWARD);
 
-    expect(result.reward).toEqual({ gold: 10, xp: 15, relicShards: 1 });
-    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1 });
+    expect(result.reward).toEqual({
+      gold: 10,
+      xp: 15,
+      relicShards: 1,
+      loot: M1_REWARD.loot,
+    });
+    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(result.save.gems).toEqual({ amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 });
     expect(result.save.characters.korvin).toMatchObject({
       level: 1,
       xp: 5,
@@ -26,12 +36,18 @@ describe('commitFloorVictory', () => {
     expect(before).toEqual(createDefaultSave(1));
   });
 
-  it('vergibt beim Farmen weiter XP und Gold, aber keine zweiten Relic Shards', () => {
+  it('vergibt beim Farmen weiter XP, Gold und Loot, aber keine zweiten Relic Shards', () => {
     const first = commitFloorVictory(createDefaultSave(1), M1_REWARD);
     const second = commitFloorVictory(first.save, M1_REWARD);
 
-    expect(second.reward).toEqual({ gold: 10, xp: 15, relicShards: 0 });
-    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1 });
+    expect(second.reward).toEqual({
+      gold: 10,
+      xp: 15,
+      relicShards: 0,
+      loot: M1_REWARD.loot,
+    });
+    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1, cinder: 2 });
+    expect(second.save.gems).toEqual({ amber: 4, ruby: 0, sapphire: 2, emerald: 0, diamond: 0 });
     expect(second.save.characters.korvin.xp).toBe(10);
     expect(second.save.firstVictories).toEqual(['A1-D1-01']);
   });

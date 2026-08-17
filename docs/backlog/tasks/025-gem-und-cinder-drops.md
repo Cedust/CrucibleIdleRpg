@@ -1,10 +1,10 @@
 # 025 — Gem- & Cinder-Drops
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M3        |
-| **Hängt ab von** | 022, 024  |
+| Feld             | Wert     |
+| ---------------- | -------- |
+| **Status**       | `ready`  |
+| **Meilenstein**  | M3       |
+| **Hängt ab von** | 022, 024 |
 
 ## Ziel
 

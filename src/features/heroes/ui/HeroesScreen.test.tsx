@@ -123,7 +123,7 @@ describe('HeroesScreen', () => {
     stats.focus();
     await user.keyboard('{ArrowRight}');
     expect(screen.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('Equipment details will be available');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Signature Weapon');
 
     firstRender.unmount();
     render(<HeroesScreen />);

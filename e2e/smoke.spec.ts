@@ -243,7 +243,7 @@ test('keeps Heroes local to the shared character context and its own scroll area
   await stats.focus();
   await stats.press('ArrowRight');
   await expect(page.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByRole('tabpanel')).toContainText('Equipment details will be available');
+  await expect(page.getByRole('tabpanel')).toContainText('Signature Weapon');
 
   await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
   await page.getByRole('button', { name: 'HEROES', exact: true }).click();

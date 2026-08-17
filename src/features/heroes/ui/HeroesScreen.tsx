@@ -21,6 +21,7 @@ import { cn } from '@/shared/ui/utils/cn';
 import { useRovingFocus } from '@/shared/ui/utils/useRovingFocus';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { HERO_AREAS, useHeroesStore, type HeroesArea } from '../heroesStore';
+import { LoadoutPanel } from './LoadoutPanel';
 
 interface StatRow {
   label: string;
@@ -437,24 +438,6 @@ function StatsPanel({
   );
 }
 
-function LoadoutPanel() {
-  return (
-    <div
-      id="heroes-panel-loadout"
-      role="tabpanel"
-      aria-labelledby="heroes-tab-loadout"
-      className="min-h-0 flex-1 overflow-y-auto py-4"
-    >
-      <Panel as="section" variant="ornate">
-        <h3 className="font-display text-display-sm text-accent-strong">Loadout</h3>
-        <p className="mt-2 text-text-muted">
-          Equipment details will be available here once the Armory can be inspected.
-        </p>
-      </Panel>
-    </div>
-  );
-}
-
 /** Character-scoped hub; the sole character selection remains in the shared sidebar. */
 export function HeroesScreen() {
   const save = useSaveStore((state) => state.data);
@@ -498,7 +481,12 @@ export function HeroesScreen() {
             }}
           />
         ) : (
-          <LoadoutPanel />
+          <LoadoutPanel
+            characterId={characterId}
+            stats={stats}
+            masteryRanks={save.characters[characterId].masteryRanks}
+            armor={save.armor[characterId]}
+          />
         )}
       </section>
     </ScreenLayout>

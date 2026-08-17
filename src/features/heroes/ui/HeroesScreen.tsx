@@ -339,7 +339,9 @@ function CharacterAttributesPanel({
                   className="flex items-baseline justify-between gap-3"
                   data-derived-stat={axis.derived}
                 >
-                  <dt className="text-base font-medium text-text">{axis.derivedLabel}</dt>
+                  <dt className="font-display text-base font-medium text-text">
+                    {axis.derivedLabel}
+                  </dt>
                   <dd className="font-display text-display-sm tabular-nums text-accent-strong">
                     {numberFormatter.format(derived[axis.derived])}
                   </dd>

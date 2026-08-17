@@ -7,13 +7,23 @@ import { expect, test, type Page } from '@playwright/test';
  */
 
 const ARMOR_ITEMS = {
-  chest: { slot: 'chest', itemType: 'armor', rarity: 'common', itemLevel: 1, innate: 'toughness' },
+  chest: {
+    slot: 'chest',
+    itemType: 'armor',
+    rarity: 'common',
+    itemLevel: 1,
+    innate: 'toughness',
+    sockets: [],
+    prismaticSockets: [],
+  },
   legs: {
     slot: 'legs',
     itemType: 'legguards',
     rarity: 'common',
     itemLevel: 1,
     innate: 'toughness',
+    sockets: [],
+    prismaticSockets: [],
   },
 } as const;
 
@@ -135,7 +145,11 @@ test('selection only swaps the detail card and locked slots stay inert', async (
   await expect(detail.getByRole('heading', { name: 'Chest Armor +1' })).toBeVisible();
   await expect(detail.getByText('Base Item Type')).toBeVisible();
   await expect(detail.getByText('+1 Toughness')).toBeVisible();
-  await expect(detail.getByText('Common', { exact: true })).toHaveCount(0);
+  // Die persistierten Schichten Seltenheit, Item-Level-Cap und Sockel (Task 026).
+  await expect(detail.getByText('Common', { exact: true })).toBeVisible();
+  await expect(detail.getByText('+1 / +20')).toBeVisible();
+  await expect(detail.getByText('Sockets')).toBeVisible();
+  await expect(detail.getByText('None', { exact: true })).toBeVisible();
 
   // Gesperrte Slots sind keine Buttons, tragen aber einen zugänglichen Locked-Status.
   const lockedHead = page.locator('[data-loadout-slot="head"]');

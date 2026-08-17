@@ -1,10 +1,10 @@
 # 026 — Item-Schichten & Handwerks-Fundament
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M4      |
-| **Hängt ab von** | 025     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M4     |
+| **Hängt ab von** | 025    |
 
 ## Ziel
 

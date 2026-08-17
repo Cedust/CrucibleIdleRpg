@@ -176,55 +176,20 @@ describe('createSaveStore', () => {
 
     await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
     await expect(store.getState().buyCrucibleNode('anvil.armory')).resolves.toBe(true);
+    const commonLayers = {
+      rarity: 'common',
+      itemLevel: 1,
+      sockets: [],
+      prismaticSockets: [],
+    } as const;
+    const commonPair = {
+      chest: { slot: 'chest', itemType: 'armor', innate: 'toughness', ...commonLayers },
+      legs: { slot: 'legs', itemType: 'legguards', innate: 'toughness', ...commonLayers },
+    };
     expect(store.getState().data?.armor).toEqual({
-      korvin: {
-        chest: {
-          slot: 'chest',
-          itemType: 'armor',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-        legs: {
-          slot: 'legs',
-          itemType: 'legguards',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-      },
-      rhaya: {
-        chest: {
-          slot: 'chest',
-          itemType: 'armor',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-        legs: {
-          slot: 'legs',
-          itemType: 'legguards',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-      },
-      quinn: {
-        chest: {
-          slot: 'chest',
-          itemType: 'armor',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-        legs: {
-          slot: 'legs',
-          itemType: 'legguards',
-          rarity: 'common',
-          itemLevel: 1,
-          innate: 'toughness',
-        },
-      },
+      korvin: commonPair,
+      rhaya: commonPair,
+      quinn: commonPair,
     });
 
     const reloaded = createSaveStore(service);

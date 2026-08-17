@@ -2,8 +2,16 @@ import { z } from 'zod';
 import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
 import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
+import { isValidArmorItemState, MAX_ITEM_LEVEL } from '@/game/items/itemLayers';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
-import type { CharacterProgressionState } from '@/game/types';
+import {
+  AMBER_AFFIXES,
+  EMERALD_AFFIXES,
+  RUBY_AFFIXES,
+  SAPPHIRE_AFFIXES,
+  type ArmorItem,
+  type CharacterProgressionState,
+} from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
 /**
@@ -72,16 +80,70 @@ const completedDungeonsSchema = z
   })
   .strict();
 
-/** M3 speichert nur kanonische Common-+1-Basen; der Armory-Rang bestimmt ihre Menge. */
+/** Gem-Werte je Sockel: gerollter Affix strikt aus dem Farb-Pool (ITEMS §8). */
+const gemLevelSchema = z.number().int().min(1);
+const gemValueSchema = z.number().nonnegative();
+const socketedGemSchema = z.discriminatedUnion('color', [
+  z
+    .object({
+      color: z.literal('amber'),
+      affix: z.enum(AMBER_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('ruby'),
+      affix: z.enum(RUBY_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('sapphire'),
+      affix: z.enum(SAPPHIRE_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('emerald'),
+      affix: z.enum(EMERALD_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+]);
+
+/** Brand-Referenz auf ein Sigil; die Katalog-Prüfung folgt mit dem Sigil Codex (030/031). */
+const armorImplicitSchema = z.object({ sigilId: z.string().min(1) }).strict();
+
+/**
+ * Ein Armor-Item mit allen fünf Schichten (ITEMS §2). Die seltenheits-abgeleiteten
+ * Invarianten — Item-Level ≤ Cap, Sockelzahl nach Tabelle, Prismatic-Formel, Implicit nur
+ * auf Legendary — prüft `isValidArmorItemState`. Prismatic-Sockel bleiben leer, bis die
+ * Diamond-Effekte entschieden sind (OPEN_ISSUES §2, Drops ab Akt 2 → M6).
+ */
 const armorItemSchema = z
   .object({
     slot: z.enum(['chest', 'legs', 'head', 'feet']),
     itemType: z.enum(['armor', 'legguards', 'helmet', 'boots']),
-    rarity: z.literal('common'),
-    itemLevel: z.literal(1),
+    rarity: z.enum(['common', 'magic', 'rare', 'epic', 'legendary']),
+    itemLevel: z.number().int().min(1).max(MAX_ITEM_LEVEL),
     innate: z.enum(['toughness', 'vitality', 'initiative']),
+    sockets: z.array(socketedGemSchema.nullable()).readonly(),
+    prismaticSockets: z.array(z.null()).readonly(),
+    implicit: armorImplicitSchema.optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((item, context) => {
+    if (!isValidArmorItemState(item)) {
+      context.addIssue({ code: 'custom', message: 'Ungültige Item-Schichten.' });
+    }
+  });
 
 const armorLoadoutSchema = z
   .object({
@@ -205,6 +267,12 @@ export type CharacterProgressionStateMatchesSchema = AssertExtends<
   CharacterProgressionState,
   SchemaCharacterProgression
 >;
+
+type SchemaArmorItem = z.infer<typeof armorItemSchema>;
+
+/** Dieselbe Drift-Sicherung für die fünf Item-Schichten des Armor-Items. */
+export type ArmorItemSchemaProducesState = AssertExtends<SchemaArmorItem, ArmorItem>;
+export type ArmorItemMatchesSchema = AssertExtends<ArmorItem, SchemaArmorItem>;
 
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {

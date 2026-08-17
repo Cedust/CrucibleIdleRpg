@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
+import { createTeamArmor } from '@/game/items/armor';
 import { CrucibleScreen } from './CrucibleScreen';
 
 /** Schema-valid state: completed first dungeon, Relic Shards and invested Smelting ranks. */
@@ -226,56 +227,7 @@ describe('CrucibleScreen', () => {
         ...base,
         currencies: { ...base.currencies, relicShards: 10 },
         crucible: { 'anvil.armory': 2 },
-        armor: {
-          korvin: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-          rhaya: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-          quinn: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-        },
+        armor: createTeamArmor({ 'anvil.armory': 2 }),
       },
       status: 'ready',
     });

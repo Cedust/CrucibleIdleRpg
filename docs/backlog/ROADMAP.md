@@ -134,8 +134,8 @@ Legendary-Items — alle Effekte wirken sichtbar im Kampf
 
 | Reihenfolge | Task                                                                                              | Status  | Hängt ab von |
 | ----------- | ------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [026 — Item-Schichten & Handwerks-Fundament](tasks/026-item-schichten-und-handwerks-fundament.md) | ready   | 025          |
-| 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | blocked | 026          |
+| 1           | [026 — Item-Schichten & Handwerks-Fundament](tasks/026-item-schichten-und-handwerks-fundament.md) | done    | 025          |
+| 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | ready   | 026          |
 | 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | blocked | 026, 027     |
 | 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | blocked | 028          |
 | 5           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | blocked | 026          |

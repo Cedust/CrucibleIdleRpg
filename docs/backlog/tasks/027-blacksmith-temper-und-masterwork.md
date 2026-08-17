@@ -1,10 +1,10 @@
 # 027 — Blacksmith: Temper & Masterwork
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M4        |
-| **Hängt ab von** | 026       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M4      |
+| **Hängt ab von** | 026     |
 
 ## Ziel
 

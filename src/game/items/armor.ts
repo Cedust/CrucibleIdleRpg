@@ -26,17 +26,19 @@ export const ARMOR_BASES: Readonly<Record<ArmorSlot, ArmorBase>> = {
 };
 
 /**
- * Platzhalter-Balancing für den mit Temper wachsenden Innate-Wert. M3 erzeugt ausschließlich
- * Common +1; die Werte ab +2 sind bewusst vorab nur deklarativer Content für den M4-Temper.
+ * Platzhalter-Balancing (docs/backlog/README.md#4-umgang-mit-offenen-balancing-werten) für den
+ * mit Temper wachsenden Innate-Wert über den vollen Bereich +1 bis +100. Verbindlich ist nur
+ * die Struktur — eine geometrisch wachsende Basis-Power (ITEMS §2), streng monoton steigend —
+ * die Parameter je Slot sind Tuning.
  */
-export const ARMOR_INNATE_VALUE_BY_ITEM_LEVEL: Readonly<Record<ArmorSlot, readonly number[]>> = {
-  chest: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-  legs: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-  head: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-  feet: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+export const ARMOR_INNATE_CURVE: Readonly<Record<ArmorSlot, { base: number; growth: number }>> = {
+  chest: { base: 1, growth: 1.02 },
+  legs: { base: 1, growth: 1.02 },
+  head: { base: 1, growth: 1.02 },
+  feet: { base: 1, growth: 1.02 },
 };
 
-/** Erzeugt die unveränderliche Startform eines durch die Armory geöffneten Slots. */
+/** Erzeugt die Startform eines durch die Armory geöffneten Slots: Common +1 ohne Sockel. */
 export function createArmorItem(slot: ArmorSlot): ArmorItem {
   const base = ARMOR_BASES[slot];
   return {
@@ -45,6 +47,8 @@ export function createArmorItem(slot: ArmorSlot): ArmorItem {
     rarity: 'common',
     itemLevel: 1,
     innate: base.innate,
+    sockets: [],
+    prismaticSockets: [],
   };
 }
 
@@ -58,8 +62,8 @@ export function createTeamArmor(ranks: CrucibleRanks): TeamArmor {
   return Object.fromEntries(TEAM_ORDER.map((id) => [id, { ...loadout }])) as TeamArmor;
 }
 
-/** Prüft, ob ein Save-Item die einzig in M3 erlaubte, kanonische Common-+1-Form besitzt. */
-export function isM3ArmorItem(item: ArmorItem, expectedSlot: ArmorSlot): boolean {
+/** Prüft, ob ein Save-Item die unveränderliche Basis-Schicht seines Slots trägt (ITEMS §1). */
+export function matchesArmorBase(item: ArmorItem, expectedSlot: ArmorSlot): boolean {
   const base = ARMOR_BASES[expectedSlot];
   return (
     item.slot === expectedSlot && item.itemType === base.itemType && item.innate === base.innate
@@ -77,7 +81,7 @@ export function hasArmorForUnlockedSlots(armor: TeamArmor, ranks: CrucibleRanks)
       actualSlots.length === expectedSlots.length &&
       expectedSlots.every((slot) => {
         const item = loadout[slot];
-        return item !== undefined && isM3ArmorItem(item, slot);
+        return item !== undefined && matchesArmorBase(item, slot);
       })
     );
   });
@@ -110,7 +114,8 @@ export function armorEffects(loadout: ArmorLoadout): {
   return result;
 }
 
-/** Innate-Wert einer Basis am aktuellen Item-Level; M3 validiert ausschließlich +1. */
+/** Innate-Wert einer Basis am aktuellen Item-Level entlang der Platzhalter-Kurve. */
 export function innateValue(item: ArmorItem): number {
-  return ARMOR_INNATE_VALUE_BY_ITEM_LEVEL[item.slot][item.itemLevel] ?? 0;
+  const curve = ARMOR_INNATE_CURVE[item.slot];
+  return Math.round(item.itemLevel * curve.base * curve.growth ** (item.itemLevel - 1));
 }

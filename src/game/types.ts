@@ -78,9 +78,10 @@ export type Lane = 'frontline' | 'backline';
 
 /**
  * Seltenheitsstufen eines Items — Master-Regler für Sockel, Gem-Level-Cap und Item-Level-Cap
- * (docs/spec/ITEMS.md#3-seltenheit-sockel--level-cap).
+ * (docs/spec/ITEMS.md#3-seltenheit-sockel--level-cap), aufsteigend geordnet.
  */
-export type Rarity = 'common' | 'magic' | 'rare' | 'epic' | 'legendary';
+export const RARITIES = ['common', 'magic', 'rare', 'epic', 'legendary'] as const;
+export type Rarity = (typeof RARITIES)[number];
 
 /** Die vier dauerhaften Armor-Slots (ITEMS §1); nur diese Slots können persistieren. */
 export const ARMOR_SLOTS = ['chest', 'legs', 'head', 'feet'] as const;
@@ -89,19 +90,77 @@ export type ArmorSlot = (typeof ARMOR_SLOTS)[number];
 /** Feste Item-Typen der Slot-Basen; Armor wird weder gedroppt noch getauscht. */
 export type ArmorItemType = 'armor' | 'legguards' | 'helmet' | 'boots';
 
-/** Die einzigen M3-Innates: Core-Stats oder flache Initiative. */
+/** Die festen Armor-Innates: Core-Stats oder flache Initiative (ITEMS §1). */
 export type ArmorInnateStat = 'toughness' | 'vitality' | 'initiative';
 
 /**
- * Persistierte M3-Form eines permanenten Armor-Items. Spätere Item-Schichten werden bewusst
- * noch nicht modelliert: Common +1 hat weder Sockel noch Gems, Implicit oder Handwerkszustand.
+ * Farb-Pools der vier regulären Gem-Farben (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut):
+ * Amber trägt Offensive-Chance, Ruby Offensive-Damage, Sapphire Defensive, Emerald Core.
+ * Diamond-Effekte sind ein offener Spec-Punkt (docs/backlog/OPEN_ISSUES.md) und haben noch
+ * keinen Pool.
+ */
+export const AMBER_AFFIXES = [
+  'critChance',
+  'multiHitChance',
+  'splashChance',
+  'counterChance',
+] as const;
+export const RUBY_AFFIXES = [
+  'critDamage',
+  'multiHitDamage',
+  'splashDamage',
+  'counterDamage',
+] as const;
+export const SAPPHIRE_AFFIXES = ['barrier', 'blockChance', 'evasion', 'regeneration'] as const;
+export const EMERALD_AFFIXES = ['might', 'toughness', 'vitality'] as const;
+
+export type AmberAffix = (typeof AMBER_AFFIXES)[number];
+export type RubyAffix = (typeof RUBY_AFFIXES)[number];
+export type SapphireAffix = (typeof SAPPHIRE_AFFIXES)[number];
+export type EmeraldAffix = (typeof EMERALD_AFFIXES)[number];
+export type GemAffix = AmberAffix | RubyAffix | SapphireAffix | EmeraldAffix;
+
+/**
+ * Ein im Sockel gebundener Gem (Schicht 4, docs/spec/ITEMS.md#2-item-anatomie-fünf-schichten):
+ * beim Inlay gerollter Affix aus dem Farb-Pool samt konkretem Wert. `gemLevel` ist das
+ * Attune-Level im Sockel; sein Seltenheits-Cap greift mit dem Jeweler (Task 029).
+ */
+export type SocketedGem =
+  | { color: 'amber'; affix: AmberAffix; gemLevel: number; value: number }
+  | { color: 'ruby'; affix: RubyAffix; gemLevel: number; value: number }
+  | { color: 'sapphire'; affix: SapphireAffix; gemLevel: number; value: number }
+  | { color: 'emerald'; affix: EmeraldAffix; gemLevel: number; value: number };
+
+/**
+ * Per Brand geprägtes Implicit (Schicht 5): eine Referenz auf ein Sigil aus dem Sigil Codex.
+ * Katalog, Wirkung und Stärke folgen mit dem Sigil Codex (Tasks 030/031).
+ */
+export interface ArmorImplicit {
+  sigilId: string;
+}
+
+/**
+ * Persistierte Form eines permanenten Armor-Items mit allen fünf Schichten
+ * (docs/spec/ITEMS.md#2-item-anatomie-fünf-schichten). Die Invarianten — Item-Level ≤
+ * Seltenheits-Cap, Sockelzahlen, Implicit nur auf Legendary — prüft
+ * `isValidArmorItemState` (src/game/items/itemLayers.ts).
  */
 export interface ArmorItem {
   slot: ArmorSlot;
   itemType: ArmorItemType;
-  rarity: 'common';
-  itemLevel: 1;
+  rarity: Rarity;
+  /** Stamm der Handwerks-Schichten, `+1` bis `+100`; wächst per Temper (ITEMS §2). */
+  itemLevel: number;
   innate: ArmorInnateStat;
+  /** Normale Sockel; Länge = Sockelzahl der Seltenheit (ITEMS §3), `null` = leer. */
+  sockets: readonly (SocketedGem | null)[];
+  /**
+   * Prismatic-Sockel, Länge = `floor(Item-Level / 50)` (ITEMS §4). Sie nehmen ausschließlich
+   * Diamond auf; solange die Diamond-Effekte offen sind (OPEN_ISSUES §2, Drops ab Akt 2 → M6),
+   * sind sie immer leer.
+   */
+  prismaticSockets: readonly null[];
+  implicit?: ArmorImplicit;
 }
 
 /** Pro Charakter existieren nur die aus Armory-Rängen abgeleiteten permanenten Slot-Items. */

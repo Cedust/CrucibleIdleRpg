@@ -63,6 +63,27 @@ describe('createSaveService', () => {
     expect(console.warn).toHaveBeenCalledOnce();
   });
 
+  it('setzt einen Save mit Armor-Items ohne Sockel-Schichten (M3-Form) auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const m3Item = {
+      slot: 'chest',
+      itemType: 'armor',
+      rarity: 'common',
+      itemLevel: 1,
+      innate: 'toughness',
+    };
+    const oldSave = {
+      ...createDefaultSave(42),
+      crucible: { 'anvil.armory': 1 },
+      armor: { korvin: { chest: m3Item }, rhaya: { chest: m3Item }, quinn: { chest: m3Item } },
+    };
+    const fallback = createDefaultSave(777);
+    const service = createSaveService(memoryPort(JSON.stringify(oldSave)), () => fallback);
+
+    await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
   it('serialisiert validierte Daten ausschließlich über den SavePort', async () => {
     const port = memoryPort(null);
     const service = createSaveService(port, () => createDefaultSave(1));

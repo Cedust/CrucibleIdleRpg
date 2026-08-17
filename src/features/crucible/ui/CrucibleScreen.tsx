@@ -66,7 +66,7 @@ export function CrucibleScreen() {
         <ScreenHeader
           title="Crucible"
           intro="Beneath the ruined kingdom, the ancient Crucible still burns. Relic Shards reclaimed from conquered depths can be melted down and forged into new strength."
-          className="mb-6"
+          className="mb-2"
         >
           <p className="mt-1 flex items-center gap-1.5 text-sm font-medium text-text">
             <Stone aria-hidden="true" className="size-4 text-info" />
@@ -74,20 +74,18 @@ export function CrucibleScreen() {
           </p>
         </ScreenHeader>
 
+        <CrucibleTreeNavigation
+          activeTree={tree}
+          onSelect={(treeId) => {
+            setTree(treeId);
+            setSelectedId(null);
+          }}
+        />
         <div
           data-testid="crucible-layout"
-          className="grid min-w-0 gap-5 @tree-cols:min-h-0 @tree-cols:flex-1 @tree-cols:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @tree-cols:grid-rows-[auto_minmax(0,1fr)]"
+          className="grid min-w-0 gap-5 @tree-cols:min-h-0 @tree-cols:flex-1 @tree-cols:grid-cols-[minmax(0,1fr)_var(--spacing-inspector)] @tree-cols:grid-rows-[minmax(0,1fr)]"
         >
-          <div className="min-w-0 @tree-cols:col-start-1 @tree-cols:self-start">
-            <CrucibleTreeNavigation
-              activeTree={tree}
-              onSelect={(treeId) => {
-                setTree(treeId);
-                setSelectedId(null);
-              }}
-            />
-          </div>
-          <div className="min-w-0 @tree-cols:col-start-1 @tree-cols:row-start-2 @tree-cols:min-h-0">
+          <div className="min-w-0 @tree-cols:min-h-0">
             <CrucibleTreeGraph
               tree={tree}
               nodes={nodes}
@@ -101,7 +99,7 @@ export function CrucibleScreen() {
             />
           </div>
           {selected ? (
-            <div className="min-w-0 @tree-cols:col-start-2 @tree-cols:row-start-2 @tree-cols:sticky @tree-cols:top-5 @tree-cols:self-start">
+            <div className="min-w-0 @tree-cols:sticky @tree-cols:top-5 @tree-cols:self-start">
               <CrucibleNodeInspector
                 node={selected}
                 rank={save.crucible[selected.id] ?? 0}

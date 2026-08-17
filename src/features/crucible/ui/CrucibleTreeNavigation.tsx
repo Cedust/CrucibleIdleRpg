@@ -21,7 +21,7 @@ export function CrucibleTreeNavigation({ activeTree, onSelect }: CrucibleTreeNav
   return (
     <aside
       aria-label="Crucible tree selection"
-      className="min-w-0"
+      className="mb-5 min-w-0"
       data-testid="crucible-tree-navigation"
     >
       <OrnateTabs label="Trees" className="min-w-2xl grid-cols-3">

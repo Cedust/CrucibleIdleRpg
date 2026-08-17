@@ -42,11 +42,32 @@ export interface FloorEncounterDefinition {
   formationId: FormationId;
 }
 
+/**
+ * Die fünf Gem-Farben (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut). Amber–Emerald sind
+ * die regulär gefarmten Fodder-Farben, Diamond der seltene Elite/Boss-Chase.
+ */
+export const GEM_COLORS = ['amber', 'ruby', 'sapphire', 'emerald', 'diamond'] as const;
+export type GemColor = (typeof GEM_COLORS)[number];
+
+/** Die vier von allen Gegnern droppenden Farben (docs/spec/ITEMS.md#6-drops-gems-cinder--sigils). */
+export const REGULAR_GEM_COLORS = ['amber', 'ruby', 'sapphire', 'emerald'] as const;
+export type RegularGemColor = (typeof REGULAR_GEM_COLORS)[number];
+
+/** Globale Gem-Zähler — als Bestand persistiert und als Gewinn eines Floor-Siegs gemeldet. */
+export type GemStock = Readonly<Record<GemColor, number>>;
+
+/** Loot eines Floor-Siegs (docs/spec/ITEMS.md#6-drops-gems-cinder--sigils). */
+export interface FloorLoot {
+  gems: GemStock;
+  cinder: number;
+}
+
 /** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */
 export interface FloorRewardDefinition {
   floorId: FloorId;
   gold: number;
   characterXp: Readonly<Record<CharacterId, number>>;
+  loot: FloorLoot;
 }
 
 /** Rolle bestimmt Zielregeln und Formationsplatz (SPEC §1.2/§1.3). */

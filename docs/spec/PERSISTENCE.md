@@ -78,6 +78,9 @@ characters:
 currencies:
   gold: nichtnegative Ganzzahl
   relicShards: nichtnegative Ganzzahl
+  cinder: nichtnegative Ganzzahl
+gems:
+  amber | ruby | sapphire | emerald | diamond: nichtnegative Ganzzahl
 armor:
   korvin | rhaya | quinn:
     Chest | Legs | Head | Feet: nur kanonische Common-+1-Basen der aus anvil.armory abgeleiteten Slots

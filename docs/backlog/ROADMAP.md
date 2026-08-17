@@ -118,7 +118,7 @@ Loadout aus Signaturwaffe und Armor; Gem- und Cinder-Drops speisen den späteren
 | 1           | [022 — Armory & Armor-Fundament](tasks/022-armory-und-armor-fundament.md) | done   | 016          |
 | 2           | [023 — Heroes-Hub & Stats](tasks/023-heroes-hub-und-stats.md)             | done   | 022          |
 | 3           | [024 — Loadout-Ansicht](tasks/024-loadout-ansicht.md)                     | done   | 022, 023     |
-| 4           | [025 — Gem- & Cinder-Drops](tasks/025-gem-und-cinder-drops.md)            | ready  | 022, 024     |
+| 4           | [025 — Gem- & Cinder-Drops](tasks/025-gem-und-cinder-drops.md)            | done   | 022, 024     |
 
 **022 → 023 → 024 → 025** ist eine absichtliche Kette: Das persistierte Armor-Fundament steht vor
 der Heroes-Struktur, diese vor der Loadout-Darstellung und diese vor den erst in M4 nutzbaren

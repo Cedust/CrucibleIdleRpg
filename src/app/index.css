@@ -83,6 +83,13 @@
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
 
+  /* Gem-Farben (Loot-Zähler, ab M4 Jeweler) — eigene Identität, unabhängig von Statusfarben */
+  --color-gem-amber: #f59e0b;
+  --color-gem-ruby: #ef4444;
+  --color-gem-sapphire: #3b82f6;
+  --color-gem-emerald: #10b981;
+  --color-gem-diamond: #e2e8f0;
+
   /* Flächen-Tiefe für Panels */
   --shadow-panel: 0 12px 32px -16px rgb(0 0 0 / 0.7);
 

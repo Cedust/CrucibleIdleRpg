@@ -2,7 +2,7 @@
 
 | Feld             | Wert     |
 | ---------------- | -------- |
-| **Status**       | `ready`  |
+| **Status**       | `done`   |
 | **Meilenstein**  | M3       |
 | **Hängt ab von** | 022, 024 |
 
@@ -37,18 +37,18 @@ gemergt sein. [024](024-loadout-ansicht.md) schließt davor die M3-Charakterzent
 
 ## Akzeptanzkriterien
 
-- [ ] Der Save enthält Cinder sowie die fünf Gem-Bestände Amber, Ruby, Sapphire, Emerald und
+- [x] Der Save enthält Cinder sowie die fünf Gem-Bestände Amber, Ruby, Sapphire, Emerald und
       Diamond als nichtnegative Ganzzahlen; der M3-Default beginnt mit allen Zählern bei `0`
-- [ ] Jeder besiegte Gegner vergibt reguläre Gems aus dem als Balancing-Content gekennzeichneten,
+- [x] Jeder besiegte Gegner vergibt reguläre Gems aus dem als Balancing-Content gekennzeichneten,
       tiefenabhängigen Drop-Modell; Diamond bleibt bis Akt 2 bei `0`
-- [ ] Jeder Boss-Kill vergibt genau `1` Cinder; Elite-Cinder ist eine Chance, die mit dem globalen
+- [x] Jeder Boss-Kill vergibt genau `1` Cinder; Elite-Cinder ist eine Chance, die mit dem globalen
       Floor-Index monoton steigt und beim Aktwechsel nicht zurückgesetzt wird
-- [ ] Loot wird mit dem Floor-Sieg atomar gespeichert, erscheint als konkrete Gewinne in der
+- [x] Loot wird mit dem Floor-Sieg atomar gespeichert, erscheint als konkrete Gewinne in der
       Reward-Zusammenfassung und bleibt nach Reload erhalten; eine Gesamtbestandsanzeige entsteht
       erst mit den M4-Stationen
-- [ ] Dieselben Seeds, Encounter und Run-Zähler liefern denselben Loot; Loot-Würfe verändern weder
+- [x] Dieselben Seeds, Encounter und Run-Zähler liefern denselben Loot; Loot-Würfe verändern weder
       Initialisierungs- noch Kampf-PRNG und damit keine Kampfevents
-- [ ] Unit- und Store-Tests decken Boss-Garantie, Elite-Monotonie, Akt-2-Diamond-Grenze,
+- [x] Unit- und Store-Tests decken Boss-Garantie, Elite-Monotonie, Akt-2-Diamond-Grenze,
       deterministische Wiederholung und atomaren Commit ab
 
 ## Betroffene Dateien

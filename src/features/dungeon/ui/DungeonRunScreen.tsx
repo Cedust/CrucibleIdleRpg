@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Coins, ScrollText, Stone } from 'lucide-react';
+import { Coins, Flame, Gem, ScrollText, Stone } from 'lucide-react';
+import { formatLootGains, GEM_NAMES } from '@/features/dungeon/rewards';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import { GEM_COLORS, type GemColor } from '@/game/types';
 import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
@@ -16,12 +19,24 @@ import { TeamPanel } from '@/features/combat/ui/TeamPanel';
 import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
 import { formatRelicShards } from '@/game/crucible/crucible';
 
+/** Icon-Einfärbung über die eigenen Gem-Tokens — unabhängig von den Statusfarben. */
+const GEM_ICON_CLASS: Readonly<Record<GemColor, string>> = {
+  amber: 'text-gem-amber',
+  ruby: 'text-gem-ruby',
+  sapphire: 'text-gem-sapphire',
+  emerald: 'text-gem-emerald',
+  diamond: 'text-gem-diamond',
+};
+
 /** Im Run können keine Ausgaben erfolgen; die Differenz seit Mount entspricht den Run-Rewards. */
 function RunRewardSummary() {
   const currencies = useSaveStore((state) => state.data?.currencies ?? null);
-  const [startingCurrencies] = useState(() => currencies ?? { gold: 0, relicShards: 0 });
+  const gems = useSaveStore((state) => state.data?.gems ?? null);
+  const [startingCurrencies] = useState(() => currencies ?? { gold: 0, relicShards: 0, cinder: 0 });
+  const [startingGems] = useState(() => gems ?? createEmptyGemStock());
   const gold = Math.max((currencies?.gold ?? 0) - startingCurrencies.gold, 0);
   const relicShards = Math.max((currencies?.relicShards ?? 0) - startingCurrencies.relicShards, 0);
+  const cinder = Math.max((currencies?.cinder ?? 0) - startingCurrencies.cinder, 0);
 
   return (
     <dl aria-label="Run rewards" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
@@ -40,12 +55,28 @@ function RunRewardSummary() {
         </dd>
       </div>
       <div className="flex items-center gap-1.5">
+        <Flame aria-hidden="true" className="size-4 text-warning" />
+        <dt className="sr-only">Cinder</dt>
+        <dd aria-label="Cinder amount" className="font-semibold text-text">
+          {formatNumber(cinder)}
+        </dd>
+      </div>
+      <div className="flex items-center gap-1.5">
         <ScrollText aria-hidden="true" className="size-4 text-text-muted" />
         <dt className="sr-only">Runedust</dt>
         <dd aria-label="Runedust amount" className="font-semibold text-text-muted">
           —
         </dd>
       </div>
+      {GEM_COLORS.map((color) => (
+        <div key={color} className="flex items-center gap-1.5">
+          <Gem aria-hidden="true" className={`size-4 ${GEM_ICON_CLASS[color]}`} />
+          <dt className="sr-only">{GEM_NAMES[color]}</dt>
+          <dd aria-label={`${GEM_NAMES[color]} amount`} className="font-semibold text-text">
+            {formatNumber(Math.max((gems?.[color] ?? 0) - startingGems[color], 0))}
+          </dd>
+        </div>
+      ))}
     </dl>
   );
 }
@@ -176,6 +207,7 @@ export function DungeonRunScreen() {
 
   const encounter = resolveAct1Encounter(floorId);
   const isFinalFloor = isFinalAct1Floor(encounter);
+  const lootGains = lastReward === null ? null : formatLootGains(lastReward.loot);
 
   return (
     <ScreenLayout
@@ -211,6 +243,7 @@ export function DungeonRunScreen() {
                     <p className="text-sm text-text-muted">
                       Reward saved: +{lastReward.gold} Gold / +{lastReward.xp} XP / +
                       {formatRelicShards(lastReward.relicShards)}
+                      {lootGains !== null && ` / ${lootGains}`}
                     </p>
                     {isFinalFloor ? (
                       <>

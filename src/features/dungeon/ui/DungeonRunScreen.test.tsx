@@ -67,13 +67,63 @@ describe('DungeonRunScreen', () => {
       combat: { ...combat, floorId: 'A1-D1-20' },
       outcome: 'victory',
       completionStatus: 'saved',
-      lastReward: { gold: 10, xp: 15, relicShards: 1 },
+      lastReward: {
+        gold: 10,
+        xp: 15,
+        relicShards: 1,
+        loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+      },
     });
 
     render(<DungeonRunScreen />);
 
     expect(screen.getByRole('button', { name: 'Complete Dungeon' })).toBeInTheDocument();
     expect(useDungeonRunStore.getState().mode).toBe('run');
+  });
+
+  it('zeigt die konkreten Loot-Gewinne des gespeicherten Floor-Siegs', () => {
+    const combat = useCombatStore.getState().combat;
+    if (combat === null) throw new Error('expected dungeon combat');
+    // Floor 20 verhindert den Auto-Advance der Run-Subscription, der Sieg bleibt sichtbar.
+    useCombatStore.setState({
+      combat: { ...combat, floorId: 'A1-D1-20' },
+      outcome: 'victory',
+      completionStatus: 'saved',
+      lastReward: {
+        gold: 10,
+        xp: 15,
+        relicShards: 1,
+        loot: { gems: { amber: 2, ruby: 0, sapphire: 0, emerald: 1, diamond: 0 }, cinder: 1 },
+      },
+    });
+
+    render(<DungeonRunScreen />);
+
+    expect(screen.getByText(/Reward saved:/)).toHaveTextContent(
+      'Reward saved: +10 Gold / +15 XP / +1 Relic Shard / +2 Amber / +1 Emerald / +1 Cinder',
+    );
+  });
+
+  it('nennt ohne Drops nur Gold, XP und Relic Shards', () => {
+    const combat = useCombatStore.getState().combat;
+    if (combat === null) throw new Error('expected dungeon combat');
+    useCombatStore.setState({
+      combat: { ...combat, floorId: 'A1-D1-20' },
+      outcome: 'victory',
+      completionStatus: 'saved',
+      lastReward: {
+        gold: 10,
+        xp: 15,
+        relicShards: 1,
+        loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+      },
+    });
+
+    render(<DungeonRunScreen />);
+
+    expect(screen.getByText(/Reward saved:/)).toHaveTextContent(
+      /Reward saved: \+10 Gold \/ \+15 XP \/ \+1 Relic Shard$/,
+    );
   });
 
   it('shows the dungeon title and successfully committed rewards from this run', () => {
@@ -92,12 +142,16 @@ describe('DungeonRunScreen', () => {
     );
     expect(screen.getByTestId('run-status-bar')).toBeInTheDocument();
     const rewards = within(screen.getByLabelText('Run rewards'));
-    expect(rewards.getAllByText('0')).toHaveLength(2);
+    // Gold, Relic Shards, fünf Gems und Cinder starten als sichtbare 0-Zähler.
+    expect(rewards.getAllByText('0')).toHaveLength(8);
     expect(rewards.getByLabelText('Gold amount')).toHaveTextContent('0');
     expect(rewards.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
     expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
+    expect(container.querySelectorAll('svg.lucide-gem')).toHaveLength(5);
     expect(rewards.getByText('Gold')).toHaveClass('sr-only');
     expect(rewards.getByText('Relic Shards')).toHaveClass('sr-only');
+    expect(rewards.getByText('Cinder')).toHaveClass('sr-only');
+    expect(rewards.getByText('Amber')).toHaveClass('sr-only');
     expect(rewards.getByText('Runedust')).toHaveClass('sr-only');
     expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
 
@@ -108,14 +162,21 @@ describe('DungeonRunScreen', () => {
         data: {
           ...save,
           currencies: {
+            ...save.currencies,
             gold: save.currencies.gold + 12,
             relicShards: save.currencies.relicShards + 3,
+            cinder: save.currencies.cinder + 2,
           },
+          gems: { ...save.gems, amber: save.gems.amber + 4, sapphire: save.gems.sapphire + 1 },
         },
       }),
     );
 
     expect(rewards.getByText('12')).toBeInTheDocument();
     expect(rewards.getByText('3')).toBeInTheDocument();
+    expect(rewards.getByLabelText('Cinder amount')).toHaveTextContent('2');
+    expect(rewards.getByLabelText('Amber amount')).toHaveTextContent('4');
+    expect(rewards.getByLabelText('Sapphire amount')).toHaveTextContent('1');
+    expect(rewards.getByLabelText('Emerald amount')).toHaveTextContent('0');
   });
 });

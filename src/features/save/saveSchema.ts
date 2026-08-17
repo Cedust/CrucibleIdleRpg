@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
 import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
+import { createEmptyGemStock } from '@/game/rewards/lootRewards';
 import type { CharacterProgressionState } from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
@@ -116,6 +117,17 @@ export const saveSchema = z
       .object({
         gold: z.number().int().nonnegative(),
         relicShards: z.number().int().nonnegative(),
+        cinder: z.number().int().nonnegative(),
+      })
+      .strict(),
+    /** Globale Gem-Bestände als Zähler, kein Inventar (PERSISTENCE §2). */
+    gems: z
+      .object({
+        amber: z.number().int().nonnegative(),
+        ruby: z.number().int().nonnegative(),
+        sapphire: z.number().int().nonnegative(),
+        emerald: z.number().int().nonnegative(),
+        diamond: z.number().int().nonnegative(),
       })
       .strict(),
     firstVictories: z
@@ -215,7 +227,8 @@ export function createDefaultSave(saveSeed: number): SaveData {
       rhaya: createLevelOneProgression(),
       quinn: createLevelOneProgression(),
     },
-    currencies: { gold: 0, relicShards: 0 },
+    currencies: { gold: 0, relicShards: 0, cinder: 0 },
+    gems: createEmptyGemStock(),
     firstVictories: [],
     crucible: {},
     armor: createTeamArmor({}),

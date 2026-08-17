@@ -35,7 +35,8 @@ describe('saveSchema', () => {
           masteryRanks: {},
         },
       },
-      currencies: { gold: 0, relicShards: 0 },
+      currencies: { gold: 0, relicShards: 0, cinder: 0 },
+      gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
       firstVictories: [],
       crucible: {},
       armor: {
@@ -79,7 +80,7 @@ describe('saveSchema', () => {
     expect(
       saveSchema.safeParse({
         ...save,
-        currencies: { gold: 0, relicShards: 7 },
+        currencies: { gold: 0, relicShards: 7, cinder: 0 },
       }).success,
     ).toBe(true);
     expect(
@@ -88,6 +89,33 @@ describe('saveSchema', () => {
         currencies: { gold: 0, [legacyCurrencyKey]: 7 },
       }).success,
     ).toBe(false);
+  });
+
+  it('verlangt Cinder und alle fünf Gem-Bestände als nichtnegative Ganzzahlen', () => {
+    const save = createDefaultSave(123);
+
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        currencies: { ...save.currencies, cinder: 3 },
+        gems: { amber: 2, ruby: 0, sapphire: 1, emerald: 4, diamond: 0 },
+      }).success,
+    ).toBe(true);
+    expect(
+      saveSchema.safeParse({
+        ...save,
+        currencies: { ...save.currencies, cinder: -1 },
+      }).success,
+    ).toBe(false);
+    expect(saveSchema.safeParse({ ...save, gems: { ...save.gems, ruby: -1 } }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, gems: { ...save.gems, amber: 0.5 } }).success).toBe(
+      false,
+    );
+    expect(saveSchema.safeParse({ ...save, gems: { ...save.gems, opal: 1 } }).success).toBe(false);
+    const withoutDiamond = Object.fromEntries(
+      Object.entries(save.gems).filter(([color]) => color !== 'diamond'),
+    );
+    expect(saveSchema.safeParse({ ...save, gems: withoutDiamond }).success).toBe(false);
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {

@@ -83,7 +83,11 @@
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
 
-  /* Gem-Farben (Loot-Zähler, ab M4 Jeweler) — eigene Identität, unabhängig von Statusfarben */
+  /* Ressourcen-Farben */
+  --color-gold: #fbbf24;
+  --color-cinder: #f59e0b;
+
+  /* Gem-Farben */
   --color-gem-amber: #f59e0b;
   --color-gem-ruby: #ef4444;
   --color-gem-sapphire: #3b82f6;

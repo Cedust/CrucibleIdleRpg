@@ -212,12 +212,23 @@ describe('CrucibleScreen', () => {
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    await user.click(screen.getByRole('button', { name: /Blacksmith, rank 0 of 1, Locked/ }));
+    await user.click(screen.getByRole('button', { name: /Jeweler, rank 0 of 1, Locked/ }));
 
-    expect(screen.getByRole('heading', { name: 'Blacksmith' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Jeweler' })).toBeInTheDocument();
     expect(screen.getByText('Locked until Crafting (M4).')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
     expect(saveStore.getState().data).toEqual(before);
+  });
+
+  it('sells the Blacksmith unlock behind Armory rank 1 (ITEMS §1)', async () => {
+    const user = userEvent.setup();
+    render(<CrucibleScreen />);
+
+    await user.click(screen.getByRole('button', { name: /Blacksmith, rank 0 of 1, Locked/ }));
+
+    expect(screen.getByRole('heading', { name: 'Blacksmith' })).toBeInTheDocument();
+    expect(screen.getByText('A prerequisite node is missing.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
   });
 
   it('names the next team-wide Armory slot and its rank cost in the inspector', async () => {

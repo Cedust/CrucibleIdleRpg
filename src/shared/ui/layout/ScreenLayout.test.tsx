@@ -54,6 +54,19 @@ describe('ScreenLayout', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });
 
+  it('unterstützt den Blacksmith-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="blacksmith">
+        <h1>Blacksmith</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="blacksmith"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/blacksmith-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
   it('rendert full-height und scrollt per Default im Content-Wrapper', () => {
     render(
       <ScreenLayout as="main">

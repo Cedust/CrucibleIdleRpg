@@ -86,8 +86,8 @@ const node = (
 
 /**
  * Der vollständige Katalog (PROGRESSION §3.1–§3.3). Gesperrte Nodes erscheinen sichtbar als
- * Voraussetzungen späterer Systeme; kaufbar sind in M2 Waystones, Smelting und der komplette
- * Molten-Tree — zusammen 190 aktive Relic-Shard-Kosten (PROGRESSION §3.4).
+ * Voraussetzungen späterer Systeme; kaufbar sind seit M4 Waystones, Armory, Blacksmith,
+ * Smelting und der komplette Molten-Tree — zusammen 201 aktive Relic-Shard-Kosten.
  */
 export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   node(
@@ -106,7 +106,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   ),
   node(CRUCIBLE_IDS.blacksmith, 'anvil', 'Blacksmith', 1, 'Unlocks the Blacksmith system.', {
     prerequisites: [{ nodeId: CRUCIBLE_IDS.armory, rank: 1 }],
-    lockedUntil: 'Crafting (M4)',
   }),
   node(CRUCIBLE_IDS.jeweler, 'anvil', 'Jeweler', 1, 'Unlocks the Jeweler system.', {
     prerequisites: [{ nodeId: CRUCIBLE_IDS.blacksmith, rank: 1 }],

@@ -1123,7 +1123,7 @@ to 28 pixels. No text, frames, grid lines, color, gradients, shadows, glow, or
 watermark anywhere on the sheet.
 ```
 
-## 29. Akt-Bannerrahmen (9-Slice, vertikal)
+## 30. Akt-Bannerrahmen (9-Slice, vertikal)
 
 - **Zieldatei:** `public/assets/frames/banner-act.png`
 - **Format:** Hochformat 3:4, mindestens 1152×1536
@@ -1186,6 +1186,62 @@ Avoid: a long needle-like tail, a centered crest that blocks the stretchable mid
 filigree, asymmetry, broken rails, large curls, excessive spikes, bright solid-gold metal,
 colored gemstones, painted cloth banner instead of a metal frame, separate state versions,
 multiple banners in one image, mockup presentation
+```
+
+## 31. Blacksmith-View-Hintergrund — Die Schmiede
+
+- **Zieldatei:** `public/assets/backgrounds/blacksmith-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Blacksmith-Ansicht hinter Überschrift,
+  Gold/Cinder-Bestand, Service-Tabs (Temper, Masterwork, Brand), Slot-Liste, Werkstück-Bühne
+  und Dienst-Panel. Das Bild wird per `background-size: cover` eingesetzt. Esse und Amboss
+  bleiben auch bei engerem Crop das zentrale Motiv; die UI-relevanten Bereiche sind dunkel
+  und kontrastarm gehalten.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial blacksmith workshop as the defining visual heart of
+the Blacksmith view, where armor recovered from the depths is tempered, reforged into
+higher rarities, and branded — a working forge of a fallen golden empire, alive again
+Scene/backdrop: a vaulted stone forge-hall carved into the ruins of a golden empire, built
+around one broad blackened-iron forge hearth with banked glowing coals and a massive
+scarred anvil on a low stone dais before it; behind and beside them, heavy soot-darkened
+masonry, cracked pillars with tarnished gold inlays, hanging tongs and hammers as quiet
+silhouettes, a stone quenching trough, and racks of half-finished armor plates receding
+into the surrounding darkness
+Subject: the forge hearth and anvil together form one unmistakable focal group; the hearth
+glows with contained banked coals rather than open fire, and the anvil is heavy, worn, and
+clearly in use — the workshop feels ancient, functional, and dignified rather than
+decorative or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+forge hearth and anvil in the lower central third, large enough to remain the clear focal
+point but low enough that UI panels can occupy the middle of the screen; preserve a broad,
+dark, low-detail field across the central and upper-middle area for service tabs, a slot
+list on the left, an item stage in the center, and an action panel on the right; keep the
+upper-left corner especially calm for the live "Blacksmith" heading and resource display;
+distribute secondary workshop elements symmetrically toward the outer edges; crop-safe from
+wide desktop down to roughly 4:5 mobile, with hearth and anvil remaining recognizable near
+the center
+Lighting/mood: the only strong light rises from the banked coals of the hearth, casting a
+controlled ember glow onto the anvil, the nearest floor slabs, and the lower edges of the
+pillars; sparse drifting sparks and fine ash catch the light; the rest of the hall stays in
+cool shadow with soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened iron,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), concentrated ember orange (#e25822) and
+restrained amber highlights (#f59e0b)
+Materials/textures: soot-darkened stone, forged black iron, worn gold inlays, glowing
+coals, scorched wood, aged leather straps, fine ash and subtle smoke haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast
+outside the hearth glow; retain enough negative space for large opaque or translucent
+panels; no border or frame; no text, letters, readable runes, icons, characters, logos,
+interface elements, or watermark
+Avoid: a blacksmith figure or any hands at work, one large centered weapon, open
+wall-to-wall flames, bright orange full-frame lighting, excessive bloom or sparks, busy
+foreground clutter, modern industrial machinery, horror imagery, photorealistic photography
 ```
 
 ## Hinweise zur Ablage

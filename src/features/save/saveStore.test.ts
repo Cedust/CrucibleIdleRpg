@@ -3,6 +3,7 @@ import type { SavePort } from '@/shared/ports/savePort';
 import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
+import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
 import { createSaveStore } from './saveStore';
@@ -255,6 +256,104 @@ describe('createSaveStore', () => {
     await expect(store.getState().buyCrucibleNode('molten.rally')).resolves.toBe(true);
     expect(store.getState().data?.crucible).toEqual({ 'molten.rally': 2 });
     expect(store.getState().data?.currencies.relicShards).toBe(8);
+  });
+
+  it('persistiert Temper und Masterwork atomar und lädt beide Schichten wieder', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000, cinder: 2 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1 },
+        armor: createTeamArmor({ 'anvil.armory': 1 }),
+      },
+    });
+
+    await expect(store.getState().temperArmor('korvin', 'chest')).resolves.toBe(true);
+    await expect(store.getState().masterworkArmor('korvin', 'chest')).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    const item = reloaded.getState().data?.armor.korvin.chest;
+    expect(item).toMatchObject({ itemLevel: 2, rarity: 'magic' });
+    expect(item?.sockets).toEqual([null]);
+    // 1000 − 20 (Temper +1) − 60 (Masterwork-Gold); Cinder 2 − 1 nach Tabelle.
+    expect(reloaded.getState().data?.currencies.gold).toBe(920);
+    expect(reloaded.getState().data?.currencies.cinder).toBe(1);
+    // Unbeteiligte Charaktere und Slots bleiben unberührt.
+    expect(reloaded.getState().data?.armor.rhaya.chest).toMatchObject({
+      itemLevel: 1,
+      rarity: 'common',
+    });
+  });
+
+  it('lehnt unbezahlbare oder unmögliche Blacksmith-Aktionen ohne Save-Schreibvorgang ab', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 0, cinder: 0 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1 },
+        armor: createTeamArmor({ 'anvil.armory': 1 }),
+      },
+    });
+    const before = store.getState().data;
+
+    // Zu wenig Gold bzw. Cinder; der Legs-Slot ist bei Armory Rang 1 noch nicht freigeschaltet.
+    await expect(store.getState().temperArmor('korvin', 'chest')).resolves.toBe(false);
+    await expect(store.getState().masterworkArmor('korvin', 'chest')).resolves.toBe(false);
+    await expect(store.getState().temperArmor('korvin', 'legs')).resolves.toBe(false);
+
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
+  });
+
+  it('sperrt Blacksmith-Aktionen über das injizierte Optimierungs-Prädikat', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    let allowed = false;
+    const store = createSaveStore(service, { canOptimize: () => allowed });
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000, cinder: 10 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1 },
+        armor: createTeamArmor({ 'anvil.armory': 1 }),
+      },
+    });
+
+    await expect(store.getState().temperArmor('korvin', 'chest')).resolves.toBe(false);
+    await expect(store.getState().masterworkArmor('korvin', 'chest')).resolves.toBe(false);
+    expect(store.getState().data?.armor.korvin.chest).toMatchObject({
+      itemLevel: 1,
+      rarity: 'common',
+    });
+
+    allowed = true;
+    await expect(store.getState().temperArmor('korvin', 'chest')).resolves.toBe(true);
+    expect(store.getState().data?.armor.korvin.chest?.itemLevel).toBe(2);
   });
 
   it('serialisiert überlappende Actions ohne Lost Update', async () => {

@@ -41,7 +41,7 @@ function RunRewardSummary() {
   return (
     <dl aria-label="Run rewards" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
       <div className="flex items-center gap-1.5">
-        <Coins aria-hidden="true" className="size-4 text-accent" />
+        <Coins aria-hidden="true" className="size-4 text-gold" />
         <dt className="sr-only">Gold</dt>
         <dd aria-label="Gold amount" className="font-semibold text-text">
           {formatNumber(gold)}
@@ -55,7 +55,7 @@ function RunRewardSummary() {
         </dd>
       </div>
       <div className="flex items-center gap-1.5">
-        <Flame aria-hidden="true" className="size-4 text-warning" />
+        <Flame aria-hidden="true" className="size-4 text-cinder" />
         <dt className="sr-only">Cinder</dt>
         <dd aria-label="Cinder amount" className="font-semibold text-text">
           {formatNumber(cinder)}

@@ -6,9 +6,10 @@ import {
   respecCrucibleTree,
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
+import { applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
 import { createTeamArmor } from '@/game/items/armor';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
-import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
+import type { ArmorSlot, AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
 import {
   purchaseMasteryNode,
   respecMasteryDiscipline,
@@ -36,6 +37,8 @@ export interface SaveStoreState {
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
+  temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
+  masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
@@ -266,6 +269,59 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
               ...current,
               crucible: respec.ranks,
               currencies: { ...current.currencies, relicShards: respec.relicShards },
+            },
+            result: true,
+          };
+        }),
+
+      // Beide Blacksmith-Aktionen sind RNG-frei und schreiben Item und Bezahlung in einem
+      // atomaren Save (docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand); während
+      // eines Runs sperrt das Optimierungs-Prädikat (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch).
+      temperArmor: (characterId, slot) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyTemper(item, current.currencies.gold);
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      masterworkArmor: (characterId, slot) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyMasterwork(item, current.currencies);
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold, cinder: outcome.cinder },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
             },
             result: true,
           };

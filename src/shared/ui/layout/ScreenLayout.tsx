@@ -4,7 +4,7 @@ import type { DungeonBackgroundId } from '@/game/encounters/actMeta';
 import { cn } from '../utils/cn';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
-type ScreenBackgroundId = DungeonBackgroundId | 'crucible' | 'weapon-mastery';
+type ScreenBackgroundId = DungeonBackgroundId | 'crucible' | 'weapon-mastery' | 'blacksmith';
 
 const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
@@ -12,6 +12,7 @@ const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'forgotten-citadel': 'bg-[url(/assets/backgrounds/dungeon-forgotten-citadel.png)]',
   crucible: 'bg-[url(/assets/backgrounds/crucible-view.png)]',
   'weapon-mastery': 'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
+  blacksmith: 'bg-[url(/assets/backgrounds/blacksmith-view.png)]',
 };
 
 const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
@@ -20,6 +21,7 @@ const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
   'forgotten-citadel': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
   crucible: 'bg-background/28',
   'weapon-mastery': 'bg-background/28',
+  blacksmith: 'bg-background/28',
 };
 
 interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {

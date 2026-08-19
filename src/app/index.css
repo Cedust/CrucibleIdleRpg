@@ -169,20 +169,22 @@
  */
 @utility transition-state {
   transition-property:
-    color, background-color, border-color, outline-color, opacity, box-shadow, filter;
+    color, background-color, border-color, outline-color, opacity, box-shadow, filter,
+    backdrop-filter;
   transition-duration: 150ms;
 }
 
 /*
  * Aktive Navigation: Die Fläche beginnt erst an den Spitzen des linken
  * Selektionsornaments. Die 3 px entsprechen dessen sichtbarer Position nach
- * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx.
+ * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx. Die 55 %
+ * lassen die Steintextur der Sidebar durchscheinen.
  */
 @utility nav-selection-surface {
   background-image: linear-gradient(
     to right,
     transparent 0 3px,
-    color-mix(in srgb, var(--color-surface) 70%, transparent) 3px
+    color-mix(in srgb, var(--color-surface) 55%, transparent) 3px
   );
 }
 
@@ -197,6 +199,20 @@
 
 .nav-selection-surface::after {
   filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+/*
+ * Nav-Hover als Vorstufe der Selektion: dieselbe Verlaufsform wie
+ * nav-selection-surface in stark transparenter Tönung, dazu hellt
+ * backdrop-filter die dahinterliegende Steintextur leicht auf.
+ */
+@utility nav-hover-surface {
+  background-image: linear-gradient(
+    to right,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-surface) 28%, transparent) 3px
+  );
+  backdrop-filter: brightness(1.35);
 }
 
 /*

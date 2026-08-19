@@ -138,7 +138,7 @@ function SidebarNavItem({
         // ::before/::after-Regeln aus index.css greifen.
         selected
           ? ACTIVE_NAV_ITEM_CLASS
-          : 'text-accent-strong/70 hover:bg-surface hover:text-accent-strong',
+          : 'text-accent-strong/70 hover:nav-hover-surface hover:text-accent-strong',
       )}
     >
       {selected ? (

@@ -9,7 +9,7 @@ import {
 import { useSaveStore } from '@/features/save/saveStore';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
-import { ActBanner } from './ActBanner';
+import { ActPanel } from './ActPanel';
 import { DungeonSelector } from './DungeonSelector';
 import { SelectedDungeonPanel } from './SelectedDungeonPanel';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
@@ -46,7 +46,7 @@ export function DungeonSelectionScreen() {
     firstVictories === null ? null : dungeonProgress(selectedDungeonId, firstVictories);
 
   return (
-    <ScreenLayout background="ashen-depths">
+    <ScreenLayout background="dungeons">
       <section className="mx-auto w-full max-w-page-narrow space-y-4">
         <ScreenHeader
           title="Dungeons"
@@ -58,44 +58,38 @@ export function DungeonSelectionScreen() {
             {saveStatus === 'error' ? 'Saved progress unavailable.' : 'Loading saved progress...'}
           </p>
         ) : (
-          <div className="flex flex-col gap-6 @min-[42rem]:flex-row">
-            {/* Die Banner-Spalte streckt sich auf die Zeilenhöhe; ihre Breite ist
-                --spacing-banner, weil das Banner-Chrome daran skaliert (ActBanner.tsx). */}
-            <ul
-              aria-label="Acts"
-              className="flex w-full flex-col items-center @min-[42rem]:w-banner @min-[42rem]:shrink-0 @min-[42rem]:justify-center"
-            >
+          <div className="flex flex-col gap-4">
+            <ul aria-label="Acts" className="grid grid-cols-1 gap-4 @min-[42rem]:grid-cols-3">
               {ACT_DISPLAY_META.map((act) => (
                 // Der Content-Akt ist der gewählte; mit Akt-2-Content wird daraus
                 // selectedActId-State und die Liste eine Radio-Group.
-                <ActBanner key={act.id} act={act} selected={act.id === ACT_1_DISPLAY_META.id} />
+                <ActPanel key={act.id} act={act} selected={act.id === ACT_1_DISPLAY_META.id} />
               ))}
             </ul>
-            <section aria-label={`${ACT_1_DISPLAY_META.label} dungeons`} className="min-w-0 flex-1">
-              <div className="space-y-5">
-                <DungeonSelector
-                  unlockedDungeonIds={unlockedDungeonIds}
-                  completedDungeons={completedDungeons}
-                  selectedDungeonId={selectedDungeonId}
-                  onSelect={setRequestedDungeonId}
-                />
-                <SelectedDungeonPanel
-                  actLabel={ACT_1_DISPLAY_META.label}
-                  actName={ACT_1_DISPLAY_META.name}
-                  dungeonLabel={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].label}
-                  dungeonName={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].name}
-                  description={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].description}
-                  locked={!selectedDungeonUnlocked}
-                  masteredFloorCount={selectedProgress.masteredFloorCount}
-                  totalFloorCount={selectedProgress.totalFloorCount}
-                  disabled={
-                    !selectedDungeonUnlocked || mode === 'starting' || saveStatus !== 'ready'
-                  }
-                  isStarting={mode === 'starting'}
-                  startError={startError}
-                  onEnter={() => void startRun(selectedDungeonId)}
-                />
-              </div>
+            <section
+              aria-label={`${ACT_1_DISPLAY_META.label} dungeons`}
+              className="min-w-0 space-y-4"
+            >
+              <DungeonSelector
+                unlockedDungeonIds={unlockedDungeonIds}
+                completedDungeons={completedDungeons}
+                selectedDungeonId={selectedDungeonId}
+                onSelect={setRequestedDungeonId}
+              />
+              <SelectedDungeonPanel
+                actLabel={ACT_1_DISPLAY_META.label}
+                actName={ACT_1_DISPLAY_META.name}
+                dungeonLabel={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].label}
+                dungeonName={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].name}
+                description={ACT_1_DUNGEON_DISPLAY_META[selectedDungeonId].description}
+                locked={!selectedDungeonUnlocked}
+                masteredFloorCount={selectedProgress.masteredFloorCount}
+                totalFloorCount={selectedProgress.totalFloorCount}
+                disabled={!selectedDungeonUnlocked || mode === 'starting' || saveStatus !== 'ready'}
+                isStarting={mode === 'starting'}
+                startError={startError}
+                onEnter={() => void startRun(selectedDungeonId)}
+              />
             </section>
           </div>
         )}

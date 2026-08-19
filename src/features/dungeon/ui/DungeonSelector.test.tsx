@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { createDefaultCompletedDungeons } from '@/features/save/saveSchema';
@@ -63,12 +63,50 @@ describe('DungeonSelector', () => {
     const selectedCard = radios[0]?.closest('label');
     expect(selectedCard).toHaveAttribute('data-selected');
     expect(selectedCard).not.toHaveAttribute('data-semantic');
-    expect(selectedCard?.querySelector('img')).toHaveClass('drop-shadow-glow-accent');
+    // Scale liegt auf dem Kunst-Wrapper (Numerale zieht mit); der Kontur-Glow
+    // liegt auf dem img, damit das Bild den eigenen Schatten verdeckt.
+    expect(selectedCard?.querySelector('.\\@container')).toHaveClass('scale-105');
+    expect(selectedCard?.querySelector('img')).toHaveClass(
+      'drop-shadow-[0_0_3px_var(--color-accent)]',
+      'group-hover:brightness-110',
+    );
 
     const lockedCard = radios[2]?.closest('label');
     expect(lockedCard).toHaveAttribute('data-semantic', 'locked');
     expect(lockedCard).not.toHaveAttribute('data-selected');
     expect(lockedCard?.querySelector('img')).toHaveClass('opacity-(--state-deemphasis-weak)');
+  });
+
+  it('legt die Dungeon-Numerale auf die Tor-Raute und den Namen unter das Tor', () => {
+    render(
+      <DungeonSelector
+        unlockedDungeonIds={['A1-D1']}
+        completedDungeons={createDefaultCompletedDungeons()}
+        selectedDungeonId="A1-D1"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    const labels = screen.getAllByRole('radio').map((radio) => radio.closest('label'));
+
+    // Numerale im aria-hidden @container-Wrapper, cqw-skaliert mit der Kachel.
+    const firstWrapper = labels[0]?.querySelector('.\\@container');
+    expect(firstWrapper).toHaveAttribute('aria-hidden', 'true');
+    expect(firstWrapper).toHaveClass('aspect-517/604', 'max-w-gate-art');
+    const firstNumeral = within(firstWrapper as HTMLElement).getByText('I');
+    expect(firstNumeral).toHaveClass('text-[7cqw]', 'top-[15.7cqw]');
+
+    // Boss-Tor (gesperrt): eigener Rauten-Offset des Boss-Locked-Crops.
+    const bossWrapper = labels[4]?.querySelector('.\\@container');
+    expect(within(bossWrapper as HTMLElement).getByText('V')).toHaveClass('top-[13.9cqw]');
+
+    // Der sichtbare Name folgt im DOM auf den Kunst-Wrapper.
+    const firstName = within(labels[0] as HTMLElement).getByText('Cinder Gate');
+    expect(
+      (firstWrapper as HTMLElement).compareDocumentPosition(firstName) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(firstName).toHaveClass('min-h-[2lh]', 'text-center');
   });
 
   it('zeigt pro Zustand und Variante die passende Tor-Illustration', () => {
@@ -88,6 +126,17 @@ describe('DungeonSelector', () => {
     expect(gateSrc(0)).toBe('/assets/gates/gate-open.png');
     expect(gateSrc(2)).toBe('/assets/gates/gate-locked.png');
     expect(gateSrc(4)).toBe('/assets/gates/gate-boss-open.png');
+
+    // Offene Tore zeigen den Dungeon-Hintergrund durch die Bogen-Öffnung.
+    const openingBg = (index: number) =>
+      radios[index]
+        ?.closest('label')
+        ?.querySelector(
+          '.bg-\\[url\\(\\/assets\\/backgrounds\\/dungeon-ashen-depths_2\\.png\\)\\]',
+        );
+    expect(openingBg(0)).toBeInTheDocument();
+    expect(openingBg(4)).toBeInTheDocument();
+    expect(openingBg(2)).toBeNull();
   });
 
   it('zeigt das gesperrte Boss-Tor für den gesperrten fünften Dungeon', () => {

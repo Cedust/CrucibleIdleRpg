@@ -65,13 +65,13 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach einem gemeinsamen Muster:
 
 ## 3. Zuordnung fixed und fluid
 
-| Kategorie              | Elemente                                                                                                             | Mechanik                                      |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| **Fixed**              | 9-Slice-Frame-Geometrie der Panels, Vollrahmen und Buttons, Frame-Gutter, Gaps und Radii                             | px/rem-konstant                               |
-| **Leicht fluid**       | Nav-Breite, Tab-Strip samt Tab-Chrome, Inspector-Spalte, Page-Padding, Text-Skala, Medallions, Portraits, Akt-Banner | Clamp-Tokens nach dem Muster aus §2           |
-| **Voll fluid**         | Graph- und Tree-Spalten, Arena-Spalten, Karten-Grids, Tor-Grid, Listenflächen, Log                                   | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0` |
-| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips            | `min-h-0 flex-1 overflow-y-auto`              |
-| **max-width-begrenzt** | Screen-Flächen, zentriert je Screen-Typ: Trees, Listen/Detail, Run-Arena                                             | `mx-auto w-full max-w-*`                      |
+| Kategorie              | Elemente                                                                                                                                | Mechanik                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Fixed**              | 9-Slice-Frame-Geometrie der Panels, Vollrahmen und Buttons, Frame-Gutter, Gaps und Radii                                                | px/rem-konstant                               |
+| **Leicht fluid**       | Nav-Breite, Tab-Strip samt Tab-Chrome, Inspector-Spalte, Page-Padding, Text-Skala, Medallions, Portraits, Akt-Panel-Höhe, Tor-Kunst-Cap | Clamp-Tokens nach dem Muster aus §2           |
+| **Voll fluid**         | Graph- und Tree-Spalten, Arena-Spalten, Karten-Grids, Tor-Grid, Listenflächen, Log                                                      | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0` |
+| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                               | `min-h-0 flex-1 overflow-y-auto`              |
+| **max-width-begrenzt** | Screen-Flächen, zentriert je Screen-Typ: Trees, Listen/Detail, Run-Arena                                                                | `mx-auto w-full max-w-*`                      |
 
 Die Caps sind pro Screen-Typ definiert; ein globales Maximum bleibt offen.
 
@@ -161,9 +161,9 @@ Kompositionsregeln:
 - **className-Policy:** `className` erweitert die Klassenliste eines Primitives und überschreibt
   keine Property, die das Primitive selbst setzt. Variation läuft über Props, weil `cn()` keine
   Merge-Logik trägt. Alle Klassenkompositionen laufen über `cn()`.
-- **Panel-Rollen:** ornate für große Screen-Panels, thin für Karten, Inspectors und Bars, plain
-  für ruhige Log-Flächen. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von
-  Dialogen bis zu kompakten Slots.
+- **Panel-Rollen:** ornate für große Screen-Panels, thin für Karten, Inspectors und Bars, act für
+  die Goldrahmen-Flächen der Dungeon-Auswahl, plain für ruhige Log-Flächen. Das Padding folgt der
+  Rolle in einer bewussten Rhythmus-Skala von Dialogen bis zu kompakten Slots.
 - Ein Screen nutzt vorhandene Primitive; ein neues Primitive entsteht mit dem zweiten Konsumenten.
 - Ein Primitive bleibt zustandslos gegenüber Spiellogik: Es empfängt State über Props und
   `stateAttrs`.
@@ -199,13 +199,14 @@ Dokumentierte, bleibende Abweichungen:
 - Das Crucible-Tree-Panel trägt einen Höhen-Floor für die gestapelte Ansicht; ab dem
   zweispaltigen Threshold streckt das Grid die Reihe.
 - Dungeon-Tore sind freigestellte `<img>`-Illustrationen direkt auf dem Screen-Hintergrund; ihre
-  Zustände laufen über CSS auf dem Art-Layer. Ein Gold-Pfad mit Status-Medaillons verbindet die
-  Tore zur Akt-Route.
-- Die Akt-Banner tragen einen vertikal streckbaren 9-Slice-Rahmen, dessen sämtliche Maße
-  Anteile der Breiten-Token `--spacing-banner` sind: Der horizontale Maßstab bleibt
-  asset-gebunden bei 1 (Kopf-Krone und Spitzen-Diamant liegen im gestreckten Mittelband), die
-  Höhe streckt allein das Schienenband. Die Banner teilen die Zeilenhöhe der Auswahl im
-  Flex-Gewicht 1.3 : 1 zugunsten des gewählten Akts.
+  Zustände laufen über CSS auf dem Art-Layer. Die Dungeon-Numerale liegt als cqw-skaliertes
+  Text-Overlay auf dem Rauten-Zentrum der Tor-Crops (`@container`-Wrapper der Kachel, Offsets je
+  Tor-Variante in `gateArt.ts`) und bleibt auf gesperrten Toren voll lesbar. Ein Gold-Pfad mit
+  Status-Medaillons verbindet die Tore zur Akt-Route.
+- Die Akt-Panels tragen den rechteckigen 9-Slice-Goldrahmen `border-image-act` (px-konstant)
+  über der Akt-Szenerie; die Höhe kommt aus dem Clamp-Token `--spacing-act-panel`, die Breite
+  aus dem 3er-Grid des Screens. Das Medaillon-Asset trägt die Akt-Numerale als Text-Overlay,
+  der Lock-Indikator sitzt am Akt-Label.
 - Die Tree-Tabs sind Segmente einer durchgehenden flachen Leiste: Haarlinien-Rahmen und
   Eckwinkel tragen das Chrome, Gold und der Ember-Inset-Glow allein das aktive Segment. Der
   Ember-Inset-Glow bleibt dabei das einzige komponentenspezifische State-Token. Eckwinkel und

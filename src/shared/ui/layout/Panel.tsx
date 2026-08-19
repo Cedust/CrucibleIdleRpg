@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
 
 type PanelElement = 'div' | 'section' | 'article' | 'aside' | 'footer';
-type PanelVariant = 'ornate' | 'thin' | 'plain';
+type PanelVariant = 'ornate' | 'thin' | 'act' | 'plain';
 type PanelPadding = 'none' | 'md';
 
 interface PanelProps extends HTMLAttributes<HTMLElement> {
@@ -16,6 +16,7 @@ const VARIANT_CLASSES: Record<PanelVariant, string> = {
   // border-ornament bleibt als Fallback sichtbar, bis das 9-Slice-Asset lädt.
   ornate: 'border-image-ornate border-ornament bg-surface/90 shadow-panel',
   thin: 'relative isolate rounded-lg bg-surface/70 shadow-panel',
+  act: 'relative isolate rounded-lg bg-surface/70 shadow-panel',
   plain: 'rounded-lg border border-border bg-surface/90 shadow-panel',
 };
 
@@ -33,7 +34,8 @@ export function Panel({
   children,
   ...props
 }: PanelProps) {
-  const overlayClass = variant === 'thin' ? 'border-image-thin' : null;
+  const overlayClass =
+    variant === 'thin' ? 'border-image-thin' : variant === 'act' ? 'border-image-act' : null;
 
   return (
     <Tag className={cn(VARIANT_CLASSES[variant], PADDING_CLASSES[padding], className)} {...props}>

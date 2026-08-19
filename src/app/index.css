@@ -112,9 +112,10 @@
   --spacing-portrait-md: clamp(3.5rem, calc(3.5rem + var(--fluid-delta) * 0.0072917), 4.375rem);
   --spacing-portrait-lg: clamp(5.5rem, calc(5.5rem + var(--fluid-delta) * 0.0114583), 6.875rem);
   --spacing-portrait-xl: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
-  /* Akt-Banner-Breite; Rahmen-, Flächen- und Höhengeometrie hängen als
-     Anteile daran (border-image-banner, .banner-act-surface, ActBanner.tsx) */
-  --spacing-banner: clamp(14.5rem, calc(14.5rem + var(--fluid-delta) * 0.0302083), 18.125rem);
+  /* Akt-Panel-Höhe der Dungeon-Auswahl; die Breite kommt aus dem 3er-Grid */
+  --spacing-act-panel: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
+  /* Breiten-Cap der Tor-Illustrationen; die Kachel bleibt fluid, die Kunst cappt */
+  --spacing-gate-art: clamp(11.5rem, calc(11.5rem + var(--fluid-delta) * 0.025), 14.5rem);
 
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;
@@ -309,55 +310,23 @@
 }
 
 /*
- * Vertikaler 9-Slice-Bannerrahmen der Akt-Banner (Asset aus
- * concept/PROMPTS.md §29, 1024×1536). Vermessung: Kopfschiene samt Finials
- * und Schienen-Nieten in den Zeilen 0–305, Schwanzspitze ab Zeile 1148,
- * Schienen in den Spalten 136–189 und 833–886 mit pixelkonstantem Profil von
- * Zeile 306 bis 1148. Kopf-Krone und Spitzen-Diamant liegen im horizontal
- * gestreckten Mittelband; alle Border-Widths sind deshalb Anteile der
- * Elementbreite --spacing-banner (306/1024, 304/1024, 388/1024) — der
- * horizontale Maßstab bleibt exakt 1, und nur das Schienenband streckt
- * vertikal. Die Elementhöhe ist dadurch frei; unter der Chrome-Mindesthöhe
- * von 0.678 Breiten skaliert der Browser die Border-Widths proportional.
+ * Rechteckiger 9-Slice-Rahmen der Akt-Panels (Ausschnitt aus
+ * concept/ui-draft-3/dungeon-asset-sheet.png, Zelle unten rechts; Asset
+ * 559×327, freigestellt). Vermessung: Goldlinien in den Zeilen 22–23 und
+ * 301–302 sowie den Spalten 24–25 und 535–536; die Stern-Ecken ragen bis
+ * ~12 px über die Linien hinaus (Motiv-Bounds x 12–548, y 10–316), die
+ * Mittelkanten-Diamanten liegen in den linken/rechten Seitenbändern. Die
+ * Slices 60/80 fassen die Stern-Ecken vollständig in die Eck-Slices; die
+ * Border-Widths 24 px / 32 px rendern mit Maßstab 0.4, das Outset legt die
+ * Goldlinien-Mitte (22.5/23.5/25.5/24.5 Asset-px × 0.4) auf die Elementkante.
+ * Nur die Stern-Spitzen ragen hinaus; umgebende Elemente dürfen daher kein
+ * overflow-hidden clippen.
  */
-@utility border-image-banner {
-  --banner-frame-top: calc(var(--spacing-banner) * 0.2988);
-  --banner-frame-x: calc(var(--spacing-banner) * 0.2969);
-  --banner-frame-bottom: calc(var(--spacing-banner) * 0.3789);
+@utility border-image-act {
   border-style: solid;
-  border-width: var(--banner-frame-top) var(--banner-frame-x) var(--banner-frame-bottom);
-  border-image: url('/assets/frames/banner-act.png') 306 304 388 304 / var(--banner-frame-top)
-    var(--banner-frame-x) var(--banner-frame-bottom) stretch;
-}
-
-/*
- * Bild- und Scrim-Fläche unter dem Bannerrahmen. Die Insets fassen die Fläche
- * rund 25 Asset-Pixel hinter die gezeichneten Innenkanten des Rahmens
- * (Schienen-Innenkanten Asset-Spalten 190/833, Kopfschienen-Unterkante Zeile
- * 154, V-Schulter Zeile 1224): Die painterly Kanten laufen über mehrere Pixel
- * weich aus, und erst diese Reserve schließt die Fläche sichtbar an die
- * Rahmenzeichnung an. Die V-Zone endet als flacher Boden statt als Spitze:
- * Neben dem Spitzen-Diamanten liegen transparente Taschen (Spalten 468–556
- * bis Zeile ~1400), die der Boden auf Zeile 1408 vollständig unterfasst —
- * dort deckt das massive Spitzen-Ornament (Zeilen 1359–1470) die Fläche ab.
- * Alle Maße sind Anteile von --spacing-banner wie beim Rahmen.
- */
-.banner-act-surface {
-  --banner-surface-inset-x: calc(var(--spacing-banner) * 0.18);
-  --banner-surface-inset-top: calc(var(--spacing-banner) * 0.14);
-  --banner-surface-inset-bottom: calc(var(--spacing-banner) * 0.125);
-  --banner-surface-notch: calc(var(--spacing-banner) * 0.18);
-  position: absolute;
-  inset: var(--banner-surface-inset-top) var(--banner-surface-inset-x)
-    var(--banner-surface-inset-bottom);
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--banner-surface-notch)),
-    60% 100%,
-    40% 100%,
-    0 calc(100% - var(--banner-surface-notch))
-  );
+  border-width: 24px 32px;
+  border-image: url('/assets/frames/panel-act.png') 60 80 / 24px 32px stretch;
+  border-image-outset: 9px 9.5px 10px 10px;
 }
 
 /*

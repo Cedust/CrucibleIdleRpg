@@ -28,6 +28,19 @@ describe('ScreenLayout', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
   });
 
+  it('unterstützt den Dungeons-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="dungeons">
+        <h1>Dungeons</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="dungeons"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/dungeons-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
   it('unterstützt den Crucible-Hintergrund mit eigenem Kontrast-Overlay', () => {
     const { container } = render(
       <ScreenLayout background="crucible">

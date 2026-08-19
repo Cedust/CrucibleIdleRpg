@@ -52,10 +52,12 @@ test('loads the accessible dungeon selection', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();
 
-  await page.getByText('DUNGEON II', { exact: true }).click();
+  // Sichtbare Klickziele sind die Dungeon-Namen unter den Toren; die Labels
+  // ("DUNGEON II") sind sr-only-Bestandteile des Accessible Name.
+  await page.getByText('The Charred Vaults', { exact: true }).click();
   await expect(page.getByRole('radio', { name: /DUNGEON II\b/ })).toBeChecked();
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toHaveCount(0);
-  await page.getByText('DUNGEON I', { exact: true }).click();
+  await page.getByText('Cinder Gate', { exact: true }).click();
   await expect(page.getByRole('radio', { name: /DUNGEON I\b/ })).toBeChecked();
   await expect(page.getByRole('button', { name: 'ENTER DUNGEON' })).toBeEnabled();
 });

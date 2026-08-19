@@ -1306,6 +1306,90 @@ lighting, excessive sparkle and bloom, busy foreground clutter, modern machinery
 optics, horror imagery, photorealistic photography
 ```
 
+## 33. Dungeon-Asset-Sheet — Tore, Akt-Medaillon und Akt-Rahmen
+
+- **Quelldatei:** `concept/ui-draft-3/dungeon-asset-sheet.png` (1024×1536, 2×3-Raster)
+- **Zieldateien:** die sechs Zellen des Sheets, freigestellt ausgeschnitten:
+  - oben links → `public/assets/gates/gate-open.png`
+  - oben rechts → `public/assets/gates/gate-locked.png`
+  - Mitte links → `public/assets/gates/gate-boss-open.png`
+  - Mitte rechts → `public/assets/gates/gate-boss-locked.png`
+  - unten links → `public/assets/frames/medallion-act.png`
+  - unten rechts → `public/assets/frames/panel-act.png`
+- **Verwendung:** Dungeon-Auswahl (concept/ui-draft-3/ui-dungeons-selection-v1.png + v2.png).
+  Die Tore ersetzen die §27-Illustrationen; offene Tore haben eine transparente Bogen-Öffnung
+  für künftige Hintergrund-Layer. Das Stachel-Medaillon trägt die Akt-Numerale der Akt-Panels,
+  der rechteckige Goldrahmen ist die 9-Slice-Basis von `border-image-act` (Akt-Panels und
+  unteres Dungeon-Panel).
+- **Prompt:** liegt beim Generierungstool; bei erneuter Generierung hier nachtragen.
+
+## 34. Dungeons-View-Hintergrund — Vor den Toren Veyras
+
+- **Zieldatei:** `public/assets/backgrounds/dungeons-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Dungeon-Auswahl hinter Überschrift,
+  Akt-Panels, Tor-Kacheln, Progress-Schiene und Dungeon-Panel. Das Bild wird per
+  `background-size: cover` eingesetzt. Sichtbar bleiben vor allem der Himmelsstreifen oben,
+  das Mittelband zwischen den freigestellten Tor-Kacheln und der Bodenstreifen unterhalb des
+  Dungeon-Panels; die Akt-Panel-Reihe im oberen Viertel und das breite Dungeon-Panel im
+  unteren Drittel überdecken ihre Zonen fast vollständig.
+- **Lore:** Die Ankunftsnacht aus
+  [crucible-story-foundation.md](lore/crucible-story-foundation.md) — die bei Dämmerung
+  wiederkehrende Reichsstraße, schwarzer Ascheregen unter klarem Himmel und das vom Beben
+  freigelegte, zerborstene Außentor der begrabenen Stadt Veyra.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: the night of arrival before the buried city of Veyra — a long-forgotten
+imperial road that has reappeared at dusk, ending at a ruined monumental outer gate recently
+torn open by an earthquake, twenty-three years after the golden empire's capital vanished
+beneath the earth
+Scene/backdrop: a desolate highland valley under a clear deep-blue night sky from which fine
+black ash silently falls; a broken imperial road of cracked, gold-veined paving slabs and
+leaning milestones runs from the lower edge of the frame into the distance, flanked by
+ash-covered fields, dead trees, toppled statues, and half-sunken fragments of tarnished
+golden walls; the road ends at one colossal ruined triumphal gate of blackened stone and
+aged brass, its arch split open and partly swallowed by the mountainside; behind the gate
+the dark mountain rises into the sky, cleft by a narrow ravine from which a faint warm
+golden-ember glow breathes upward out of the buried city
+Subject: the ruined outer gate of Veyra and the abandoned road leading to it form one
+unmistakable focal axis; the gate feels monumental, ancient, and recently reopened —
+an invitation into the depths — while the valley around it feels emptied, silent, and
+half-erased from memory
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+ruined gate at the horizontal center at roughly mid-height, large enough to anchor the scene
+but subdued enough to stay background; run the foreground road and ash-covered ground as a
+calm dark strip along the entire lower edge; keep the sky band across the top third quiet
+and gradient-like, with the upper-left corner especially calm for the live "Dungeons"
+heading and subtitle; keep the horizontal middle band low-contrast and atmospheric, because
+a row of large UI gate tiles sits on top of it; keep the zone between the middle band and
+the foreground strip dark and free of important detail, because a wide UI info panel covers
+it; distribute secondary ruins symmetrically toward the outer edges; crop-safe from wide
+desktop down to roughly 4:5 mobile, with the gate and the glowing mountain cleft remaining
+recognizable near the center
+Lighting/mood: cold blue night light with a last pale glimmer of dusk on the horizon; the
+only warm light is the restrained golden-ember glow (#e25822) rising from the ravine behind
+the gate and seeping through its broken arch, catching the nearest paving slabs and the
+falling ash; sparse drifting embers and soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened stone,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), concentrated ember orange (#e25822) and
+restrained amber highlights (#f59e0b)
+Materials/textures: cracked imperial paving stone, weathered milestones, blackened masonry,
+worn gold inlays and reliefs, dry dead grass under grey ash, fine falling ash and thin haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast outside
+the gate glow; retain generous negative space for large opaque or translucent panels; no
+border or frame; no text, letters, readable runes, icons, characters, figures on the road,
+logos, interface elements, or watermark
+Avoid: the three heroes or any travelers, a city skyline above ground, an intact
+gleaming gate, a bright moon or starfield as focal point, daylight, green lush landscape,
+bright full-frame fire, excessive bloom, busy foreground clutter, modern elements, horror
+imagery, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

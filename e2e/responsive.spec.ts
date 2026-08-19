@@ -100,11 +100,22 @@ test('hält 1366×768 und 1600×900 ohne Seiten-Scroll mit internen Scrollern', 
 test('bricht die Dungeon-Karten bei schmalem Container in eine zweite Reihe um', async ({
   page,
 }) => {
+  // Bei 1366 stehen alle fünf Tore in einer Reihe (Content ≈ 1006 px ≥ 5 × 152 px).
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.goto('/');
 
   const cards = page.getByRole('group', { name: 'Dungeon selection' }).locator('label');
   await expect(cards).toHaveCount(5);
+  const [wideFirstBox, wideLastBox] = await Promise.all([
+    cards.first().boundingBox(),
+    cards.last().boundingBox(),
+  ]);
+  if (wideFirstBox === null || wideLastBox === null) throw new Error('Cards must be visible');
+  expect(Math.abs(wideLastBox.y - wideFirstBox.y)).toBeLessThanOrEqual(1);
+
+  // Unter 5 × 152 px Content-Breite (1100 − 288 − 24 − 48 = 740 px) bricht das
+  // auto-fit-Grid die fünfte Kachel in eine zweite Reihe um.
+  await page.setViewportSize({ width: 1100, height: 768 });
   const [firstBox, lastBox] = await Promise.all([
     cards.first().boundingBox(),
     cards.last().boundingBox(),

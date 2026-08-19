@@ -105,6 +105,14 @@
 KI-generierte Hintergründe und Portraits nennen als Quelle das Generierungstool und
 verweisen auf den Prompt in [concept/PROMPTS.md](../../concept/PROMPTS.md).
 
+## Figuren
+
+| Datei                                    | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                                      |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | -------------------------------------------------------------------------------- |
+| [figures/korvin.png](figures/korvin.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 82–566, volle Höhe), 484×1024    |
+| [figures/rhaya.png](figures/rhaya.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 632–996, volle Höhe), 364×1024   |
+| [figures/quinn.png](figures/quinn.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 1065–1402, volle Höhe), 337×1024 |
+
 ## Schriften (npm-Pakete, im Bundle)
 
 | Schrift         | Paket                         | Autor               | Lizenz                                     |

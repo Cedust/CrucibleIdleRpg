@@ -1444,6 +1444,97 @@ relief scene, statues or figures, doorways or windows, torches or flames, visibl
 seams, busy micro-detail, cracked dramatic rubble, photorealistic photography
 ```
 
+## 36. Charakter-Figuren-Sheet — Korvin, Rhaya und Quinn (Ganzkörper)
+
+- **Zielrohdatei:** `concept/ui-draft-3/character-figures-sheet-v3.png` (1536×1024, 3×1-Raster)
+- **Format:** exakt 1536×1024 mit transparentem Hintergrund; unsichtbares 3×1-Raster aus
+  512×1024 großen Hochformat-Zellen
+- **Zieldateien:** die drei Figuren des Sheets, freigestellt ausgeschnitten:
+  - links → `public/assets/figures/korvin.png`
+  - Mitte → `public/assets/figures/rhaya.png`
+  - rechts → `public/assets/figures/quinn.png`
+
+  Geschnitten wird an den Leerspalten zwischen den Figuren (Sheet vom 2026-08-19:
+  x 82–566, 632–996 und 1065–1402), jeweils über die volle Höhe von 1024 Pixeln — die
+  gemeinsame Grundlinie und die Größenrelation der drei Figuren bleiben über die
+  unterschiedlich breiten Zuschnitte erhalten. `character-figures-sheet-v1.png` und
+  `-v2.png` sind frühere Iterationen (Referenz, unbenutzt); v2 ist eine „highlighted“-
+  Variante mit hellerem Goldlicht und eigenen Silhouetten.
+- **Verwendung:** Stations-Personas der Crafting-Ansichten — Korvin im Panel der
+  Blacksmith-Ansicht, Rhaya im Panel der Jeweler-Ansicht, Quinn im Panel der
+  Runescribe-Ansicht. Die freigestellten Ganzkörper-Figuren liegen direkt auf den dunklen
+  View-Hintergründen (§31, §32) und werden dort grob 300–500 CSS-Pixel hoch dargestellt.
+  Gemeinsame Grundlinie, gleiche Kamerahöhe und gleiche Figurenhöhe im Sheet halten die
+  drei Panels untereinander konsistent. Identität, Ausrüstung und Lichtführung folgen den
+  Bust-Portraits (§2–§4); die Figuren sind unbewaffnet.
+
+```text
+Use case: stylized-concept
+Asset type: production character sheet containing three cut-out full-body hero figures on
+a fully transparent background for dark fantasy game UI panels
+Primary request: one internally consistent trio of frontal full-body figure shots of the
+heroes Korvin, Rhaya, and Quinn — unarmed, wearing only their personal equipment — rendered
+as clean alpha cut-outs that will later be cropped into three individual portrait PNG files
+and placed inside the dark crafting-station panels of the game UI
+Canvas and grid: exact 1536 by 1024 pixel fully transparent canvas, divided conceptually
+into an invisible three-column grid of exact 512 by 1024 pixel portrait cells; do not draw
+grid lines, cell borders, guides, labels, captions, numbers, or cell backgrounds
+Placement and safe area: center exactly one standing figure in each cell; every visible
+pixel of a figure stays inside the central 416 by 960 pixel safe area of its cell; all
+three figures stand on one shared invisible ground line near the bottom of the safe area,
+share the same camera height at chest level, the same optical figure height relative to
+their builds, and the same level of finish; figures never touch, overlap, or extend into
+neighboring cells
+Fixed left-to-right order and figures:
+1. left — KORVIN: a heavily armored male human knight-warden in his late forties, broad
+thickset build; full dark blued-steel plate armor with tarnished gold inlay, visibly
+battle-repaired with riveted patches and scorch marks along the edges, heavy plate
+gauntlets and armored boots; short cropped grey-streaked hair, long beard; calm, patient,
+protective expression; standing square and planted, arms relaxed at his sides
+2. center — RHAYA: a lean athletic female human blade dancer in her late twenties; light
+layered armor of dark leather with battered bronze-gold plates over her shoulders, wrapped
+forearms, fitted dark trousers and worn leather boots; dark auburn hair in a rough braid
+coming undone, a few strands loose around her face, warm bronze skin; hot-tempered,
+challenging half-smile; standing with her weight on one hip, arms loosely crossed
+3. right — QUINN: a wiry androgynous non-binary human archer in their early thirties; worn
+high-collared imperial uniform vest over rolled-up shirtsleeves, fitted dark trousers,
+sturdy leather boots, a slim leather surveyor's belt with small map and tool pouches; short
+black hair combed severely back, one side shaved above the ear, light-dark skin, sharp
+features; dry, analytical, faintly impatient expression; standing upright and composed,
+hands clasped behind their back
+Pose and framing: strict frontal full-body shots from the top of the head to the soles of
+the boots, each hero facing the camera directly and looking into it; grounded, calm,
+self-contained standing poses with compact silhouettes; all limbs and hair stay inside the
+safe area
+Style/medium: painterly dark fantasy character concept art, high fantasy, heroic realism,
+muted painterly colors, matching the existing bust portraits of the same three heroes;
+gilded ruins mood — noble and mysterious, never hopeless
+Lighting/mood: one identical lighting setup for all three figures — a soft neutral key with
+warm gold rim light (#fbbf24) along shoulders and outer contours, as if each hero stands in
+a dark ember-lit imperial stone hall; dim warm bounce from below, restrained contrast, and
+edge lighting chosen to read cleanly against dark blue-slate UI backgrounds (#0f172a to
+#1e293b)
+Color palette: blued steel, dark leather, tarnished brass and aged gold (#8a6d3b to
+#fbbf24), muted warm skin tones, restrained amber accents (#f59e0b); overall values dark
+enough to sit in the game's night palette yet clearly separated from near-black backgrounds
+Materials/textures: worn plate steel with gold inlay, battered bronze, scuffed dark
+leather, rough cloth, aged straps and buckles, a faint film of ash on boots and shoulders
+Alpha rendering: fully transparent background around and between the figures; crisp, clean
+silhouette edges with minimal antialiasing; no ground plane, no cast or contact shadow, no
+glow halo, no background gradient, no checkerboard pattern
+Readability: designed for display at roughly 300 to 500 CSS pixels of height — strong
+readable silhouettes, clear value separation between figure and any dark backdrop, detail
+concentrated on faces, chest, and equipment rather than fine micro-texture
+Constraints: the heroes are completely unarmed — no warhammer, no tower shield, no swords
+or sword hilts, no bow, no quiver, no arrows, no scabbards, no weapon straps or holsters;
+no text, letters, readable runes, numbers, icons, logos, frames, pedestals, interface
+elements, or watermark
+Avoid: three inconsistent art styles, differing camera angles or eye levels, dynamic action
+poses, walking or mid-motion stances, three-quarter or profile views, cropped feet or
+heads, props held in hands, capes or hoods, background scenery, floor tiles or shadows,
+bright full-frame lighting, oversaturated colors, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

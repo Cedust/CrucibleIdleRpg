@@ -1,5 +1,4 @@
-import { ArrowRight, Coins, Flame, LockKeyhole } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { Coins, Flame } from 'lucide-react';
 import { useNavigationStore } from '@/app/navigationStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import {
@@ -12,91 +11,41 @@ import {
 import { ARMORY_SLOT_ORDER, CRUCIBLE_IDS } from '@/game/crucible/crucible';
 import { innateValue } from '@/game/items/armor';
 import { RARITY_LAYER } from '@/game/items/itemLayers';
-import type {
-  ArmorInnateStat,
-  ArmorItem,
-  ArmorItemType,
-  ArmorLoadout,
-  ArmorSlot,
-  Rarity,
-  SocketedGem,
-} from '@/game/types';
+import type { ArmorItem } from '@/game/types';
 import { Button } from '@/shared/ui/controls/Button';
 import { OrnateTab, OrnateTabs } from '@/shared/ui/controls/OrnateTabs';
 import { ProgressBar } from '@/shared/ui/feedback/ProgressBar';
+import { GemIcon } from '@/shared/ui/icons/GemIcon';
 import { Icon } from '@/shared/ui/icons/Icon';
 import { Panel } from '@/shared/ui/layout/Panel';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
 import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { cn } from '@/shared/ui/utils/cn';
-import {
-  focusRing,
-  hoverBorder,
-  selectedRing,
-  stateAttrs,
-  transitionState,
-} from '@/shared/ui/utils/state';
 import { useRovingFocus } from '@/shared/ui/utils/useRovingFocus';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { BLACKSMITH_TABS, useCraftingStore, type BlacksmithTab } from '../craftingStore';
-
-/** Anatomische Anzeige-Reihenfolge der Slot-Spalte, wie im Heroes-Loadout. */
-const ARMOR_COLUMN = ['head', 'chest', 'legs', 'feet'] as const satisfies readonly ArmorSlot[];
-
-const ARMOR_SLOT_LABEL: Record<ArmorSlot, string> = {
-  head: 'Head',
-  chest: 'Chest',
-  legs: 'Legs',
-  feet: 'Feet',
-};
-
-const ARMOR_BASE_LABEL: Record<ArmorItemType, string> = {
-  helmet: 'Helmet',
-  armor: 'Chest Armor',
-  legguards: 'Legguards',
-  boots: 'Boots',
-};
-
-const INNATE_LABEL: Record<ArmorInnateStat, string> = {
-  toughness: 'Toughness',
-  vitality: 'Vitality',
-  initiative: 'Initiative',
-};
-
-/** Seltenheits-Akzente über bestehende Palette-Tokens; einziger Konsument, daher lokal. */
-const RARITY_TEXT_CLASS: Record<Rarity, string> = {
-  common: 'text-text',
-  magic: 'text-info',
-  rare: 'text-accent-strong',
-  epic: 'text-arcane',
-  legendary: 'text-ember-bright',
-};
-
-const RARITY_BADGE_CLASS: Record<Rarity, string> = {
-  common: 'border-border text-text-muted',
-  magic: 'border-info/50 text-info',
-  rare: 'border-accent/50 text-accent-strong',
-  epic: 'border-arcane/50 text-arcane',
-  legendary: 'border-ember/60 text-ember-bright',
-};
-
-// Statische Klassen-Strings, damit Tailwind die Gem-Token-Utilities beim Scan findet.
-const GEM_DOT_CLASS: Record<SocketedGem['color'], string> = {
-  amber: 'bg-gem-amber',
-  ruby: 'bg-gem-ruby',
-  sapphire: 'bg-gem-sapphire',
-  emerald: 'bg-gem-emerald',
-};
+import {
+  ARMOR_BASE_LABEL,
+  costFormatter,
+  INNATE_LABEL,
+  RARITY_BADGE_CLASS,
+  RARITY_TEXT_CLASS,
+} from './stationPresentation';
+import {
+  CostAmount,
+  CostRow,
+  FundsBar,
+  LockedStation,
+  PreviewRow,
+  SlotList,
+} from './stationShared';
 
 const BLACKSMITH_TAB_LABEL: Record<BlacksmithTab, string> = {
   temper: 'Temper',
   masterwork: 'Masterwork',
   brand: 'Brand',
 };
-
-/** Exakte Kostenbeträge; der kompakte Bestand im Kopf läuft über formatNumber. */
-const costFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 
 /** Dienst-Auswahl der Station: Temper, Masterwork und der künftige Brand (Task 031). */
 function BlacksmithTabs({
@@ -131,158 +80,6 @@ function BlacksmithTabs({
   );
 }
 
-/** Dauerhaft sichtbarer Gold- und Cinder-Bestand der Station (Task 027). */
-function FundsBar({ gold, cinder }: { gold: number; cinder: number }) {
-  return (
-    <dl aria-label="Crafting funds" className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1">
-      <div className="flex items-center gap-1.5 text-sm">
-        <Coins aria-hidden="true" className="size-4 text-gold" />
-        <dt className="sr-only">Gold</dt>
-        <dd aria-label="Gold amount" className="font-semibold tabular-nums text-text">
-          {formatNumber(gold)}
-        </dd>
-      </div>
-      <div className="flex items-center gap-1.5 text-sm">
-        <Flame aria-hidden="true" className="size-4 text-cinder" />
-        <dt className="sr-only">Cinder</dt>
-        <dd aria-label="Cinder amount" className="font-semibold tabular-nums text-text">
-          {formatNumber(cinder)}
-        </dd>
-      </div>
-    </dl>
-  );
-}
-
-/** Gesperrte Station: gedimmte Art, muted Text, Lock-Indikator (UI.md §6). */
-function LockedStation() {
-  return (
-    <Panel
-      as="section"
-      aria-label="Blacksmith locked"
-      data-testid="blacksmith-locked"
-      className="mx-auto mt-8 flex w-full max-w-xl flex-col items-center px-8 py-10 text-center"
-    >
-      <span
-        aria-hidden="true"
-        className="flex size-24 items-center justify-center rounded-full border-2 border-state-locked-border bg-surface-raised/50 opacity-(--state-deemphasis-medium)"
-      >
-        <Icon name="crucible-blacksmith" size="xl" className="bg-text-muted" />
-      </span>
-      <h3 className="mt-4 font-display text-display text-text">The forge lies cold</h3>
-      <p className="mt-2 max-w-md text-sm leading-6 text-text-muted">
-        Unlock the Blacksmith in the Crucible: the Anvil Sparks tree opens the station once the
-        Armory holds its first rank.
-      </p>
-      <span className="mt-4 flex items-center gap-1.5 text-xs text-text-muted">
-        <LockKeyhole aria-hidden="true" className="size-3.5" />
-        Locked
-      </span>
-    </Panel>
-  );
-}
-
-/** Noch nicht freigeschalteter Armor-Slot. */
-function LockedSlotRow({ slot }: { slot: ArmorSlot }) {
-  return (
-    <div
-      {...stateAttrs({ semantic: 'locked' })}
-      data-blacksmith-slot={slot}
-      className={cn(
-        'flex min-w-0 items-center gap-3 rounded-lg border border-state-locked-border bg-surface/50 px-3 py-2.5',
-        transitionState,
-      )}
-    >
-      <span
-        aria-hidden="true"
-        className="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface-raised/40 text-text-muted opacity-(--state-deemphasis-medium)"
-      >
-        <LockKeyhole className="size-4" />
-      </span>
-      <span className="min-w-0">
-        <span className="block font-display text-sm text-text">{ARMOR_SLOT_LABEL[slot]}</span>
-        <span className="block text-xs text-text-muted">Locked</span>
-      </span>
-    </div>
-  );
-}
-
-function SlotList({
-  loadout,
-  selectedSlot,
-  onSelect,
-}: {
-  loadout: ArmorLoadout;
-  selectedSlot: ArmorSlot;
-  onSelect: (slot: ArmorSlot) => void;
-}) {
-  const unlockedSlots = ARMOR_COLUMN.filter((slot) => loadout[slot] !== undefined);
-  const rovingProps = useRovingFocus({
-    items: unlockedSlots,
-    selected: selectedSlot,
-    onSelect,
-    itemDomId: (slot) => `blacksmith-slot-${slot}`,
-    orientation: 'both',
-  });
-
-  return (
-    <section aria-label="Armor slots" className="min-w-0">
-      <SectionTitle as="h3" align="start">
-        Armor
-      </SectionTitle>
-      <div role="radiogroup" aria-label="Armor slot" className="mt-2 flex flex-col gap-3">
-        {ARMOR_COLUMN.map((slot) => {
-          const item = loadout[slot];
-          if (item === undefined) {
-            return <LockedSlotRow key={slot} slot={slot} />;
-          }
-
-          const selected = slot === selectedSlot;
-          return (
-            <button
-              key={slot}
-              type="button"
-              id={`blacksmith-slot-${slot}`}
-              role="radio"
-              aria-checked={selected}
-              aria-label={`${ARMOR_SLOT_LABEL[slot]}, ${ARMOR_BASE_LABEL[item.itemType]} level ${item.itemLevel}, ${RARITY_LABEL[item.rarity]}`}
-              {...rovingProps(slot)}
-              {...stateAttrs({ selected })}
-              data-blacksmith-slot={slot}
-              onClick={() => onSelect(slot)}
-              className={cn(
-                'flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-lg border border-border bg-surface/70 px-3 py-2.5 text-left',
-                focusRing,
-                selectedRing,
-                hoverBorder,
-                transitionState,
-              )}
-            >
-              <span
-                aria-hidden="true"
-                className="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface-raised/60 text-accent-strong"
-              >
-                <Icon name="crucible-armory" size="sm" className="bg-current" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-display text-sm text-text">
-                  {ARMOR_SLOT_LABEL[slot]}
-                </span>
-                <span className="block truncate text-xs text-text-muted">
-                  {ARMOR_BASE_LABEL[item.itemType]}{' '}
-                  <span className="tabular-nums">[{item.itemLevel}]</span>
-                </span>
-              </span>
-              <span className={cn('shrink-0 text-2xs uppercase', RARITY_TEXT_CLASS[item.rarity])}>
-                {RARITY_LABEL[item.rarity]}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 /** Sichtbare Sockelreihe des Items: gebundene Gems, leere und Prismatic-Sockel. */
 function SocketRow({ item }: { item: ArmorItem }) {
   const total = item.sockets.length + item.prismaticSockets.length;
@@ -295,15 +92,14 @@ function SocketRow({ item }: { item: ArmorItem }) {
       {item.sockets.map((gem, index) => (
         // Sockel sind positionsfest; der Index ist die Identität des Sockels.
         <li key={`socket-${index}`} className="flex items-center">
-          <span
-            aria-hidden="true"
-            className={cn(
-              'block size-3.5 rounded-full',
-              gem === null
-                ? 'border border-dashed border-state-empty-border bg-background/60'
-                : cn('ring-1 ring-border', GEM_DOT_CLASS[gem.color]),
-            )}
-          />
+          {gem === null ? (
+            <span
+              aria-hidden="true"
+              className="block size-3.5 rounded-full border border-dashed border-state-empty-border bg-background/60"
+            />
+          ) : (
+            <GemIcon color={gem.color} className="size-3.5" />
+          )}
           <span className="sr-only">
             {gem === null ? `Socket ${index + 1}: Empty` : `Socket ${index + 1}: ${gem.color}`}
           </span>
@@ -311,10 +107,7 @@ function SocketRow({ item }: { item: ArmorItem }) {
       ))}
       {item.prismaticSockets.map((_, index) => (
         <li key={`prismatic-${index}`} className="flex items-center">
-          <span
-            aria-hidden="true"
-            className="block size-3 rotate-45 border border-gem-diamond/70 bg-background/60"
-          />
+          <GemIcon color="diamond" className="size-3.5 opacity-(--state-deemphasis-medium)" />
           <span className="sr-only">Prismatic socket {index + 1}: Empty</span>
         </li>
       ))}
@@ -388,43 +181,6 @@ function AnvilStage({ item }: { item: ArmorItem }) {
         </div>
       </div>
     </Panel>
-  );
-}
-
-/** Vorher-→-Nachher-Zeile einer Aktion; ohne `to` zeigt sie nur den Ist-Zustand. */
-function PreviewRow({ term, from, to }: { term: string; from: ReactNode; to?: ReactNode }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4 py-2">
-      <dt className="text-sm text-text-muted">{term}</dt>
-      <dd className="flex items-center gap-1.5 font-medium tabular-nums text-text">
-        {from}
-        {to !== undefined ? (
-          <>
-            <ArrowRight aria-hidden="true" className="size-3.5 text-text-muted" />
-            <span className="text-accent-strong">{to}</span>
-          </>
-        ) : null}
-      </dd>
-    </div>
-  );
-}
-
-function CostRow({ children }: { children: ReactNode }) {
-  return (
-    <div className="mt-3 flex items-center justify-between gap-4">
-      <span className="text-sm text-text-muted">Cost</span>
-      <span className="flex items-center gap-3">{children}</span>
-    </div>
-  );
-}
-
-function CostAmount({ icon, amount, label }: { icon: ReactNode; amount: number; label: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-sm font-semibold tabular-nums text-text">
-      {icon}
-      {costFormatter.format(amount)}
-      <span className="sr-only">{label}</span>
-    </span>
   );
 }
 
@@ -619,13 +375,34 @@ export function BlacksmithScreen() {
       >
         <ScreenHeader
           title="Blacksmith"
-          intro="The forge never sleeps. Steel that survived the depths is laid upon this anvil — and leaves the coals stronger than the day it was made."
+          intro="The forge never sleeps. Steel that survived the depths is laid upon this anvil and leaves the coals stronger than the day it was made."
         >
-          <FundsBar gold={save.currencies.gold} cinder={save.currencies.cinder} />
+          <FundsBar
+            entries={[
+              {
+                label: 'Gold',
+                icon: <Coins aria-hidden="true" className="size-4 text-gold" />,
+                value: formatNumber(save.currencies.gold),
+              },
+              {
+                label: 'Cinder',
+                icon: <Flame aria-hidden="true" className="size-4 text-cinder" />,
+                value: formatNumber(save.currencies.cinder),
+              },
+            ]}
+          />
         </ScreenHeader>
 
         {!stationUnlocked ? (
-          <LockedStation />
+          <LockedStation
+            ariaLabel="Blacksmith locked"
+            testId="blacksmith-locked"
+            icon={<Icon name="crucible-blacksmith" size="xl" className="bg-text-muted" />}
+            title="The forge lies cold"
+          >
+            Unlock the Blacksmith in the Crucible: the Anvil Sparks tree opens the station once the
+            Armory holds its first rank.
+          </LockedStation>
         ) : (
           <>
             <div className="mt-6">
@@ -652,7 +429,12 @@ export function BlacksmithScreen() {
                 aria-labelledby={`blacksmith-tab-${activeTab}`}
                 className="mt-5 grid min-w-0 content-start gap-5 @min-[60rem]:grid-cols-[minmax(13rem,0.9fr)_minmax(0,1.3fr)_minmax(16rem,1.05fr)]"
               >
-                <SlotList loadout={loadout} selectedSlot={activeSlot} onSelect={setSelectedSlot} />
+                <SlotList
+                  idPrefix="blacksmith"
+                  loadout={loadout}
+                  selectedSlot={activeSlot}
+                  onSelect={setSelectedSlot}
+                />
                 <AnvilStage item={item} />
                 {activeTab === 'temper' ? (
                   <TemperPanel

@@ -5,6 +5,7 @@ import {
 import { CHARACTERS } from '@/game/characters/characters';
 import { smeltingEffects } from '@/game/crucible/crucible';
 import { armorEffects } from '@/game/items/armor';
+import { gemEffects } from '@/game/items/gems';
 import {
   MASTERY_BALANCE,
   MASTERY_IDS,
@@ -19,8 +20,10 @@ import type {
   CharacterDefinition,
   CharacterStats,
   CoreStats,
+  DefensiveStats,
   DerivedStatPercent,
   DerivedStats,
+  OffensiveStats,
 } from '@/game/types';
 
 /**
@@ -71,6 +74,10 @@ export interface CharacterProgression {
   /** Quick Step: flacher Initiative-Zuschlag je Rang (PROGRESSION §3.2). */
   crucibleInitiative?: number;
   masteryRanks?: Readonly<Record<string, number>>;
+  /** Additive Offensive-Zuschläge aus gesockelten Amber-/Ruby-Gems (ITEMS §8). */
+  offensiveBonus?: OffensiveStats;
+  /** Additive Defensive-Zuschläge aus gesockelten Sapphire-Gems (ITEMS §8). */
+  defensiveBonus?: DefensiveStats;
 }
 
 /**
@@ -96,15 +103,23 @@ export function progressionFromSave(
 ): CharacterProgression {
   const character = save.characters[characterId];
   const armor = armorEffects(save.armor[characterId]);
+  const gems = gemEffects(save.armor[characterId]);
   const smelting = smeltingEffects(save.crucible);
 
   return {
     ...neutralProgression(character.level),
-    coreStats: armor.coreStats,
+    // Emerald-Gems sind neben den Innates die zweite Core-Stat-Quelle (CHARACTERS §2).
+    coreStats: {
+      might: armor.coreStats.might + gems.core.might,
+      toughness: armor.coreStats.toughness + gems.core.toughness,
+      vitality: armor.coreStats.vitality + gems.core.vitality,
+    },
     attributePoints: character.attributePoints,
     masteryRanks: character.masteryRanks,
     crucibleBonus: smelting.crucibleBonus,
     crucibleInitiative: smelting.initiative + armor.initiative,
+    offensiveBonus: gems.offensive,
+    defensiveBonus: gems.defensive,
   };
 }
 
@@ -147,6 +162,17 @@ export function deriveCharacterStats(
       initiative: definition.baseUtility.initiative + (progression.crucibleInitiative ?? 0),
     },
   };
+
+  if (progression.offensiveBonus !== undefined) {
+    for (const key of Object.keys(stats.offensive) as (keyof OffensiveStats)[]) {
+      stats.offensive[key] += progression.offensiveBonus[key];
+    }
+  }
+  if (progression.defensiveBonus !== undefined) {
+    for (const key of Object.keys(stats.defensive) as (keyof DefensiveStats)[]) {
+      stats.defensive[key] += progression.defensiveBonus[key];
+    }
+  }
 
   for (const [id, rank] of Object.entries(progression.masteryRanks ?? {})) {
     const node = nodeById(definition.id, id);

@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Coins, Flame, Gem, ScrollText, Stone } from 'lucide-react';
+import { Coins, Flame, ScrollText, Stone } from 'lucide-react';
 import { formatLootGains, GEM_NAMES } from '@/features/dungeon/rewards';
 import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
-import { GEM_COLORS, type GemColor } from '@/game/types';
+import { GEM_COLORS } from '@/game/types';
 import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
 import { useSaveStore } from '@/features/save/saveStore';
 import { Button } from '@/shared/ui/controls/Button';
+import { GemIcon } from '@/shared/ui/icons/GemIcon';
 import { Panel } from '@/shared/ui/layout/Panel';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
@@ -18,15 +19,6 @@ import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
 import { TeamPanel } from '@/features/combat/ui/TeamPanel';
 import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
 import { formatRelicShards } from '@/game/crucible/crucible';
-
-/** Icon-Einfärbung über die eigenen Gem-Tokens — unabhängig von den Statusfarben. */
-const GEM_ICON_CLASS: Readonly<Record<GemColor, string>> = {
-  amber: 'text-gem-amber',
-  ruby: 'text-gem-ruby',
-  sapphire: 'text-gem-sapphire',
-  emerald: 'text-gem-emerald',
-  diamond: 'text-gem-diamond',
-};
 
 /** Im Run können keine Ausgaben erfolgen; die Differenz seit Mount entspricht den Run-Rewards. */
 function RunRewardSummary() {
@@ -70,7 +62,7 @@ function RunRewardSummary() {
       </div>
       {GEM_COLORS.map((color) => (
         <div key={color} className="flex items-center gap-1.5">
-          <Gem aria-hidden="true" className={`size-4 ${GEM_ICON_CLASS[color]}`} />
+          <GemIcon color={color} />
           <dt className="sr-only">{GEM_NAMES[color]}</dt>
           <dd aria-label={`${GEM_NAMES[color]} amount`} className="font-semibold text-text">
             {formatNumber(Math.max((gems?.[color] ?? 0) - startingGems[color], 0))}

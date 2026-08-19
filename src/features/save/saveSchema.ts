@@ -167,6 +167,12 @@ export const saveSchema = z
     version: z.literal(SAVE_VERSION),
     saveSeed: uint32Schema,
     runCounter: z.number().int().nonnegative(),
+    /**
+     * Monoton steigender Zähler der Handwerks-Rolls (Jeweler): pro Roll um 1 erhöht und
+     * atomar mit dem Ergebnis persistiert — ein Reload liefert denselben Zähler und damit
+     * denselben Roll (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme, analog `runCounter`).
+     */
+    craftCounter: z.number().int().nonnegative(),
     playbackSpeed: z.union([z.literal(1), z.literal(2)]),
     characters: z
       .object({
@@ -289,6 +295,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     version: SAVE_VERSION,
     saveSeed,
     runCounter: 0,
+    craftCounter: 0,
     playbackSpeed: 1,
     characters: {
       korvin: createLevelOneProgression(),

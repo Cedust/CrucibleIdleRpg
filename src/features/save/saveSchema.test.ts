@@ -8,6 +8,7 @@ describe('saveSchema', () => {
       version: 1,
       saveSeed: 0x12345678,
       runCounter: 0,
+      craftCounter: 0,
       playbackSpeed: 1,
       characters: {
         korvin: {
@@ -71,6 +72,18 @@ describe('saveSchema', () => {
     const save = createDefaultSave(123);
 
     expect(saveSchema.safeParse({ ...save, version: 2 }).success).toBe(false);
+  });
+
+  it('verlangt den craftCounter als nichtnegative Ganzzahl', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, craftCounter: 7 }).success).toBe(true);
+    expect(saveSchema.safeParse({ ...save, craftCounter: -1 }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, craftCounter: 0.5 }).success).toBe(false);
+    const withoutCounter = Object.fromEntries(
+      Object.entries(save).filter(([key]) => key !== 'craftCounter'),
+    );
+    expect(saveSchema.safeParse(withoutCounter).success).toBe(false);
   });
 
   it('accepts Relic Shards and rejects the removed legacy currency field', () => {

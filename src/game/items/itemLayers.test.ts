@@ -17,13 +17,13 @@ function craftedChest(layers: Partial<ArmorItem>): ArmorItem {
 }
 
 describe('Seltenheits-Tabelle (ITEMS §3)', () => {
-  it('legt Sockelzahl und Item-Level-Cap je Seltenheit fest', () => {
+  it('legt Sockelzahl, Gem-Level-Cap und Item-Level-Cap je Seltenheit fest', () => {
     expect(RARITY_LAYER).toEqual({
-      common: { sockets: 0, itemLevelCap: 20 },
-      magic: { sockets: 1, itemLevelCap: 40 },
-      rare: { sockets: 2, itemLevelCap: 60 },
-      epic: { sockets: 3, itemLevelCap: 80 },
-      legendary: { sockets: 4, itemLevelCap: 100 },
+      common: { sockets: 0, gemLevelCap: 1, itemLevelCap: 20 },
+      magic: { sockets: 1, gemLevelCap: 2, itemLevelCap: 40 },
+      rare: { sockets: 2, gemLevelCap: 3, itemLevelCap: 60 },
+      epic: { sockets: 3, gemLevelCap: 4, itemLevelCap: 80 },
+      legendary: { sockets: 4, gemLevelCap: 5, itemLevelCap: 100 },
     });
     expect(MAX_ITEM_LEVEL).toBe(100);
   });
@@ -91,6 +91,29 @@ describe('isValidArmorItemState', () => {
       ),
     ).toBe(true);
     expect(isValidArmorItemState(craftedChest({ prismaticSockets: [null] }))).toBe(false);
+  });
+
+  it('deckelt das Gem-Level gesockelter Gems durch das Seltenheits-Cap (Attune, ITEMS §8)', () => {
+    expect(
+      isValidArmorItemState(
+        craftedChest({ rarity: 'magic', sockets: [{ ...AMBER_GEM, gemLevel: 2 }] }),
+      ),
+    ).toBe(true);
+    expect(
+      isValidArmorItemState(
+        craftedChest({ rarity: 'magic', sockets: [{ ...AMBER_GEM, gemLevel: 3 }] }),
+      ),
+    ).toBe(false);
+    expect(
+      isValidArmorItemState(
+        craftedChest({ rarity: 'magic', sockets: [{ ...AMBER_GEM, gemLevel: 0 }] }),
+      ),
+    ).toBe(false);
+    expect(
+      isValidArmorItemState(
+        craftedChest({ rarity: 'magic', sockets: [{ ...AMBER_GEM, gemLevel: 1.5 }] }),
+      ),
+    ).toBe(false);
   });
 
   it('erlaubt ein Implicit ausschließlich auf Legendary (Brand-Ziel, ITEMS §7)', () => {

@@ -1,10 +1,10 @@
 # 029 — Jeweler: Attune & Recut
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M4        |
-| **Hängt ab von** | 028       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M4     |
+| **Hängt ab von** | 028    |
 
 ## Ziel
 

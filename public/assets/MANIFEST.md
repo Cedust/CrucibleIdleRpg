@@ -54,6 +54,7 @@
 | [backgrounds/crucible-view.png](backgrounds/crucible-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §21](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 | [backgrounds/weapon-mastery-view.png](backgrounds/weapon-mastery-view.png)                   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §22](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 | [backgrounds/blacksmith-view.png](backgrounds/blacksmith-view.png)                           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §31](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
+| [backgrounds/jeweler-view.png](backgrounds/jeweler-view.png)                                 | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §32](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 
 ## Rahmen
 

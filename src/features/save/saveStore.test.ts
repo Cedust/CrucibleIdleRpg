@@ -2,6 +2,15 @@ import { describe, expect, it } from 'vitest';
 import type { SavePort } from '@/shared/ports/savePort';
 import { deriveFloorSeed, deriveRunSeed } from '@/features/combat/engine/combatState';
 import { createDungeonEntryCombat } from '@/features/dungeon/dungeonCombat';
+import {
+  ATTUNE_GOLD_COST,
+  attuneFodderCost,
+  craftLootPrng,
+  INLAY_GOLD_COST,
+  RECUT_GOLD_COST,
+  rollGem,
+} from '@/game/crafting/jeweler';
+import { gemValueRange } from '@/game/items/gems';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
@@ -354,6 +363,264 @@ describe('createSaveStore', () => {
     allowed = true;
     await expect(store.getState().temperArmor('korvin', 'chest')).resolves.toBe(true);
     expect(store.getState().data?.armor.korvin.chest?.itemLevel).toBe(2);
+  });
+
+  it('persistiert Inlay atomar: Sockel, Bestand, Gold und craftCounter überleben den Reload', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        gems: { ...base.gems, amber: 2 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'magic', sockets: [null] } },
+        },
+      },
+    });
+
+    await expect(store.getState().inlayGem('korvin', 'chest', 0, 'amber')).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    const persisted = reloaded.getState().data;
+    expect(persisted?.armor.korvin.chest?.sockets[0]).toMatchObject({
+      color: 'amber',
+      gemLevel: 1,
+    });
+    expect(persisted?.gems.amber).toBe(1);
+    expect(persisted?.currencies.gold).toBe(1000 - INLAY_GOLD_COST);
+    expect(persisted?.craftCounter).toBe(1);
+    // Der Roll entspricht exakt dem Craft-Seed aus saveSeed und Zähler 0 (kein Save-Scumming).
+    expect(persisted?.armor.korvin.chest?.sockets[0]).toEqual(
+      rollGem('amber', craftLootPrng(7, 0)),
+    );
+  });
+
+  it('würfelt aufeinanderfolgende Inlays über den steigenden craftCounter frisch', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        gems: { ...base.gems, sapphire: 5 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'rare', sockets: [null, null] } },
+        },
+      },
+    });
+
+    await expect(store.getState().inlayGem('korvin', 'chest', 0, 'sapphire')).resolves.toBe(true);
+    await expect(store.getState().inlayGem('korvin', 'chest', 1, 'sapphire')).resolves.toBe(true);
+
+    const sockets = store.getState().data?.armor.korvin.chest?.sockets;
+    expect(sockets?.[0]).toEqual(rollGem('sapphire', craftLootPrng(7, 0)));
+    expect(sockets?.[1]).toEqual(rollGem('sapphire', craftLootPrng(7, 1)));
+    expect(store.getState().data?.craftCounter).toBe(2);
+    expect(store.getState().data?.gems.sapphire).toBe(3);
+  });
+
+  it('lehnt unmögliche Inlays ohne Save-Schreibvorgang ab und sperrt über das Prädikat', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    let allowed = true;
+    const store = createSaveStore(
+      createSaveService(port, () => createDefaultSave(7)),
+      {
+        canOptimize: () => allowed,
+      },
+    );
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        gems: { ...base.gems, ruby: 1 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'magic', sockets: [null] } },
+        },
+      },
+    });
+    const before = store.getState().data;
+
+    // Leerer Amber-Bestand, ungültiger Sockel, gesperrter Slot — und die Run-Sperre.
+    await expect(store.getState().inlayGem('korvin', 'chest', 0, 'amber')).resolves.toBe(false);
+    await expect(store.getState().inlayGem('korvin', 'chest', 1, 'ruby')).resolves.toBe(false);
+    await expect(store.getState().inlayGem('korvin', 'legs', 0, 'ruby')).resolves.toBe(false);
+    allowed = false;
+    await expect(store.getState().inlayGem('korvin', 'chest', 0, 'ruby')).resolves.toBe(false);
+
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
+  });
+
+  it('persistiert Attune atomar: Gem-Level, Wert, Fodder und Gold überleben den Reload', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    // Emerald auf dem Range-Minimum: die relative Position 0 bleibt beim Attune erhalten.
+    const gem = {
+      color: 'emerald',
+      affix: 'might',
+      gemLevel: 1,
+      value: gemValueRange('might', 1).min,
+    } as const;
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        gems: { ...base.gems, emerald: 10 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'magic', sockets: [gem] } },
+        },
+      },
+    });
+
+    await expect(store.getState().attuneGem('korvin', 'chest', 0)).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    const persisted = reloaded.getState().data;
+    expect(persisted?.armor.korvin.chest?.sockets[0]).toMatchObject({
+      color: 'emerald',
+      affix: 'might',
+      gemLevel: 2,
+    });
+    expect(persisted?.armor.korvin.chest?.sockets[0]?.value).toBeCloseTo(
+      gemValueRange('might', 2).min,
+      10,
+    );
+    expect(persisted?.gems.emerald).toBe(10 - attuneFodderCost(1));
+    expect(persisted?.currencies.gold).toBe(1000 - ATTUNE_GOLD_COST);
+    // Attune ist RNG-frei und verbraucht keinen Craft-Roll.
+    expect(persisted?.craftCounter).toBe(0);
+
+    // Magic-Cap erreicht: das zweite Attune ist abgelehnt.
+    await expect(reloaded.getState().attuneGem('korvin', 'chest', 0)).resolves.toBe(false);
+  });
+
+  it('persistiert Recut atomar und rollt deterministisch über den craftCounter', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const range = gemValueRange('barrier', 1);
+    const gem = { color: 'sapphire', affix: 'barrier', gemLevel: 1, value: range.min } as const;
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'magic', sockets: [gem] } },
+        },
+      },
+    });
+
+    await expect(store.getState().recutGem('korvin', 'chest', 0)).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    const persisted = reloaded.getState().data;
+    const recut = persisted?.armor.korvin.chest?.sockets[0];
+    // Der Wert entspricht exakt dem Craft-Seed aus saveSeed und Zähler 0 (kein Save-Scumming).
+    const expected = range.min + craftLootPrng(7, 0).next() * (range.max - range.min);
+    expect(recut?.value).toBeCloseTo(expected, 10);
+    expect(recut).toMatchObject({ color: 'sapphire', affix: 'barrier', gemLevel: 1 });
+    expect(persisted?.currencies.gold).toBe(1000 - RECUT_GOLD_COST);
+    expect(persisted?.craftCounter).toBe(1);
+  });
+
+  it('lehnt Attune und Recut auf leeren Sockeln ab und sperrt beide über das Prädikat', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    let allowed = true;
+    const store = createSaveStore(service, { canOptimize: () => allowed });
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const gem = {
+      color: 'emerald',
+      affix: 'might',
+      gemLevel: 1,
+      value: gemValueRange('might', 1).min,
+    } as const;
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1000 },
+        gems: { ...base.gems, emerald: 10 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1, 'anvil.jeweler': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'rare', sockets: [gem, null] } },
+        },
+      },
+    });
+
+    // Sockel 2 ist leer — beide Aktionen sind abgelehnt.
+    await expect(store.getState().attuneGem('korvin', 'chest', 1)).resolves.toBe(false);
+    await expect(store.getState().recutGem('korvin', 'chest', 1)).resolves.toBe(false);
+
+    allowed = false;
+    await expect(store.getState().attuneGem('korvin', 'chest', 0)).resolves.toBe(false);
+    await expect(store.getState().recutGem('korvin', 'chest', 0)).resolves.toBe(false);
+    expect(store.getState().data?.armor.korvin.chest?.sockets[0]).toEqual(gem);
+    expect(store.getState().data?.craftCounter).toBe(0);
   });
 
   it('serialisiert überlappende Actions ohne Lost Update', async () => {

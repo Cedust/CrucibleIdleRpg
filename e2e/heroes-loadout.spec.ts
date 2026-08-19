@@ -40,6 +40,7 @@ const SEEDED_SAVE = {
   version: 1,
   saveSeed: 42,
   runCounter: 0,
+  craftCounter: 0,
   playbackSpeed: 1,
   characters: { korvin: LEVEL_ONE, rhaya: LEVEL_ONE, quinn: LEVEL_ONE },
   currencies: { gold: 0, relicShards: 0, cinder: 0 },

@@ -1,5 +1,6 @@
 import { useNavigationStore, VIEW_LABELS } from '../navigationStore';
 import { BlacksmithScreen } from '@/features/crafting/ui/BlacksmithScreen';
+import { JewelerScreen } from '@/features/crafting/ui/JewelerScreen';
 import { CrucibleScreen } from '@/features/crucible/ui/CrucibleScreen';
 import { DungeonSelectionScreen } from '@/features/dungeon/ui/DungeonSelectionScreen';
 import { HeroesScreen } from '@/features/heroes/ui/HeroesScreen';
@@ -22,6 +23,8 @@ export function ActiveView() {
       return <WeaponMasteryScreen />;
     case 'blacksmith':
       return <BlacksmithScreen />;
+    case 'jeweler':
+      return <JewelerScreen />;
     default:
       return (
         <ScreenLayout>

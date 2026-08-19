@@ -200,6 +200,75 @@ describe('deriveCharacterStats', () => {
     );
   });
 
+  it('aggregiert gesockelte Gem-Affixe in Offensive, Defensive und Core (ITEMS §8)', () => {
+    const base = createDefaultSave(42);
+    const crucible = { [CRUCIBLE_IDS.armory]: 1 };
+    const armor = createTeamArmor(crucible);
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const save = {
+      ...base,
+      crucible,
+      armor: {
+        ...armor,
+        korvin: {
+          chest: {
+            ...chest,
+            rarity: 'rare' as const,
+            sockets: [
+              { color: 'amber', affix: 'critChance', gemLevel: 1, value: 0.02 } as const,
+              { color: 'emerald', affix: 'might', gemLevel: 1, value: 2 } as const,
+            ],
+          },
+        },
+      },
+    };
+    const ohneGems = {
+      ...save,
+      armor: {
+        ...save.armor,
+        korvin: { chest: { ...chest, rarity: 'rare' as const, sockets: [null, null] } },
+      },
+    };
+
+    const mit = effectiveStatsFromSave(save, 'korvin');
+    const ohne = effectiveStatsFromSave(ohneGems, 'korvin');
+
+    expect(mit.offensive.critChance).toBeCloseTo(ohne.offensive.critChance + 0.02, 10);
+    expect(mit.core.might).toBe(ohne.core.might + 2);
+    // Der Emerald-Might speist Attack über die Core-Schicht (CHARACTERS §2).
+    expect(mit.derived.attack).toBeGreaterThan(ohne.derived.attack);
+    // Heroes und Kampf lesen dieselbe Herleitung.
+    expect(mit).toEqual(
+      deriveCharacterStats(CHARACTERS.korvin, progressionFromSave(save, 'korvin')),
+    );
+  });
+
+  it('addiert Gem-Zuschläge additiv und deckelt Chance-Stats weiterhin bei 1', () => {
+    const stats = deriveCharacterStats(
+      PROBAND,
+      progression({
+        offensiveBonus: {
+          critChance: 5,
+          critDamage: 0.1,
+          multiHitChance: 0,
+          multiHitDamage: 0,
+          splashChance: 0,
+          splashDamage: 0,
+          counterChance: 0,
+          counterDamage: 0,
+        },
+        defensiveBonus: { barrier: 4, blockChance: 0.02, evasion: 0, regeneration: 1.5 },
+      }),
+    );
+
+    expect(stats.offensive.critChance).toBe(1);
+    expect(stats.offensive.critDamage).toBeCloseTo(PROBAND.baseOffensive.critDamage + 0.1, 10);
+    expect(stats.defensive.barrier).toBe(PROBAND.baseDefensive.barrier + 4);
+    expect(stats.defensive.blockChance).toBeCloseTo(PROBAND.baseDefensive.blockChance + 0.02, 10);
+    expect(stats.defensive.regeneration).toBeCloseTo(PROBAND.baseDefensive.regeneration + 1.5, 10);
+  });
+
   it('applies the new formulas in their separate core, attribute and crucible layers', () => {
     const stats = deriveCharacterStats(
       PROBAND,

@@ -7,9 +7,16 @@ import {
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
 import { applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
+import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/crafting/jeweler';
 import { createTeamArmor } from '@/game/items/armor';
 import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
-import type { ArmorSlot, AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
+import type {
+  ArmorSlot,
+  AttributePoints,
+  CharacterId,
+  FloorRewardDefinition,
+  RegularGemColor,
+} from '@/game/types';
 import {
   purchaseMasteryNode,
   respecMasteryDiscipline,
@@ -39,6 +46,14 @@ export interface SaveStoreState {
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
+  inlayGem: (
+    characterId: CharacterId,
+    slot: ArmorSlot,
+    socketIndex: number,
+    color: RegularGemColor,
+  ) => Promise<boolean>;
+  attuneGem: (characterId: CharacterId, slot: ArmorSlot, socketIndex: number) => Promise<boolean>;
+  recutGem: (characterId: CharacterId, slot: ArmorSlot, socketIndex: number) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
@@ -318,6 +333,106 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               currencies: { ...current.currencies, gold: outcome.gold, cinder: outcome.cinder },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Der einzige Zufall im Handwerk: Der Roll läuft über den loot-Strom des Craft-Seeds
+      // (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut); der craftCounter wird atomar mit
+      // Item, Bestand und Bezahlung persistiert, ein Reload liefert denselben Roll.
+      inlayGem: (characterId, slot, socketIndex, color) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyInlay(
+            item,
+            socketIndex,
+            color,
+            { gold: current.currencies.gold, gems: current.gems },
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              gems: outcome.gems,
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Attune ist RNG-frei (Positions-Erhalt in der wachsenden Range) und zahlt Gold plus
+      // Fodder gleicher Farbe atomar mit dem Item (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut).
+      attuneGem: (characterId, slot, socketIndex) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyAttune(item, socketIndex, {
+            gold: current.currencies.gold,
+            gems: current.gems,
+          });
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              gems: outcome.gems,
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Recut rollt wie das Inlay über den loot-Strom des Craft-Seeds; der craftCounter
+      // wird atomar mit Item und Bezahlung persistiert, ein Reload liefert denselben Wert.
+      recutGem: (characterId, slot, socketIndex) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyRecut(
+            item,
+            socketIndex,
+            current.currencies.gold,
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: { ...current.currencies, gold: outcome.gold },
               armor: {
                 ...current.armor,
                 [characterId]: { ...current.armor[characterId], [slot]: outcome.item },

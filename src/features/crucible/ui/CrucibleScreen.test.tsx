@@ -212,10 +212,10 @@ describe('CrucibleScreen', () => {
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    await user.click(screen.getByRole('button', { name: /Jeweler, rank 0 of 1, Locked/ }));
+    await user.click(screen.getByRole('button', { name: /Rune Grimoire, rank 0 of 1, Locked/ }));
 
-    expect(screen.getByRole('heading', { name: 'Jeweler' })).toBeInTheDocument();
-    expect(screen.getByText('Locked until Crafting (M4).')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
+    expect(screen.getByText('Locked until Runes (M5).')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
     expect(saveStore.getState().data).toEqual(before);
   });

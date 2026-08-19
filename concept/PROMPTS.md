@@ -1244,6 +1244,68 @@ wall-to-wall flames, bright orange full-frame lighting, excessive bloom or spark
 foreground clutter, modern industrial machinery, horror imagery, photorealistic photography
 ```
 
+## 32. Jeweler-View-Hintergrund — Die Juwelierwerkstatt
+
+- **Zieldatei:** `public/assets/backgrounds/jeweler-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Jeweler-Ansicht hinter Überschrift,
+  Gem-Beständen, Service-Tabs (Inlay, Attune, Recut), Slot-Liste, Werkstück-Bühne und
+  Dienst-Panel. Das Bild wird per `background-size: cover` eingesetzt. Werkbank und
+  Schleifrad bleiben auch bei engerem Crop das zentrale Motiv; die UI-relevanten Bereiche
+  sind dunkel und kontrastarm gehalten.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial jeweler's workshop as the defining visual heart of
+the Jeweler view, where gems recovered from the depths are cut, set into armor sockets,
+attuned, and recut — a precise lapidary atelier of a fallen golden empire, alive again
+Scene/backdrop: a vaulted stone atelier carved into the ruins of a golden empire, built
+around one heavy gem-cutter's workbench of dark stone and blackened iron with a brass
+lapidary wheel and a gold-rimmed magnifying lens suspended above it on an articulated
+arm; behind and beside it, soot-darkened masonry, cracked pillars with tarnished gold
+inlays, wall shelves with small brass trays and bowls holding uncut gems in amber, deep
+ruby red, sapphire blue, and emerald green, fine tongs and engraving tools resting as
+quiet silhouettes, and one small locked crystal case holding a single pale diamond,
+receding into the surrounding darkness
+Subject: the workbench with its lapidary wheel and hanging lens forms one unmistakable
+focal group; a few cut gems lie on the bench catching the light, and the wheel and tools
+are worn and clearly in use — the atelier feels ancient, functional, and dignified rather
+than decorative or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+workbench with wheel and lens in the lower central third, large enough to remain the clear
+focal point but low enough that UI panels can occupy the middle of the screen; preserve a
+broad, dark, low-detail field across the central and upper-middle area for service tabs, a
+slot list on the left, an item stage in the center, and an action panel on the right; keep
+the upper-left corner especially calm for the live "Jeweler" heading and gem inventory
+display; distribute secondary workshop elements symmetrically toward the outer edges;
+crop-safe from wide desktop down to roughly 4:5 mobile, with workbench and wheel remaining
+recognizable near the center
+Lighting/mood: the only strong light is a low shielded lamp glow at the workbench, casting
+a controlled warm light onto the wheel, the lens, and the nearest floor slabs; the gems on
+the bench and in the trays answer with small, dim colored glints of amber, ruby, sapphire,
+and emerald; fine dust catches the light; the rest of the atelier stays in cool shadow
+with soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened iron,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), restrained amber highlights (#f59e0b),
+sparse ember orange (#e25822), and small localized jewel accents of ruby red, sapphire
+blue, and emerald green that stay subordinate to the warm gold light
+Materials/textures: soot-darkened stone, forged black iron, worn gold inlays, polished
+brass, faceted crystal and raw gemstone, velvet-lined trays, aged leather tool rolls, fine
+dust haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast
+outside the workbench light; keep every colored gem glint small and localized; retain
+enough negative space for large opaque or translucent panels; no border or frame; no text,
+letters, readable runes, icons, characters, logos, interface elements, or watermark
+Avoid: a jeweler figure or any hands at work, one large centered gemstone, piles of
+treasure or coins, a merchant counter or shop display, rainbow or prismatic full-frame
+lighting, excessive sparkle and bloom, busy foreground clutter, modern machinery or
+optics, horror imagery, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

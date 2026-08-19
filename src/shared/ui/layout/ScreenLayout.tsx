@@ -46,9 +46,9 @@ interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {
  * Screen-Primitive mit Hintergrund-Layer und Kontrast-Overlay (DESIGN.md §5)
  * nach dem Viewport-Contract: full-height, `@container`
  * am Content-Wrapper, Scrollen nur in dafür vorgesehenen Containern.
- * Die Rand-Vignette auf dem Kontrast-Overlay lässt das Bild zur Kante hin in
- * den Grundton auslaufen; der Screen schließt dadurch nahtlos an das Gutter
- * des App-Rahmens an.
+ * Hintergrund und Overlay bluten um das Frame-Gutter nach außen bis unter
+ * die Goldlinie des App-Rahmens (frame-bleed); die Rand-Vignette auf dem
+ * Kontrast-Overlay lässt das Bild dort in den Grundton auslaufen.
  */
 export function ScreenLayout({
   as: Tag = 'div',
@@ -71,14 +71,14 @@ export function ScreenLayout({
               aria-hidden="true"
               data-screen-background={background}
               className={cn(
-                'absolute inset-0 -z-10 bg-cover bg-position-[center_bottom]',
+                'absolute -inset-frame-bleed -z-10 bg-cover bg-position-[center_bottom]',
                 BACKGROUND_CLASSES[background],
               )}
             />
             <div
               aria-hidden="true"
               className={cn(
-                'absolute inset-0 -z-10 shadow-[inset_0_0_32px_12px_var(--color-background)]',
+                'absolute -inset-frame-bleed -z-10 shadow-[inset_0_0_32px_12px_var(--color-background)]',
                 BACKGROUND_OVERLAY_CLASSES[background],
               )}
             />

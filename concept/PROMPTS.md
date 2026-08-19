@@ -1390,6 +1390,60 @@ bright full-frame fire, excessive bloom, busy foreground clutter, modern element
 imagery, photorealistic photography
 ```
 
+## 35. Sidebar-Hintergrund — Steinwand mit erloschenen Reliefs
+
+- **Zieldatei:** `public/assets/backgrounds/sidebar-stone.png` (oder `.webp`)
+- **Format:** Hochformat 2:3, mindestens 1024×1536
+- **Verwendung:** Hintergrund der linken Menüleiste (288 CSS-Pixel breit, viewport-hoch),
+  per `background-size: cover` eingesetzt. Das Bild liegt zuunterst; Ornamentrahmen (§16),
+  Ember-Glow (§17), Emblem, Navigationseinträge und Selektionsmarker bleiben separate
+  Layer darüber. Durch `cover` auf der schmalen Spalte bleibt horizontal nur ein
+  mittiger Streifen von grob einem Drittel der Bildbreite sichtbar — jeder vertikale
+  Streifen des Bildes muss deshalb für sich funktionieren.
+- **Zweck:** Reines Material statt Motiv — die Sidebar erhält die Stofflichkeit des
+  behauenen Reichssteins der Tore und Hintergründe, ohne mit den Navigationseinträgen
+  um Aufmerksamkeit zu konkurrieren.
+
+```text
+Use case: stylized-concept
+Asset type: subtle material background for a dark fantasy game UI sidebar
+Primary request: a quiet wall of ancient hewn imperial stone, seen from very close, serving
+as the barely noticeable material backdrop of a narrow full-height navigation column — pure
+texture and atmosphere, never a picture that draws the eye
+Scene/backdrop: large flat blocks of soot-darkened, finely dressed stone from a fallen golden
+empire, stacked in calm horizontal courses with slim mortar lines; within a few blocks,
+almost extinguished fragments of worn imperial relief carving — faint laurel curves, shallow
+geometric borders, the ghost of a wing or spear tip — eroded to the point of near
+invisibility; one or two hairline veins of tarnished gold inlay run through the joints, dull
+and matte, catching no light
+Style/medium: painterly dark fantasy texture study with restrained detail, matching the
+project's heavy stone-carved imperial style and gilded ruins mood — noble and mysterious,
+never hopeless
+Composition/framing: portrait 2:3 canvas treated as a seamless material surface; distribute
+the stone courses evenly across the full canvas with no focal object, no composition center,
+and no single dominant block; keep the texture statistically uniform from left to right so
+the image survives a hard horizontal crop to a narrow center strip; keep the vertical middle
+of the canvas especially calm and even, because navigation text sits on top of it; relief
+fragments and gold veins stay sparse, scattered, and near the edges rather than clustered
+Lighting/mood: almost no directional light — a flat, cool ambient darkness as if lit only by
+distant embers; extremely low contrast overall, with block edges and carvings defined by
+subtle value shifts rather than highlights or cast shadows
+Color palette: dominated by deep blue-black and cool slate (#0f172a to #1e293b), charcoal
+stone, traces of soot; only whisper-quiet accents of tarnished brass and aged gold (#8a6d3b,
+far below full #fbbf24 brightness) and no ember orange, because a separate ember-glow layer
+is rendered on top
+Materials/textures: finely dressed dark stone, shallow eroded relief carving, thin mortar
+seams, matte gold inlay veins, a faint film of ash and dust
+Constraints: prioritize UI readability above all; the texture must stay darker and calmer
+than every element rendered on top; keep contrast so low that the wall reads as a surface,
+not as an image; no border or frame; no light source, glow, lens flare, or bloom; no text,
+letters, readable runes, numbers, icons, characters, faces, logos, interface elements, or
+watermark
+Avoid: bright highlights, strong shadows, a centered medallion or crest, one large readable
+relief scene, statues or figures, doorways or windows, torches or flames, visible tiling
+seams, busy micro-detail, cracked dramatic rubble, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

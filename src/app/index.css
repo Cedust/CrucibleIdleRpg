@@ -119,6 +119,13 @@
 
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;
+  /* Goldlinien-Versatz des Vollrahmens zur Containerkante. Vermessung des
+     Assets: Linienmitte bei 45/48 Asset-px × 40/275 minus Outset 3/4 px
+     ≈ 3–3.6 px; 4 px liegen auf allen Seiten im deckenden Rahmenband.
+     Hintergrund-Flächen enden hier, damit sie den Rahmen nicht überragen. */
+  --spacing-frame-line: 4px;
+  /* Bleed absoluter Hintergrund-Layer aus dem Gutter bis unter die Goldlinie */
+  --spacing-frame-bleed: calc(var(--spacing-frame-pad) - var(--spacing-frame-line));
 
   /* Screen-Caps pro Screen-Typ; kein globales Maximum */
   --container-page: 96rem;
@@ -190,6 +197,23 @@
 
 .nav-selection-surface::after {
   filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+/*
+ * Sidebar-Fläche: Steintextur (concept/PROMPTS.md §35) unter einer
+ * verlaufenden Abschwächungslage der Grundfarbe (30 % oben bis 60 % unten).
+ * Die Prozentwerte steuern die effektive Deckkraft der Textur.
+ */
+@utility sidebar-stone-surface {
+  background-color: var(--color-background);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--color-background) 80%, transparent),
+      color-mix(in srgb, var(--color-background) 25%, transparent)
+    ),
+    url('/assets/backgrounds/sidebar-stone.png');
+  background-size: cover;
+  background-position: center;
 }
 
 /*

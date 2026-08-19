@@ -55,8 +55,8 @@
 | [backgrounds/weapon-mastery-view.png](backgrounds/weapon-mastery-view.png)                   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §22](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 | [backgrounds/blacksmith-view.png](backgrounds/blacksmith-view.png)                           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §31](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 | [backgrounds/jeweler-view.png](backgrounds/jeweler-view.png)                                 | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §32](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
-| [backgrounds/dungeons-view.png](backgrounds/dungeons-view.png)                               | KI-generiert (ChatGPT)                                                             | Timo Sudeck | projektintern | 1672×941; Hintergrund der Dungeon-Auswahl                       |
-| [backgrounds/dungeons-view.png](backgrounds/dungeons-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §34](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
+| [backgrounds/dungeons-view.png](backgrounds/dungeons-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §34](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941; Hintergrund der Dungeon-Auswahl                       |
+| [backgrounds/sidebar-stone.png](backgrounds/sidebar-stone.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §35](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; Hintergrund der Menüleiste                           |
 
 ## Rahmen
 

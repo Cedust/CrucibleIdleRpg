@@ -1,11 +1,12 @@
-import { ArrowRight, LockKeyhole } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { RARITY_LABEL } from '@/game/crafting/blacksmith';
+import {
+  ARMOR_BASE_LABEL,
+  ARMOR_COLUMN,
+  ARMOR_SLOT_LABEL,
+  RARITY_TEXT_CLASS,
+  costFormatter,
+} from './stationPresentation';
 import type { ArmorLoadout, ArmorSlot } from '@/game/types';
-import { Icon } from '@/shared/ui/icons/Icon';
-import { Panel } from '@/shared/ui/layout/Panel';
-import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
-import { cn } from '@/shared/ui/utils/cn';
+import { ArrowRight, LockKeyhole } from 'lucide-react';
 import {
   focusRing,
   hoverBorder,
@@ -13,14 +14,14 @@ import {
   stateAttrs,
   transitionState,
 } from '@/shared/ui/utils/state';
+
+import { Icon } from '@/shared/ui/icons/Icon';
+import { Panel } from '@/shared/ui/layout/Panel';
+import { RARITY_LABEL } from '@/game/crafting/blacksmith';
+import type { ReactNode } from 'react';
+import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
+import { cn } from '@/shared/ui/utils/cn';
 import { useRovingFocus } from '@/shared/ui/utils/useRovingFocus';
-import {
-  ARMOR_BASE_LABEL,
-  ARMOR_COLUMN,
-  ARMOR_SLOT_LABEL,
-  costFormatter,
-  RARITY_TEXT_CLASS,
-} from './stationPresentation';
 
 /**
  * Gemeinsame Bausteine der Handwerks-Stationen (Blacksmith Task 027, Jeweler Task 028):
@@ -69,9 +70,10 @@ export function LockedStation({
   return (
     <Panel
       as="section"
+      padding="lg"
       aria-label={ariaLabel}
       data-testid={testId}
-      className="mx-auto mt-8 flex w-full max-w-xl flex-col items-center px-8 py-10 text-center"
+      className="mx-auto mt-8 flex w-full max-w-xl flex-col items-center text-center"
     >
       <span
         aria-hidden="true"

@@ -1315,12 +1315,12 @@ optics, horror imagery, photorealistic photography
   - Mitte links → `public/assets/gates/gate-boss-open.png`
   - Mitte rechts → `public/assets/gates/gate-boss-locked.png`
   - unten links → `public/assets/frames/medallion-act.png`
-  - unten rechts → `public/assets/frames/panel-act.png`
+  - unten rechts → `public/assets/frames/panel-standard.png`
 - **Verwendung:** Dungeon-Auswahl (concept/ui-draft-3/ui-dungeons-selection-v1.png + v2.png).
   Die Tore ersetzen die §27-Illustrationen; offene Tore haben eine transparente Bogen-Öffnung
   für künftige Hintergrund-Layer. Das Stachel-Medaillon trägt die Akt-Numerale der Akt-Panels,
-  der rechteckige Goldrahmen ist die 9-Slice-Basis von `border-image-act` (Akt-Panels und
-  unteres Dungeon-Panel).
+  der rechteckige Goldrahmen ist die 9-Slice-Basis von `border-image-standard`, dem Standard-
+  Panel-Rahmen (Akt-Panels, unteres Dungeon-Panel und alle übrigen Panels ohne eigene Variante).
 - **Prompt:** liegt beim Generierungstool; bei erneuter Generierung hier nachtragen.
 
 ## 34. Dungeons-View-Hintergrund — Vor den Toren Veyras

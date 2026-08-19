@@ -109,7 +109,7 @@ export function CrucibleTreeGraph({
   return (
     <Panel
       as="section"
-      variant="thin"
+      variant="standard"
       padding="none"
       id={`crucible-tree-panel-${tree}`}
       role="tabpanel"

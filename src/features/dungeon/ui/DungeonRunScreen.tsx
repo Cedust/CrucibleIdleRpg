@@ -1,24 +1,25 @@
-import { useState } from 'react';
-import { Coins, Flame, ScrollText, Stone } from 'lucide-react';
-import { formatLootGains, GEM_NAMES } from '@/features/dungeon/rewards';
-import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
-import { createEmptyGemStock } from '@/game/rewards/lootRewards';
-import { GEM_COLORS } from '@/game/types';
-import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
-import { useSaveStore } from '@/features/save/saveStore';
+import { Coins, Flame, ScrollText, Stone } from 'lucide-react';
+import { GEM_NAMES, formatLootGains } from '@/features/dungeon/rewards';
+import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
+
 import { Button } from '@/shared/ui/controls/Button';
+import { CombatLog } from '@/features/combat/ui/CombatLog';
+import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
+import { GEM_COLORS } from '@/game/types';
 import { GemIcon } from '@/shared/ui/icons/GemIcon';
 import { Panel } from '@/shared/ui/layout/Panel';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
-import { formatNumber } from '@/shared/utils/formatNumber';
-import { CombatLog } from '@/features/combat/ui/CombatLog';
-import { useCombatStore } from '@/features/combat/state/combatStore';
-import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
 import { TeamPanel } from '@/features/combat/ui/TeamPanel';
 import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
+import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import { formatNumber } from '@/shared/utils/formatNumber';
 import { formatRelicShards } from '@/game/crucible/crucible';
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import { useSaveStore } from '@/features/save/saveStore';
+import { useState } from 'react';
 
 /** Im Run können keine Ausgaben erfolgen; die Differenz seit Mount entspricht den Run-Rewards. */
 function RunRewardSummary() {
@@ -111,10 +112,10 @@ function RunStatusBar({
   return (
     <Panel
       as="footer"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       data-testid="run-status-bar"
-      className="grid items-center gap-3 px-4 py-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
+      className="grid items-center gap-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
     >
       <div
         role="group"

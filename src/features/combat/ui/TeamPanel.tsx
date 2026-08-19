@@ -53,7 +53,7 @@ function CharacterCard({ index }: { index: number }) {
   const xpRequired = xpRequiredForNextLevel(progression.level);
 
   return (
-    <Panel as="article" variant="thin" className="flex min-w-0 items-center gap-3">
+    <Panel as="article" variant="standard" className="flex min-w-0 items-center gap-3">
       <CombatPortrait
         characterId={character.id}
         size="xl"

@@ -122,7 +122,7 @@ function AnvilStage({ item }: { item: ArmorItem }) {
   return (
     <Panel
       as="section"
-      variant="thin"
+      variant="standard"
       padding="none"
       aria-label="Workpiece"
       data-testid="blacksmith-stage"
@@ -200,10 +200,10 @@ function TemperPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       aria-label="Temper"
-      className="min-w-0 self-start px-4 py-3"
+      className="min-w-0 self-start"
     >
       <SectionTitle as="h3" align="start">
         Temper
@@ -266,10 +266,10 @@ function MasterworkPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       aria-label="Masterwork"
-      className="min-w-0 self-start px-4 py-3"
+      className="min-w-0 self-start"
     >
       <SectionTitle as="h3" align="start">
         Masterwork

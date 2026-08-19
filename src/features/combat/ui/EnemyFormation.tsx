@@ -68,7 +68,7 @@ function EnemySlot({ formationIndex, lane, slotIndex }: EnemySlotProps) {
   return (
     <Panel
       as="article"
-      variant="thin"
+      variant="standard"
       padding="none"
       data-testid="formation-slot"
       aria-label={`${slot.name} ${lane} slot ${slotIndex + 1}`}

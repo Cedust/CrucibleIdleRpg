@@ -37,7 +37,7 @@ describe('ActPanel', () => {
     expect(panel).toHaveAttribute('data-selected');
     expect(panel).toHaveClass('h-act-panel');
 
-    const frame = panel.querySelector('.border-image-act');
+    const frame = panel.querySelector('.border-image-standard');
     expect(frame).toHaveClass('drop-shadow-glow-accent');
 
     const medallion = panel.querySelector('img');
@@ -64,7 +64,7 @@ describe('ActPanel', () => {
 
     const art = panel.querySelector('.bg-cover');
     expect(art).toHaveClass('opacity-(--state-deemphasis-medium)', 'grayscale-50');
-    expect(panel.querySelector('.border-image-act')).toHaveClass(
+    expect(panel.querySelector('.border-image-standard')).toHaveClass(
       'opacity-(--state-deemphasis-strong)',
     );
 
@@ -82,7 +82,7 @@ describe('ActPanel', () => {
 
     const panel = screen.getByRole('listitem');
     expect(panel).toHaveAttribute('aria-current', 'true');
-    expect(panel.querySelector('.border-image-act')).toHaveClass('drop-shadow-glow-accent');
+    expect(panel.querySelector('.border-image-standard')).toHaveClass('drop-shadow-glow-accent');
     expect(panel.querySelector('.bg-cover')).toHaveClass('opacity-(--state-deemphasis-medium)');
   });
 });

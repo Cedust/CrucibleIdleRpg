@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { act, render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useNavigationStore } from '@/app/navigationStore';
+import { createHeroesStore, useHeroesStore } from '../heroesStore';
+
+import { HeroesScreen } from './HeroesScreen';
 import { createDefaultSave } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
-import { createHeroesStore, useHeroesStore } from '../heroesStore';
-import { HeroesScreen } from './HeroesScreen';
+import { useNavigationStore } from '@/app/navigationStore';
+import userEvent from '@testing-library/user-event';
 
 describe('HeroesScreen', () => {
   beforeEach(() => {
@@ -58,12 +59,11 @@ describe('HeroesScreen', () => {
     for (const category of ['Core', 'Offensive', 'Defensive', 'Utility']) {
       const panel = screen.getByRole('heading', { name: category }).closest('section');
       expect(panel).not.toHaveClass('border-image-ornate');
-      expect(panel?.querySelector('.border-image-thin')).toBeInTheDocument();
+      expect(panel?.querySelector('.border-image-standard')).toBeInTheDocument();
     }
-    expect(screen.getByTestId('heroes-progression')).not.toHaveClass('p-4');
     expect(screen.getByTestId('heroes-progression')).not.toHaveClass('border-image-ornate');
     expect(
-      screen.getByTestId('heroes-progression').querySelector('.border-image-thin'),
+      screen.getByTestId('heroes-progression').querySelector('.border-image-standard'),
     ).toBeInTheDocument();
     expect(screen.getByTestId('heroes-progression')).toHaveClass('flex', 'items-center');
 
@@ -76,7 +76,7 @@ describe('HeroesScreen', () => {
     ).toBeInTheDocument();
     const corePanel = screen.getByRole('heading', { name: 'Core' }).closest('section');
     expect(corePanel).not.toHaveClass('grid-cols-[auto_minmax(0,1fr)]');
-    expect(corePanel?.querySelector('dl')).toHaveClass('mt-3');
+    expect(corePanel?.querySelector('dl')).toHaveClass('mt-1.5');
     expect(within(corePanel as HTMLElement).getByText('Might').parentElement).toHaveClass(
       'items-baseline',
       'justify-between',

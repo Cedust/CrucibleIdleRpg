@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
-import { createDefaultSave } from '@/features/save/saveSchema';
-import { saveStore } from '@/features/save/saveStore';
+
 import { ACT_1_ENCOUNTERS } from '@/game/encounters/act1';
 import { DungeonSelectionScreen } from './DungeonSelectionScreen';
+import { createDefaultSave } from '@/features/save/saveSchema';
+import { saveStore } from '@/features/save/saveStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import userEvent from '@testing-library/user-event';
 
 describe('DungeonSelectionScreen', () => {
   beforeEach(() => {
@@ -30,7 +31,7 @@ describe('DungeonSelectionScreen', () => {
     expect(acts[0]).toHaveTextContent(/ACT I\b.*The Ashen Depths/);
     expect(acts[0]).toHaveAttribute('aria-current', 'true');
     expect(acts[0]).toHaveAttribute('data-selected');
-    expect(acts[0]?.querySelector('.border-image-act')).toBeInTheDocument();
+    expect(acts[0]?.querySelector('.border-image-standard')).toBeInTheDocument();
     expect(acts[1]).toHaveAttribute('data-semantic', 'locked');
     expect(acts[2]).toHaveAttribute('data-semantic', 'locked');
     expect(within(acts[1] as HTMLElement).getByText('ACT II')).toBeInTheDocument();
@@ -65,9 +66,9 @@ describe('DungeonSelectionScreen', () => {
     expect(gateGrid).toHaveClass('grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))]');
 
     const details = screen.getByRole('region', { name: 'Cinder Gate details' });
-    expect(details).toHaveClass('mx-4', 'grid', 'px-6', 'py-5');
+    expect(details).toHaveClass('px-4', 'py-3', 'mx-4', 'grid');
     expect(details).toHaveClass('@min-[42rem]:grid-cols-[minmax(0,1fr)_auto]');
-    expect(details.querySelector('.border-image-act')).toBeInTheDocument();
+    expect(details.querySelector('.border-image-standard')).toBeInTheDocument();
     expect(within(details).getByText('ACT I - The Ashen Depths')).toBeInTheDocument();
     expect(
       within(details).getByRole('heading', { name: 'DUNGEON I - Cinder Gate' }),

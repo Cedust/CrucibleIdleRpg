@@ -334,7 +334,7 @@
 }
 
 /*
- * Rechteckiger 9-Slice-Rahmen der Akt-Panels (Ausschnitt aus
+ * Rechteckiger 9-Slice-Rahmen des Standard-Panels (Ausschnitt aus
  * concept/ui-draft-3/dungeon-asset-sheet.png, Zelle unten rechts; Asset
  * 559×327, freigestellt). Vermessung: Goldlinien in den Zeilen 22–23 und
  * 301–302 sowie den Spalten 24–25 und 535–536; die Stern-Ecken ragen bis
@@ -346,10 +346,10 @@
  * Nur die Stern-Spitzen ragen hinaus; umgebende Elemente dürfen daher kein
  * overflow-hidden clippen.
  */
-@utility border-image-act {
+@utility border-image-standard {
   border-style: solid;
   border-width: 24px 32px;
-  border-image: url('/assets/frames/panel-act.png') 60 80 / 24px 32px stretch;
+  border-image: url('/assets/frames/panel-standard.png') 80 80 / 24px 32px stretch;
   border-image-outset: 9px 9.5px 10px 10px;
 }
 

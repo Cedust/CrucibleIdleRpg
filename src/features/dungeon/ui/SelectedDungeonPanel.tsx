@@ -39,9 +39,9 @@ export function SelectedDungeonPanel({
     <Panel
       as="section"
       aria-label={`${dungeonName} details`}
-      variant="act"
-      padding="none"
-      className="mx-4 grid grid-cols-1 items-center gap-x-6 gap-y-3 px-6 py-5 @min-[42rem]:grid-cols-[minmax(0,1fr)_auto]"
+      variant="standard"
+      padding="md"
+      className="mx-4 grid grid-cols-1 items-center gap-x-6 gap-y-3 @min-[42rem]:grid-cols-[minmax(0,1fr)_auto]"
     >
       <div className="flex min-w-0 flex-col gap-2">
         <header className="space-y-0.5">

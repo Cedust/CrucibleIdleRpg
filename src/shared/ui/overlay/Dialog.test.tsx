@@ -22,12 +22,12 @@ function renderDialog(onClose: (returnValue: string) => void) {
 }
 
 describe('Dialog', () => {
-  it('öffnet modal mit zugänglichem Namen und Panel-thin-Chrome', () => {
+  it('öffnet modal mit zugänglichem Namen und Panel-standard-Chrome', () => {
     const { container } = renderDialog(vi.fn());
 
     const dialog = screen.getByRole('dialog', { name: 'Confirm Test' });
     expect(dialog).toHaveClass('backdrop:bg-black/70');
-    expect(container.querySelector('.border-image-thin')).toBeInTheDocument();
+    expect(container.querySelector('.border-image-standard')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Sicher?' })).toBeInTheDocument();
   });
 

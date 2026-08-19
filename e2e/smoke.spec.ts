@@ -160,9 +160,9 @@ test('keeps Heroes local to the shared character context and its own scroll area
   expect(Math.abs(progressionTopGap - progressionBottomGap)).toBeLessThanOrEqual(1);
   const corePanel = page.getByRole('heading', { name: 'Core', exact: true }).locator('..');
   await expect(corePanel).not.toHaveClass(/border-image-ornate/);
-  await expect(corePanel.locator('.border-image-thin')).toHaveCSS(
+  await expect(corePanel.locator('.border-image-standard')).toHaveCSS(
     'border-image-source',
-    /panel-thin\.png/,
+    /panel-standard\.png/,
   );
   const attributePanel = page.getByTestId('heroes-attributes');
   const specializedStats = page.getByTestId('heroes-specialized-stats');

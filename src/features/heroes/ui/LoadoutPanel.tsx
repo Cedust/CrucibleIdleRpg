@@ -406,11 +406,11 @@ export function LoadoutPanel({ characterId, stats, masteryRanks, armor }: Loadou
         </section>
         <Panel
           as="aside"
-          variant="thin"
-          padding="none"
+          variant="standard"
+          padding="md"
           aria-label="Loadout details"
           data-testid="loadout-detail"
-          className="min-w-0 self-start px-4 py-3"
+          className="min-w-0 self-start"
         >
           {selection === 'weapon' ? (
             <WeaponDetail characterId={characterId} stats={stats} masteryRanks={masteryRanks} />

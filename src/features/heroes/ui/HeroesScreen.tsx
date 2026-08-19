@@ -166,28 +166,20 @@ function HeroesTabs({
 
 function StatCategoryPanel({
   category,
-  variant = 'ornate',
   layout = 'rows',
 }: {
   category: StatCategory;
-  variant?: 'ornate' | 'thin';
   layout?: 'rows' | 'columns';
 }) {
-  const isThin = variant === 'thin';
   const usesColumns = layout === 'columns';
 
   return (
-    <Panel
-      as="section"
-      variant={variant}
-      padding="none"
-      className={cn('min-w-0', isThin ? 'px-4 py-3' : 'px-2 py-1')}
-    >
+    <Panel as="section" padding="md" className="min-w-0">
       <h3 className="font-display text-display-sm text-accent-strong">{category.label}</h3>
       <dl
         className={cn(
           usesColumns ? 'grid grid-cols-3 divide-x divide-border/50' : 'divide-y divide-border/50',
-          isThin ? 'mt-3' : 'mt-1.5',
+          'mt-1.5',
         )}
       >
         {category.stats.map((stat) => (
@@ -198,7 +190,7 @@ function StatCategoryPanel({
               usesColumns
                 ? 'items-baseline justify-between px-4 py-2'
                 : 'items-baseline justify-between',
-              !usesColumns && (isThin ? 'py-2' : 'py-1.5'),
+              !usesColumns && 'py-1.5',
             )}
           >
             <dt className="text-sm text-text-muted">{stat.label}</dt>
@@ -267,9 +259,9 @@ function CharacterProgressPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
-      className="flex min-h-16 min-w-0 items-center px-4 py-2"
+      variant="standard"
+      padding="md"
+      className="flex min-w-0 items-center"
       data-testid="heroes-progression"
     >
       <div className="grid w-full min-w-0 items-center gap-4 @min-[42rem]:grid-cols-[auto_minmax(0,1fr)]">
@@ -308,9 +300,9 @@ function CharacterAttributesPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
-      className="h-full w-full px-4 py-2"
+      variant="standard"
+      padding="md"
+      className="h-full w-full"
       data-testid="heroes-attributes"
     >
       <h3 className="text-center font-display text-display-sm text-accent-strong">Attributes</h3>
@@ -425,14 +417,14 @@ function StatsPanel({
         </div>
         <div className="flex h-full min-w-0 flex-col gap-6" data-testid="heroes-overview-column">
           <CharacterProgressPanel characterId={characterId} progression={progression} />
-          <StatCategoryPanel category={core} variant="thin" layout="columns" />
+          <StatCategoryPanel category={core} layout="columns" />
           <div
             className="grid min-h-0 min-w-0 flex-1 gap-6 @min-[42rem]:grid-cols-2 @min-[68rem]:grid-cols-3"
             data-testid="heroes-specialized-stats"
           >
-            <StatCategoryPanel category={offensive} variant="thin" />
-            <StatCategoryPanel category={defensive} variant="thin" />
-            <StatCategoryPanel category={utility} variant="thin" />
+            <StatCategoryPanel category={offensive} />
+            <StatCategoryPanel category={defensive} />
+            <StatCategoryPanel category={utility} />
           </div>
         </div>
       </div>

@@ -161,7 +161,7 @@ function GemBench({
   return (
     <Panel
       as="section"
-      variant="thin"
+      variant="standard"
       padding="none"
       aria-label="Workpiece"
       data-testid="jeweler-stage"
@@ -355,10 +355,10 @@ function InlayPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       aria-label="Inlay"
-      className="min-w-0 self-start px-4 py-3"
+      className="min-w-0 self-start"
     >
       <SectionTitle as="h3" align="start">
         Inlay
@@ -432,10 +432,10 @@ function AttunePanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       aria-label="Attune"
-      className="min-w-0 self-start px-4 py-3"
+      className="min-w-0 self-start"
     >
       <SectionTitle as="h3" align="start">
         Attune
@@ -508,10 +508,10 @@ function RecutPanel({
   return (
     <Panel
       as="section"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       aria-label="Recut"
-      className="min-w-0 self-start px-4 py-3"
+      className="min-w-0 self-start"
     >
       <SectionTitle as="h3" align="start">
         Recut

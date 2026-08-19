@@ -161,9 +161,11 @@ Kompositionsregeln:
 - **className-Policy:** `className` erweitert die Klassenliste eines Primitives und überschreibt
   keine Property, die das Primitive selbst setzt. Variation läuft über Props, weil `cn()` keine
   Merge-Logik trägt. Alle Klassenkompositionen laufen über `cn()`.
-- **Panel-Rollen:** ornate für große Screen-Panels, thin für Karten, Inspectors und Bars, act für
-  die Goldrahmen-Flächen der Dungeon-Auswahl, plain für ruhige Log-Flächen. Das Padding folgt der
-  Rolle in einer bewussten Rhythmus-Skala von Dialogen bis zu kompakten Slots.
+- **Panel-Rollen:** standard (Default) trägt alle Panels mit 9-Slice-Goldrahmen — große
+  Screen-Panels, Karten, Inspectors, Bars und die Goldrahmen-Flächen der Dungeon-Auswahl —, plain
+  für ruhige Log-Flächen; ornate und thin bleiben als Varianten erhalten, werden aber aktuell
+  nirgends eingesetzt. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von Dialogen
+  bis zu kompakten Slots.
 - Ein Screen nutzt vorhandene Primitive; ein neues Primitive entsteht mit dem zweiten Konsumenten.
 - Ein Primitive bleibt zustandslos gegenüber Spiellogik: Es empfängt State über Props und
   `stateAttrs`.
@@ -203,7 +205,7 @@ Dokumentierte, bleibende Abweichungen:
   Text-Overlay auf dem Rauten-Zentrum der Tor-Crops (`@container`-Wrapper der Kachel, Offsets je
   Tor-Variante in `gateArt.ts`) und bleibt auf gesperrten Toren voll lesbar. Ein Gold-Pfad mit
   Status-Medaillons verbindet die Tore zur Akt-Route.
-- Die Akt-Panels tragen den rechteckigen 9-Slice-Goldrahmen `border-image-act` (px-konstant)
+- Die Akt-Panels tragen den rechteckigen 9-Slice-Goldrahmen `border-image-standard` (px-konstant)
   über der Akt-Szenerie; die Höhe kommt aus dem Clamp-Token `--spacing-act-panel`, die Breite
   aus dem 3er-Grid des Screens. Das Medaillon-Asset trägt die Akt-Numerale als Text-Overlay,
   der Lock-Indikator sitzt am Akt-Label.

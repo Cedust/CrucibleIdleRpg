@@ -32,7 +32,7 @@ interface ActPanelProps {
 /**
  * Breites Akt-Panel der Dungeon-Auswahl
  * (concept/ui-draft-3/ui-dungeons-selection-v1.png + v2.png): Layer-Stack aus
- * Akt-Szenerie, Scrim und 9-Slice-Goldrahmen (border-image-act, index.css).
+ * Akt-Szenerie, Scrim und 9-Slice-Goldrahmen (border-image-standard, index.css).
  * Links trägt das Stachel-Medaillon die Akt-Numerale, mittig oben stehen
  * Akt-Label und Akt-Name. Die Höhe kommt aus --spacing-act-panel, die Breite
  * aus dem 3er-Grid des Screens. `selected` trägt vollen Rahmen und Glow;
@@ -71,7 +71,7 @@ export function ActPanel({ act, selected }: ActPanelProps) {
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute inset-0 z-10 border-image-act',
+          'pointer-events-none absolute inset-0 z-10 border-image-standard',
           transitionState,
           selected
             ? 'drop-shadow-glow-accent'

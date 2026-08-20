@@ -74,9 +74,7 @@ export function AttributesPanel({
         ) : (
           <span />
         )}
-        <SectionTitle as="h3" size="md">
-          Attributes
-        </SectionTitle>
+        <SectionTitle as="h3">Attributes</SectionTitle>
         <span className="justify-self-end">
           {freePoints > 0 || respeccing ? (
             <span

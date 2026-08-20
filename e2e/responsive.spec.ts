@@ -7,8 +7,16 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * 16:9-Normierung). Screenshot-Infrastruktur bleibt bewusst außen vor.
  */
 
-async function scrollState(locator: Locator) {
-  return locator.evaluate((element) => {
+/**
+ * Hintergrund und Kontrast-Overlay eines Screens bluten um `--spacing-frame-bleed`
+ * nach außen unter die Goldlinie des App-Rahmens (UI.md §1). Der Rahmen-Wrapper
+ * klippt diesen Überlauf, `main` ist selbst kein Scroll-Container. Container, die
+ * den Bleed tragen, werden daher mit dieser Toleranz geprüft.
+ */
+const FRAME_BLEED = 8;
+
+async function scrollState(locator: Locator, tolerance = 0) {
+  return locator.evaluate((element, slack) => {
     const scrollContainer = element as unknown as {
       clientWidth: number;
       scrollWidth: number;
@@ -16,15 +24,18 @@ async function scrollState(locator: Locator) {
       scrollHeight: number;
     };
     return {
-      scrollsX: scrollContainer.scrollWidth > scrollContainer.clientWidth,
-      scrollsY: scrollContainer.scrollHeight > scrollContainer.clientHeight,
+      scrollsX: scrollContainer.scrollWidth - scrollContainer.clientWidth > slack,
+      scrollsY: scrollContainer.scrollHeight - scrollContainer.clientHeight > slack,
     };
-  });
+  }, tolerance);
 }
 
 async function assertNoPageScroll(page: Page) {
   expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
-  expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+  expect(await scrollState(page.getByRole('main'), FRAME_BLEED)).toEqual({
+    scrollsX: false,
+    scrollsY: false,
+  });
 }
 
 async function boxWidth(locator: Locator): Promise<number> {

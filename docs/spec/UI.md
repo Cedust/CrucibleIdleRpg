@@ -167,7 +167,7 @@ Hover-Affordance; `aria-current` bleibt.
 | ----------- | ---------------------------------------------------------------------------------- |
 | `utils/`    | `cn()`, State-System und Roving-Focus — die geteilte Mechanik ohne eigenes Markup  |
 | `controls/` | fokussierbare Elemente: Button, Node-Button, Ornate-Tabs                           |
-| `layout/`   | Flächen und Gerüste: Panel, ScreenLayout, ScreenHeader, SectionTitle               |
+| `layout/`   | Flächen und Gerüste: Panel, ScreenLayout, ScreenHeader, SectionTitle, Divider      |
 | `overlay/`  | über dem Fluss liegende Ebenen: Dialog, ConfirmDialog, Tooltip, NodeInspectorPanel |
 | `tree/`     | Tree-Bausteine: Node-Medaillon mit Rang-Pips, Connector-Messung und SVG-Layer      |
 | `feedback/` | Zustandsanzeige: ProgressBar, ErrorBoundary                                        |
@@ -183,6 +183,10 @@ Kompositionsregeln:
   für ruhige Log-Flächen; ornate und thin bleiben als Varianten erhalten, werden aber aktuell
   nirgends eingesetzt. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von Dialogen
   bis zu kompakten Slots.
+- **Divider-Rollen:** ornate (Default) trägt das große Ornament unter dem Sidebar-Titel, thin den
+  feinen Trenner zwischen den Stat-Gruppen der Heroes-Panels. Beide skalieren ein vollbreites
+  Asset per `object-cover` auf die Höhe ihres Streifens; die thin-Variante trägt zusätzlich eine
+  Haarlinie, damit die Trennung auch ohne geladenes Asset steht.
 - Ein Screen nutzt vorhandene Primitive; ein neues Primitive entsteht mit dem zweiten Konsumenten.
 - Ein Primitive bleibt zustandslos gegenüber Spiellogik: Es empfängt State über Props und
   `stateAttrs`.
@@ -245,9 +249,16 @@ Dokumentierte, bleibende Abweichungen:
   `--spacing-portal` cappt sie in den ein- und zweispaltigen Klassen, die Höhe folgt dem
   3:4-Format des Assets. Portal und Level-Panel sitzen am Fuß der Mittelspalte, der
   Höhenunterschied zu den Stat-Spalten liegt als Weißraum darüber.
-- Der Stats-Bereich von Heroes stapelt rechts drei Stat-Listen mit zusammen 16 Zeilen. Ab der
-  1920er-Höhenklasse passt er ohne Scroll; in den beiden kleineren Klassen übernimmt der lokale
-  Scroller des Tabpanels. Die Zeilen tragen in allen Klassen die volle Icon- und Textgröße.
+- Der Stats-Bereich von Heroes trägt seine sechs Stat-Gruppen in zwei Spalten-Panels statt in
+  sechs Einzelrahmen: links Combat, Attributes und Core, rechts Offensive, Defensive und Utility,
+  je durch den feinen Divider getrennt. Das Grid streckt beide Panels auf dieselbe Höhe,
+  `justify-between` verteilt den Rest. Combat steht links zuoberst und ist damit das optische
+  Hauptpanel. Die Offensive Stats stehen paarweise — eine Zeile je Muster mit zwei Wertspalten,
+  einmal klein als „Chance" und „Damage" im Kopf beschriftet; für Screenreader trägt jede Zelle
+  ihren Qualifier selbst. Die rechte Spalte kommt damit auf 12 Zeilen und der Bereich in jeder
+  dreispaltigen Klasse ohne Scroll aus. Unterhalb des 68rem-Thresholds spannt das Portal über
+  beide Stat-Spalten und stapelt darüber; dort übernimmt der lokale Scroller des Tabpanels. Die
+  Zeilen tragen in allen Klassen die volle Icon- und Textgröße.
 - Controls senken im Disabled-Zustand ihre Opacity ganzheitlich, weil sie keinen
   Informationsgehalt tragen.
 - Der TurnOrder-Akteur kombiniert Selection-Ring und Glow-Fläche — Bestandsschutz der

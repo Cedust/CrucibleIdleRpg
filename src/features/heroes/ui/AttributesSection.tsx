@@ -5,7 +5,6 @@ import { attributeRespecCost, refundedAttributePoints } from '@/game/rewards/xpR
 
 import { Button } from '@/shared/ui/controls/Button';
 import { Icon } from '@/shared/ui/icons/Icon';
-import { Panel } from '@/shared/ui/layout/Panel';
 import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { cn } from '@/shared/ui/utils/cn';
 import { formatNumber } from '@/shared/utils/formatNumber';
@@ -14,7 +13,7 @@ function total(points: AttributePoints): number {
   return points.ferocity + points.resilience + points.vigor;
 }
 
-interface AttributesPanelProps {
+interface AttributesSectionProps {
   progression: CharacterProgressionState;
   gold: number;
   /** `null` = normaler Modus; sonst der laufende Respec-Entwurf. */
@@ -27,19 +26,19 @@ interface AttributesPanelProps {
 }
 
 /**
- * Attribute der linken Spalte. Außerhalb des Respec-Modus gibt der Plus-Button freie Punkte
- * direkt aus. Im Respec-Modus arbeiten Minus und Plus auf einem lokalen Entwurf; erst
- * `CONFIRM` schreibt ihn gegen Gold, `CANCEL` verwirft ihn.
+ * Attribute als mittlere Gruppe des linken Spalten-Panels. Außerhalb des Respec-Modus gibt der
+ * Plus-Button freie Punkte direkt aus. Im Respec-Modus arbeiten Minus und Plus auf einem lokalen
+ * Entwurf; erst `CONFIRM` schreibt ihn gegen Gold, `CANCEL` verwirft ihn.
  *
  * Beide Modi teilen sich denselben Aufbau: zentrierter Titel in der Kopfzeile, darunter die
  * Attributzeilen, darunter eine Fußzeile aus linksbündigem Text und rechtsbündigen Buttons.
  * RESPEC steht dort an derselben Stelle wie später CANCEL/CONFIRM, damit der Wechsel in den
- * Respec-Modus die Höhe des Panels nicht verändert. Die Kopfzeile trägt drei gleich breite
+ * Respec-Modus die Höhe der Gruppe nicht verändert. Die Kopfzeile trägt drei gleich breite
  * Spalten und die Höhe der Punkte-Raute; der Titel steht damit unabhängig von den beiden
  * Randspalten mittig, und ihre Inhalte schalten ohne Höhensprung: die Raute erscheint bei freien
  * Punkten und im Respec-Modus, der Gold-Bestand nur im Respec-Modus.
  */
-export function AttributesPanel({
+export function AttributesSection({
   progression,
   gold,
   draft,
@@ -48,7 +47,7 @@ export function AttributesPanel({
   onStartRespec,
   onCancelRespec,
   onConfirmRespec,
-}: AttributesPanelProps) {
+}: AttributesSectionProps) {
   const respeccing = draft !== null;
   const points = draft ?? progression.attributePoints;
   const available = total(progression.attributePoints) + progression.freeAttributePoints;
@@ -58,7 +57,7 @@ export function AttributesPanel({
   const affordable = gold >= cost;
 
   return (
-    <Panel as="section" padding="md" className="min-w-0" data-testid="heroes-attributes">
+    <section className="min-w-0" data-testid="heroes-attributes">
       <div className="grid min-h-7 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
         {respeccing ? (
           <p
@@ -111,7 +110,7 @@ export function AttributesPanel({
             <div
               key={axis.attribute}
               data-attribute-axis={axis.attribute}
-              className="flex items-center gap-3 py-2.5"
+              className="flex items-center gap-3 py-1"
             >
               <Icon
                 name={axis.icon}
@@ -218,6 +217,6 @@ export function AttributesPanel({
           )}
         </span>
       </div>
-    </Panel>
+    </section>
   );
 }

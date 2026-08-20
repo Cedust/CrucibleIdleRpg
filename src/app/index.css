@@ -147,7 +147,7 @@
   /* Breiten-Cap der Tor-Illustrationen; die Kachel bleibt fluid, die Kunst cappt */
   --spacing-gate-art: clamp(11.5rem, calc(11.5rem + var(--fluid-delta) * 0.025), 14.5rem);
   /* Breiten-Cap des Heroes-Charakterportals; die Höhe folgt dem 3:4-Format des Assets */
-  --spacing-portal: clamp(33rem, calc(33rem + var(--fluid-delta) * 0.0166667), 35rem);
+  --spacing-portal: clamp(32rem, calc(32rem + var(--fluid-delta) * 0.025), 35rem);
 
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;

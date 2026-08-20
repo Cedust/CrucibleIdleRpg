@@ -1,20 +1,28 @@
 import type { AttributePoints, CharacterId } from '@/game/types';
 import { deriveCharacterStats, progressionFromSave } from '@/features/combat/engine/characterStats';
 
-import { AttributesPanel } from './AttributesPanel';
+import { AttributesSection } from './AttributesSection';
 import { CHARACTERS } from '@/game/characters/characters';
 import { CharacterPortal } from './CharacterPortal';
-import { CombatStatsPanel } from './CombatStatsPanel';
+import { CombatStatsSection } from './CombatStatsSection';
+import { Divider } from '@/shared/ui/layout/Divider';
 import { LevelPanel } from './LevelPanel';
+import { Panel } from '@/shared/ui/layout/Panel';
 import type { SaveData } from '@/features/save/saveSchema';
-import { StatGroupPanel } from './StatGroupPanel';
+import { StatGroupSection } from './StatGroupSection';
 import { statGroups } from './statsPresentation';
 import { useSaveStore } from '@/features/save/saveStore';
 import { useState } from 'react';
 
 /**
- * Stats-Bereich von Heroes: links Attribute, Combat Stats und Core Stats, in der Mitte das
- * Charakterportal über dem Level-Panel, rechts die Offensive-, Defensive- und Utility-Listen.
+ * Stats-Bereich von Heroes: links ein Panel mit Combat, Attributes und Core Stats, in der Mitte
+ * das Charakterportal über dem Level-Panel, rechts ein Panel mit den Offensive-, Defensive- und
+ * Utility-Listen. Jede Seite trägt ihre drei Gruppen in einem gemeinsamen Rahmen, getrennt durch
+ * das feine Divider-Ornament; das Grid streckt beide Spalten-Panels auf dieselbe Höhe und
+ * `justify-between` verteilt den Rest.
+ *
+ * Combat steht links zuoberst und ist damit das optische Hauptpanel der Ansicht.
+ *
  * Portal und Level-Panel sitzen per `mt-auto` am Fuß der Mittelspalte; der Höhenunterschied zu
  * den Stat-Spalten liegt damit als Weißraum über dem Portal.
  * Die Mittelspalte steht im DOM zuerst und wandert erst im dreispaltigen Layout zwischen die
@@ -43,7 +51,7 @@ export function StatsPanel({ characterId, save }: { characterId: CharacterId; sa
       aria-labelledby="heroes-tab-stats"
       className="min-h-0 flex-1 overflow-y-auto px-3 py-2"
     >
-      <div className="grid min-w-0 gap-4 @min-[44rem]:grid-cols-2 @min-[68rem]:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,1fr)]">
+      <div className="grid min-w-0 gap-4 @min-[44rem]:grid-cols-2 @min-[68rem]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,1fr)]">
         <div
           className="flex min-w-0 flex-col gap-4 @min-[44rem]:col-span-2 @min-[68rem]:order-2 @min-[68rem]:col-span-1"
           data-testid="heroes-portal-column"
@@ -51,11 +59,15 @@ export function StatsPanel({ characterId, save }: { characterId: CharacterId; sa
           <CharacterPortal characterId={characterId} className="mt-auto" />
           <LevelPanel characterId={characterId} progression={progression} />
         </div>
-        <div
-          className="flex min-w-0 flex-col gap-4 @min-[68rem]:order-1"
-          data-testid="heroes-attribute-column"
+        <Panel
+          as="section"
+          padding="md"
+          className="flex min-w-0 flex-col justify-between @min-[68rem]:order-1"
+          data-testid="heroes-combat-column"
         >
-          <AttributesPanel
+          <CombatStatsSection derived={stats.derived} />
+          <Divider variant="thin" className="my-2" />
+          <AttributesSection
             progression={progression}
             gold={save.currencies.gold}
             draft={draft}
@@ -77,17 +89,21 @@ export function StatsPanel({ characterId, save }: { characterId: CharacterId; sa
               });
             }}
           />
-          <CombatStatsPanel derived={stats.derived} />
-          <StatGroupPanel group={core} />
-        </div>
-        <div
-          className="flex min-w-0 flex-col gap-4 @min-[68rem]:order-3"
+          <Divider variant="thin" className="my-2" />
+          <StatGroupSection group={core} />
+        </Panel>
+        <Panel
+          as="section"
+          padding="md"
+          className="flex min-w-0 flex-col justify-between @min-[68rem]:order-3"
           data-testid="heroes-detail-column"
         >
-          <StatGroupPanel group={offensive} />
-          <StatGroupPanel group={defensive} />
-          <StatGroupPanel group={utility} />
-        </div>
+          <StatGroupSection group={offensive} />
+          <Divider variant="thin" className="my-2" />
+          <StatGroupSection group={defensive} />
+          <Divider variant="thin" className="my-2" />
+          <StatGroupSection group={utility} />
+        </Panel>
       </div>
     </div>
   );

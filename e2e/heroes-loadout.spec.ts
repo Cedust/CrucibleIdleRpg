@@ -119,7 +119,10 @@ test('arranges talisman, signature weapon, armor column and detail without docum
   expect(slotOrder).toEqual(['head', 'chest', 'legs', 'feet']);
 
   expect(await scrollState(page, 'html')).toEqual({ scrollsX: false, scrollsY: false });
-  const mainScroll = await page.getByRole('main').evaluate((element) => {
+  // `main` traegt den Frame-Bleed des Screen-Hintergrunds (UI.md 1); der
+  // Rahmen-Wrapper klippt ihn, `main` selbst ist kein Scroll-Container.
+  const FRAME_BLEED = 8;
+  const mainScroll = await page.getByRole('main').evaluate((element, slack) => {
     const scrollContainer = element as unknown as {
       clientWidth: number;
       scrollWidth: number;
@@ -127,10 +130,10 @@ test('arranges talisman, signature weapon, armor column and detail without docum
       scrollHeight: number;
     };
     return (
-      scrollContainer.scrollHeight > scrollContainer.clientHeight ||
-      scrollContainer.scrollWidth > scrollContainer.clientWidth
+      scrollContainer.scrollHeight - scrollContainer.clientHeight > slack ||
+      scrollContainer.scrollWidth - scrollContainer.clientWidth > slack
     );
-  });
+  }, FRAME_BLEED);
   expect(mainScroll).toBe(false);
 });
 

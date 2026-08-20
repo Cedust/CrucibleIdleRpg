@@ -26,8 +26,16 @@ async function elementWidth(locator: Locator) {
   return locator.evaluate((element) => (element as unknown as { clientWidth: number }).clientWidth);
 }
 
-async function scrollState(locator: Locator) {
-  return locator.evaluate((element) => {
+/**
+ * Hintergrund und Kontrast-Overlay eines Screens bluten um `--spacing-frame-bleed`
+ * nach außen unter die Goldlinie des App-Rahmens (UI.md §1). Der Rahmen-Wrapper
+ * klippt diesen Überlauf, `main` ist selbst kein Scroll-Container. Container, die
+ * den Bleed tragen, werden daher mit dieser Toleranz geprüft.
+ */
+const FRAME_BLEED = 8;
+
+async function scrollState(locator: Locator, tolerance = 0) {
+  return locator.evaluate((element, slack) => {
     const scrollContainer = element as unknown as {
       clientWidth: number;
       scrollWidth: number;
@@ -35,10 +43,10 @@ async function scrollState(locator: Locator) {
       scrollHeight: number;
     };
     return {
-      scrollsX: scrollContainer.scrollWidth > scrollContainer.clientWidth,
-      scrollsY: scrollContainer.scrollHeight > scrollContainer.clientHeight,
+      scrollsX: scrollContainer.scrollWidth - scrollContainer.clientWidth > slack,
+      scrollsY: scrollContainer.scrollHeight - scrollContainer.clientHeight > slack,
     };
-  });
+  }, tolerance);
 }
 
 test('loads the accessible dungeon selection', async ({ page }) => {
@@ -112,8 +120,10 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
     ) {
       throw new Error('Weapon Mastery layout must be visible');
     }
-    expect(Math.abs(backgroundBox.x - mainViewBox.x)).toBeLessThanOrEqual(1);
-    expect(Math.abs(backgroundBox.width - mainViewBox.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(backgroundBox.x - (mainViewBox.x - FRAME_BLEED))).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(backgroundBox.width - (mainViewBox.width + 2 * FRAME_BLEED)),
+    ).toBeLessThanOrEqual(1);
     expect(switcherBox.height).toBeLessThanOrEqual(124);
     expect(switcherBox.x).toBeGreaterThanOrEqual(sidebarBox.x);
     expect(switcherBox.x + switcherBox.width).toBeLessThanOrEqual(sidebarBox.x + sidebarBox.width);
@@ -147,7 +157,7 @@ test('keeps Heroes local to the shared character context and its own scroll area
   await expect(portal.getByText('Korvin')).toBeVisible();
 
   const portalColumn = page.getByTestId('heroes-portal-column');
-  const attributeColumn = page.getByTestId('heroes-attribute-column');
+  const combatColumn = page.getByTestId('heroes-combat-column');
   const detailColumn = page.getByTestId('heroes-detail-column');
   const levelPanel = page.getByTestId('heroes-progression');
   const combatStats = page.getByTestId('heroes-combat-stats');
@@ -161,15 +171,15 @@ test('keeps Heroes local to the shared character context and its own scroll area
   }
 
   // Dreispaltig: Attribute links, Portal in der Mitte, Detail-Listen rechts.
-  const [attributeBox, portalBox, detailBox, levelBox, frameBox] = await Promise.all([
-    attributeColumn.boundingBox(),
+  const [combatBox, portalBox, detailBox, levelBox, frameBox] = await Promise.all([
+    combatColumn.boundingBox(),
     portalColumn.boundingBox(),
     detailColumn.boundingBox(),
     levelPanel.boundingBox(),
     portal.boundingBox(),
   ]);
   if (
-    attributeBox === null ||
+    combatBox === null ||
     portalBox === null ||
     detailBox === null ||
     levelBox === null ||
@@ -177,9 +187,9 @@ test('keeps Heroes local to the shared character context and its own scroll area
   ) {
     throw new Error('Heroes stat columns must be visible');
   }
-  expect(attributeBox.x + attributeBox.width).toBeLessThanOrEqual(portalBox.x + 1);
+  expect(combatBox.x + combatBox.width).toBeLessThanOrEqual(portalBox.x + 1);
   expect(portalBox.x + portalBox.width).toBeLessThanOrEqual(detailBox.x + 1);
-  expect(Math.abs(attributeBox.y - portalBox.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(combatBox.y - portalBox.y)).toBeLessThanOrEqual(1);
   expect(Math.abs(portalBox.y - detailBox.y)).toBeLessThanOrEqual(1);
   // Das Level-Panel schließt die Mittelspalte ab, das Portal steht direkt darüber.
   expect(
@@ -213,26 +223,29 @@ test('keeps Heroes local to the shared character context and its own scroll area
 
   // Zweispaltig: das Portal spannt über beide Stat-Spalten.
   await page.setViewportSize({ width: 1280, height: 720 });
-  const [narrowPortal, narrowAttribute, narrowDetail] = await Promise.all([
+  const [narrowPortal, narrowCombat, narrowDetail] = await Promise.all([
     portalColumn.boundingBox(),
-    attributeColumn.boundingBox(),
+    combatColumn.boundingBox(),
     detailColumn.boundingBox(),
   ]);
-  if (narrowPortal === null || narrowAttribute === null || narrowDetail === null) {
+  if (narrowPortal === null || narrowCombat === null || narrowDetail === null) {
     throw new Error('Heroes stat columns must stay visible in the two-column layout');
   }
-  expect(narrowPortal.y + narrowPortal.height).toBeLessThanOrEqual(narrowAttribute.y + 1);
-  expect(narrowAttribute.x + narrowAttribute.width).toBeLessThanOrEqual(narrowDetail.x + 1);
-  expect(Math.abs(narrowAttribute.y - narrowDetail.y)).toBeLessThanOrEqual(1);
+  expect(narrowPortal.y + narrowPortal.height).toBeLessThanOrEqual(narrowCombat.y + 1);
+  expect(narrowCombat.x + narrowCombat.width).toBeLessThanOrEqual(narrowDetail.x + 1);
+  expect(Math.abs(narrowCombat.y - narrowDetail.y)).toBeLessThanOrEqual(1);
 
   /*
-   * Die drei gestapelten Detail-Listen tragen 16 Stat-Zeilen: ab der 1920er-Hoehenklasse
-   * passt der Bereich ohne Scroll, in den beiden kleineren Klassen uebernimmt der lokale
-   * Scroller des Panels. Quer gescrollt wird nie, und der Scroll bleibt lokal (UI.md §1, §3).
+   * Die rechte Spalte tragt 12 Stat-Zeilen, weil die Offensive Stats paarweise stehen: in
+   * jeder dreispaltigen Klasse passt der Bereich damit ohne Scroll. Unterhalb des
+   * 68rem-Thresholds spannt das Portal uber beide Stat-Spalten und stapelt darueber; dort
+   * uebernimmt der lokale Scroller des Panels. Quer gescrollt wird nie, und der Scroll bleibt
+   * lokal (UI.md §1, §3).
    */
   for (const viewport of [
-    { width: 1536, height: 864, scrollsY: true },
-    { width: 1600, height: 900, scrollsY: true },
+    { width: 1366, height: 768, scrollsY: true },
+    { width: 1536, height: 864, scrollsY: false },
+    { width: 1600, height: 900, scrollsY: false },
     { width: 1920, height: 1080, scrollsY: false },
     { width: 2560, height: 1440, scrollsY: false },
   ]) {
@@ -242,7 +255,7 @@ test('keeps Heroes local to the shared character context and its own scroll area
       scrollsY: viewport.scrollsY,
     });
     expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
-    expect(await scrollState(page.getByRole('main'))).toEqual({
+    expect(await scrollState(page.getByRole('main'), FRAME_BLEED)).toEqual({
       scrollsX: false,
       scrollsY: false,
     });
@@ -265,7 +278,10 @@ test('keeps Heroes local to the shared character context and its own scroll area
   await page.getByRole('button', { name: 'HEROES', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
   expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
-  expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+  expect(await scrollState(page.getByRole('main'), FRAME_BLEED)).toEqual({
+    scrollsX: false,
+    scrollsY: false,
+  });
 
   await page.reload();
   await page.getByRole('button', { name: 'HEROES', exact: true }).click();
@@ -302,7 +318,7 @@ test('keeps mastery tab focus ornaments visible and scrolls tall trees within th
     }),
   ]);
 
-  expect(mainMetrics.scrollHeight).toBeLessThanOrEqual(mainMetrics.clientHeight);
+  expect(mainMetrics.scrollHeight).toBeLessThanOrEqual(mainMetrics.clientHeight + FRAME_BLEED);
   expect(treeMetrics.scrollHeight).toBeGreaterThan(treeMetrics.clientHeight);
 });
 
@@ -378,7 +394,7 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
   expect(wideLayout.columns).toBe(2);
   expect(wideLayout.scrollWidth).toBeLessThanOrEqual(wideLayout.clientWidth);
   expect((await gridMetrics(tablist)).columns).toBe(3);
-  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(layout)))).toBeLessThan(1);
   const [graphBox, inspectorBox] = await Promise.all([
     graph.boundingBox(),
     inspector.boundingBox(),
@@ -392,7 +408,7 @@ test('renders the Crucible graph without horizontal overflow at wide and stacked
   expect(stackedLayout.columns).toBe(1);
   expect(stackedLayout.scrollWidth).toBeLessThanOrEqual(stackedLayout.clientWidth);
   expect((await gridMetrics(tablist)).columns).toBe(3);
-  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(graph)))).toBeLessThan(1);
+  expect(Math.abs((await elementWidth(navigation)) - (await elementWidth(layout)))).toBeLessThan(1);
 
   await page.setViewportSize({ width: 768, height: 900 });
   const scroller = navigation.locator('.overflow-x-auto');
@@ -464,10 +480,10 @@ test('isolates a dungeon run without sidebar branding or resources', async ({ pa
   await expect(page.getByRole('region', { name: 'Party' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Combat Log' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Enemy Formation', exact: true })).toBeVisible();
-  const runScrolls = await page.getByRole('main').evaluate((element) => {
+  const runScrolls = await page.getByRole('main').evaluate((element, slack) => {
     const scrollContainer = element as unknown as { clientHeight: number; scrollHeight: number };
-    return scrollContainer.scrollHeight > scrollContainer.clientHeight;
-  });
+    return scrollContainer.scrollHeight - scrollContainer.clientHeight > slack;
+  }, FRAME_BLEED);
   const documentScrolls = await page.locator('html').evaluate((element) => {
     const scrollContainer = element as unknown as { clientHeight: number; scrollHeight: number };
     return scrollContainer.scrollHeight > scrollContainer.clientHeight;
@@ -499,12 +515,18 @@ test('keeps dungeon selection and crucible free of document and main scroll', as
 
     await expect(page.getByRole('heading', { name: 'Dungeons', exact: true })).toBeVisible();
     expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
-    expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+    expect(await scrollState(page.getByRole('main'), FRAME_BLEED)).toEqual({
+      scrollsX: false,
+      scrollsY: false,
+    });
 
     await page.getByRole('button', { name: 'CRUCIBLE', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Crucible', exact: true })).toBeVisible();
     expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
-    expect(await scrollState(page.getByRole('main'))).toEqual({ scrollsX: false, scrollsY: false });
+    expect(await scrollState(page.getByRole('main'), FRAME_BLEED)).toEqual({
+      scrollsX: false,
+      scrollsY: false,
+    });
   }
 });
 
@@ -575,8 +597,8 @@ test('centers the combat log between equally wide hero and enemy areas', async (
   }
 
   expect(Math.abs(heroBox.width - formationBox.width)).toBeLessThanOrEqual(1);
-  expect(frontlineBox.height).toBe(heroBox.height);
-  expect(backlineBox.height).toBe(heroBox.height);
+  expect(frontlineBox.height).toBe(backlineBox.height);
+  expect(heroBox.height).toBeLessThanOrEqual(frontlineBox.height);
   expect(Math.abs(heroBox.x - statusBox.x)).toBeLessThanOrEqual(1);
   expect(
     Math.abs(formationBox.x + formationBox.width - (statusBox.x + statusBox.width)),

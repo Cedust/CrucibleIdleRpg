@@ -26,9 +26,9 @@ describe('AppShell', () => {
     expect(
       container.querySelector('img[src="/assets/icons/logo/crucible-emblem.png"]'),
     ).toBeInTheDocument();
-    expect(
-      container.querySelector('img[src="/assets/ornaments/divider-ornate.png"]'),
-    ).toBeInTheDocument();
+    expect(container.querySelector('[data-divider="ornate"]')).toHaveClass(
+      'bg-[url(/assets/ornaments/divider-ornate.png)]',
+    );
     expect(
       container.querySelector('img[src="/assets/ornaments/nav-selection.png"]'),
     ).toBeInTheDocument();

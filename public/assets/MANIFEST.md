@@ -103,13 +103,15 @@ nutzen stattdessen paarweise die vorhandenen `icons/mastery/discipline-*.png`.
 | [frames/medallion-act.png](frames/medallion-act.png)                       | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (453×464); Akt-Numerale-Medaillon der Akt-Panels                                                                                         |
 | [frames/panel-standard.png](frames/panel-standard.png)                     | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (559×327); 9-Slice-Basis von `border-image-standard`, dem Standard-Panel-Rahmen (Goldlinien Zeilen 22–23/301–302, Spalten 24–25/535–536) |
 | [frames/character-portal-frame.png](frames/character-portal-frame.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §37](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1086×1448 (exakt 3:4); Bogenöffnung transparent (x 232–851, y 320–1375), Namensfläche über dem Bogen (y 91–256); Charakterportal der Heroes-Stats                                      |
+| [frames/medallion-stat.png](frames/medallion-stat.png)                     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §40](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1254×1254; Ring mit transparenter Mitte, Medaillon der Combat-Stat-Zeilen der Heroes-Stats                                                                                             |
 
 ## Ornamente
 
-| Datei                                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
-| [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
-| [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
+| Datei                                                        | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                   |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------------------- |
+| [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                             |
+| [ornaments/divider-thin.png](ornaments/divider-thin.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §41](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2048×768; Trenner zwischen den Stat-Gruppen der Heroes-Panels |
+| [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                             |
 
 ## Tore
 

@@ -1734,6 +1734,64 @@ banners with emblems; bright full-frame fire, daylight, god-ray spectacle, exces
 busy foreground clutter; modern elements; horror imagery; photorealistic photography
 ```
 
+## 40. Stat-Medaillon
+
+- **Zieldatei:** `public/assets/frames/medallion-stat.png`
+- **Format:** quadratisch, mindestens 768×768, transparenter Hintergrund
+- **Verwendung:** Medaillon der drei Combat-Stat-Zeilen der Heroes-Stats-Ansicht (Attack,
+  Defense, Health). Das Asset liegt als CSS-Background hinter einer zentrierten Stat-Glyphe (§38)
+  und wird bei 56 bis 70 CSS-Pixeln Breite dargestellt (`size-portrait-md`), die Glyphe darin in
+  `size-lg` (32 px).
+- **Geometrie — der kritische Punkt:** Die **transparente Öffnung nimmt 70 % der Bildbreite** ein,
+  der Ring also **15 % je Seite**. Bei 56 px Medaillon sind das 8,4 px Ring und 39 px Öffnung; die
+  32-px-Glyphe steht frei darin und füllt 57 % des Medaillons. Zwei Gegenproben, beide zu weit
+  außen:
+  - `medallion-act.png` (§33) trägt nur 36–40 % Öffnung (453×464 px bei 179×166 px) — genug für
+    eine Numerale, zu wenig für eine Glyphe.
+  - Der erste Wurf dieses Assets kam mit 89 % Öffnung und damit 4,5 % Ringbreite: bei 56 px
+    Medaillon 2,5 px Ring, der als Haarlinie verschwindet statt als Ornament zu tragen.
+
+```text
+Round ornamental ring frame for a dark fantasy game UI icon, square format, fully
+transparent background. The transparent circular opening in the center takes up exactly
+70 percent of the image width, so the ring itself is a substantial band occupying 15
+percent of the image width on each side — clearly a carved ring, not a hairline. Forged
+tarnished brass and warm gold (#8a6d3b to #fbbf24) with visible depth and bevel: a raised
+outer edge, a recessed channel, and four round rivets at the cardinal points. Heavy
+stone-carved imperial style, gilded ruins mood, subtle worn-metal texture, strict radial
+symmetry, crisp clean vector-like edges. Do not make the ring thin or wiry, do not leave
+more than 70 percent of the width transparent. No spikes, no thorns, no flourishes
+reaching inward, no inner disc or plaque, no glow, no background, no text, no numerals,
+no watermark.
+```
+
+## 41. Feiner Divider
+
+- **Zieldatei:** `public/assets/ornaments/divider-thin.png`
+- **Format:** Querformat, mindestens 2048 px breit, transparenter Hintergrund; die gelieferte
+  Datei ist 2048×768 (2,67:1).
+- **Verwendung:** Trenner zwischen den Stat-Gruppen der beiden Spalten-Panels der
+  Heroes-Stats-Ansicht — je zwei Trenner links (Combat / Attributes / Core) und rechts
+  (Offensive / Defensive / Utility).
+- **Technik:** Vollbreiter CSS-Background (`bg-cover bg-center`) auf einem 16 px hohen Streifen,
+  das Seitenverhältnis der Datei spielt damit keine Rolle: Die Linie muss auf der senkrechten
+  Bildmitte liegen, weil der Streifen dort beschneidet. Ein `<img>` wäre hier falsch, weil ein
+  fehlendes Asset den Broken-Image-Platzhalter zeigen würde, ein fehlender Background nichts.
+  Strikte horizontale Spiegelsymmetrie und spitz auslaufende Enden. Die zurückgenommene
+  Schwester des Sidebar-Dividers (§6): vier Trenner in einem Panel dürfen zusammen nicht
+  auftragen.
+
+```text
+Horizontal ornamental divider for a dark fantasy game UI, wide 8:1 landscape format,
+fully transparent background. A single very thin hairline of tarnished brass (#8a6d3b)
+running the full width at constant thickness, swelling at the exact center into nothing
+more than a tiny plain diamond, tapering to fine sharp points at both ends. Deliberately
+restrained and low contrast, much thinner and quieter than an ornate divider: no
+filigree, no medallion, no gemstone, no specular highlight, no glow. Heavy stone-carved
+imperial style, gilded ruins mood, strict left-right mirror symmetry, perfectly straight
+horizontal axis, crisp clean vector-like edges, no background, no text, no watermark.
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

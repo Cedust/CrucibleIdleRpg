@@ -45,7 +45,7 @@ describe('HeroesScreen', () => {
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
-  it('composes the stats area from the portal, attribute, and detail columns', () => {
+  it('composes the stats area from the portal, combat, and detail columns', () => {
     render(<HeroesScreen />);
 
     expect(screen.getByRole('heading', { name: 'Heroes' })).toBeInTheDocument();
@@ -54,18 +54,18 @@ describe('HeroesScreen', () => {
     ).toBeInTheDocument();
 
     const portalColumn = screen.getByTestId('heroes-portal-column');
-    const attributeColumn = screen.getByTestId('heroes-attribute-column');
+    const combatColumn = screen.getByTestId('heroes-combat-column');
     const detailColumn = screen.getByTestId('heroes-detail-column');
 
     // Die Mittelspalte steht im DOM zuerst und wandert erst per order in die Mitte.
-    expect(portalColumn.compareDocumentPosition(attributeColumn)).toBe(
+    expect(portalColumn.compareDocumentPosition(combatColumn)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
-    expect(attributeColumn.compareDocumentPosition(detailColumn)).toBe(
+    expect(combatColumn.compareDocumentPosition(detailColumn)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
     expect(portalColumn).toHaveClass('@min-[68rem]:order-2');
-    expect(attributeColumn).toHaveClass('@min-[68rem]:order-1');
+    expect(combatColumn).toHaveClass('@min-[68rem]:order-1');
     expect(detailColumn).toHaveClass('@min-[68rem]:order-3');
 
     const portal = within(portalColumn).getByTestId('heroes-portal-frame');
@@ -88,9 +88,12 @@ describe('HeroesScreen', () => {
       '75',
     );
 
-    // Attribute, Combat Stats und Core Stats stehen in der linken Spalte …
-    expect(within(attributeColumn).getByTestId('heroes-attributes')).toBeInTheDocument();
-    const combatStats = within(attributeColumn).getByTestId('heroes-combat-stats');
+    // Combat Stats, Attribute und Core Stats teilen sich das linke Panel, Combat zuoberst …
+    const combatStats = within(combatColumn).getByTestId('heroes-combat-stats');
+    const attributes = within(combatColumn).getByTestId('heroes-attributes');
+    const core = within(combatColumn).getByRole('heading', { name: 'Core' });
+    expect(combatStats.compareDocumentPosition(attributes)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(attributes.compareDocumentPosition(core)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     for (const [stat, value] of [
       ['attack', '14'],
       ['defense', '5'],
@@ -99,15 +102,26 @@ describe('HeroesScreen', () => {
       const row = combatStats.querySelector('[data-combat-stat="' + stat + '"]');
       expect(within(row as HTMLElement).getByText(value)).toBeInTheDocument();
     }
-    expect(within(attributeColumn).getByRole('heading', { name: 'Core' })).toBeInTheDocument();
 
-    // … die drei Detail-Listen in der rechten.
+    // … die drei Detail-Listen das rechte.
     for (const group of ['Offensive', 'Defensive', 'Utility']) {
       expect(within(detailColumn).getByRole('heading', { name: group })).toBeInTheDocument();
     }
-    expect(within(detailColumn).getByText('Crit Chance')).toBeInTheDocument();
     expect(within(detailColumn).getByText('Splash Radius')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Derived' })).not.toBeInTheDocument();
+
+    // Die Offensive Stats stehen paarweise; ‚Chance‘ und ‚Damage‘ beschriften die Spalten
+    // einmal im Kopf, jede Zeile trägt sie für Screenreader selbst.
+    const offensive = detailColumn.querySelector('[data-stat-group="Offensive"]') as HTMLElement;
+    expect(offensive.querySelector('[data-stat-columns]')).toHaveTextContent('ChanceDamage');
+    const critRow = offensive.querySelector('[data-stat-row="Critical Hits"]') as HTMLElement;
+    expect(within(critRow).getByRole('term')).toHaveTextContent('Critical Hits');
+    expect(
+      within(critRow)
+        .getAllByRole('definition')
+        .map((cell) => cell.textContent),
+    ).toEqual(['Chance 5%', 'Damage 150%']);
+    expect(within(detailColumn).queryByText('Crit Chance')).not.toBeInTheDocument();
   });
 
   it('uses keyboard-operated local tabs and retains their selection during the session', async () => {

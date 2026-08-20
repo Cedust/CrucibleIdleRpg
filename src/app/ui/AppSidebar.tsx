@@ -16,6 +16,7 @@ import {
   type View,
 } from '../navigationStore';
 import { cn } from '@/shared/ui/utils/cn';
+import { Divider } from '@/shared/ui/layout/Divider';
 import { focusRing, stateAttrs, transitionState } from '@/shared/ui/utils/state';
 import { CharacterSwitcher } from './CharacterSwitcher';
 
@@ -80,13 +81,7 @@ export function AppSidebar() {
           </p>
         </div>
 
-        <div aria-hidden="true" className="my-3 h-7 overflow-hidden">
-          <img
-            alt=""
-            src="/assets/ornaments/divider-ornate.png"
-            className="size-full object-cover"
-          />
-        </div>
+        <Divider className="my-3" />
 
         <nav
           aria-label="Primary navigation"

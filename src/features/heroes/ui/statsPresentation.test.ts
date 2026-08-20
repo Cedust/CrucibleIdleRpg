@@ -9,7 +9,8 @@ const [core, offensive, defensive, utility] = statGroups(stats);
 describe('statsPresentation', () => {
   it('deckt jede Stat des Charakters genau einmal ab', () => {
     expect(core.stats.map((stat) => stat.label)).toEqual(['Might', 'Toughness', 'Vitality']);
-    expect(offensive.stats).toHaveLength(Object.keys(stats.offensive).length);
+    // Die Offensive Stats stehen paarweise: eine Zeile trägt Chance und Damage eines Musters.
+    expect(offensive.stats).toHaveLength(Object.keys(stats.offensive).length / 2);
     expect(defensive.stats).toHaveLength(Object.keys(stats.defensive).length);
     expect(utility.stats).toHaveLength(Object.keys(stats.utility).length);
     expect(combatStatRows(stats.derived).map((row) => row.label)).toEqual([
@@ -48,17 +49,41 @@ describe('statsPresentation', () => {
     }
   });
 
-  it('nutzt für die Offensive Stats paarweise die Discipline-Icons der Weapon Mastery', () => {
+  it('stellt jedes offensive Muster als eine Zeile aus Chance und Damage dar', () => {
+    expect(offensive.valueColumns).toEqual(['Chance', 'Damage']);
+    expect(offensive.stats.map((stat) => stat.label)).toEqual([
+      'Critical Hits',
+      'Multi Hits',
+      'Splash Hits',
+      'Counter Hits',
+    ]);
+    expect(offensive.stats.map((stat) => [stat.value, stat.pairedValue])).toEqual([
+      [stats.offensive.critChance, stats.offensive.critDamage],
+      [stats.offensive.multiHitChance, stats.offensive.multiHitDamage],
+      [stats.offensive.splashChance, stats.offensive.splashDamage],
+      [stats.offensive.counterChance, stats.offensive.counterDamage],
+    ]);
+    for (const stat of offensive.stats) {
+      expect(stat.format).toBe('percent');
+    }
+  });
+
+  it('trägt je offensivem Muster genau einmal das Discipline-Icon seiner Weapon Mastery', () => {
     expect(offensive.stats.map((stat) => stat.icon)).toEqual([
       'discipline-finesse',
-      'discipline-finesse',
-      'discipline-tempest',
       'discipline-tempest',
       'discipline-dominance',
-      'discipline-dominance',
-      'discipline-valor',
       'discipline-valor',
     ]);
+  });
+
+  it('lässt die übrigen Gruppen einwertig und ohne Spaltenköpfe', () => {
+    for (const group of [core, defensive, utility]) {
+      expect(group.valueColumns).toBeUndefined();
+      for (const stat of group.stats) {
+        expect(stat.pairedValue).toBeUndefined();
+      }
+    }
   });
 
   it('koppelt jedes Attribut an Icon und Tönung seines Derived Stats', () => {

@@ -25,6 +25,11 @@ export const TONE_TEXT_CLASSES: Record<StatTone, string> = {
 export interface StatRow {
   label: string;
   value: number;
+  /**
+   * Zweiter Wert der Zeile; nur die Offensive-Gruppe trägt ihn, dort Chance und Damage je
+   * Muster (SPEC §3.0). `format` gilt für beide Werte.
+   */
+  pairedValue?: number;
   format?: 'number' | 'percent';
   icon: IconName;
   /** Eigene Tönung der Zeile; ohne sie trägt die Zeile die Tönung ihrer Gruppe. */
@@ -34,6 +39,8 @@ export interface StatRow {
 export interface StatGroup {
   label: string;
   tone: StatTone;
+  /** Beschriftung der beiden Wertspalten; nur die paarweise Offensive-Gruppe trägt sie. */
+  valueColumns?: readonly [string, string];
   stats: readonly StatRow[];
 }
 
@@ -125,9 +132,10 @@ export function combatStatRows(
 }
 
 /**
- * Die vier Listen-Gruppen der Stats-Ansicht. Die Offensive Stats nutzen paarweise die
- * Discipline-Icons der Weapon-Mastery-Tabs: Crit → Finesse, Multi Hit → Tempest,
- * Splash → Dominance, Counter → Valor.
+ * Die vier Listen-Gruppen der Stats-Ansicht. Die Offensive Stats stehen paarweise: eine Zeile je
+ * Muster mit Chance und Damage nebeneinander (SPEC §3.0), beschriftet über `valueColumns`. Jede
+ * Zeile trägt damit genau einmal das Discipline-Icon ihres Weapon-Mastery-Tabs — Critical Hits →
+ * Finesse, Multi Hits → Tempest, Splash Hits → Dominance, Counter Hits → Valor.
  *
  * Die Core Stats bleiben als Gruppe golden und tönen stattdessen jede Zeile mit der Achse des
  * Derived Stats, den der Core Stat speist (Might → Attack, Toughness → Defense,
@@ -164,52 +172,33 @@ export function statGroups(
     {
       label: 'Offensive',
       tone: 'offense',
+      valueColumns: ['Chance', 'Damage'],
       stats: [
         {
-          label: 'Crit Chance',
+          label: 'Critical Hits',
           value: stats.offensive.critChance,
+          pairedValue: stats.offensive.critDamage,
           format: 'percent',
           icon: 'discipline-finesse',
         },
         {
-          label: 'Crit Damage',
-          value: stats.offensive.critDamage,
-          format: 'percent',
-          icon: 'discipline-finesse',
-        },
-        {
-          label: 'Multi Hit Chance',
+          label: 'Multi Hits',
           value: stats.offensive.multiHitChance,
+          pairedValue: stats.offensive.multiHitDamage,
           format: 'percent',
           icon: 'discipline-tempest',
         },
         {
-          label: 'Multi Hit Damage',
-          value: stats.offensive.multiHitDamage,
-          format: 'percent',
-          icon: 'discipline-tempest',
-        },
-        {
-          label: 'Splash Chance',
+          label: 'Splash Hits',
           value: stats.offensive.splashChance,
+          pairedValue: stats.offensive.splashDamage,
           format: 'percent',
           icon: 'discipline-dominance',
         },
         {
-          label: 'Splash Damage',
-          value: stats.offensive.splashDamage,
-          format: 'percent',
-          icon: 'discipline-dominance',
-        },
-        {
-          label: 'Counter Chance',
+          label: 'Counter Hits',
           value: stats.offensive.counterChance,
-          format: 'percent',
-          icon: 'discipline-valor',
-        },
-        {
-          label: 'Counter Damage',
-          value: stats.offensive.counterDamage,
+          pairedValue: stats.offensive.counterDamage,
           format: 'percent',
           icon: 'discipline-valor',
         },

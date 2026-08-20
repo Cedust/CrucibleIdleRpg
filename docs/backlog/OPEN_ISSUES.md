@@ -33,13 +33,15 @@ erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Maste
 - [ ] Item-Level-Kurve, Seltenheits-Caps und Sockel-Meilensteine. → [Items](../spec/ITEMS.md#3-seltenheit-sockel--level-cap)
 - [ ] Cinder-, Blacksmith- und Jeweler-Kosten. → [Handwerk](../spec/ITEMS.md#7-blacksmith--temper-masterwork--brand)
 - [ ] Gem-Werte, Targeting, Drops und Aufleveln-Kosten. → [Jeweler](../spec/ITEMS.md#8-jeweler--inlay-attune--recut)
-- [ ] Sigil-Pool, Mindesttiefen, Gewichte, Drops und Skalierung. → [Sigils](../spec/ITEMS.md#5-sigils--sigil-codex)
+- [ ] Sigil-Drop-Chance je Wiederholungs-Kill, Auswahl-Gewichte des Akt-3-Bosses und
+      Imprint-Stärke je Sigil-Level. → [Sigils](../spec/ITEMS.md#5-sigils--sigil-codex)
 - [ ] Diamond-Effekte sowie Runedust-, Rune-Katalog-, Rune-Stärke- und Trigger-Kurven. → [Runen](../spec/RUNES.md)
 
 ## 2. Offene Spec-Punkte
 
 - [ ] Prismatic-/Diamond-Mechanik im Detail. → [Jeweler](../spec/ITEMS.md#8-jeweler--inlay-attune--recut)
-- [ ] Sigil-Katalog, Implicit-Klassen und Boss-Signatur-Sigils. → [Sigils](../spec/ITEMS.md#5-sigils--sigil-codex)
+- [ ] Name des Akt-3-Bosses; die Rolle ist eine **Empress** und die vier Boss-Sigils tragen sie
+      im Namen. → [Struktur](../spec/PROGRESSION.md#1-struktur-akte-dungeons-floors)
 - [ ] Mehrfachzug für Boss-Gegner statt zusätzlicher Gegner. → [Rundenablauf](../spec/COMBAT-RUN.md#11-rundenablauf)
 - [ ] Tiebreak bei gleicher gegnerischer Initiative für die Zielpriorisierung. → [Zielauswahl](../spec/COMBAT-RUN.md#12-zielauswahl)
 - [ ] Counter eines Charakters, der durch denselben Gegner-Angriff fällt. → [Ausgehender Schaden](../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)

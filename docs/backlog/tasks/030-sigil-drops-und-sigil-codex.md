@@ -4,56 +4,61 @@
 | ---------------- | --------- |
 | **Status**       | `blocked` |
 | **Meilenstein**  | M4        |
-| **Hängt ab von** | 026       |
+| **Hängt ab von** | 026, 032  |
 
 ## Ziel
 
-Elite- und Boss-Siege schreiben Sigils tiefen-gestaffelt in den Sigil Codex — unbekannte auf
-Level 1, bekannte um +1 —, der erste Sigil-Drop eines Spielstands ist garantiert, und eine
-Codex-Ansicht zeigt Wissensstand und Level.
+Elite- und Boss-Siege schreiben das Sigil ihrer Quelle in den Sigil Codex — der erste Kill
+garantiert, jeder weitere mit flacher Chance auf +1 Level —, und eine Codex-Ansicht zeigt
+Wissensstand und Level.
 
 ## Nicht-Ziel
 
 Brand wendet Sigils erst in [031](031-blacksmith-brand.md) an; dort entstehen auch die
-Implicit-Kampfwirkungen.
+Imprint-Kampfwirkungen.
 
 ## Blockiert durch
 
-Der Sigil-Katalog mit Implicit-Klassen, Slot-Bindungen, Mindesttiefen und dem
-Boss-Signatur-Sigil ist ein offener Spec-Punkt
-([OPEN_ISSUES §2](../OPEN_ISSUES.md#2-offene-spec-punkte)); Gewichte und Skalierung sind offenes
-Balancing ([OPEN_ISSUES §1](../OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)). Der
-Katalog wird zuerst in Spec beziehungsweise Balancing-Content festgelegt.
-[026](026-item-schichten-und-handwerks-fundament.md) liefert davor das gemeinsame Save-Schema.
+[032](032-imprint-und-brand-schwelle.md) — der Begriff `Imprint` steht vor dem Sigil-Content,
+damit der neue Code nicht gegen die alte Benennung schreibt.
+[026](026-item-schichten-und-handwerks-fundament.md) liefert das gemeinsame Save-Schema.
 
 ## Verbindliche Spec-Anker
 
 - [Sigils & Sigil Codex](../../spec/ITEMS.md#5-sigils--sigil-codex) — Wissensstand plus Level
-  1–5, kein Bestand, Slot(-Typ)-Bindung, Pool-Größe unter 12
-- [Drops](../../spec/ITEMS.md#6-drops-gems-cinder--sigils) — Elite/Boss ab `A1-D1-20`, erster
-  Drop garantiert, tiefen-gestaffelter Pool, Gewichtung unbekannter Sigils, Level 5 verlässt den
-  Pool, Akt-Boss-Signatur-Sigil
+  1–5, kein Bestand, feste Quelle, Slot(-Typ)-Bindung, 18 Sigils bei 12 Slots, Anzeigeform
+  `Sigil of …`, verdeckte Einträge als Platzhalter
+- [Katalog](../../spec/ITEMS.md#51-katalog) — die 18 Sigils mit Quelle, Imprint und Slot-Bindung
+- [Drops](../../spec/ITEMS.md#6-drops-gems-cinder--sigils) — eine Quelle je Sigil, erster Kill
+  garantiert, flache Chance bei Wiederholungen, Level 5 erschöpft die Quelle, Akt-3-Boss mit vier
+  Sigils und gewichteter Auswahl
 - [Seeds und Zufalls-Ströme](../../spec/SIMULATION.md#4-seeds-und-zufalls-ströme) — Sigil-Würfe
   laufen über den seedbaren `loot`-Strom
 - [Save-Inhalt](../../spec/PERSISTENCE.md#2-save-inhalt) — der Codex-Stand ist persistenter
   Save-Inhalt
 - [Belohnungen aus einem Sieg](../../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg) —
   Sigil-Drops committen atomar mit dem Floor-Sieg
+- [Umgang mit offenen Balancing-Werten](../README.md#4-umgang-mit-offenen-balancing-werten) —
+  Drop-Chance und Imprint-Stärke je Sigil-Level sind markierter Balancing-Content
 
 ## Akzeptanzkriterien
 
-- [ ] Elite- und Boss-Siege ab `A1-D1-20` würfeln Sigils über den loot-Strom aus dem
-      tiefen-gestaffelten Pool; unbekannte Sigils sind höher gewichtet
-- [ ] Der erste Sigil-Drop eines Spielstands ist garantiert; der Akt-1-Boss droppt beim ersten
-      Kill sein Signatur-Sigil und würfelt bei Wiederholungen aus dem obersten Tier
-- [ ] Unbekannte Sigils erscheinen auf Level 1 im Codex, bekannte steigen um +1; Sigils auf
-      Level 5 verlassen den Pool, und mit allen Sigils auf Level 5 entfällt der Wurf
+- [ ] `src/game/sigils/` deklariert alle 18 Sigils des Katalogs mit Quelle, Imprint-Identität und
+      Slot(-Typ)-Bindung; jeder Elite- und Boss-Floor hat genau eine Sigil-Quelle, der
+      Akt-3-Boss vier
+- [ ] Der erste Sieg über eine Quelle schreibt ihr Sigil RNG-frei auf Level 1 in den Codex; beim
+      Akt-3-Boss ist das `Empress's Mandate`
+- [ ] Jeder weitere Sieg über eine Quelle hebt ihr Sigil mit flacher Chance über den `loot`-Strom
+      um +1 Level; ein Sigil auf Level 5 erschöpft seine Quelle
+- [ ] Der Akt-3-Boss würfelt bei Wiederholungen zuerst die Chance, dann gewichtet unter seinen
+      vier Sigils; unbekannte sind höher gewichtet, Sigils auf Level 5 fallen aus der Auswahl
 - [ ] Der Codex-Stand persistiert im Save, und Sigil-Drops erscheinen in der
       Reward-Zusammenfassung
-- [ ] Die Codex-Ansicht zeigt bekannte Sigils mit Level, Slot-Bindung und Implicit-Identität;
-      unbekannte Einträge erscheinen verdeckt
-- [ ] Unit- und Store-Tests decken Garantie, Staffelung, Gewichtung, Level-Pfad und Pool-Austritt
-      deterministisch ab
+- [ ] Die Codex-Ansicht zeigt bekannte Sigils als `Sigil of …` mit Level, Slot-Bindung und
+      Imprint; unbekannte Einträge erscheinen als Platzhalter, und die Ansicht rendert die
+      Einträge freigeschalteter Akte
+- [ ] Unit- und Store-Tests decken Garantie, Wiederholungs-Chance, Level-Pfad,
+      Quellen-Erschöpfung und die gewichtete Auswahl des Akt-3-Bosses deterministisch ab
 
 ## Betroffene Dateien
 

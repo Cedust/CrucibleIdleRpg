@@ -47,12 +47,14 @@ die drei übrigen Handwerks-Schichten hängen.
 | 2   | **Item-Level** (`+n`)   | skaliert den **Innate-Value**                | **Stamm: Basis-Power** | **Blacksmith** Temper     | Gold              | keiner    |
 | 3   | **Seltenheit**          | Sockelzahl, Gem-Level-Cap, Item-Level-Cap    | **Ast: Kapazität**     | **Blacksmith** Masterwork | Cinder + Gold     | keiner    |
 | 4   | **Gems in den Sockeln** | je ein gerollter Affix mit Value             | **Ast: Min-Max**       | **Jeweler**               | Gold + Gem-Fodder | seed-PRNG |
-| 5   | **Implicit**            | Affix eines **Sigils**, den kein Gem liefert | **Ast: Identität**     | **Blacksmith** Brand      | Cinder + Gold     | keiner    |
+| 5   | **Imprint**             | Affix eines **Sigils**, den kein Gem liefert | **Ast: Identität**     | **Blacksmith** Brand      | Cinder + Gold     | keiner    |
 
 - **Schicht 2 ist die geometrisch wachsende Basis-Power** und der **planbare** Träger der
   Progressions-Kurve — das persistente Item „wächst mit".
 - **Schicht 4 ist die Min-Max-Achse** und damit die eigentliche Loot-Jagd: Der Affix eines
   Gems wird beim Einsetzen gewürfelt.
+- **Schicht 5 ist die Identitäts-Achse:** Ein Imprint verstärkt einen Gem-Stat prozentual oder
+  hebt einen gem-freien Stat ([§5](#5-sigils--sigil-codex)).
 - Alle Handwerks-Aktionen kosten Gold; Masterwork und Brand zusätzlich Cinder. Der
   **einzige Zufall im Handwerk** liegt beim Jeweler — die drei Blacksmith-Aktionen sind
   vollständig planbar.
@@ -96,12 +98,63 @@ Weapon Mastery Ranks sind keine Seltenheit; Waffen verwenden diese Tabelle nicht
 
 - Ein **Sigil** ist ein Eintrag im **Sigil Codex** mit Level 1–5 — ein binärer Wissensstand plus
   Level, **kein Bestand und kein Inventar**. Jedes Sigil trägt eine vordefinierte
-  Implicit-Identität, eine **Mindesttiefe** und eine **Slot(-Typ)-Bindung**.
-- Das **Implicit** kommt per Brand (siehe Blacksmith) auf ein **Legendary**-Item; seine Stärke
+  **Imprint-Identität**, eine feste **Quelle** ([§6](#6-drops-gems-cinder--sigils)) und eine
+  **Slot(-Typ)-Bindung**.
+- Das **Imprint** kommt per Brand (siehe Blacksmith) auf ein Item **ab Magic**; seine Stärke
   skaliert mit dem Sigil-Level.
 - Jedes Sigil ist **teamweit genau einmal aktiv** und nur auf seinem gebundenen Slot(-Typ)
-  einsetzbar. Die **Pool-Größe liegt unter 12** (Zahl der Armor-Slots) → es tragen nie alle Slots
-  ein Sigil.
+  einsetzbar. Der Katalog umfasst **18 Sigils** bei **12 Armor-Slots** (4 Slots × 3 Charaktere) →
+  ein Teil des Katalogs bleibt dauerhaft inaktiv, die Auswahl ist die Entscheidung des Spielers.
+- **Ein Imprint verstärkt einen Stat, den ein Gem liefert, ausschließlich prozentual.** Gem-freie
+  Stats ([§8](#8-jeweler--inlay-attune--recut)) hebt ein Imprint auch flach. Damit bleiben Gems
+  die Quelle der Werte und Imprints deren Multiplikator.
+- **Anzeige:** Im Sigil Codex und im Drop trägt ein Sigil das Präfix `Sigil of`. Als Imprint auf
+  einem Item steht der Name **ohne Präfix** — das Item trägt das Imprint, nicht das Sigil.
+- **Verdeckte Codex-Einträge zeigen nur einen Platzhalter:** Der Spieler sieht, wie viele Sigils
+  ein Akt umfasst. Die Ansicht rendert die Einträge **freigeschalteter Akte**.
+
+### 5.1 Katalog
+
+Alle 18 Sigils. Die **Quelle** ist der Floor, der genau dieses Sigil droppt; `A?-D5-20` ist der
+Akt-Boss. Konkrete Imprint-Werte je Sigil-Level = Balancing (`src/game/sigils/`).
+
+| Quelle     | `Sigil of …`               | Imprint                                              | Slot-Bindung      |
+| ---------- | -------------------------- | ---------------------------------------------------- | ----------------- |
+| `A1-D1-20` | **Tempered Edge**          | `%` Weapon Base Damage                               | Chest, Legs       |
+| `A1-D2-20` | **Kindled Blood**          | `%` Regeneration                                     | Head, Chest       |
+| `A1-D3-20` | **Narrowed Fate**          | schiebt die **untere** Damage-Range-Grenze nach oben | Head, Feet        |
+| `A1-D4-20` | **Forged Ward**            | `%` Barrier                                          | Chest, Legs       |
+| `A1-D5-20` | **Warden's Bastion**       | `pp` Block-Reduktion                                 | Chest, Legs, Feet |
+| `A2-D1-20` | **Burning Sentence**       | `%` Crit Damage                                      | Head, Chest       |
+| `A2-D2-20` | **Stormchain**             | `%` Multi Hit Damage                                 | Legs, Feet        |
+| `A2-D3-20` | **Molten Wake**            | `%` Splash Damage                                    | Chest, Legs       |
+| `A2-D4-20` | **Answered Steel**         | `%` Counter Damage                                   | Head, Feet        |
+| `A2-D5-20` | **Saint's Last Testament** | `%` Multi Hit + Splash + Counter Damage              | alle vier         |
+| `A3-D1-20` | **Gilded Force**           | `%` auf den **Might**-Anteil an Attack               | Head, Chest       |
+| `A3-D2-20` | **Gilded Aegis**           | `%` auf den **Toughness**-Anteil an Defense          | Chest, Legs       |
+| `A3-D3-20` | **Gilded Lifeblood**       | `%` auf den **Vitality**-Anteil an Health            | Head, Legs        |
+| `A3-D4-20` | **Imperial Advance**       | `%` Initiative                                       | Head, Feet        |
+| `A3-D5-20` | **Empress's Ferocity**     | `%` auf die **Ferocity**-Effektivität                | Head, Chest       |
+| `A3-D5-20` | **Empress's Resilience**   | `%` auf die **Resilience**-Effektivität              | Chest, Legs       |
+| `A3-D5-20` | **Empress's Vigor**        | `%` auf die **Vigor**-Effektivität                   | Legs, Feet        |
+| `A3-D5-20` | **Empress's Mandate**      | `%` auf alle drei Attribut-Effektivitäten            | alle vier         |
+
+- **Slot-Bindung folgt der Anatomie:** Head = Wahrnehmung und Vorausschau, Chest = Kern und
+  Deckung, Legs = Stand und Wucht, Feet = Bewegung und Reaktion. Boss-Sigils binden breiter.
+- **Breitband gegen Spezialist:** Ein Ein-Kanal-Sigil ist die volle Stärke seines Kanals, die
+  beiden Breitband-Sigils (`Saint's Last Testament`, `Empress's Mandate`) liefern **je Kanal einen
+  Bruchteil** davon. Damit ist das breite Sigil in Summe stark und in keinem Build das Optimum
+  ([BALANCING §1](../BALANCING.md#1-zielbild)).
+- **`Burning Sentence` verstärkt den Bonus-Anteil:**
+  `Crit Damage = 100 % + (Crit Damage − 100 %) × (1 + Imprint)`. Crit Damage ist ein
+  Gesamt-Multiplikator mit Neutralpunkt 100 % ([Stats](CHARACTERS.md#2-stats)); die Formel setzt
+  das Sigil damit auf denselben Neutralpunkt wie seine drei anteilsbasierten Geschwister.
+- **`Warden's Bastion` hebt die Block-Reduktion**, eine globale Konstante der Schadenspipeline
+  ([Eingehender Schaden](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline)) und keinen
+  Gem-Stat. Wie jeder chance-artige Wert ist sie bei **100 %** gedeckelt.
+- **Die Attribut-Sigils des Akt-3-Bosses** heben die Effektivität von Ferocity, Resilience und
+  Vigor ([Attribute](CHARACTERS.md#3-attribute-level-up-progression)) — sie vergeben keine
+  Attributpunkte.
 
 ## 6. Drops: Gems, Cinder & Sigils
 
@@ -116,20 +169,23 @@ ausschüttet (XP, Gold, Relic Shards), steht in
 | **Diamond**                            | Elite & Boss         | **ab Akt 2**                                                                                                                         |
 | **Cinder**                             | Boss                 | **garantiert 1 pro Kill** (100 %, jeder Durchlauf)                                                                                   |
 | **Cinder**                             | Elite (Dungeons 1–4) | Bonus mit einer Chance, die **monoton mit der globalen Floor-Tiefe** steigt (kein Akt-Reset); Ausschüttung steigt in Akt 2 und Akt 3 |
-| **Sigils**                             | Elite & Boss         | ab dem ersten Elite-Floor `A1-D1-20`; der **erste Sigil-Drop eines Spielstands ist garantiert**                                      |
+| **Sigils**                             | Elite & Boss         | ab dem ersten Elite-Floor `A1-D1-20`; jede Quelle droppt **ihr eigenes** Sigil, der **erste Kill einer Quelle ist garantiert**       |
 
-- **Sigil-Pool:** Elite-Gegner würfeln aus einem **tiefen-gestaffelten Pool** — ein Sigil ist
-  erst ab seiner **Mindesttiefe** ziehbar, der Pool wächst also mit dem Fortschritt.
-  Jeder Akt-Boss droppt beim **ersten Kill** garantiert sein festes, namentliches
-  Signatur-Sigil; bei Wiederholungen würfelt er wie ein Elite aus dem **obersten Tier** —
-  inklusive des eigenen Signatur-Sigils als Level-Up-Kandidat.
-- **Sigil-Drop-Fortschritt:** ein **unbekanntes** Sigil wird auf Level 1 in den Sigil Codex
-  eingeschrieben, ein **bekanntes** um +1 Level gehoben. Unbekannte Sigils sind im Wurf höher
-  gewichtet (Gewicht = Balancing). **Ein Sigil auf Level 5 verlässt den Drop-Pool**; sind alle
-  Sigils auf Level 5, droppen keine Sigils mehr.
+- **Eine Quelle, ein Sigil:** Jeder Elite- und Boss-Floor ist die Quelle **genau eines** Sigils
+  ([Katalog](#51-katalog)). Der **Akt-3-Boss** ist die Quelle von **vier** Sigils. Die Tiefe eines
+  Sigils ist damit seine Quelle.
+- **Erster Kill garantiert, danach Chance:** Der erste Sieg über eine Quelle schreibt ihr Sigil
+  auf **Level 1** in den Sigil Codex. Jeder weitere Sieg hebt es mit einer **flachen Chance** um
+  **+1 Level** — dieselbe Chance auf allen Leveln, ohne Pity-Zähler (Chance = Balancing).
+  **Level 5 erschöpft die Quelle:** sie droppt kein Sigil mehr.
+- **Akt-3-Boss:** Der erste Kill schreibt garantiert `Sigil of Empress's Mandate` ein. Jeder
+  weitere Kill würfelt zuerst die Chance, dann die Auswahl unter seinen vier Sigils; **unbekannte
+  Sigils sind höher gewichtet** (Gewicht = Balancing), Sigils auf Level 5 verlassen die Auswahl.
+  Dies ist die einzige Stelle, an der ein Wurf zwischen mehreren Sigils wählt.
 - Aller Loot-Zufall läuft über den **`loot`-Strom** des seedbaren PRNG
   ([Feststehende Regeln](DAMAGE-SYSTEM.md#15-feststehende-regeln),
-  [Seeds und Zufalls-Ströme](SIMULATION.md#4-seeds-und-zufalls-ströme)).
+  [Seeds und Zufalls-Ströme](SIMULATION.md#4-seeds-und-zufalls-ströme)); garantierte Drops sind
+  RNG-frei.
 
 ## 7. Blacksmith — Temper, Masterwork & Brand
 
@@ -140,7 +196,8 @@ Verbindlicher Wohnort der drei Blacksmith-Aktionen. Alle drei sind **RNG-frei**.
 - **Masterwork (Seltenheit):** hebt die **Seltenheit** um eine Stufe → +1 Sockel, höheres Gem-Cap,
   höheres Item-Level-Cap. Kosten: **Cinder** nach der Seltenheits-Tabelle oben (konkrete Werte =
   Balancing) plus **Gold**.
-- **Brand (Implicit):** überträgt das Implicit eines bekannten **Sigils** auf ein **Legendary**-Item.
+- **Brand (Imprint):** überträgt das Imprint eines bekannten **Sigils** auf ein Item **ab
+  Magic**-Seltenheit auf dem gebundenen Slot-Typ ([§5](#5-sigils--sigil-codex)).
   Kosten: **Cinder** plus **Gold**.
   - **Re-Brand** überschreibt einen bestehenden Brand und kostet **deutlich weniger** als der
     Erst-Brand (Kostenziel: [BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
@@ -177,11 +234,11 @@ im Handwerk**.
   seltene Elite/Boss-Chase (Drop-Bedingungen: [§6](#6-drops-gems-cinder--sigils)).
 - **Ohne Gem-Quelle:** die **Derived Stats** (Attack/Defense/Health — sie ergeben sich aus
   Weapon-/Startwerten, Core, Attributen und Crucible, [Stats](CHARACTERS.md#2-stats)),
-  **Multi Hit Chain**, **Multi Hit Chain Factor**, **Splash Radius** und **Precision**
-  ([Weapon Mastery](WEAPON-MASTERY.md)) sowie **Initiative** (Innate Feet + Crucible +
-  charakterindividuelle Weapon-Node).
+  **Multi Hit Chain**, **Multi Hit Chain Factor**, **Splash Radius**, **Precision** sowie
+  **Weapon Base Damage** und die **Damage Range** ([Weapon Mastery](WEAPON-MASTERY.md)) und
+  **Initiative** (Innate Feet + Crucible + charakterindividuelle Weapon-Node).
 - Konkrete Pool-Gewichte, Value-Ranges, Aufleveln-Kosten und Diamond-Effekte = Balancing
   (`src/game/`, [BALANCING §3](../BALANCING.md#3-ökonomische-absicht)).
 
-<!-- TODO (Spec): Prismatic/Diamond-Effekte, Sigil-Katalog und Implicit-Abgrenzung —
+<!-- TODO (Spec): Prismatic/Diamond-Effekte —
      siehe docs/backlog/OPEN_ISSUES.md, Abschnitt „Offene Spec-Punkte". -->

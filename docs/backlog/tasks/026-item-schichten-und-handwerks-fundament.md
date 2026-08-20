@@ -9,7 +9,7 @@
 ## Ziel
 
 Das persistierte Armor-Item trägt alle fünf Schichten — Basis, Item-Level, Seltenheit, Sockel mit
-gebundenen Gems und Implicit — mit seltenheits-abgeleiteten Caps, und der Innate-Wert fließt am
+gebundenen Gems und Imprint — mit seltenheits-abgeleiteten Caps, und der Innate-Wert fließt am
 aktuellen Item-Level in effektive Stats und Kampf ein.
 
 ## Nicht-Ziel
@@ -36,7 +36,7 @@ bis 029 und 031; Sigil-Inhalte in 030 und 031. Diamond-Effekte warten auf den of
 ## Akzeptanzkriterien
 
 - [ ] `ArmorItem` persistiert Item-Level, Seltenheit, Sockelbelegung (gebundene Gems mit Farbe,
-      Affix, Gem-Level und Wert) und optionales Implicit; das Schema erzwingt Item-Level ≤
+      Affix, Gem-Level und Wert) und optionales Imprint; das Schema erzwingt Item-Level ≤
       Seltenheits-Cap und Sockelzahl nach Seltenheits-Tabelle plus Prismatic-Formel
 - [ ] Der Default-Save startet weiterhin als Common +1 ohne Sockel; Saves in anderer Form
       resetten beim Laden auf den Default (Schema, Default und Tests atomar ersetzt)

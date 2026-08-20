@@ -128,9 +128,8 @@ Materialien.
 
 **Fertig, wenn:** Der Spieler entwickelt die permanente Armor über die Stationen weiter: Temper
 und Masterwork heben Item-Level und Seltenheit gegen Gold und Cinder, Inlay, Attune und Recut
-bewirtschaften Gem-Affixe, Sigils füllen den Sigil Codex, und Brand prägt Implicits auf
-Legendary-Items — alle Effekte wirken sichtbar im Kampf
-([Items, Loot & Handwerk](../spec/ITEMS.md)).
+bewirtschaften Gem-Affixe, Sigils füllen den Sigil Codex, und Brand prägt Imprints auf Items ab
+Magic — alle Effekte wirken sichtbar im Kampf ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
 | Reihenfolge | Task                                                                                              | Status  | Hängt ab von |
 | ----------- | ------------------------------------------------------------------------------------------------- | ------- | ------------ |
@@ -138,15 +137,16 @@ Legendary-Items — alle Effekte wirken sichtbar im Kampf
 | 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | done    | 026          |
 | 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | done    | 026, 027     |
 | 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | done    | 028          |
-| 5           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | blocked | 026          |
-| 6           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | blocked | 027, 030     |
+| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | ready   | 026          |
+| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | blocked | 026, 032     |
+| 7           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | blocked | 027, 030     |
 
-**030** ist von den Jeweler-Tasks unabhängig und ab 026 parallel zu 027–029 bearbeitbar; beide
-Stränge ändern das Save-Schema, der später gemergte Task rebased. **030 und 031** sind zusätzlich
-durch den offenen Sigil-Spec-Punkt blockiert
-([OPEN_ISSUES §2](OPEN_ISSUES.md#2-offene-spec-punkte)): Der Sigil-Katalog mit Implicit-Klassen,
-Mindesttiefen und Boss-Signatur-Sigil wird vor 030 entschieden. Prismatic-/Diamond-Effekte
-bleiben außerhalb von M4 (offener Spec-Punkt, Drops ab Akt 2 → [M6](#m6--endgame--politur)).
+**032** benennt Schicht 5 in `Imprint` um und öffnet Brand für Items ab Magic; es steht vor
+**030**, damit der Sigil-Content nicht gegen die alte Benennung schreibt. **030** ist von den
+Jeweler-Tasks unabhängig; beide Stränge ändern das Save-Schema, der später gemergte Task rebased.
+Der Sigil-Katalog ist entschieden und liegt in [ITEMS §5.1](../spec/ITEMS.md#51-katalog).
+Prismatic-/Diamond-Effekte bleiben außerhalb von M4 (offener Spec-Punkt, Drops ab Akt 2 →
+[M6](#m6--endgame--politur)).
 
 ## M5 — Runen & Sigils
 

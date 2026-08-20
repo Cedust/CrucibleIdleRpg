@@ -137,8 +137,8 @@ Magic — alle Effekte wirken sichtbar im Kampf ([Items, Loot & Handwerk](../spe
 | 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | done    | 026          |
 | 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | done    | 026, 027     |
 | 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | done    | 028          |
-| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | ready   | 026          |
-| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | blocked | 026, 032     |
+| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | done    | 026          |
+| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | ready   | 026, 032     |
 | 7           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | blocked | 027, 030     |
 
 **032** benennt Schicht 5 in `Imprint` um und öffnet Brand für Items ab Magic; es steht vor

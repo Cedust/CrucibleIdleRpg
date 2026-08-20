@@ -96,7 +96,7 @@ describe('LoadoutPanel', () => {
     expect(within(detail).getByText('Sockets')).toBeInTheDocument();
     expect(within(detail).getByText('None')).toBeInTheDocument();
     expect(within(detail).getByText('+1 Toughness')).toBeInTheDocument();
-    expect(within(detail).queryByText(/implicit/i)).not.toBeInTheDocument();
+    expect(within(detail).queryByText(/imprint/i)).not.toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: 'Chest, Chest Armor +1' })).toHaveAttribute(
       'aria-pressed',

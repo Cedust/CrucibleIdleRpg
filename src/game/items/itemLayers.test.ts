@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ArmorItem, SocketedGem } from '@/game/types';
+import type { ArmorItem, Rarity, SocketedGem } from '@/game/types';
 import { createArmorItem } from './armor';
 import {
   isValidArmorItemState,
@@ -49,7 +49,7 @@ describe('isValidArmorItemState', () => {
           itemLevel: 100,
           sockets: [AMBER_GEM, null, null, null],
           prismaticSockets: [null, null],
-          implicit: { sigilId: 'sigil.placeholder' },
+          imprint: { sigilId: 'sigil.placeholder' },
         }),
       ),
     ).toBe(true);
@@ -116,29 +116,18 @@ describe('isValidArmorItemState', () => {
     ).toBe(false);
   });
 
-  it('erlaubt ein Implicit ausschließlich auf Legendary (Brand-Ziel, ITEMS §7)', () => {
-    expect(
-      isValidArmorItemState(craftedChest({ implicit: { sigilId: 'sigil.placeholder' } })),
-    ).toBe(false);
-    expect(
-      isValidArmorItemState(
-        craftedChest({
-          rarity: 'epic',
-          itemLevel: 80,
-          sockets: [null, null, null],
-          prismaticSockets: [null],
-          implicit: { sigilId: 'sigil.placeholder' },
-        }),
-      ),
-    ).toBe(false);
-    expect(
-      isValidArmorItemState(
-        craftedChest({
-          rarity: 'legendary',
-          sockets: [null, null, null, null],
-          implicit: { sigilId: 'sigil.placeholder' },
-        }),
-      ),
-    ).toBe(true);
+  it('erlaubt ein Imprint ab Magic und lehnt es auf Common ab (Brand-Ziel, ITEMS §7)', () => {
+    const imprinted = (rarity: Rarity): ArmorItem =>
+      craftedChest({
+        rarity,
+        sockets: Array.from({ length: RARITY_LAYER[rarity].sockets }, () => null),
+        imprint: { sigilId: 'sigil.placeholder' },
+      });
+
+    expect(isValidArmorItemState(imprinted('common'))).toBe(false);
+    expect(isValidArmorItemState(imprinted('magic'))).toBe(true);
+    expect(isValidArmorItemState(imprinted('rare'))).toBe(true);
+    expect(isValidArmorItemState(imprinted('epic'))).toBe(true);
+    expect(isValidArmorItemState(imprinted('legendary'))).toBe(true);
   });
 });

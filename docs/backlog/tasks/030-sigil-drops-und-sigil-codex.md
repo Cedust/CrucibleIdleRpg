@@ -1,10 +1,10 @@
 # 030 — Sigil-Drops & Sigil Codex
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M4        |
-| **Hängt ab von** | 026, 032  |
+| Feld             | Wert     |
+| ---------------- | -------- |
+| **Status**       | `ready`  |
+| **Meilenstein**  | M4       |
+| **Hängt ab von** | 026, 032 |
 
 ## Ziel
 

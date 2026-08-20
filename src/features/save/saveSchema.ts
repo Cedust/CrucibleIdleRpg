@@ -119,12 +119,12 @@ const socketedGemSchema = z.discriminatedUnion('color', [
 ]);
 
 /** Brand-Referenz auf ein Sigil; die Katalog-Prüfung folgt mit dem Sigil Codex (030/031). */
-const armorImplicitSchema = z.object({ sigilId: z.string().min(1) }).strict();
+const armorImprintSchema = z.object({ sigilId: z.string().min(1) }).strict();
 
 /**
  * Ein Armor-Item mit allen fünf Schichten (ITEMS §2). Die seltenheits-abgeleiteten
- * Invarianten — Item-Level ≤ Cap, Sockelzahl nach Tabelle, Prismatic-Formel, Implicit nur
- * auf Legendary — prüft `isValidArmorItemState`. Prismatic-Sockel bleiben leer, bis die
+ * Invarianten — Item-Level ≤ Cap, Sockelzahl nach Tabelle, Prismatic-Formel, Imprint ab
+ * Magic — prüft `isValidArmorItemState`. Prismatic-Sockel bleiben leer, bis die
  * Diamond-Effekte entschieden sind (OPEN_ISSUES §2, Drops ab Akt 2 → M6).
  */
 const armorItemSchema = z
@@ -136,7 +136,7 @@ const armorItemSchema = z
     innate: z.enum(['toughness', 'vitality', 'initiative']),
     sockets: z.array(socketedGemSchema.nullable()).readonly(),
     prismaticSockets: z.array(z.null()).readonly(),
-    implicit: armorImplicitSchema.optional(),
+    imprint: armorImprintSchema.optional(),
   })
   .strict()
   .superRefine((item, context) => {

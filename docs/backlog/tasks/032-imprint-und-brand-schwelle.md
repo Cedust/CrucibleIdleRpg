@@ -1,10 +1,10 @@
 # 032 — Imprint-Begriff & Brand-Schwelle
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M4      |
-| **Hängt ab von** | 026     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M4     |
+| **Hängt ab von** | 026    |
 
 ## Ziel
 
@@ -31,16 +31,16 @@ liefert keine Kampfwirkung. Der Sigil-Katalog entsteht in
 
 ## Akzeptanzkriterien
 
-- [ ] `ArmorImplicit` heißt `ArmorImprint`, das Item-Feld `implicit` heißt `imprint`, und
+- [x] `ArmorImplicit` heißt `ArmorImprint`, das Item-Feld `implicit` heißt `imprint`, und
       `armorImplicitSchema` heißt `armorImprintSchema`; der Begriff `Implicit` kommt in `src/`
       nicht mehr vor
-- [ ] Die Item-Invariante in `src/game/items/itemLayers.ts` erlaubt ein Imprint auf jeder
+- [x] Die Item-Invariante in `src/game/items/itemLayers.ts` erlaubt ein Imprint auf jeder
       Seltenheit **ab Magic** und lehnt es auf `common` ab; das Save-Schema erzwingt dieselbe
       Invariante
-- [ ] Der Default-Save, das Schema und die Schema-Tests wandern atomar mit; Saves im alten Format
+- [x] Der Default-Save, das Schema und die Schema-Tests wandern atomar mit; Saves im alten Format
       fallen beim Laden auf den Default zurück (Pre-Release-Save-Policy,
       [AGENTS.md](../../../AGENTS.md)) — es entsteht **keine** Migration
-- [ ] `npm run lint`, `npm run typecheck` und `npm test` laufen grün
+- [x] `npm run lint`, `npm run typecheck` und `npm test` laufen grün
 
 ## Betroffene Dateien
 

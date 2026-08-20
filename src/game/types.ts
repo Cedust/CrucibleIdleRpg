@@ -132,17 +132,17 @@ export type SocketedGem =
   | { color: 'emerald'; affix: EmeraldAffix; gemLevel: number; value: number };
 
 /**
- * Per Brand geprägtes Implicit (Schicht 5): eine Referenz auf ein Sigil aus dem Sigil Codex.
+ * Per Brand geprägtes Imprint (Schicht 5): eine Referenz auf ein Sigil aus dem Sigil Codex.
  * Katalog, Wirkung und Stärke folgen mit dem Sigil Codex (Tasks 030/031).
  */
-export interface ArmorImplicit {
+export interface ArmorImprint {
   sigilId: string;
 }
 
 /**
  * Persistierte Form eines permanenten Armor-Items mit allen fünf Schichten
  * (docs/spec/ITEMS.md#2-item-anatomie-fünf-schichten). Die Invarianten — Item-Level ≤
- * Seltenheits-Cap, Sockelzahlen, Implicit nur auf Legendary — prüft
+ * Seltenheits-Cap, Sockelzahlen, Imprint ab Magic — prüft
  * `isValidArmorItemState` (src/game/items/itemLayers.ts).
  */
 export interface ArmorItem {
@@ -160,7 +160,7 @@ export interface ArmorItem {
    * sind sie immer leer.
    */
   prismaticSockets: readonly null[];
-  implicit?: ArmorImplicit;
+  imprint?: ArmorImprint;
 }
 
 /** Pro Charakter existieren nur die aus Armory-Rängen abgeleiteten permanenten Slot-Items. */

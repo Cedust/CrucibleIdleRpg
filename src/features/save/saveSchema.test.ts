@@ -288,7 +288,7 @@ describe('saveSchema', () => {
           null,
         ],
         prismaticSockets: [null, null],
-        implicit: { sigilId: 'sigil.placeholder' },
+        imprint: { sigilId: 'sigil.placeholder' },
       });
 
       const parsed = saveSchema.safeParse(crafted);
@@ -347,16 +347,16 @@ describe('saveSchema', () => {
       ).toBe(false);
     });
 
-    it('erlaubt ein Implicit nur auf Legendary', () => {
+    it('erlaubt ein Imprint ab Magic und lehnt es auf Common ab', () => {
       expect(
-        saveSchema.safeParse(armedSave({ implicit: { sigilId: 'sigil.placeholder' } })).success,
+        saveSchema.safeParse(armedSave({ imprint: { sigilId: 'sigil.placeholder' } })).success,
       ).toBe(false);
       expect(
         saveSchema.safeParse(
           armedSave({
-            rarity: 'legendary',
-            sockets: [null, null, null, null],
-            implicit: { sigilId: 'sigil.placeholder' },
+            rarity: 'magic',
+            sockets: [null],
+            imprint: { sigilId: 'sigil.placeholder' },
           }),
         ).success,
       ).toBe(true);
@@ -365,8 +365,13 @@ describe('saveSchema', () => {
           armedSave({
             rarity: 'legendary',
             sockets: [null, null, null, null],
-            implicit: { sigilId: '' },
+            imprint: { sigilId: 'sigil.placeholder' },
           }),
+        ).success,
+      ).toBe(true);
+      expect(
+        saveSchema.safeParse(
+          armedSave({ rarity: 'magic', sockets: [null], imprint: { sigilId: '' } }),
         ).success,
       ).toBe(false);
     });

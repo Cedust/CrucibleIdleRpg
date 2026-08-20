@@ -29,7 +29,7 @@ export function prismaticSocketCount(itemLevel: number): number {
  * Prüft die seltenheits-abgeleiteten Invarianten eines persistierten Armor-Items:
  * Item-Level im Cap, Sockelzahlen nach Tabelle und Prismatic-Formel, Gem-Level im
  * Seltenheits-Cap (Attune-Grenze, docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut),
- * Implicit nur auf Legendary (Brand-Ziel, docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand).
+ * Imprint ab Magic (Brand-Ziel, docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand).
  * Farb-Pool-Bindung der Gems erzwingt bereits der `SocketedGem`-Typ bzw. das Save-Schema.
  */
 export function isValidArmorItemState(item: ArmorItem): boolean {
@@ -45,6 +45,6 @@ export function isValidArmorItemState(item: ArmorItem): boolean {
         (Number.isInteger(gem.gemLevel) && gem.gemLevel >= 1 && gem.gemLevel <= layer.gemLevelCap),
     ) &&
     item.prismaticSockets.length === prismaticSocketCount(item.itemLevel) &&
-    (item.implicit === undefined || item.rarity === 'legendary')
+    (item.imprint === undefined || item.rarity !== 'common')
   );
 }

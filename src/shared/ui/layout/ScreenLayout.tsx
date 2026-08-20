@@ -5,13 +5,20 @@ import { cn } from '../utils/cn';
 
 type ScreenLayoutElement = 'div' | 'main' | 'section';
 type ScreenBackgroundId =
-  DungeonBackgroundId | 'dungeons' | 'crucible' | 'weapon-mastery' | 'blacksmith' | 'jeweler';
+  | DungeonBackgroundId
+  | 'dungeons'
+  | 'heroes'
+  | 'crucible'
+  | 'weapon-mastery'
+  | 'blacksmith'
+  | 'jeweler';
 
 const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
   'ember-foundry': 'bg-[url(/assets/backgrounds/dungeon-ember-foundry.png)]',
   'forgotten-citadel': 'bg-[url(/assets/backgrounds/dungeon-forgotten-citadel.png)]',
   dungeons: 'bg-[url(/assets/backgrounds/dungeons-view.png)]',
+  heroes: 'bg-[url(/assets/backgrounds/heroes-view.png)]',
   crucible: 'bg-[url(/assets/backgrounds/crucible-view.png)]',
   'weapon-mastery': 'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
   blacksmith: 'bg-[url(/assets/backgrounds/blacksmith-view.png)]',
@@ -23,6 +30,7 @@ const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
   'ember-foundry': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
   'forgotten-citadel': 'bg-linear-to-t from-background/82 via-background/58 to-background/32',
   dungeons: 'bg-background/28',
+  heroes: 'bg-background/28',
   crucible: 'bg-background/28',
   'weapon-mastery': 'bg-background/28',
   blacksmith: 'bg-background/28',

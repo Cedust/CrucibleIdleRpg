@@ -7,3 +7,10 @@ export const ROLE_ICON: Record<Role, LucideIcon> = {
   melee: Swords,
   ranged: Crosshair,
 };
+
+/** Gemeinsame Rollen-Bezeichnungen (TeamPanel, Charakterportal). */
+export const ROLE_LABEL: Record<Role, string> = {
+  tank: 'Tank',
+  melee: 'Melee',
+  ranged: 'Ranged',
+};

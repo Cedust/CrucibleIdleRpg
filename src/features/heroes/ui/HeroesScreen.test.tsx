@@ -3,11 +3,40 @@ import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createHeroesStore, useHeroesStore } from '../heroesStore';
 
+import type { AttributePoints } from '@/game/types';
 import { HeroesScreen } from './HeroesScreen';
+import { attributeRespecCost } from '@/game/rewards/xpRewards';
 import { createDefaultSave } from '@/features/save/saveSchema';
+import { formatNumber } from '@/shared/utils/formatNumber';
 import { saveStore } from '@/features/save/saveStore';
 import { useNavigationStore } from '@/app/navigationStore';
 import userEvent from '@testing-library/user-event';
+
+/**
+ * Setzt Korvin auf eine investierte Verteilung mit definierter Gold-Deckung. Das Save-Schema
+ * verlangt `freeAttributePoints + verteilte Punkte === level`; das Level folgt darum der Summe.
+ */
+function investKorvin(attributePoints: AttributePoints, gold: number) {
+  const save = createDefaultSave(42);
+  const level = attributePoints.ferocity + attributePoints.resilience + attributePoints.vigor;
+  saveStore.setState({
+    data: {
+      ...save,
+      currencies: { ...save.currencies, gold },
+      characters: {
+        ...save.characters,
+        korvin: {
+          ...save.characters.korvin,
+          level,
+          freeMasteryPoints: level,
+          freeAttributePoints: 0,
+          attributePoints,
+        },
+      },
+    },
+    status: 'ready',
+  });
+}
 
 describe('HeroesScreen', () => {
   beforeEach(() => {
@@ -16,103 +45,69 @@ describe('HeroesScreen', () => {
     saveStore.setState({ data: createDefaultSave(42), status: 'ready' });
   });
 
-  it('shows the active character’s stats, portrait, and progression details', () => {
+  it('composes the stats area from the portal, attribute, and detail columns', () => {
     render(<HeroesScreen />);
 
     expect(screen.getByRole('heading', { name: 'Heroes' })).toBeInTheDocument();
     expect(
       screen.getByText("Review Korvin's current combat capabilities and prepare for the depths."),
     ).toBeInTheDocument();
-    for (const category of ['Core', 'Offensive', 'Defensive', 'Utility']) {
-      expect(screen.getByRole('heading', { name: category })).toBeInTheDocument();
-    }
-    expect(screen.queryByRole('heading', { name: 'Derived' })).not.toBeInTheDocument();
-    expect(screen.getByText('Attack')).toBeInTheDocument();
-    expect(screen.getByText('14', { exact: true })).toBeInTheDocument();
-    expect(screen.getByText('Defense')).toBeInTheDocument();
-    expect(screen.getByText('Health')).toBeInTheDocument();
-    expect(screen.getByText('Block Chance')).toBeInTheDocument();
-    expect(screen.getByText('10%', { exact: true })).toBeInTheDocument();
-    expect(screen.getByAltText('Korvin portrait')).toBeInTheDocument();
-    expect(screen.getByText('Level 1')).toBeInTheDocument();
-    expect(screen.queryByText('Role')).not.toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'tank role' })).toBeInTheDocument();
-    expect(within(screen.getByTestId('heroes-portrait-frame')).getByText('Korvin')).toHaveClass(
-      'top-[78.3%]',
-      'text-display',
+
+    const portalColumn = screen.getByTestId('heroes-portal-column');
+    const attributeColumn = screen.getByTestId('heroes-attribute-column');
+    const detailColumn = screen.getByTestId('heroes-detail-column');
+
+    // Die Mittelspalte steht im DOM zuerst und wandert erst per order in die Mitte.
+    expect(portalColumn.compareDocumentPosition(attributeColumn)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
     );
-    expect(screen.getByTestId('heroes-identity')).not.toHaveClass(
-      'border-image-ornate',
-      'bg-surface/90',
-      'shadow-panel',
+    expect(attributeColumn.compareDocumentPosition(detailColumn)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
     );
+    expect(portalColumn).toHaveClass('@min-[68rem]:order-2');
+    expect(attributeColumn).toHaveClass('@min-[68rem]:order-1');
+    expect(detailColumn).toHaveClass('@min-[68rem]:order-3');
+
+    const portal = within(portalColumn).getByTestId('heroes-portal-frame');
+    expect(within(portal).getByAltText('Korvin figure')).toHaveAttribute(
+      'src',
+      '/assets/figures/korvin.png',
+    );
+    expect(portal.querySelector('[data-character-part="frame"]')).toHaveAttribute(
+      'src',
+      '/assets/frames/character-portal-frame.png',
+    );
+    expect(within(portal).getByText('Korvin')).toBeInTheDocument();
+    expect(portal).toHaveClass('aspect-3/4', 'max-w-portal', 'mt-auto');
+
+    const progression = within(portalColumn).getByTestId('heroes-progression');
+    expect(within(progression).getByText('Level 1')).toBeInTheDocument();
+    expect(screen.queryByText(/Level Progression/i)).not.toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'Korvin experience' })).toHaveAttribute(
       'aria-valuemax',
       '75',
     );
-    expect(
-      within(screen.getByTestId('heroes-identity')).queryByText('Level'),
-    ).not.toBeInTheDocument();
-    expect(
-      within(screen.getByTestId('heroes-identity')).queryByText('tank'),
-    ).not.toBeInTheDocument();
-    for (const category of ['Core', 'Offensive', 'Defensive', 'Utility']) {
-      const panel = screen.getByRole('heading', { name: category }).closest('section');
-      expect(panel).not.toHaveClass('border-image-ornate');
-      expect(panel?.querySelector('.border-image-standard')).toBeInTheDocument();
-    }
-    expect(screen.getByTestId('heroes-progression')).not.toHaveClass('border-image-ornate');
-    expect(
-      screen.getByTestId('heroes-progression').querySelector('.border-image-standard'),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('heroes-progression')).toHaveClass('flex', 'items-center');
 
-    const identityColumn = screen.getByTestId('heroes-identity-column');
-    expect(within(identityColumn).getByTestId('heroes-attributes')).toBeInTheDocument();
-    expect(within(identityColumn).getByText('Ferocity')).toBeInTheDocument();
-    expect(within(identityColumn).queryByRole('heading', { name: 'Core' })).not.toBeInTheDocument();
-    expect(
-      within(screen.getByTestId('heroes-overview-column')).getByRole('heading', { name: 'Core' }),
-    ).toBeInTheDocument();
-    const corePanel = screen.getByRole('heading', { name: 'Core' }).closest('section');
-    expect(corePanel).not.toHaveClass('grid-cols-[auto_minmax(0,1fr)]');
-    expect(corePanel?.querySelector('dl')).toHaveClass('mt-1.5');
-    expect(within(corePanel as HTMLElement).getByText('Might').parentElement).toHaveClass(
-      'items-baseline',
-      'justify-between',
-    );
-    expect(within(screen.getByTestId('heroes-progression')).queryByText('Ferocity')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Increase Ferocity' })).toHaveClass('size-8', 'p-0');
-    expect(screen.getByRole('button', { name: 'Respec attributes' })).toHaveClass('ml-auto');
-    const ferocityAxis = document.querySelector('[data-attribute-axis="ferocity"]');
-    const attackStat = ferocityAxis?.querySelector('[data-derived-stat="attack"]');
-    const ferocityControl = ferocityAxis?.querySelector('[data-attribute-control="ferocity"]');
-    expect(attackStat).toHaveTextContent('Attack14');
-    expect(within(attackStat as HTMLElement).getByText('Attack')).toHaveClass(
-      'text-base',
-      'text-text',
-    );
-    expect(ferocityControl).toHaveTextContent('Ferocity0+');
-    expect(within(ferocityControl as HTMLElement).getByText('Ferocity')).toHaveClass(
-      'text-sm',
-      'text-text-muted',
-    );
-    expect(within(ferocityControl as HTMLElement).getByText('0')).toHaveClass(
-      'font-medium',
-      'tabular-nums',
-      'text-text',
-    );
-    expect(within(ferocityControl as HTMLElement).getByText('Ferocity')).not.toHaveClass(
-      'font-display',
-      'uppercase',
-    );
-    expect(attackStat?.compareDocumentPosition(ferocityControl as Node)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
-    expect(document.querySelectorAll('[data-attribute-icon]')).toHaveLength(3);
-    for (const icon of document.querySelectorAll('[data-attribute-icon]')) {
-      expect(icon).toHaveAttribute('aria-hidden', 'true');
+    // Attribute, Combat Stats und Core Stats stehen in der linken Spalte …
+    expect(within(attributeColumn).getByTestId('heroes-attributes')).toBeInTheDocument();
+    const combatStats = within(attributeColumn).getByTestId('heroes-combat-stats');
+    for (const [stat, value] of [
+      ['attack', '14'],
+      ['defense', '5'],
+      ['health', '320'],
+    ] as const) {
+      const row = combatStats.querySelector('[data-combat-stat="' + stat + '"]');
+      expect(within(row as HTMLElement).getByText(value)).toBeInTheDocument();
     }
+    expect(within(attributeColumn).getByRole('heading', { name: 'Core' })).toBeInTheDocument();
+
+    // … die drei Detail-Listen in der rechten.
+    for (const group of ['Offensive', 'Defensive', 'Utility']) {
+      expect(within(detailColumn).getByRole('heading', { name: group })).toBeInTheDocument();
+    }
+    expect(within(detailColumn).getByText('Crit Chance')).toBeInTheDocument();
+    expect(within(detailColumn).getByText('Splash Radius')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Derived' })).not.toBeInTheDocument();
   });
 
   it('uses keyboard-operated local tabs and retains their selection during the session', async () => {
@@ -130,17 +125,19 @@ describe('HeroesScreen', () => {
     expect(screen.getByRole('tab', { name: 'Loadout' })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('spends available attribute points and updates the coupled derived stat', async () => {
+  it('marks free points on the plus button and spends them into the coupled derived stat', async () => {
     const user = userEvent.setup();
     render(<HeroesScreen />);
 
-    expect(screen.getByText('1 Point Available')).toBeInTheDocument();
-    expect(screen.getByText('Ferocity')).toBeInTheDocument();
-    expect(screen.getByText('Resilience')).toBeInTheDocument();
-    expect(screen.getByText('Vigor')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Respec attributes' })).toBeDisabled();
+    expect(screen.getByTestId('heroes-free-points')).toHaveTextContent(
+      '1 attribute point available',
+    );
+    expect(screen.getByTestId('heroes-free-points-badge')).toBeInTheDocument();
+    const increase = screen.getByRole('button', { name: 'Increase Ferocity' });
+    expect(increase).toHaveAttribute('data-availability', 'available');
+    expect(screen.queryByRole('button', { name: 'Decrease Ferocity' })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Increase Ferocity' }));
+    await user.click(increase);
 
     await waitFor(() => {
       expect(saveStore.getState().data?.characters.korvin).toMatchObject({
@@ -148,9 +145,95 @@ describe('HeroesScreen', () => {
         attributePoints: { ferocity: 1, resilience: 0, vigor: 0 },
       });
     });
-    expect(screen.queryByText('1 Point Available')).not.toBeInTheDocument();
-    expect(screen.getByText('14.17', { exact: true })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Increase Ferocity' })).toBeDisabled();
+    expect(screen.getByTestId('heroes-free-points')).toHaveTextContent(
+      '0 attribute points available',
+    );
+    // Ohne freie Punkte trägt die Kopfzeile keine Raute mehr.
+    expect(screen.queryByTestId('heroes-free-points-badge')).not.toBeInTheDocument();
+    expect(screen.getByText('14.17')).toBeInTheDocument();
+    const spent = screen.getByRole('button', { name: 'Increase Ferocity' });
+    expect(spent).toBeDisabled();
+    expect(spent).not.toHaveAttribute('data-availability');
+  });
+
+  it('redistributes attribute points as a priced draft and commits it', async () => {
+    const user = userEvent.setup();
+    investKorvin({ ferocity: 2, resilience: 0, vigor: 0 }, attributeRespecCost(1));
+    render(<HeroesScreen />);
+
+    expect(screen.queryByTestId('heroes-respec-funds')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('heroes-free-points-badge')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Respec attributes' }));
+    // Im Respec-Modus steht die Raute auch bei null freien Punkten.
+    expect(screen.getByTestId('heroes-free-points-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('heroes-respec-draft')).toBeInTheDocument();
+    expect(screen.getByTestId('heroes-respec-funds')).toHaveTextContent(
+      `${formatNumber(attributeRespecCost(1))} Gold available`,
+    );
+    expect(screen.getByRole('button', { name: 'Confirm respec' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Decrease Ferocity' }));
+    expect(screen.getByTestId('heroes-respec-draft')).toHaveTextContent(
+      `Cost ${formatNumber(attributeRespecCost(1))} Gold`,
+    );
+    expect(screen.getByTestId('heroes-free-points')).toHaveTextContent(
+      '1 attribute point available',
+    );
+    // Die Vorschau folgt dem Entwurf, noch ohne Schreibvorgang.
+    expect(screen.getByText('14.17')).toBeInTheDocument();
+    expect(saveStore.getState().data?.characters.korvin.attributePoints).toEqual({
+      ferocity: 2,
+      resilience: 0,
+      vigor: 0,
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Increase Vigor' }));
+    const confirm = screen.getByRole('button', { name: 'Confirm respec' });
+    expect(confirm).toBeEnabled();
+
+    await user.click(confirm);
+
+    await waitFor(() => {
+      expect(saveStore.getState().data?.characters.korvin).toMatchObject({
+        freeAttributePoints: 0,
+        attributePoints: { ferocity: 1, resilience: 0, vigor: 1 },
+      });
+    });
+    expect(saveStore.getState().data?.currencies.gold).toBe(0);
+    expect(screen.queryByTestId('heroes-respec-draft')).not.toBeInTheDocument();
+  });
+
+  it('keeps the draft local until it is confirmed and discards it on cancel', async () => {
+    const user = userEvent.setup();
+    investKorvin({ ferocity: 2, resilience: 0, vigor: 0 }, attributeRespecCost(1));
+    render(<HeroesScreen />);
+
+    await user.click(screen.getByRole('button', { name: 'Respec attributes' }));
+    await user.click(screen.getByRole('button', { name: 'Decrease Ferocity' }));
+    await user.click(screen.getByRole('button', { name: 'Cancel respec' }));
+
+    expect(screen.queryByTestId('heroes-respec-draft')).not.toBeInTheDocument();
+    expect(saveStore.getState().data?.characters.korvin.attributePoints).toEqual({
+      ferocity: 2,
+      resilience: 0,
+      vigor: 0,
+    });
+    expect(saveStore.getState().data?.currencies.gold).toBe(attributeRespecCost(1));
+    expect(screen.getByRole('button', { name: 'Respec attributes' })).toBeInTheDocument();
+  });
+
+  it('blocks a redistribution the player cannot pay for', async () => {
+    const user = userEvent.setup();
+    investKorvin({ ferocity: 2, resilience: 0, vigor: 0 }, attributeRespecCost(1) - 1);
+    render(<HeroesScreen />);
+
+    await user.click(screen.getByRole('button', { name: 'Respec attributes' }));
+    await user.click(screen.getByRole('button', { name: 'Decrease Ferocity' }));
+
+    const confirm = screen.getByRole('button', { name: 'Confirm respec' });
+    expect(confirm).toBeDisabled();
+    expect(confirm).toHaveAttribute('title', 'Not enough Gold for this redistribution.');
   });
 
   it('starts a fresh browser session on Stats', () => {
@@ -159,18 +242,21 @@ describe('HeroesScreen', () => {
     expect(store.getState().activeArea).toBe('stats');
   });
 
-  it('updates the character identity and progression when the shared character changes', () => {
+  it('follows the shared character selection and discards a running draft', async () => {
+    const user = userEvent.setup();
+    investKorvin({ ferocity: 2, resilience: 0, vigor: 0 }, attributeRespecCost(1));
     render(<HeroesScreen />);
-    expect(screen.getByAltText('Korvin portrait')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Respec attributes' }));
+    await user.click(screen.getByRole('button', { name: 'Decrease Ferocity' }));
 
     act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
 
     expect(
       screen.getByText("Review Rhaya's current combat capabilities and prepare for the depths."),
     ).toBeInTheDocument();
-    expect(screen.getByAltText('Rhaya portrait')).toBeInTheDocument();
-    expect(screen.getByText('18', { exact: true })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'melee role' })).toBeInTheDocument();
+    expect(screen.getByAltText('Rhaya figure')).toBeInTheDocument();
+    expect(screen.queryByTestId('heroes-respec-draft')).not.toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'Rhaya experience' })).toHaveAttribute(
       'aria-valuemax',
       '75',

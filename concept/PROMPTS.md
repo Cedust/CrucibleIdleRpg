@@ -1466,7 +1466,8 @@ seams, busy micro-detail, cracked dramatic rubble, photorealistic photography
   View-Hintergründen (§31, §32) und werden dort grob 300–500 CSS-Pixel hoch dargestellt.
   Gemeinsame Grundlinie, gleiche Kamerahöhe und gleiche Figurenhöhe im Sheet halten die
   drei Panels untereinander konsistent. Identität, Ausrüstung und Lichtführung folgen den
-  Bust-Portraits (§2–§4); die Figuren sind unbewaffnet.
+  Bust-Portraits (§2–§4); die Figuren sind unbewaffnet. Dieselben Figuren stehen im
+  Charakterportal der Heroes-Stats-Ansicht (§37) in der Bogenöffnung des Portal-Rahmens.
 
 ```text
 Use case: stylized-concept
@@ -1533,6 +1534,201 @@ Avoid: three inconsistent art styles, differing camera angles or eye levels, dyn
 poses, walking or mid-motion stances, three-quarter or profile views, cropped feet or
 heads, props held in hands, capes or hoods, background scenery, floor tiles or shadows,
 bright full-frame lighting, oversaturated colors, photorealistic photography
+```
+
+## 37. Charakter-Portal-Rahmen
+
+- **Zieldatei:** `public/assets/frames/character-portal-frame.png`
+- **Rohdatei:** `concept/ui-draft-3/character-portal-frame.png`
+- **Format:** 1086×1448, exakt 3:4, transparenter Außenbereich und transparente Bogenöffnung
+- **Verwendung:** Charakterportal der Heroes-Stats-Ansicht. In der Bogenöffnung steht die
+  freigestellte Ganzkörper-Figur des aktiven Charakters (§36), auf der Steinfläche über dem
+  Bogen liegt der Charaktername als Live-Text. Das Asset füllt die Breite seiner Rasterspalte
+  und wird bei rund 350 bis 450 CSS-Pixeln Breite dargestellt; das Clamp-Token
+  `--spacing-portal` cappt es bei 448 bis 560 Pixeln.
+- **Vermessung des Assets** (Grundlage der Prozent-Geometrie in `CharacterPortal.tsx`,
+  [UI.md §9](../docs/spec/UI.md#9-bewusste-sonderfälle)):
+  - Opake Bounds: x 3–1081, y 2–1436 — das Bild wird als vollflächiges Overlay skaliert.
+  - Bogenöffnung transparent von x 232–851 (21,4 %–78,4 %) und y 320–1375 (22,1 %–94,9 %).
+  - Der Bogen läuft von der Spitze bei y 320 bis zur vollen Öffnungsbreite bei y 619 und
+    entspricht damit fast genau einem Halbkreis über der Öffnungsbreite.
+  - Dunkle Namensfläche zwischen oberem Steinbogen und Goldband bei y 91–256 (6,3 %–17,7 %),
+    auf Höhe des Namens x 330–752 (30,4 %–69,2 %) breit.
+- **Prompt:** außerhalb dieses Dokuments generiert; der Prompt-Text ist nachzutragen.
+
+## 38. Heroes-Stat-Icon-Sheet
+
+- **Zielrohdatei:** `concept/ui-draft-3/icon-asset-sheet.png`
+- **Format des gelieferten Sheets:** 1254×1254 mit transparentem Hintergrund, unsichtbares
+  4×4-Raster; angefordert waren 2048×2048 mit 512×512-Feldern.
+- **Verwendung:** Gemeinsame Produktionsgrundlage für die 14 Stat-Glyphen der
+  Heroes-Stats-Panels. Das Sheet wird nicht direkt in der Anwendung verwendet.
+- **Kachelreihenfolge (row-major):** `Attack`, `Defense`, `Health`, `Might` · `Toughness`,
+  `Vitality`, `Barrier`, `Block Chance` · `Evasion`, `Regeneration`, `Initiative`,
+  `Multi Hit Chain` · `Multi Hit Chain Factor`, `Splash Radius`, leeres Feld, leeres Feld.
+- **Nicht im Sheet:** Ferocity, Resilience und Vigor nutzen die Glyphe ihres gekoppelten
+  Derived Stats (Attack, Defense, Health) in der Akzentfarbe des Attributs; die acht Offensive
+  Stats nutzen paarweise die vorhandenen Discipline-Icons der Weapon-Mastery-Tabs (§25):
+  Crit → Finesse, Multi Hit → Tempest, Splash → Dominance, Counter → Valor.
+- **Aufbereitung:** Ein Schnitt an den Rasterlinien würde Inhalt abschneiden — das Sheet hält
+  die Sicherheitszone nicht ein, bei Attack, Toughness und Health reicht die Glyphe bis an die
+  Zellkante, und die optische Größe streut zwischen 73 % und 92 % der Zellbreite. Statt am
+  Raster wird darum inhaltsbezogen geschnitten:
+  1. Alpha-Kanal rampen (< 80 → 0, ≥ 220 → 255, dazwischen linear). Das entfernt das
+     fast-transparente Rauschen des Sheets (13,6 % der Fläche bei Alpha 1–16).
+  2. Zusammenhangskomponenten bilden; nur einzelne Streupixel (< 16 px) fallen aus. Ein
+     höherer Schwellwert verwirft echte Details — Pommel des Schwerts, Nieten der
+     Schulterplatte, Klingenspitze des Block-Icons.
+  3. Jede Komponente über ihren Schwerpunkt einer Rasterzelle zuordnen; die Vereinigung der
+     Boxen einer Zelle ist die Glyphe, auch wenn sie über die Rasterlinie hinausragt.
+  4. Glyphe freistellen und mittig in eine 512×512-Kachel setzen, längste Seite 384 px —
+     dieselbe 384/512-Sicherheitszone wie die übrigen Icon-Sheets. Damit sind alle 14 Icons
+     zentriert und optisch gleich groß.
+
+  Ergebnis: `public/assets/icons/stats/stat-attack.png` bis `stat-splash-radius.png`, als
+  CSS-Alpha-Masken über das `Icon`-Primitive eingebunden.
+
+```text
+Use case: stylized-concept
+Asset type: production icon sheet containing fourteen monochrome alpha-mask glyphs for the
+character stat panels of a dark fantasy game UI
+Primary request: create one internally consistent family of fourteen bold imperial combat
+symbols that stay unmistakable at only 16 to 20 CSS pixels in dense stat lists, while the
+first three also read cleanly when enlarged to about 56 pixels; the symbols will later be cut
+into individual square PNG files and recolored through CSS masks
+Canvas and grid: exact 2048 by 2048 pixel transparent canvas, divided conceptually into an
+invisible four-column by four-row grid of exact 512 by 512 pixel cells; do not draw grid
+lines, cell borders, guides, labels, captions, numbers, or tile backgrounds; keep the last two
+cells of the bottom row completely empty and transparent
+Placement and safe area: center exactly one symbol in each occupied cell; every visible pixel
+of each symbol must remain inside the central 384 by 384 pixel safe area of its cell; use the
+same optical size, line weight, visual density, orientation logic, and amount of negative
+space for all fourteen symbols; symbols must never touch, overlap, or extend into neighboring
+cells
+Fixed row-major order and motifs:
+1. ATTACK: one heavy straight broadsword seen from the front, blade pointing up, with a wide
+plain crossguard and a compact pommel
+2. DEFENSE: one heraldic kite shield in strict front view with a single strong vertical spine
+and a plain face
+3. HEALTH: one bold equal-armed cross with slightly flared arm ends, plain and solid
+4. MIGHT: one clenched armored fist seen from the knuckle side, with a short banded wrist cuff
+5. TOUGHNESS: one segmented armor pauldron of three overlapping curved plates, seen from the
+front, with clear transparent gaps between the plates
+6. VITALITY: one broad symmetrical heart with a plain surface and a small notch at the top
+7. BARRIER: one wide curved ward arc floating in front of a smaller solid disc core,
+expressing an absorbing shell rather than a shield
+8. BLOCK CHANCE: one kite shield in three-quarter tilt with one short blade tip deflecting off
+its upper edge along a sharp outward angle
+9. EVASION: one slim empty silhouette outline stepping aside, accompanied by two tapered
+motion streaks that mark the vacated position
+10. REGENERATION: one single broad leaf enclosed by one open circular renewal arrow with a
+clear arrowhead
+11. INITIATIVE: one sharp arrow shooting diagonally upward, trailed by two short tapered speed
+strokes
+12. MULTI HIT CHAIN: three identical interlocking oval chain links in one straight horizontal
+row, with fully transparent link openings
+13. MULTI HIT CHAIN FACTOR: three interlocking oval chain links in one descending row, each
+link visibly smaller than the one before, expressing a decaying chain
+14. SPLASH RADIUS: one small solid impact core at the center with two concentric broken impact
+rings around it and one short straight radius marker reaching from the core to the outer ring
+15. and 16. EMPTY: no mark, ornament, placeholder, guide, or residual shadow
+Visual language: one coherent set of ancient imperial dark-fantasy glyphs from a fallen golden
+empire, in the same family as the existing Weapon Mastery and Crucible tab glyphs; bold
+engraved-emblem silhouettes, controlled symmetry where appropriate, strong outer contours,
+only a few large interior cutouts, no delicate filigree, and clear semantic separation between
+all fourteen motifs
+Mask rendering: each glyph is a single fully opaque warm-white shape on true transparent
+alpha; all intended holes and negative spaces are fully transparent; no intentional
+semi-transparent shading inside the glyphs, with partial alpha allowed only for minimal clean
+edge antialiasing; no material color, gradient, texture, lighting, shadow, glow, outline halo,
+ambient occlusion, or background fill
+Readability: design for severe downscaling to 16 to 20 pixels; prefer one dominant silhouette
+and two or three large internal separations over small detail; maintain at least a robust
+medium stroke weight after downscaling
+Constraints: icons only; no medallions, circles around the icons, frames, UI panels, letters,
+words, readable runes, numbers, percent signs, characters, faces, hands other than the named
+fist, scenery, flames, particles, logos, mockup, watermark, checkerboard transparency, or
+visible grid
+Avoid: fourteen unrelated art styles, inconsistent scale, duplicate silhouettes between the
+shield motifs of cells 2, 7 and 8 or between the chain motifs of cells 12 and 13,
+photorealistic objects, painterly color, black backgrounds, clipped shapes, thin scratchy
+lines, busy engraving, soft blurry edges, merged neighboring cells, any content in cells 15
+and 16
+```
+
+## 39. Heroes-View-Hintergrund — Halle der Wächter
+
+- **Zieldatei:** `public/assets/backgrounds/heroes-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Heroes-Ansicht hinter Überschrift,
+  Stats/Loadout-Tabs, den beiden Stat-Spalten, dem Charakterportal (§37) und dem Level-Panel.
+  Das Bild wird per `background-size: cover` mit Ankerpunkt `center bottom` eingesetzt und
+  liegt unter dem Kontrast-Overlay des `ScreenLayout`; auf breiten Viewports wird oben
+  beschnitten. Sichtbar bleiben vor allem das Band über den Tabs, der hohe freie Streifen
+  über dem Charakterportal in der Mittelspalte und die Ränder um die Panels; die linke und
+  die rechte Spalte sind von je drei Panels fast vollständig überdeckt.
+- **Lore:** Die Musterhalle der Wächter an der Prozessionsstraße von Veyra aus
+  [crucible-story-foundation.md](lore/crucible-story-foundation.md) — der Ort, an dem die
+  Kompanien des Reichs vor dem Marsch gemustert und gerüstet wurden und an dem die drei
+  Helden nun ihre Ausrüstung prüfen, bevor sie in die Tiefe absteigen.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: the muster hall of an ancient imperial order of wardens as the ceremonial
+home of the Heroes view — a place where a single armored hero is inspected, equipped, and
+readied before descending into the buried city, built around one empty central standing bay,
+without depicting any person
+Scene/backdrop: a tall vaulted stone chamber just inside the ruins of a golden empire,
+seen frontally and symmetrically; the back wall is heavy masonry with a row of tall narrow
+standing niches that once held the wardens of the order, now empty and dark apart from a few
+worn iron armor stands, hanging harness straps, and dulled steel fittings; the walls carry
+faded reliefs of a guardian order and thin tarnished gold inlays; a large circular imperial
+seal is inlaid into the floor in brass and worn stone, half buried under drifting grey ash;
+overhead the ribs of a broken vault converge on the central axis, one rib split open to a
+narrow shaft of pale night sky
+Subject: the central bay of the hall is the subject — a slightly raised stone dais beneath
+the converging vault ribs, flanked by two low shielded braziers, forming an empty standing
+place that reads as prepared and waiting for one hero; the hall feels ancient, solemn,
+disciplined, and still tended rather than looted or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong architectural silhouettes, matching the project's heavy stone-carved
+imperial style and gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen, anchored
+at center bottom and cropped from the top on wide displays; hold a strictly symmetrical
+frontal composition around the vertical center axis; concentrate the visual interest in the
+upper central area — converging vault ribs, the pale light shaft, and the upper back wall —
+because a tall UI portal frame with a hero figure covers the lower central third and must
+stand in front of the empty dais; keep that lower central third dark and free of important
+detail; keep the left and right thirds very dark, flat, and low-detail, because two
+full-height columns of stat panels sit on top of them; keep the top band across the full
+width quiet for the live "Heroes" heading, one intro line, and a wide two-tab bar;
+distribute niches, armor stands, and reliefs symmetrically toward the outer edges; crop-safe
+from wide desktop down to roughly 4:5 mobile, with the central bay and the vault axis
+remaining recognizable
+Lighting/mood: cool ambient darkness; a pale cold shaft of night light falls through the
+broken vault onto the central dais and the ash-covered floor seal, while two low shielded
+braziers add a restrained warm ember glow along the lower center and catch the nearest gold
+inlays; sparse dust and fine ash drift through the shaft; soft atmospheric depth and a mood
+of preparation and quiet resolve before the descent
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened stone
+and steel, tarnished brass and aged gold (#8a6d3b to #fbbf24), restrained amber highlights
+(#f59e0b), and only sparse concentrated ember orange (#e25822) around the braziers
+Materials/textures: cracked imperial masonry, weathered gold inlays and faded reliefs,
+brass floor seal, forged black iron stands, dulled steel harness fittings, aged leather
+straps, grey ash drifts and thin dust haze
+Constraints: prioritize UI readability; keep most of the image dark, low-contrast, and
+low-detail; leave the central bay completely empty; keep the central axis free of any
+free-standing arch, gateway, or doorway outline, because the UI portal frame already
+provides that shape; retain generous negative space for large opaque or translucent panels;
+no border or frame; no text, letters, readable runes, numbers, icons, characters, logos,
+interface elements, or watermark
+Avoid: any hero, guard, or humanoid figure; a complete standing suit of armor, statue, or
+armor stand that reads as a person near the center; a throne, altar, mirror, or portal gate
+as the central object; one large centered weapon; a literal character-select stage or
+spotlight pedestal; crowded weapon racks or a forge, which belong to other views; hanging
+banners with emblems; bright full-frame fire, daylight, god-ray spectacle, excessive bloom;
+busy foreground clutter; modern elements; horror imagery; photorealistic photography
 ```
 
 ## Hinweise zur Ablage

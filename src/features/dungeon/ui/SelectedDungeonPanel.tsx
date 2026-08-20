@@ -69,7 +69,7 @@ export function SelectedDungeonPanel({
             value={progress}
             max={totalFloorCount}
             valueText={`Floor ${progress} / ${totalFloorCount}`}
-            tone="accent"
+            tone="progress"
             labelSize="sm"
           />
         )}

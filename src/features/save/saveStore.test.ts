@@ -11,6 +11,7 @@ import {
   rollGem,
 } from '@/game/crafting/jeweler';
 import { gemValueRange } from '@/game/items/gems';
+import { attributeRespecCost } from '@/game/rewards/xpRewards';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
@@ -104,21 +105,58 @@ describe('createSaveStore', () => {
     await store.getState().hydrate();
     await store.getState().commitVictory({
       floorId: 'A1-D1-01',
-      gold: 10,
+      gold: attributeRespecCost(1),
       characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
       loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
     });
 
     await expect(store.getState().spendAttributePoint('korvin', 'ferocity')).resolves.toBe(true);
-    await expect(store.getState().respecAttributes('korvin', 10)).resolves.toBe(true);
+    // Ein Punkt verlässt Ferocity und landet auf Vigor; nur dieser Punkt kostet Gold.
+    await expect(
+      store
+        .getState()
+        .redistributeAttributePoints('korvin', { ferocity: 0, resilience: 0, vigor: 1 }),
+    ).resolves.toBe(true);
 
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
     expect(reloaded.getState().data?.characters.korvin).toMatchObject({
-      freeAttributePoints: 1,
-      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+      freeAttributePoints: 0,
+      attributePoints: { ferocity: 0, resilience: 0, vigor: 1 },
     });
     expect(reloaded.getState().data?.currencies.gold).toBe(0);
+  });
+
+  it('lehnt eine Neuverteilung ohne Gold-Deckung und während eines Runs ab', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+    await expect(store.getState().spendAttributePoint('korvin', 'ferocity')).resolves.toBe(true);
+
+    // Ohne Gold bleibt jede kostenpflichtige Neuverteilung aus.
+    await expect(
+      store
+        .getState()
+        .redistributeAttributePoints('korvin', { ferocity: 0, resilience: 1, vigor: 0 }),
+    ).resolves.toBe(false);
+    expect(store.getState().data?.characters.korvin.attributePoints).toEqual({
+      ferocity: 1,
+      resilience: 0,
+      vigor: 0,
+    });
+
+    const locked = createSaveStore(
+      createSaveService(memoryPort(), () => createDefaultSave(7)),
+      {
+        canOptimize: () => false,
+      },
+    );
+    await locked.getState().hydrate();
+    await expect(
+      locked
+        .getState()
+        .redistributeAttributePoints('korvin', { ferocity: 0, resilience: 0, vigor: 0 }),
+    ).resolves.toBe(false);
   });
 
   it('marks only the completed dungeon; the entry follows from the waystone purchase', async () => {

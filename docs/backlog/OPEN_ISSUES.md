@@ -24,7 +24,10 @@
 - [ ] **Weapon Mastery:** Discipline-Respec-Grundpreis und Punktpreis festlegen. Aktuell nutzt
       `src/game/weaponMastery/mastery.ts` die expliziten Platzhalter `100 Gold + 25 Gold ×
 erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Mastery](../spec/WEAPON-MASTERY.md#31-discipline-respec)
-- [ ] Gold-Drops je Floor sowie die Kosten des Attribut-Respecs. →
+- [ ] Gold-Drops je Floor sowie die Kosten des Attribut-Respecs. Aktuell nutzt
+      `src/game/rewards/xpRewards.ts` den expliziten Platzhalter
+      `25 Gold × erstattete Attributpunkte`; die Bemessung je erstatteten Punkt ist
+      verbindlich und hat mit der Heroes-Stats-Ansicht einen Konsumenten. →
       [Belohnungen](../spec/PROGRESSION.md#2-belohnungen-aus-einem-sieg),
       [Attribute](../spec/CHARACTERS.md#3-attribute-level-up-progression)
 - [ ] Item-Level-Kurve, Seltenheits-Caps und Sockel-Meilensteine. → [Items](../spec/ITEMS.md#3-seltenheit-sockel--level-cap)

@@ -9,7 +9,9 @@ import {
   distributeFloorXp,
   floorXpPool,
   gainExperience,
-  respecAttributes,
+  attributeRespecCost,
+  redistributeAttributePoints,
+  refundedAttributePoints,
   spendAttributePoint,
   xpPerEnemyForFloor,
   xpRequiredForNextLevel,
@@ -117,14 +119,88 @@ describe('Charakter-XP und Punkte', () => {
     expect(progression.level).toBe(MAX_CHARACTER_LEVEL);
   });
 
-  it('vergibt freie Punkte und respecct sie gegen Gold', () => {
+  it('vergibt freie Punkte und gibt sie erst nach Deckung aus', () => {
     const spent = spendAttributePoint(createLevelOneProgression(), 'ferocity');
     expect(spent).toMatchObject({ freeAttributePoints: 0, attributePoints: { ferocity: 1 } });
+    expect(spendAttributePoint(spent ?? createLevelOneProgression(), 'vigor')).toBeNull();
+  });
+});
 
-    expect(respecAttributes(spent ?? createLevelOneProgression(), 9, 10)).toBeNull();
-    expect(respecAttributes(spent ?? createLevelOneProgression(), 10, 10)).toEqual({
-      gold: 0,
-      progression: createLevelOneProgression(),
+describe('Attribut-Respec als Neuverteilung', () => {
+  const invested = (ferocity: number, resilience: number, vigor: number, free = 0) => ({
+    ...createLevelOneProgression(),
+    freeAttributePoints: free,
+    attributePoints: { ferocity, resilience, vigor },
+  });
+
+  it('zählt nur die aus ihren Attributen zurückgeholten Punkte', () => {
+    const current = { ferocity: 6, resilience: 2, vigor: 0 };
+    expect(refundedAttributePoints(current, { ferocity: 6, resilience: 2, vigor: 0 })).toBe(0);
+    // Zwei Punkte verlassen Ferocity; der Zugang bei Vigor kostet nichts extra.
+    expect(refundedAttributePoints(current, { ferocity: 4, resilience: 2, vigor: 2 })).toBe(2);
+    expect(refundedAttributePoints(current, { ferocity: 0, resilience: 0, vigor: 0 })).toBe(8);
+    // Rein aus dem freien Pool nachgelegte Punkte sind keine Erstattung.
+    expect(refundedAttributePoints(current, { ferocity: 6, resilience: 3, vigor: 0 })).toBe(0);
+  });
+
+  it('hält die Preisstruktur unabhängig von ihren Platzhalterwerten', () => {
+    expect(attributeRespecCost(0)).toBe(0);
+    expect(attributeRespecCost(4) - attributeRespecCost(3)).toBe(attributeRespecCost(1));
+    expect(attributeRespecCost(3)).toBe(3 * attributeRespecCost(1));
+  });
+
+  it('verteilt dieselbe Punktsumme neu und zieht den Preis ab', () => {
+    const cost = attributeRespecCost(2);
+    const result = redistributeAttributePoints(invested(6, 2, 0), cost, {
+      ferocity: 4,
+      resilience: 2,
+      vigor: 2,
     });
+
+    expect(result).toEqual({
+      gold: 0,
+      progression: invested(4, 2, 2),
+    });
+  });
+
+  it('verbucht nicht wieder verteilte Punkte als frei und erlaubt den Voll-Respec', () => {
+    const result = redistributeAttributePoints(invested(6, 2, 0), attributeRespecCost(8), {
+      ferocity: 0,
+      resilience: 0,
+      vigor: 0,
+    });
+
+    expect(result?.progression).toEqual(invested(0, 0, 0, 8));
+  });
+
+  it('rechnet vorhandene freie Punkte in die verfügbare Summe ein', () => {
+    const result = redistributeAttributePoints(invested(2, 0, 0, 3), 0, {
+      ferocity: 2,
+      resilience: 3,
+      vigor: 0,
+    });
+
+    // Kein Punkt verlässt ein Attribut: kostenlos, keine freien Punkte mehr übrig.
+    expect(result).toEqual({ gold: 0, progression: invested(2, 3, 0) });
+  });
+
+  it('lehnt Überverteilung, ungültige Ziele und fehlendes Gold ab', () => {
+    const progression = invested(6, 2, 0);
+    expect(
+      redistributeAttributePoints(progression, 10_000, { ferocity: 6, resilience: 2, vigor: 1 }),
+    ).toBeNull();
+    expect(
+      redistributeAttributePoints(progression, 10_000, { ferocity: -1, resilience: 2, vigor: 0 }),
+    ).toBeNull();
+    expect(
+      redistributeAttributePoints(progression, 10_000, { ferocity: 1.5, resilience: 2, vigor: 0 }),
+    ).toBeNull();
+    expect(
+      redistributeAttributePoints(progression, attributeRespecCost(2) - 1, {
+        ferocity: 4,
+        resilience: 2,
+        vigor: 2,
+      }),
+    ).toBeNull();
   });
 });

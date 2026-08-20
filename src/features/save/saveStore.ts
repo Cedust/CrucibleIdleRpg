@@ -9,7 +9,7 @@ import {
 import { applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
 import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/crafting/jeweler';
 import { createTeamArmor } from '@/game/items/armor';
-import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
+import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
   AttributePoints,
@@ -39,7 +39,11 @@ export interface SaveStoreState {
     characterId: CharacterId,
     attribute: keyof AttributePoints,
   ) => Promise<boolean>;
-  respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
+  /** Attribut-Respec: schreibt eine Neuverteilung derselben Punktsumme gegen Gold. */
+  redistributeAttributePoints: (
+    characterId: CharacterId,
+    target: AttributePoints,
+  ) => Promise<boolean>;
   buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
@@ -174,12 +178,16 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
           };
         }),
 
-      respecAttributes: (characterId, goldCost) =>
+      redistributeAttributePoints: (characterId, target) =>
         persist((current) => {
-          const respec = respecAttributes(
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const respec = redistributeAttributePoints(
             current.characters[characterId],
             current.currencies.gold,
-            goldCost,
+            target,
           );
           if (respec === null) {
             return { next: null, result: false };

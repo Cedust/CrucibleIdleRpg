@@ -85,6 +85,23 @@ Die Caps sind pro Screen-Typ definiert; ein globales Maximum bleibt offen.
   für Glows und Kontrast.
 - Farben laufen über Palette-Tokens und `color-mix`. Schwarz-Literale bleiben Scrims und Schatten
   vorbehalten.
+- Die Palette trennt zwei Schichten. Die **Statusfarben** (`--color-danger`, `--color-success`,
+  `--color-info`) gehören dem Feedback: Health- und Barrier-Balken, Fehlermeldungen, nicht
+  bezahlbare Kosten, gefallene Helden. Die vier **Stat-Achsen** (`--color-offense`,
+  `--color-defense`, `--color-vitality`, `--color-utility`) tönen die Heroes-Ansicht im
+  Ruhezustand — Attribute, Combat Stats, Core Stats und die drei Listen-Gruppen. Jeder Achsen-Ton
+  liegt in OKLCH unter dem Chroma von `--color-accent` (0.164), damit Gold die lauteste Farbe der
+  UI bleibt; die Helligkeit staffelt sie nach Gewicht von Defense (0.71) bis Utility (0.63).
+- Der `progress`-Tone der `ProgressBar` trägt als einziger einen mehrfarbigen Verlauf: die
+  Flamme aus `--color-flame-core`, `--color-flame-mid` und `--color-flame-tip`. Alle drei Stops
+  sind bei jedem Füllstand sichtbar, der Balken wächst allein in der Breite. Ihn tragen die
+  Balken, deren Füllen ein Ereignis ankündigt: XP bis zum Level-Up und die Floors eines
+  Dungeons. Health und Barrier bleiben einfarbig, der Item-Level-Balken des Blacksmith bleibt
+  auf `accent`, weil er eine Obergrenze zeigt und kein Ereignis. `--color-arcane` trägt damit
+  Magie, Epic-Seltenheit und Schatten-Gegner, `--color-utility` die Stat-Achse.
+- Die Achsen-Töne bleiben ein zweiter Kanal: Bei Rot-Grün-Schwäche fallen Stahl und Amethyst
+  nahezu zusammen, was die Helligkeitsstaffelung mildert statt aufhebt. Die Zuordnung tragen
+  Glyphe, Label und Gruppentitel, jede Stat-Zeile also unabhängig von ihrer Farbe.
 - Query-Stützstellen bleiben statische Literale, weil Tailwind sie build-seitig in die
   `@container`-Queries inlined.
 - State-Übergänge laufen über die gemeinsame `transition-state`-Utility, kombiniert mit
@@ -219,6 +236,16 @@ Dokumentierte, bleibende Abweichungen:
   Selektion getrennt lesbar bleiben.
 - Der CharacterSwitcher trägt einen verkleinerten Focus-Offset und handjustierte
   Prozent-Geometrie, beides auf das Portrait-Frame-Asset abgestimmt.
+- Das Charakterportal der Heroes-Stats trägt ebenfalls handjustierte Prozent-Geometrie, am
+  Asset vermessen: die Bogenöffnung nimmt die freigestellte Ganzkörper-Figur auf, ihr Bogen
+  entspricht fast genau einem Halbkreis über der Öffnungsbreite, und die Steinfläche über dem
+  Bogen trägt den Charakternamen als Text-Overlay. Das Portal füllt die Breite seiner Spalte;
+  das Clamp-Token `--spacing-portal` cappt sie in den ein- und zweispaltigen Klassen, die Höhe
+  folgt dem 3:4-Format des Assets. Portal und Level-Panel sitzen am Fuß der Mittelspalte, der
+  Höhenunterschied zu den Stat-Spalten liegt als Weißraum darüber.
+- Der Stats-Bereich von Heroes stapelt rechts drei Stat-Listen mit zusammen 16 Zeilen. Ab der
+  1920er-Höhenklasse passt er ohne Scroll; in den beiden kleineren Klassen übernimmt der lokale
+  Scroller des Tabpanels. Die Zeilen tragen in allen Klassen die volle Icon- und Textgröße.
 - Controls senken im Disabled-Zustand ihre Opacity ganzheitlich, weil sie keinen
   Informationsgehalt tragen.
 - Der TurnOrder-Akteur kombiniert Selection-Ring und Glow-Fläche — Bestandsschutz der

@@ -23,7 +23,25 @@ export type IconName =
   | 'crucible-rune-mastery'
   | 'crucible-tree-anvil'
   | 'crucible-tree-smelting'
-  | 'crucible-tree-molten';
+  | 'crucible-tree-molten'
+  | 'discipline-finesse'
+  | 'discipline-tempest'
+  | 'discipline-dominance'
+  | 'discipline-valor'
+  | 'stat-attack'
+  | 'stat-defense'
+  | 'stat-health'
+  | 'stat-might'
+  | 'stat-toughness'
+  | 'stat-vitality'
+  | 'stat-barrier'
+  | 'stat-block'
+  | 'stat-evasion'
+  | 'stat-regeneration'
+  | 'stat-initiative'
+  | 'stat-multi-hit-chain'
+  | 'stat-chain-factor'
+  | 'stat-splash-radius';
 type IconSize = 'sm' | 'md' | 'lg' | 'xl';
 
 // Statische Klassen-Strings, damit Tailwind die mask-Utilities beim Scan findet.
@@ -51,6 +69,24 @@ const ICON_MASK_CLASSES: Record<IconName, string> = {
   'crucible-tree-anvil': 'mask-[url(/assets/icons/crucible/crucible-tree-anvil.png)]',
   'crucible-tree-smelting': 'mask-[url(/assets/icons/crucible/crucible-tree-smelting.png)]',
   'crucible-tree-molten': 'mask-[url(/assets/icons/crucible/crucible-tree-molten.png)]',
+  'discipline-finesse': 'mask-[url(/assets/icons/mastery/discipline-finesse.png)]',
+  'discipline-tempest': 'mask-[url(/assets/icons/mastery/discipline-tempest.png)]',
+  'discipline-dominance': 'mask-[url(/assets/icons/mastery/discipline-dominance.png)]',
+  'discipline-valor': 'mask-[url(/assets/icons/mastery/discipline-valor.png)]',
+  'stat-attack': 'mask-[url(/assets/icons/stats/stat-attack.png)]',
+  'stat-defense': 'mask-[url(/assets/icons/stats/stat-defense.png)]',
+  'stat-health': 'mask-[url(/assets/icons/stats/stat-health.png)]',
+  'stat-might': 'mask-[url(/assets/icons/stats/stat-might.png)]',
+  'stat-toughness': 'mask-[url(/assets/icons/stats/stat-toughness.png)]',
+  'stat-vitality': 'mask-[url(/assets/icons/stats/stat-vitality.png)]',
+  'stat-barrier': 'mask-[url(/assets/icons/stats/stat-barrier.png)]',
+  'stat-block': 'mask-[url(/assets/icons/stats/stat-block.png)]',
+  'stat-evasion': 'mask-[url(/assets/icons/stats/stat-evasion.png)]',
+  'stat-regeneration': 'mask-[url(/assets/icons/stats/stat-regeneration.png)]',
+  'stat-initiative': 'mask-[url(/assets/icons/stats/stat-initiative.png)]',
+  'stat-multi-hit-chain': 'mask-[url(/assets/icons/stats/stat-multi-hit-chain.png)]',
+  'stat-chain-factor': 'mask-[url(/assets/icons/stats/stat-chain-factor.png)]',
+  'stat-splash-radius': 'mask-[url(/assets/icons/stats/stat-splash-radius.png)]',
 };
 
 const SIZE_CLASSES: Record<IconSize, string> = {

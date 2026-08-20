@@ -74,14 +74,44 @@
   --color-ember: #e25822;
   --color-ember-bright: #ff8a4d;
 
-  /* Arkan (XP, Magie, Schatten-Gegner) */
+  /* Arkan (Magie, Epic-Seltenheit, Schatten-Gegner) */
   --color-arcane: #8b5cf6;
+
+  /*
+   * Flamme: die Rampe des Fortschritts-Tones der ProgressBar (XP-Balken, Dungeon-Floors).
+   * Drei Stops, die bei jedem Füllstand alle sichtbar sind — Gelb am Anfang, Rot an der
+   * vorauslaufenden Kante; der Balken wächst allein in der Breite.
+   * Die Rampe schreitet in OKLCH gleichmäßig fort (ΔE 0.162 / 0.157, Spannweite 0.315);
+   * Kontrast auf --color-background 12.11 / 7.70 / 4.34.
+   *   Kern   L 0.84 C 0.164 h 84 — das Gold des Design-Systems, unverändert übernommen
+   *   Flamme L 0.72 C 0.170 h 52
+   *   Spitze L 0.58 C 0.170 h 28 — dunkler als --color-danger (L 0.64), damit der Balken
+   *                                nicht als zweiter Health-Balken liest
+   */
+  --color-flame-core: #fbbf24;
+  --color-flame-mid: #f58028;
+  --color-flame-tip: #cb473d;
 
   /* Statusfarben (Kampf) */
   --color-danger: #ef4444;
   --color-success: #22c55e;
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
+
+  /*
+   * Stat-Achsen der Heroes-Ansicht (UI.md §4): Werkstoffe eines vergoldeten Ruins.
+   * Jeder Ton liegt in OKLCH unter dem Chroma von --color-accent (0.164), damit Gold
+   * die lauteste Farbe der UI bleibt; die Helligkeit staffelt die Achsen nach Gewicht.
+   * Kontrast auf --color-surface: 5.31 / 7.15 / 6.52 / 5.07.
+   *   Glut     L 0.65 C 0.145 h  38 — Attack, Ferocity, Might, Offensive Stats
+   *   Stahl    L 0.71 C 0.098 h 250 — Defense, Resilience, Toughness, Defensive Stats
+   *   Patina   L 0.67 C 0.104 h 170 — Health, Vigor, Vitality
+   *   Amethyst L 0.63 C 0.125 h 296 — Utility Stats
+   */
+  --color-offense: #d66a48;
+  --color-defense: #70a5db;
+  --color-vitality: #47aa8b;
+  --color-utility: #9078cc;
 
   /* Ressourcen-Farben */
   --color-gold: #fbbf24;
@@ -116,6 +146,8 @@
   --spacing-act-panel: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
   /* Breiten-Cap der Tor-Illustrationen; die Kachel bleibt fluid, die Kunst cappt */
   --spacing-gate-art: clamp(11.5rem, calc(11.5rem + var(--fluid-delta) * 0.025), 14.5rem);
+  /* Breiten-Cap des Heroes-Charakterportals; die Höhe folgt dem 3:4-Format des Assets */
+  --spacing-portal: clamp(28rem, calc(28rem + var(--fluid-delta) * 0.0583333), 35rem);
 
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;

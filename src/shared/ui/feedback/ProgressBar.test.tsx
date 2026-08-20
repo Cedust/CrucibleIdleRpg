@@ -7,7 +7,7 @@ describe('ProgressBar', () => {
   it.each([
     ['health', 'Korvin health', 'from-danger/80 to-danger'],
     ['barrier', 'Korvin barrier', 'from-info/80 to-info'],
-    ['xp', 'Korvin experience', 'from-arcane/80 to-arcane'],
+    ['progress', 'Korvin experience', 'from-flame-core via-flame-mid to-flame-tip'],
     ['accent', 'Dungeon progress', 'from-accent/80 to-accent'],
   ] as const)('renders the %s tone as an accessible single bar', (tone, ariaLabel, toneClass) => {
     const { container } = render(
@@ -30,7 +30,7 @@ describe('ProgressBar', () => {
   });
 
   it('uses an explicit display value while retaining the numeric accessibility value', () => {
-    render(<ProgressBar label="XP" value={0} max={0} valueText="MAX" tone="xp" />);
+    render(<ProgressBar label="XP" value={0} max={0} valueText="MAX" tone="progress" />);
 
     expect(screen.getByText('MAX')).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'XP' })).toHaveAttribute('aria-valuemax', '0');
@@ -72,7 +72,7 @@ describe('ProgressBar', () => {
         max={75}
         valueText="18/75 XP"
         endLabel="2"
-        tone="xp"
+        tone="progress"
       />,
     );
 

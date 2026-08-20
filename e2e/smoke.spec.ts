@@ -129,117 +129,131 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
 test('keeps Heroes local to the shared character context and its own scroll area', async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto('/');
   await page.getByRole('button', { name: 'HEROES', exact: true }).click();
 
   await expect(page.getByRole('heading', { name: 'Heroes', exact: true })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Stats' })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByText('Attack', { exact: true })).toBeVisible();
-  await expect(page.getByAltText('Korvin portrait')).toBeVisible();
-  await expect(page.getByText('Role', { exact: true })).toHaveCount(0);
-  await expect(page.getByRole('img', { name: 'tank role' })).toBeVisible();
-  await expect(page.getByTestId('heroes-portrait-frame').getByText('Korvin')).toBeVisible();
-  await expect(page.getByTestId('heroes-identity')).not.toHaveClass(/border-image-ornate/);
-  await expect(page.getByText('XP', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Derived', exact: true })).toHaveCount(0);
-  const progressionPanel = page.getByTestId('heroes-progression');
-  const progressionContent = progressionPanel.locator(':scope > div').last();
-  const [progressionBox, progressionContentBox] = await Promise.all([
-    progressionPanel.boundingBox(),
-    progressionContent.boundingBox(),
-  ]);
-  if (progressionBox === null || progressionContentBox === null) {
-    throw new Error('Heroes progression panel must be visible');
-  }
-  const progressionTopGap = progressionContentBox.y - progressionBox.y;
-  const progressionBottomGap =
-    progressionBox.y +
-    progressionBox.height -
-    (progressionContentBox.y + progressionContentBox.height);
-  expect(Math.abs(progressionTopGap - progressionBottomGap)).toBeLessThanOrEqual(1);
-  const corePanel = page.getByRole('heading', { name: 'Core', exact: true }).locator('..');
-  await expect(corePanel).not.toHaveClass(/border-image-ornate/);
-  await expect(corePanel.locator('.border-image-standard')).toHaveCSS(
-    'border-image-source',
-    /panel-standard\.png/,
+
+  // Das Charakterportal trägt Figur, Rahmen und Name als getrennte Ebenen.
+  const portal = page.getByTestId('heroes-portal-frame');
+  await expect(portal.getByAltText('Korvin figure')).toBeVisible();
+  await expect(portal.locator('[data-character-part="frame"]')).toHaveAttribute(
+    'src',
+    '/assets/frames/character-portal-frame.png',
   );
-  const attributePanel = page.getByTestId('heroes-attributes');
-  const specializedStats = page.getByTestId('heroes-specialized-stats');
-  const offensivePanel = page
-    .getByRole('heading', { name: 'Offensive', exact: true })
-    .locator('..');
-  const defensivePanel = page
-    .getByRole('heading', { name: 'Defensive', exact: true })
-    .locator('..');
-  const utilityPanel = page.getByRole('heading', { name: 'Utility', exact: true }).locator('..');
-  const [
-    identityBox,
-    attributeBox,
-    coreBox,
-    specializedBox,
-    offensiveBox,
-    defensiveBox,
-    utilityBox,
-  ] = await Promise.all([
-    page.getByTestId('heroes-identity').boundingBox(),
-    attributePanel.boundingBox(),
-    corePanel.boundingBox(),
-    specializedStats.boundingBox(),
-    offensivePanel.boundingBox(),
-    defensivePanel.boundingBox(),
-    utilityPanel.boundingBox(),
+  await expect(portal.getByText('Korvin')).toBeVisible();
+
+  const portalColumn = page.getByTestId('heroes-portal-column');
+  const attributeColumn = page.getByTestId('heroes-attribute-column');
+  const detailColumn = page.getByTestId('heroes-detail-column');
+  const levelPanel = page.getByTestId('heroes-progression');
+  const combatStats = page.getByTestId('heroes-combat-stats');
+
+  await expect(levelPanel.getByText('Level 1')).toBeVisible();
+  await expect(levelPanel.getByText('XP 0 / 75')).toBeVisible();
+  await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('Attack');
+  await expect(combatStats.locator('[data-combat-stat="health"]')).toContainText('320');
+  for (const group of ['Core Stats', 'Offensive Stats', 'Defensive Stats', 'Utility Stats']) {
+    await expect(page.getByRole('heading', { name: group, exact: true })).toBeVisible();
+  }
+
+  // Dreispaltig: Attribute links, Portal in der Mitte, Detail-Listen rechts.
+  const [attributeBox, portalBox, detailBox, levelBox, frameBox] = await Promise.all([
+    attributeColumn.boundingBox(),
+    portalColumn.boundingBox(),
+    detailColumn.boundingBox(),
+    levelPanel.boundingBox(),
+    portal.boundingBox(),
   ]);
   if (
-    identityBox === null ||
     attributeBox === null ||
-    coreBox === null ||
-    specializedBox === null ||
-    offensiveBox === null ||
-    defensiveBox === null ||
-    utilityBox === null
+    portalBox === null ||
+    detailBox === null ||
+    levelBox === null ||
+    frameBox === null
   ) {
-    throw new Error('Heroes stat layout must be visible');
+    throw new Error('Heroes stat columns must be visible');
   }
-  expect(attributeBox.y).toBeGreaterThanOrEqual(identityBox.y + identityBox.height);
-  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(offensiveBox.y);
-  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(defensiveBox.y);
-  expect(coreBox.y + coreBox.height).toBeLessThanOrEqual(utilityBox.y);
-  expect(Math.abs(coreBox.x - specializedBox.x)).toBeLessThanOrEqual(1);
-  expect(Math.abs(coreBox.width - specializedBox.width)).toBeLessThanOrEqual(1);
-  await expect(page.getByText('1 Point Available')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Respec attributes' })).toBeDisabled();
+  expect(attributeBox.x + attributeBox.width).toBeLessThanOrEqual(portalBox.x + 1);
+  expect(portalBox.x + portalBox.width).toBeLessThanOrEqual(detailBox.x + 1);
+  expect(Math.abs(attributeBox.y - portalBox.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(portalBox.y - detailBox.y)).toBeLessThanOrEqual(1);
+  // Das Level-Panel schließt die Mittelspalte ab, das Portal steht direkt darüber.
+  expect(
+    Math.abs(levelBox.y + levelBox.height - (portalBox.y + portalBox.height)),
+  ).toBeLessThanOrEqual(1);
+  expect(levelBox.y - (frameBox.y + frameBox.height)).toBeLessThanOrEqual(17);
+  // Das Portal nutzt die Breite seiner Spalte aus.
+  expect(frameBox.width).toBeGreaterThanOrEqual(portalBox.width - 1);
+
+  // Der Respec-Entwurf bleibt lokal und verlangt Gold-Deckung.
+  await expect(page.getByTestId('heroes-free-points')).toHaveText('1 attribute point available');
   await page.getByRole('button', { name: 'Increase Ferocity' }).click();
-  await expect(page.getByText('14.17', { exact: true })).toBeVisible();
-  await expect(page.getByText('1 Point Available')).toHaveCount(0);
+  await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('14.17');
+  await expect(page.getByRole('button', { name: 'Increase Ferocity' })).toBeDisabled();
+
+  const attributesPanel = page.getByTestId('heroes-attributes');
+  const restingHeight = (await attributesPanel.boundingBox())?.height;
+  await page.getByRole('button', { name: 'Respec attributes' }).click();
+  // Der Respec-Modus tauscht nur die Buttons der Fußzeile; das Panel behält seine Höhe.
+  expect((await attributesPanel.boundingBox())?.height).toBe(restingHeight);
+  await page.getByRole('button', { name: 'Decrease Ferocity' }).click();
+  await expect(page.getByTestId('heroes-respec-draft')).toContainText(/Cost \d+ Gold/);
+  await expect(page.getByTestId('heroes-respec-funds')).toBeVisible();
+  await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('14');
+  await expect(page.getByRole('button', { name: 'Confirm respec' })).toBeDisabled();
+  expect((await attributesPanel.boundingBox())?.height).toBe(restingHeight);
+  await page.getByRole('button', { name: 'Cancel respec' }).click();
+  await expect(page.getByTestId('heroes-respec-draft')).toHaveCount(0);
+  await expect(page.getByTestId('heroes-respec-funds')).toHaveCount(0);
+  await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('14.17');
+
+  // Zweispaltig: das Portal spannt über beide Stat-Spalten.
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const [narrowPortal, narrowAttribute, narrowDetail] = await Promise.all([
+    portalColumn.boundingBox(),
+    attributeColumn.boundingBox(),
+    detailColumn.boundingBox(),
+  ]);
+  if (narrowPortal === null || narrowAttribute === null || narrowDetail === null) {
+    throw new Error('Heroes stat columns must stay visible in the two-column layout');
+  }
+  expect(narrowPortal.y + narrowPortal.height).toBeLessThanOrEqual(narrowAttribute.y + 1);
+  expect(narrowAttribute.x + narrowAttribute.width).toBeLessThanOrEqual(narrowDetail.x + 1);
+  expect(Math.abs(narrowAttribute.y - narrowDetail.y)).toBeLessThanOrEqual(1);
+
+  /*
+   * Die drei gestapelten Detail-Listen tragen 16 Stat-Zeilen: ab der 1920er-Hoehenklasse
+   * passt der Bereich ohne Scroll, in den beiden kleineren Klassen uebernimmt der lokale
+   * Scroller des Panels. Quer gescrollt wird nie, und der Scroll bleibt lokal (UI.md §1, §3).
+   */
   for (const viewport of [
-    { width: 1536, height: 864 },
-    { width: 1600, height: 900 },
-    { width: 1920, height: 1080 },
-    { width: 2560, height: 1440 },
+    { width: 1536, height: 864, scrollsY: true },
+    { width: 1600, height: 900, scrollsY: true },
+    { width: 1920, height: 1080, scrollsY: false },
+    { width: 2560, height: 1440, scrollsY: false },
   ]) {
     await page.setViewportSize(viewport);
     expect(await scrollState(page.locator('#heroes-panel-stats'))).toEqual({
       scrollsX: false,
+      scrollsY: viewport.scrollsY,
+    });
+    expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
+    expect(await scrollState(page.getByRole('main'))).toEqual({
+      scrollsX: false,
       scrollsY: false,
     });
-    const alignedPanels = await Promise.all(
-      [attributePanel, offensivePanel, defensivePanel, utilityPanel].map((panel) =>
-        panel.boundingBox(),
-      ),
-    );
-    const panelBottoms = alignedPanels.map((box) => {
-      if (box === null) throw new Error('Aligned Heroes panels must be visible');
-      return box.y + box.height;
-    });
-    expect(Math.max(...panelBottoms) - Math.min(...panelBottoms)).toBeLessThanOrEqual(1);
   }
+
   await page.getByRole('radio', { name: 'Rhaya' }).click();
   await expect(
     page.getByText("Review Rhaya's current combat capabilities and prepare for the depths."),
   ).toBeVisible();
-  await expect(page.getByText('18', { exact: true })).toBeVisible();
-  await expect(page.getByRole('img', { name: 'melee role' })).toBeVisible();
+  await expect(portal.getByAltText('Rhaya figure')).toBeVisible();
+  await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('18');
 
   const stats = page.getByRole('tab', { name: 'Stats' });
   await stats.focus();

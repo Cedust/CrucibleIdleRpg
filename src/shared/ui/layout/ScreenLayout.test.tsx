@@ -41,6 +41,19 @@ describe('ScreenLayout', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });
 
+  it('unterstützt den Heroes-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="heroes">
+        <h1>Heroes</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="heroes"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/heroes-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
   it('unterstützt den Crucible-Hintergrund mit eigenem Kontrast-Overlay', () => {
     const { container } = render(
       <ScreenLayout background="crucible">

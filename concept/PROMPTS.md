@@ -1544,14 +1544,17 @@ bright full-frame lighting, oversaturated colors, photorealistic photography
 - **Verwendung:** Charakterportal der Heroes-Stats-Ansicht. In der Bogenöffnung steht die
   freigestellte Ganzkörper-Figur des aktiven Charakters (§36), auf der Steinfläche über dem
   Bogen liegt der Charaktername als Live-Text. Das Asset füllt die Breite seiner Rasterspalte
-  und wird bei rund 350 bis 450 CSS-Pixeln Breite dargestellt; das Clamp-Token
-  `--spacing-portal` cappt es bei 448 bis 560 Pixeln.
+  und wird bei rund 370 bis 525 CSS-Pixeln Breite dargestellt; das Clamp-Token
+  `--spacing-portal` cappt es bei 528 bis 560 Pixeln.
 - **Vermessung des Assets** (Grundlage der Prozent-Geometrie in `CharacterPortal.tsx`,
   [UI.md §9](../docs/spec/UI.md#9-bewusste-sonderfälle)):
   - Opake Bounds: x 3–1081, y 2–1436 — das Bild wird als vollflächiges Overlay skaliert.
-  - Bogenöffnung transparent von x 232–851 (21,4 %–78,4 %) und y 320–1375 (22,1 %–94,9 %).
-  - Der Bogen läuft von der Spitze bei y 320 bis zur vollen Öffnungsbreite bei y 619 und
-    entspricht damit fast genau einem Halbkreis über der Öffnungsbreite.
+  - Bogenöffnung transparent von x 232–851 (21,4 %–78,4 %) und y 321–1374 (22,2 %–94,9 %).
+  - Der Spitzbogen läuft von der Spitze bei y 321 bis zur vollen Öffnungsbreite bei y 619 und
+    springt direkt unter der Spitze weit auf: 4 px unter der Spitze ist er 266 px breit.
+  - Der Stein über dem Bogen deckt y 149–292 auf der ganzen Öffnungsbreite und schneidet die
+    Bogenform selbst aus; die Hintergrundfläche der Öffnung läuft dahinter bis y 174 (12 %)
+    hoch.
   - Dunkle Namensfläche zwischen oberem Steinbogen und Goldband bei y 91–256 (6,3 %–17,7 %),
     auf Höhe des Namens x 330–752 (30,4 %–69,2 %) breit.
 - **Prompt:** außerhalb dieses Dokuments generiert; der Prompt-Text ist nachzutragen.

@@ -8,9 +8,13 @@ import { cn } from '@/shared/ui/utils/cn';
  * Bogen (UI.md §9).
  *
  * Geometrie am Asset vermessen (1086×1448, exakt 3:4): Die Bogenöffnung ist transparent von
- * x 232–851 (21,4 %–78,4 %) und y 320–1375 (22,1 %–94,9 %); ihr Bogen läuft von der Spitze bei
- * y 320 bis zur vollen Breite bei y 619 und entspricht damit fast genau einem Halbkreis über
- * der Öffnungsbreite — `rounded-t-[999px]` deckt ihn ab. Die dunkle Namensfläche liegt zwischen
+ * x 232–851 (21,4 %–78,4 %) und y 321–1374 (22,2 %–94,9 %); ihr Spitzbogen läuft von der Spitze
+ * bei y 321 bis zur vollen Breite bei y 619 und springt dabei direkt unter der Spitze weit auf —
+ * 4 px darunter ist er schon 266 px breit, wo ein Halbkreis über der Öffnungsbreite nur 99 px
+ * hätte. Die Hintergrundfläche ist darum ein Rechteck, das hinter dem Stein bis y 174 (12 %)
+ * hochläuft; der Stein ist über dem Bogen von y 149 bis y 292 auf der ganzen Öffnungsbreite
+ * deckend und schneidet die Bogenform selbst aus. Die Figur hat ihre eigene Box ab der
+ * Bogenspitze, damit ihr Kopf nicht in den Rahmen ragt. Die dunkle Namensfläche liegt zwischen
  * dem oberen Steinbogen und dem Goldband bei y 91–256 (6,3 %–17,7 %) und ist auf Höhe des
  * Namens x 330–752 (30,4 %–69,2 %) breit; das Namensfeld schöpft sie aus, damit der Name in der
  * größten Display-Stufe darin steht.
@@ -29,16 +33,17 @@ export function CharacterPortal({
       className={cn('relative mx-auto aspect-3/4 w-full max-w-portal', className)}
       data-testid="heroes-portal-frame"
     >
-      <span className="absolute inset-x-[21.5%] top-[22.1%] bottom-[5%] overflow-hidden rounded-t-[999px] bg-linear-to-b from-surface-raised via-surface to-background">
-        <span
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-ember/20 to-transparent"
-        />
+      <span
+        aria-hidden="true"
+        data-character-part="backdrop"
+        className="absolute inset-x-[21.5%] top-[12%] bottom-[5%] bg-linear-to-t from-background to-transparent"
+      />
+      <span className="absolute inset-x-[21.5%] top-[22.1%] bottom-[5%]">
         <img
           src={`/assets/figures/${characterId}.png`}
           alt={`${character.name} figure`}
           data-character-part="figure"
-          className="relative size-full object-contain object-bottom"
+          className="size-full object-contain object-bottom"
         />
       </span>
       <img

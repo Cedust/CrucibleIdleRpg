@@ -156,7 +156,7 @@ test('keeps Heroes local to the shared character context and its own scroll area
   await expect(levelPanel.getByText('XP 0 / 75')).toBeVisible();
   await expect(combatStats.locator('[data-combat-stat="attack"]')).toContainText('Attack');
   await expect(combatStats.locator('[data-combat-stat="health"]')).toContainText('320');
-  for (const group of ['Core Stats', 'Offensive Stats', 'Defensive Stats', 'Utility Stats']) {
+  for (const group of ['Core', 'Offensive', 'Defensive', 'Utility']) {
     await expect(page.getByRole('heading', { name: group, exact: true })).toBeVisible();
   }
 

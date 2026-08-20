@@ -237,11 +237,13 @@ Dokumentierte, bleibende Abweichungen:
 - Der CharacterSwitcher trägt einen verkleinerten Focus-Offset und handjustierte
   Prozent-Geometrie, beides auf das Portrait-Frame-Asset abgestimmt.
 - Das Charakterportal der Heroes-Stats trägt ebenfalls handjustierte Prozent-Geometrie, am
-  Asset vermessen: die Bogenöffnung nimmt die freigestellte Ganzkörper-Figur auf, ihr Bogen
-  entspricht fast genau einem Halbkreis über der Öffnungsbreite, und die Steinfläche über dem
-  Bogen trägt den Charakternamen als Text-Overlay. Das Portal füllt die Breite seiner Spalte;
-  das Clamp-Token `--spacing-portal` cappt sie in den ein- und zweispaltigen Klassen, die Höhe
-  folgt dem 3:4-Format des Assets. Portal und Level-Panel sitzen am Fuß der Mittelspalte, der
+  Asset vermessen: die Bogenöffnung nimmt die freigestellte Ganzkörper-Figur auf, ihre
+  Hintergrundfläche ist ein Rechteck, das hinter dem deckenden Stein über dem Spitzbogen
+  hochläuft und seine Bogenform vom Rahmen-Asset ausgeschnitten bekommt, die Figur steht in
+  einer eigenen Box ab der Bogenspitze, und die Steinfläche über dem Bogen trägt den
+  Charakternamen als Text-Overlay. Das Portal füllt die Breite seiner Spalte; das Clamp-Token
+  `--spacing-portal` cappt sie in den ein- und zweispaltigen Klassen, die Höhe folgt dem
+  3:4-Format des Assets. Portal und Level-Panel sitzen am Fuß der Mittelspalte, der
   Höhenunterschied zu den Stat-Spalten liegt als Weißraum darüber.
 - Der Stats-Bereich von Heroes stapelt rechts drei Stat-Listen mit zusammen 16 Zeilen. Ab der
   1920er-Höhenklasse passt er ohne Scroll; in den beiden kleineren Klassen übernimmt der lokale

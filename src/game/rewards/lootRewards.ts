@@ -1,4 +1,6 @@
-import type { EncounterClass, FloorLoot, GemColor } from '@/game/types';
+import { rollSigilDrop } from '@/game/sigils/sigilDrops';
+import type { SigilCodex } from '@/game/sigils/types';
+import type { EncounterClass, FloorId, FloorLoot, GemColor } from '@/game/types';
 import { REGULAR_GEM_COLORS } from '@/game/types';
 import { derivePrng, PRNG_STREAM, type Prng, type ResumablePrng } from '@/shared/utils/prng';
 
@@ -31,6 +33,7 @@ export const LOOT_BALANCING = {
 
 /** Eingaben der Loot-Auswertung eines Floor-Siegs — alle drei stehen mit dem Encounter fest. */
 export interface FloorLootInput {
+  floorId: FloorId;
   classification: EncounterClass;
   /** Globaler Floor-Index `0..299` über alle drei Akte. */
   floorIndex: number;
@@ -74,7 +77,7 @@ export function lootStreamPrng(floorSeed: number): ResumablePrng {
  * Gem-Wurf, dann der Diamond-Wurf (nur Elite/Boss ab Akt 2), zuletzt der Elite-Cinder-Wurf.
  * Der Boss-Cinder ist garantiert und verbraucht keinen Wurf.
  */
-export function rollFloorLoot(input: FloorLootInput, prng: Prng): FloorLoot {
+export function rollFloorLoot(input: FloorLootInput, codex: SigilCodex, prng: Prng): FloorLoot {
   const gems = createEmptyGemStock();
   const regularGemChance = gemDropChance(input.floorIndex);
   for (let enemy = 0; enemy < input.enemyCount; enemy += 1) {
@@ -101,5 +104,5 @@ export function rollFloorLoot(input: FloorLootInput, prng: Prng): FloorLoot {
     cinder = 1;
   }
 
-  return { gems, cinder };
+  return { gems, cinder, sigil: rollSigilDrop(input.floorId, codex, prng) };
 }

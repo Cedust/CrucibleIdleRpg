@@ -131,15 +131,15 @@ und Masterwork heben Item-Level und Seltenheit gegen Gold und Cinder, Inlay, Att
 bewirtschaften Gem-Affixe, Sigils füllen den Sigil Codex, und Brand prägt Imprints auf Items ab
 Magic — alle Effekte wirken sichtbar im Kampf ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
-| Reihenfolge | Task                                                                                              | Status  | Hängt ab von |
-| ----------- | ------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| 1           | [026 — Item-Schichten & Handwerks-Fundament](tasks/026-item-schichten-und-handwerks-fundament.md) | done    | 025          |
-| 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | done    | 026          |
-| 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | done    | 026, 027     |
-| 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | done    | 028          |
-| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | done    | 026          |
-| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | ready   | 026, 032     |
-| 7           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | blocked | 027, 030     |
+| Reihenfolge | Task                                                                                              | Status | Hängt ab von |
+| ----------- | ------------------------------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [026 — Item-Schichten & Handwerks-Fundament](tasks/026-item-schichten-und-handwerks-fundament.md) | done   | 025          |
+| 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | done   | 026          |
+| 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | done   | 026, 027     |
+| 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | done   | 028          |
+| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | done   | 026          |
+| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | done   | 026, 032     |
+| 7           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | ready  | 027, 030     |
 
 **032** benennt Schicht 5 in `Imprint` um und öffnet Brand für Items ab Magic; es steht vor
 **030**, damit der Sigil-Content nicht gegen die alte Benennung schreibt. **030** ist von den

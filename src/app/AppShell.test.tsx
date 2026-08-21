@@ -56,6 +56,17 @@ describe('AppShell', () => {
     expect(useNavigationStore.getState().activeView).toBe('runescribe');
   });
 
+  it('opens the shared Sigil Codex without a character switcher', async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.click(screen.getByRole('button', { name: 'SIGIL CODEX' }));
+
+    expect(screen.getByRole('heading', { name: 'Sigil Codex' })).toBeInTheDocument();
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
+    expect(useNavigationStore.getState().activeView).toBe('sigil-codex');
+  });
+
   it('opens the weapon mastery tree from navigation', async () => {
     const user = userEvent.setup();
     render(<AppShell />);

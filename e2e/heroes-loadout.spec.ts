@@ -45,6 +45,7 @@ const SEEDED_SAVE = {
   characters: { korvin: LEVEL_ONE, rhaya: LEVEL_ONE, quinn: LEVEL_ONE },
   currencies: { gold: 0, relicShards: 0, cinder: 0 },
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+  sigils: {},
   firstVictories: [],
   crucible: { 'anvil.armory': 2 },
   armor: { korvin: ARMOR_ITEMS, rhaya: ARMOR_ITEMS, quinn: ARMOR_ITEMS },

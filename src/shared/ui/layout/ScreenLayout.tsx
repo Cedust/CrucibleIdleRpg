@@ -11,7 +11,8 @@ type ScreenBackgroundId =
   | 'crucible'
   | 'weapon-mastery'
   | 'blacksmith'
-  | 'jeweler';
+  | 'jeweler'
+  | 'sigil-codex';
 
 const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'ashen-depths': 'bg-[url(/assets/backgrounds/dungeon-ashen-depths.png)]',
@@ -23,6 +24,7 @@ const BACKGROUND_CLASSES: Record<ScreenBackgroundId, string> = {
   'weapon-mastery': 'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
   blacksmith: 'bg-[url(/assets/backgrounds/blacksmith-view.png)]',
   jeweler: 'bg-[url(/assets/backgrounds/jeweler-view.png)]',
+  'sigil-codex': 'bg-[url(/assets/backgrounds/sigil-codex-view.png)]',
 };
 
 const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
@@ -35,6 +37,7 @@ const BACKGROUND_OVERLAY_CLASSES: Record<ScreenBackgroundId, string> = {
   'weapon-mastery': 'bg-background/28',
   blacksmith: 'bg-background/28',
   jeweler: 'bg-background/28',
+  'sigil-codex': 'bg-background/28',
 };
 
 interface ScreenLayoutProps extends HTMLAttributes<HTMLElement> {

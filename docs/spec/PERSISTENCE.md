@@ -83,6 +83,8 @@ currencies:
   cinder: nichtnegative Ganzzahl
 gems:
   amber | ruby | sapphire | emerald | diamond: nichtnegative Ganzzahl
+sigils:
+  Sigil-ID → Level 1–5, gegen den Sigil-Katalog validiert
 armor:
   korvin | rhaya | quinn:
     Chest | Legs | Head | Feet: nur kanonische Common-+1-Basen der aus anvil.armory abgeleiteten Slots

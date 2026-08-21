@@ -1,10 +1,10 @@
 # 031 — Blacksmith: Brand & Re-Brand
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M4        |
-| **Hängt ab von** | 027, 030  |
+| Feld             | Wert     |
+| ---------------- | -------- |
+| **Status**       | `ready`  |
+| **Meilenstein**  | M4       |
+| **Hängt ab von** | 027, 030 |
 
 ## Ziel
 

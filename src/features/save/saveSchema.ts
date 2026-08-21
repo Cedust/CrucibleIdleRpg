@@ -4,6 +4,7 @@ import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
 import { isValidArmorItemState, MAX_ITEM_LEVEL } from '@/game/items/itemLayers';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import { createEmptySigilCodex, sigilById } from '@/game/sigils/sigils';
 import {
   AMBER_AFFIXES,
   EMERALD_AFFIXES,
@@ -121,6 +122,16 @@ const socketedGemSchema = z.discriminatedUnion('color', [
 /** Brand-Referenz auf ein Sigil; die Katalog-Prüfung folgt mit dem Sigil Codex (030/031). */
 const armorImprintSchema = z.object({ sigilId: z.string().min(1) }).strict();
 
+/** Persistierter Wissensstand des Sigil Codex, keine Sigil-Gegenstände (ITEMS §5). */
+const sigilCodexSchema = z
+  .record(z.string(), z.number().int().min(1).max(5))
+  .readonly()
+  .superRefine((sigils, context) => {
+    if (Object.keys(sigils).some((id) => sigilById(id) === undefined)) {
+      context.addIssue({ code: 'custom', message: 'Unbekanntes Sigil im Codex.' });
+    }
+  });
+
 /**
  * Ein Armor-Item mit allen fünf Schichten (ITEMS §2). Die seltenheits-abgeleiteten
  * Invarianten — Item-Level ≤ Cap, Sockelzahl nach Tabelle, Prismatic-Formel, Imprint ab
@@ -198,6 +209,7 @@ export const saveSchema = z
         diamond: z.number().int().nonnegative(),
       })
       .strict(),
+    sigils: sigilCodexSchema,
     firstVictories: z
       .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
       .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
@@ -304,6 +316,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     },
     currencies: { gold: 0, relicShards: 0, cinder: 0 },
     gems: createEmptyGemStock(),
+    sigils: createEmptySigilCodex(),
     firstVictories: [],
     crucible: {},
     armor: createTeamArmor({}),

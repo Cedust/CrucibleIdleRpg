@@ -1,3 +1,5 @@
+import type { SigilDrop } from '@/game/sigils/types';
+
 /**
  * Gemeinsame Interfaces für den deklarativen Balancing-Content (siehe AGENTS.md).
  * Content liegt getrennt von der Spiellogik unter src/game/. Alle Spieltexte Englisch.
@@ -60,6 +62,8 @@ export type GemStock = Readonly<Record<GemColor, number>>;
 export interface FloorLoot {
   gems: GemStock;
   cinder: number;
+  /** Ein Codex-Fortschritt statt eines Inventar-Gegenstands; `null` = kein Sigil-Drop. */
+  sigil: SigilDrop | null;
 }
 
 /** Bereits auf die drei Charaktere aufgeteilte Belohnung eines Floor-Siegs. */

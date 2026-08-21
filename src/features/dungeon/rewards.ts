@@ -1,6 +1,8 @@
 import type { SaveData } from '@/features/save/saveSchema';
 import { resolveAct1Encounter } from '@/game/encounters/act1';
 import { gainExperience } from '@/game/rewards/xpRewards';
+import { applySigilDrop } from '@/game/sigils/sigilDrops';
+import { sigilDisplayName } from '@/game/sigils/sigils';
 import { GEM_COLORS } from '@/game/types';
 import type {
   EncounterClass,
@@ -52,6 +54,9 @@ export function formatLootGains(loot: FloorLoot): string | null {
   if (loot.cinder > 0) {
     parts.push(`+${loot.cinder} Cinder`);
   }
+  if (loot.sigil !== null) {
+    parts.push(`${sigilDisplayName(loot.sigil.sigilId)} — Level ${loot.sigil.level}`);
+  }
   return parts.length > 0 ? parts.join(' / ') : null;
 }
 
@@ -89,6 +94,7 @@ export function commitFloorVictory(save: SaveData, input: FloorRewardDefinition)
         cinder: save.currencies.cinder + input.loot.cinder,
       },
       gems: addGems(save.gems, input.loot.gems),
+      sigils: applySigilDrop(save.sigils, input.loot.sigil),
       firstVictories: isFirstVictory
         ? [...save.firstVictories, input.floorId]
         : save.firstVictories,

@@ -21,6 +21,7 @@ import { createSaveStore } from './saveStore';
 const NO_LOOT = {
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
   cinder: 0,
+  sigil: null,
 } as const;
 
 function memoryPort(): SavePort {
@@ -80,7 +81,11 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-01',
       gold: 10,
       characterXp: { korvin: 5, rhaya: 5, quinn: 5 },
-      loot: { gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 2, diamond: 0 }, cinder: 1 },
+      loot: {
+        gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 2, diamond: 0 },
+        cinder: 1,
+        sigil: null,
+      },
     });
 
     const reloaded = createSaveStore(service);
@@ -98,6 +103,21 @@ describe('createSaveStore', () => {
     expect(reloaded.getState().data).not.toHaveProperty('combat');
   });
 
+  it('persistiert einen Sigil-Codex-Drop atomar mit dem Floor-Sieg', async () => {
+    const service = createSaveService(memoryPort(), () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    await store.getState().commitVictory({
+      floorId: 'A1-D1-20',
+      gold: 0,
+      characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
+      loot: { ...NO_LOOT, sigil: { sigilId: 'sigil.tempered-edge', level: 1 } },
+    });
+
+    expect(store.getState().data?.sigils).toEqual({ 'sigil.tempered-edge': 1 });
+  });
+
   it('persistiert freie Attributverteilung und Gold-Respec über einen Reload', async () => {
     const port = memoryPort();
     const service = createSaveService(port, () => createDefaultSave(7));
@@ -107,7 +127,11 @@ describe('createSaveStore', () => {
       floorId: 'A1-D1-01',
       gold: attributeRespecCost(1),
       characterXp: { korvin: 0, rhaya: 0, quinn: 0 },
-      loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+      loot: {
+        gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+        cinder: 0,
+        sigil: null,
+      },
     });
 
     await expect(store.getState().spendAttributePoint('korvin', 'ferocity')).resolves.toBe(true);

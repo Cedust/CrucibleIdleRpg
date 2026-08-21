@@ -38,6 +38,7 @@ describe('saveSchema', () => {
       },
       currencies: { gold: 0, relicShards: 0, cinder: 0 },
       gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+      sigils: {},
       firstVictories: [],
       crucible: {},
       armor: {
@@ -129,6 +130,21 @@ describe('saveSchema', () => {
       Object.entries(save.gems).filter(([color]) => color !== 'diamond'),
     );
     expect(saveSchema.safeParse({ ...save, gems: withoutDiamond }).success).toBe(false);
+  });
+
+  it('persists only known Sigils at levels 1 through 5', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 3 } }).success).toBe(
+      true,
+    );
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.unknown': 1 } }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 0 } }).success).toBe(
+      false,
+    );
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 5.5 } }).success).toBe(
+      false,
+    );
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {

@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { useNavigationStore } from '@/app/navigationStore';
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
+import { RuneGrimoireScreen } from './RuneGrimoireScreen';
 import { RunescribeScreen } from './RunescribeScreen';
 
 function unlockedRunescribeSave(options: { depth?: number; mastery?: number } = {}): SaveData {
@@ -40,16 +42,17 @@ function riteReadySave(): SaveData {
   };
 }
 
-describe('RunescribeScreen', () => {
+describe('RuneGrimoireScreen', () => {
   beforeEach(() => {
     localStorage.clear();
+    useNavigationStore.setState({ activeCharacterId: 'korvin' });
     saveStore.setState({ data: createDefaultSave(4242), status: 'ready' });
   });
 
   it('shows a locked Grimoire as a game-state panel before the Anvil unlock', () => {
-    render(<RunescribeScreen />);
+    render(<RuneGrimoireScreen />);
 
-    expect(screen.getByRole('heading', { name: 'Runescribe' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
     expect(screen.getByLabelText('Rune Grimoire locked')).toBeInTheDocument();
     expect(screen.getByText('The Grimoire sleeps')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Inscribe/ })).not.toBeInTheDocument();
@@ -57,9 +60,9 @@ describe('RunescribeScreen', () => {
 
   it('reveals only known Runes and categorical silhouettes up to the reached depth', () => {
     saveStore.setState({ data: unlockedRunescribeSave(), status: 'ready' });
-    const { container } = render(<RunescribeScreen />);
+    const { container } = render(<RuneGrimoireScreen />);
 
-    expect(screen.getByRole('heading', { name: 'Runescribe' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
     expect(screen.getByLabelText('Runewords amount')).toHaveTextContent('100');
     expect(screen.getByText('2 / 17 RUNES')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'TRIGGERS' })).toBeInTheDocument();
@@ -78,7 +81,7 @@ describe('RunescribeScreen', () => {
   it('inscribes through the keyboard and redraws the persistent Rune knowledge', async () => {
     const user = userEvent.setup();
     saveStore.setState({ data: unlockedRunescribeSave(), status: 'ready' });
-    render(<RunescribeScreen />);
+    render(<RuneGrimoireScreen />);
 
     const inscribe = screen.getByRole('button', { name: 'Inscribe TRIGGERS' });
     inscribe.focus();
@@ -94,7 +97,7 @@ describe('RunescribeScreen', () => {
   it('etches a known Rune through the keyboard without consuming a craft roll', async () => {
     const user = userEvent.setup();
     saveStore.setState({ data: unlockedRunescribeSave({ mastery: 1 }), status: 'ready' });
-    render(<RunescribeScreen />);
+    render(<RuneGrimoireScreen />);
 
     const etch = screen.getByRole('button', { name: 'Etch On Crit' });
     etch.focus();
@@ -106,23 +109,26 @@ describe('RunescribeScreen', () => {
     expect(saveStore.getState().data?.craftCounter).toBe(0);
     expect(screen.getByLabelText('Rune level 2 of 5')).toBeInTheDocument();
   });
+});
 
-  it('shows all Talismans with rank-gated Rite sockets outside the Heroes loadout', () => {
+describe('RunescribeScreen', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useNavigationStore.setState({ activeCharacterId: 'korvin' });
+    saveStore.setState({ data: createDefaultSave(4242), status: 'ready' });
+  });
+
+  it('shows only the selected character Talisman with rank-gated Rite sockets', () => {
     saveStore.setState({ data: riteReadySave(), status: 'ready' });
     render(<RunescribeScreen />);
 
-    expect(screen.getByLabelText('Talismans and Rites')).toBeInTheDocument();
-    expect(document.querySelectorAll('[data-character-id]')).toHaveLength(3);
+    expect(screen.getByLabelText('Korvin Talisman and Rite')).toBeInTheDocument();
+    expect(document.querySelectorAll('[data-character-id]')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Korvin TRIGGER slot, empty' })).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Rhaya EFFECT slot, empty' })).toBeEnabled();
-    expect(screen.getByLabelText('Rhaya MODIFIER slot locked')).toHaveAttribute(
-      'data-semantic',
-      'locked',
-    );
-    expect(screen.getByLabelText('Quinn TRIGGER slot locked')).toHaveAttribute(
-      'data-semantic',
-      'locked',
-    );
+    expect(screen.queryByText('Rite of Rhaya')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Rhaya EFFECT slot, empty' }),
+    ).not.toBeInTheDocument();
   });
 
   it('binds, excludes, replaces and clears a Rite slot through the keyboard', async () => {
@@ -141,13 +147,15 @@ describe('RunescribeScreen', () => {
       expect(saveStore.getState().data?.rites.korvin.triggerRuneId).toBe('rune.trigger.on-crit');
     });
 
+    act(() => useNavigationStore.getState().setActiveCharacterId('rhaya'));
     const rhayaTrigger = screen.getByRole('button', { name: 'Rhaya TRIGGER slot, empty' });
     rhayaTrigger.focus();
     await user.keyboard('{Enter}');
+    const rhayaWorkbench = screen.getByRole('region', { name: 'Rite socket selection' });
     expect(
-      within(workbench).queryByRole('button', { name: 'Bind On Crit, level 1' }),
+      within(rhayaWorkbench).queryByRole('button', { name: 'Bind On Crit, level 1' }),
     ).not.toBeInTheDocument();
-    const bindMultiHit = within(workbench).getByRole('button', {
+    const bindMultiHit = within(rhayaWorkbench).getByRole('button', {
       name: 'Bind On Multi-Hit, level 1',
     });
     bindMultiHit.focus();
@@ -158,9 +166,16 @@ describe('RunescribeScreen', () => {
       );
     });
 
-    korvinTrigger.focus();
+    act(() => useNavigationStore.getState().setActiveCharacterId('korvin'));
+    const reopenedKorvinTrigger = screen.getByRole('button', {
+      name: 'Korvin TRIGGER slot, On Crit',
+    });
+    reopenedKorvinTrigger.focus();
     await user.keyboard('{Enter}');
-    const clear = within(workbench).getByRole('button', { name: 'Clear Korvin TRIGGER slot' });
+    const korvinWorkbench = screen.getByRole('region', { name: 'Rite socket selection' });
+    const clear = within(korvinWorkbench).getByRole('button', {
+      name: 'Clear Korvin TRIGGER slot',
+    });
     clear.focus();
     await user.keyboard('{Enter}');
     await waitFor(() => {

@@ -7,8 +7,10 @@
 ---
 
 **Runescribe** ist die Station bzw. Persona des Runenbereichs, analog zu Blacksmith und Jeweler.
-Sie umfasst Rune Grimoire, Talisman mit Rites sowie Inscribe und Etch. Das **Rune-System** selbst
-heißt weiterhin Runen; Runescribe bezeichnet nicht die Kampfmechanik oder ihre Inhalte.
+In `RUNESCRIBE` konfiguriert sie ausschließlich den Talisman mit Rite des aktuell gewählten
+Charakters. Das teamweite `RUNE GRIMOIRE` ist eine eigene Sammelansicht für Inscribe und Etch.
+Das **Rune-System** selbst heißt weiterhin Runen; Runescribe bezeichnet nicht die Kampfmechanik
+oder ihre Inhalte.
 
 ## 1. Grundsatz & Abgrenzung
 
@@ -27,11 +29,11 @@ Sigils, Weapon Mastery, Attribute) sind **permanente Werte**.
 
 ## 2. Träger: Rune Grimoire, Talisman, Rite
 
-| Begriff           | Rolle                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Rune Grimoire** | Katalog **aller** Runen mit Wissensstand und **Level**; in Runescribe der Ort für **Inscribe** und **Etch**. |
-| **Talisman**      | Das eingravierte Schmuckstück, **eines pro Charakter**. Trägt genau **einen Rite**.                          |
-| **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                 |
+| Begriff           | Rolle                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Rune Grimoire** | Katalog **aller** Runen mit Wissensstand und **Level**; die eigene `RUNE GRIMOIRE`-Ansicht ist der Ort für **Inscribe** und **Etch**. |
+| **Talisman**      | Das eingravierte Schmuckstück, **eines pro Charakter**. Trägt genau **einen Rite**.                                                   |
+| **Rite**          | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**.                                                                          |
 
 - Der **Talisman ist kein fünfter Armor-Slot**: er trägt **keine** der fünf Item-Schichten
   ([Ausrüstung](CHARACTERS.md#6-ausrüstung)) — kein Innate, kein Item-Level, keine Seltenheit, keine

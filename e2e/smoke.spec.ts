@@ -136,6 +136,25 @@ test('keeps the shared character switcher inside the sidebar at target desktop s
   }
 });
 
+test('separates the character-bound Runescribe from the shared Rune Grimoire', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'RUNESCRIBE', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Runescribe', exact: true })).toBeVisible();
+  await expect(page.getByRole('radiogroup', { name: 'Active character' })).toBeVisible();
+  await expect(page.getByLabel('Korvin Talisman and Rite')).toBeVisible();
+  await expect(page.locator('[data-character-id]')).toHaveCount(1);
+
+  await page.getByRole('radio', { name: 'Rhaya' }).click();
+  await expect(page.getByLabel('Rhaya Talisman and Rite')).toBeVisible();
+  await expect(page.getByLabel('Korvin Talisman and Rite')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'RUNE GRIMOIRE', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Rune Grimoire', exact: true })).toBeVisible();
+  await expect(page.getByRole('radiogroup', { name: 'Active character' })).toHaveCount(0);
+  await expect(page.locator('[data-character-id]')).toHaveCount(0);
+});
+
 test('keeps Heroes local to the shared character context and its own scroll area', async ({
   page,
 }) => {

@@ -13,6 +13,7 @@ export const VIEWS = [
   'blacksmith',
   'jeweler',
   'sigil-codex',
+  'rune-grimoire',
   'runescribe',
 ] as const;
 export type View = (typeof VIEWS)[number];
@@ -23,6 +24,7 @@ export const CHARACTER_SCOPED_VIEWS = [
   'weapon-mastery',
   'blacksmith',
   'jeweler',
+  'runescribe',
 ] as const satisfies readonly View[];
 
 export function isCharacterScopedView(view: View): boolean {
@@ -37,6 +39,7 @@ export const VIEW_LABELS: Record<View, string> = {
   blacksmith: 'BLACKSMITH',
   jeweler: 'JEWELER',
   'sigil-codex': 'SIGIL CODEX',
+  'rune-grimoire': 'RUNE GRIMOIRE',
   runescribe: 'RUNESCRIBE',
 };
 

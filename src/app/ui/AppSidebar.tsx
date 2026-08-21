@@ -4,6 +4,7 @@ import {
   Gem,
   Hammer,
   BookMarked,
+  BookOpen,
   ScrollText,
   Swords,
   Users,
@@ -29,6 +30,7 @@ const VIEW_ICONS: Record<View, LucideIcon> = {
   blacksmith: Hammer,
   jeweler: Gem,
   'sigil-codex': BookMarked,
+  'rune-grimoire': BookOpen,
   runescribe: ScrollText,
 };
 

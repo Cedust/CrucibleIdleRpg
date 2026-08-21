@@ -151,7 +151,7 @@ Prismatic-/Diamond-Effekte bleiben außerhalb von M4 (offener Spec-Punkt, Drops 
 ## M5 — Runen
 
 **Fertig, wenn:** Der Spieler schaltet das Rune Grimoire über Anvil Sparks frei, erhält und
-investiert Runewords, entdeckt und levelt Runen in Runescribe und legt einzigartige Rites auf die
+investiert Runewords, entdeckt und levelt Runen im Rune Grimoire und legt einzigartige Rites auf die
 Talismane des Teams. Trigger, Effects und Modifier wirken als lesbare, deterministische
 Kampfereignisse ([Runen](../spec/RUNES.md)).
 

@@ -173,6 +173,9 @@ describe('RunescribeScreen', () => {
     expect(
       within(rhayaWorkbench).queryByRole('button', { name: 'Bind On Crit, level 1' }),
     ).not.toBeInTheDocument();
+    expect(
+      within(rhayaWorkbench).getByRole('button', { name: 'On Crit, level 1, bound to Korvin' }),
+    ).toBeDisabled();
     const bindMultiHit = within(rhayaWorkbench).getByRole('button', {
       name: 'Bind On Multi-Hit, level 1',
     });

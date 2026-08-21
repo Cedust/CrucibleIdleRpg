@@ -10,6 +10,7 @@ import {
   grantRuneGrimoireStarters,
   inscribeCandidates,
   inscribeRune,
+  riteSlotChoices,
   runeDepthFromFirstVictories,
   runeLevelCap,
   setRuneInRite,
@@ -257,6 +258,32 @@ describe('Rite configuration', () => {
     expect(
       availableRunesForRiteSlot(rites, grimoire, 'korvin', 'triggerRuneId').map((rune) => rune.id),
     ).toEqual(['rune.trigger.on-crit', 'rune.trigger.on-multi-hit']);
+  });
+
+  it('names the bearer of every rune another Rite already carries', () => {
+    const empty = createEmptyTeamRites();
+    const rites = setRuneInRite(
+      empty,
+      grimoire,
+      ranks,
+      'korvin',
+      'triggerRuneId',
+      'rune.trigger.on-crit',
+    );
+    if (rites === null) throw new Error('Rite fehlt');
+
+    expect(
+      riteSlotChoices(rites, grimoire, 'rhaya', 'triggerRuneId').map((choice) => [
+        choice.rune.id,
+        choice.boundTo,
+      ]),
+    ).toEqual([
+      ['rune.trigger.on-crit', 'korvin'],
+      ['rune.trigger.on-multi-hit', null],
+    ]);
+    expect(
+      riteSlotChoices(rites, grimoire, 'korvin', 'triggerRuneId').map((choice) => choice.boundTo),
+    ).toEqual([null, null]);
   });
 
   it('atomically enforces rank gates, categories and team uniqueness while allowing free removal', () => {

@@ -344,32 +344,52 @@ export function activeRitesFrom(rites: TeamRites, grimoire: RuneGrimoire): Activ
   return active;
 }
 
+/** Eine Auswahlzeile eines Rite-Slots: die bekannte Rune und ihr aktueller Träger. */
+export interface RiteSlotChoice {
+  readonly rune: RuneDefinition;
+  /**
+   * Charakter, dessen Rite die Rune gerade trägt; `null`, solange sie frei ist. Die Rune im
+   * gewählten Slot selbst gilt als frei, damit ein geöffneter Ritus unverändert bleiben kann.
+   */
+  readonly boundTo: CharacterId | null;
+}
+
 /**
- * Bekannte, teamweit noch nicht gebundene Runen für genau einen Rite-Slot. Die Rune im
- * aktuell gewählten Slot bleibt wählbar, damit ein geöffneter Ritus unverändert bleiben kann.
+ * Alle bekannten Runen der Slot-Kategorie samt Träger. Ein Träger macht die Rune für diesen Slot
+ * unwählbar; die Auskunft bleibt sichtbar, weil Umsockeln kostenlos ist
+ * (docs/spec/RUNES.md#2-träger-rune-grimoire-talisman-rite).
  */
+export function riteSlotChoices(
+  rites: TeamRites,
+  grimoire: RuneGrimoire,
+  characterId: CharacterId,
+  slot: RiteSlot,
+): readonly RiteSlotChoice[] {
+  const bearers = new Map<RuneId, CharacterId>();
+
+  for (const teamMemberId of TEAM_ORDER) {
+    for (const riteSlot of Object.keys(RITE_SLOT_CATEGORY) as RiteSlot[]) {
+      if (teamMemberId === characterId && riteSlot === slot) continue;
+      const runeId = rites[teamMemberId][riteSlot];
+      if (runeId !== null) bearers.set(runeId, teamMemberId);
+    }
+  }
+
+  return runesForCategory(RITE_SLOT_CATEGORY[slot])
+    .filter((rune) => grimoire[rune.id] !== undefined)
+    .map((rune) => ({ rune, boundTo: bearers.get(rune.id) ?? null }));
+}
+
+/** Bekannte, teamweit noch nicht gebundene Runen für genau einen Rite-Slot. */
 export function availableRunesForRiteSlot(
   rites: TeamRites,
   grimoire: RuneGrimoire,
   characterId: CharacterId,
   slot: RiteSlot,
 ): readonly RuneDefinition[] {
-  const currentRuneId = rites[characterId][slot];
-  const activeElsewhere = new Set<RuneId>();
-
-  for (const teamMemberId of TEAM_ORDER) {
-    for (const riteSlot of Object.keys(RITE_SLOT_CATEGORY) as RiteSlot[]) {
-      if (teamMemberId === characterId && riteSlot === slot) continue;
-      const runeId = rites[teamMemberId][riteSlot];
-      if (runeId !== null) activeElsewhere.add(runeId);
-    }
-  }
-
-  return runesForCategory(RITE_SLOT_CATEGORY[slot]).filter(
-    (rune) =>
-      grimoire[rune.id] !== undefined &&
-      (rune.id === currentRuneId || !activeElsewhere.has(rune.id)),
-  );
+  return riteSlotChoices(rites, grimoire, characterId, slot)
+    .filter((choice) => choice.boundTo === null)
+    .map((choice) => choice.rune);
 }
 
 /**

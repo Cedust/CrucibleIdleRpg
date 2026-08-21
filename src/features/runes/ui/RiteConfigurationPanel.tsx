@@ -3,7 +3,7 @@ import { Link2, LockKeyhole, Sparkles, X } from 'lucide-react';
 import { CHARACTERS } from '@/game/characters/characters';
 import { CombatPortrait } from '@/features/combat/ui/CombatPortrait';
 import { useSaveStore } from '@/features/save/saveStore';
-import { availableRunesForRiteSlot, runeById, unlockedRiteSlots } from '@/game/runes/runes';
+import { riteSlotChoices, runeById, unlockedRiteSlots } from '@/game/runes/runes';
 import { riteModifierDescription, riteModifierFacet } from '@/game/runes/riteEffects';
 import {
   RITE_SLOT_CATEGORY,
@@ -185,7 +185,7 @@ function RiteWorkbench({ selection, onClose }: { selection: RiteSelection; onClo
   const { characterId, slot } = selection;
   const character = CHARACTERS[characterId];
   const currentRuneId = save.rites[characterId][slot];
-  const choices = availableRunesForRiteSlot(save.rites, save.runes, characterId, slot);
+  const choices = riteSlotChoices(save.rites, save.runes, characterId, slot);
   const { label, question } = RITE_SLOT_PRESENTATION[slot];
 
   return (
@@ -225,15 +225,24 @@ function RiteWorkbench({ selection, onClose }: { selection: RiteSelection; onClo
       </header>
 
       <div className="relative mt-4 grid gap-2 @min-[40rem]:grid-cols-2 @min-[66rem]:grid-cols-3">
-        {choices.map((rune) => {
+        {choices.map(({ rune, boundTo }) => {
           const selected = rune.id === currentRuneId;
           const level = save.runes[rune.id];
+          const bearer = boundTo === null ? null : CHARACTERS[boundTo];
+          let status = 'BIND';
+          if (bearer !== null) status = bearer.name.toUpperCase();
+          else if (selected) status = 'BOUND';
           return (
             <Button
               key={rune.id}
               variant="ghost"
               selected={selected}
-              aria-label={`Bind ${rune.name}, level ${level ?? 0}`}
+              disabled={bearer !== null}
+              aria-label={
+                bearer === null
+                  ? `Bind ${rune.name}, level ${level ?? 0}`
+                  : `${rune.name}, level ${level ?? 0}, bound to ${bearer.name}`
+              }
               className="flex min-h-14 min-w-0 items-center justify-between gap-3 px-3 py-2 text-left"
               onClick={() => void setRiteRune(characterId, slot, rune.id)}
             >
@@ -246,7 +255,7 @@ function RiteWorkbench({ selection, onClose }: { selection: RiteSelection; onClo
                 </span>
               </span>
               <span className="shrink-0 text-2xs font-semibold tracking-[0.12em] text-text-muted">
-                {selected ? 'BOUND' : 'BIND'}
+                {status}
               </span>
             </Button>
           );

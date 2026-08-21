@@ -164,8 +164,8 @@ describe('DungeonRunScreen', () => {
     expect(rewards.getByText('Relic Shards')).toHaveClass('sr-only');
     expect(rewards.getByText('Cinder')).toHaveClass('sr-only');
     expect(rewards.getByText('Amber')).toHaveClass('sr-only');
-    expect(rewards.getByText('Runedust')).toHaveClass('sr-only');
-    expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
+    expect(rewards.getByText('Runewords')).toHaveClass('sr-only');
+    expect(screen.getByLabelText('Runewords amount')).toHaveTextContent('—');
 
     const save = saveStore.getState().data;
     if (save === null) throw new Error('expected save data');

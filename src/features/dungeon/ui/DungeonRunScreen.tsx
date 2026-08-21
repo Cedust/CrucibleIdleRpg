@@ -56,8 +56,8 @@ function RunRewardSummary() {
       </div>
       <div className="flex items-center gap-1.5">
         <ScrollText aria-hidden="true" className="size-4 text-text-muted" />
-        <dt className="sr-only">Runedust</dt>
-        <dd aria-label="Runedust amount" className="font-semibold text-text-muted">
+        <dt className="sr-only">Runewords</dt>
+        <dd aria-label="Runewords amount" className="font-semibold text-text-muted">
           —
         </dd>
       </div>

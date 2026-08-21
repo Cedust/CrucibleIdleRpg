@@ -49,7 +49,7 @@ Verfügbar zum **Ausgeben** werden sie erst nach dem Run
 4. **Loot** — jeder Sieg speist den Handwerk-Loop. Die Drop-Regeln stehen bei der Ressource,
    nicht hier:
    - **Gems, Cinder & Sigils** → [Drops: Gems, Cinder & Sigils](ITEMS.md#6-drops-gems-cinder--sigils)
-   - **Runedust** → [Runedust (Drop)](RUNES.md#6-runedust-drop)
+   - **Runewords** → [Runewords (Drop)](RUNES.md#6-runewords-drop)
 
 Der Zufall in den Belohnungen läuft über den `loot`-Strom; beim **Farmen** würfelt jeder
 Durchlauf mit neuem Seed, der Jagd-Reiz bleibt also erhalten

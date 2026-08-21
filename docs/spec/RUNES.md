@@ -23,7 +23,7 @@ Sigils, Weapon Mastery, Attribute) sind **permanente Werte**.
   Buff oder eine Extra-Aktion.
 - Das gesamte System wird über den **Anvil Sparks**-Tree des Crucible freigeschaltet
   ([Crucible](PROGRESSION.md#3-crucible-globaler-skilltree));
-  vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runedust-Drop).
+  vor dem `Rune Grimoire`-Node existiert es nicht (kein Talisman, keine Runen, kein Runewords-Drop).
 
 ## 2. Träger: Rune Grimoire, Talisman, Rite
 
@@ -117,12 +117,13 @@ eines Rite lohnende Ziele sind:
 
 - **Level-Cap = Stand des `Rune Mastery`-Nodes** ([§8](#8-anvil-sparks-nodes)). Der
   `Rune Grimoire`-Node bringt Cap **1** mit, `Rune Mastery` hebt es auf **2/3/4/5**.
-- Daraus ergeben sich zwei Phasen der Runedust-Verwendung: solange das Cap 1 ist, fließt Dust
+- Daraus ergeben sich zwei Phasen der Runewords-Verwendung: solange das Cap 1 ist, fließen
+  Runewords
   vollständig in **Inscribe** (Entdeckung); mit steigendem Cap in **Etch** (Investition).
 
-## 6. Runedust (Drop)
+## 6. Runewords (Drop)
 
-Verbindlicher Wohnort der Runedust-Drop-Regeln.
+Verbindlicher Wohnort der Runewords-Drop-Regeln.
 
 - Droppt von **allen** Gegnern, **sobald der `Rune Grimoire`-Node freigeschaltet ist** — vorher
   gar nicht.
@@ -133,29 +134,29 @@ Verbindlicher Wohnort der Runedust-Drop-Regeln.
 
 - **Inscribe (neue Rune):** **pro Kategorie** ein eigenes Rezept — man wählt Trigger, Effect oder
   Modifier und erhält eine **zufällige noch unbekannte** Rune dieser Kategorie, gezogen aus
-  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: Runedust + Gold.
+  dem nach **Mindesttiefe** gestaffelten Pool. Kosten: Runewords + Gold.
   - **Es werden ausschließlich Unbekannte gezogen** — keine Duplikate, keine Fehlzüge
     (Design-Absicht: [DESIGN §6](../DESIGN.md#6-bewusste-nicht-ziele-design-perspektive)).
   - Ist eine Kategorie vollständig entdeckt, entfällt ihr Rezept.
 - **Etch (Rune aufleveln):** hebt das Level einer bekannten Rune um eine Stufe bis zum Cap.
-  Kosten: Runedust + Gold, pro Level steigend. Kein RNG.
+  Kosten: Runewords + Gold, pro Level steigend. Kein RNG.
 - Der **`Rune Grimoire`-Node schenkt** einen Starter-Trigger und einen Starter-Effect, damit im
   Moment der Freischaltung ein vollständiger Rite gelegt werden kann (analog zum garantierten
   ersten Sigil-Drop, [Items, Loot & Handwerk](ITEMS.md)).
 
 ## 8. Anvil-Sparks-Nodes
 
-| Node              | Level | Wirkung                                                                           | Relic Shards |
-| ----------------- | ----- | --------------------------------------------------------------------------------- | ------------ |
-| **Rune Grimoire** | 1     | System an: Runedust-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1            |
-| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                  | 6            |
-| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                         | 6            |
-| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                  | 10           |
-|                   |       |                                                                                   | **23**       |
+| Node              | Level | Wirkung                                                                            | Relic Shards |
+| ----------------- | ----- | ---------------------------------------------------------------------------------- | ------------ |
+| **Rune Grimoire** | 1     | System an: Runewords-Drops, Starter-Trigger + Starter-Effect, Rune-Level-Cap **1** | 1            |
+| **Talisman**      | 1–3   | Talisman mit Rite (**Trigger + Effect**) für Charakter 1 / 2 / 3                   | 6            |
+| **Runic Focus**   | 1–3   | **Modifier**-Slot für Charakter 1 / 2 / 3                                          | 6            |
+| **Rune Mastery**  | 1–4   | Rune-Level-Cap **2 / 3 / 4 / 5**                                                   | 10           |
+|                   |       |                                                                                    | **23**       |
 
 `Talisman` und `Runic Focus` sind **charakterweise** gestaffelt — Stufe `n` schaltet den Slot für
 Charakter `n` frei (Design-Absicht: [DESIGN §3.2](../DESIGN.md#3-player-experience--der-kern-loop)).
 
 <!-- TODO (Balancing, `src/game/`): konkreter Runen-Katalog (17 Einträge: Name, Mindesttiefe,
-     Level-Skalierung je Stufe), Runedust-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für
+     Level-Skalierung je Stufe), Runewords-Drop-Kurve, Inscribe-/Etch-Kosten, Dauer-Werte für
      Empower/Mark/Lingering, Chain-Zielzahl je Level, Surge-Bezugs-Stat je Rune. -->

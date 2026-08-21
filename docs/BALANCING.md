@@ -30,7 +30,7 @@ Armor-Ausbau und Weapon Mastery tragen gemeinsam die permanente Charakterprogres
 liefert dafür Attribute und Mastery Points statt automatischer Stat-Zuwächse; Crucible ergänzt
 das globale Grundgerüst. Respecs sollen Experimentieren ermöglichen, ohne Entscheidungen wertlos
 zu machen. Cinder setzt den Rhythmus der Armor-Aufwertung, Gems tragen die Loot-Jagd, und
-Runedust erweitert im Endgame Möglichkeiten statt bloß Zahlen.
+Runewords erweitern im Endgame Möglichkeiten statt bloß Zahlen.
 
 Konkrete Pools, Kosten, Drop-Raten und Wertkurven sind Content oder offene Fragen — nie eine
 zweite Tabelle in dieser Datei.

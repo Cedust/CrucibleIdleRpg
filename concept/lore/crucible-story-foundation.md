@@ -223,9 +223,9 @@ The three great Crucible paths can be understood as different ways of handling r
 
 These are not separate sources of magic. They are three philosophies of creation: strike, refine, and shape.
 
-### Runic Shards and Runedust
+### Runic Shards and Runewords
 
-Runic Shards should remain distinct from **Runedust**. A Shard is a stable fragment of a major law recovered from a Threshold Seal and used in the Crucible. Runedust is the fine residue produced when lesser inscriptions are carved, corrected, or broken down. The Runescribe uses Runedust for Inscribing and Etching; the Crucible requires the larger and rarer structural Shards.
+Runic Shards should remain distinct from **Runewords**. A Shard is a stable fragment of a major law recovered from a Threshold Seal and used in the Crucible. A Runeword is a lesser inscription recovered, corrected, or broken down by the Runescribe. The Runescribe uses Runewords for Inscribing and Etching; the Crucible requires the larger and rarer structural Shards.
 
 ---
 

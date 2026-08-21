@@ -37,7 +37,7 @@
   Ränge und den Relic-Shard-Bestand.
 - Gold, Cinder, Gem-Bestände (Amber/Ruby/Sapphire/Emerald/Diamond).
 - **Sigil Codex** (bekannte Sigils mit Level).
-- Runedust, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
+- Runewords, **Rune Grimoire** (bekannte Runen mit Level) und pro Charakter der **Rite** auf
   dem **Talisman** (gesockelte Trigger-/Effect-/Modifier-Rune, [Runen](RUNES.md)).
 - **Pro Dungeon ein Vollendet-Flag** (schaltet 2× frei und ist Kaufvoraussetzung der Waystones,
   [Checkpoints, Wipe & Abbruch](PROGRESSION.md#4-checkpoints-wipe--abbruch)), höchster

@@ -160,8 +160,8 @@ Akt-Boss. Konkrete Imprint-Werte je Sigil-Level = Balancing (`src/game/sigils/`)
 
 Verbindlicher Wohnort der Drop-Regeln dieser drei Ressourcen. Was ein Sieg **sonst** noch
 ausschüttet (XP, Gold, Relic Shards), steht in
-[Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg); **Runedust** in
-[Runedust (Drop)](RUNES.md#6-runedust-drop).
+[Belohnungen aus einem Sieg](PROGRESSION.md#2-belohnungen-aus-einem-sieg); **Runewords** in
+[Runewords (Drop)](RUNES.md#6-runewords-drop).
 
 | Ressource                              | Quelle               | Bedingung                                                                                                                            |
 | -------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |

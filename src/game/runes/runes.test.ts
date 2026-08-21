@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CRUCIBLE_IDS } from '@/game/crucible/crucible';
 import type { Prng } from '@/shared/utils/prng';
 import {
+  activeRitesFrom,
   availableRunesForRiteSlot,
   createEmptyTeamRites,
   etchCost,
@@ -49,6 +50,36 @@ describe('rune catalog', () => {
       trigger: false,
       effect: false,
       modifier: false,
+    });
+  });
+});
+
+describe('activeRitesFrom', () => {
+  it('übernimmt nur vollständige Rite mit ihren aktuellen Leveln in den Kampf', () => {
+    const empty = createEmptyTeamRites();
+    const rites = {
+      ...empty,
+      rhaya: {
+        ...empty.rhaya,
+        triggerRuneId: 'rune.trigger.on-crit' as const,
+        effectRuneId: 'rune.effect.bolt' as const,
+      },
+      quinn: { ...empty.quinn, triggerRuneId: 'rune.trigger.on-splash' as const },
+    };
+
+    expect(
+      activeRitesFrom(rites, {
+        'rune.trigger.on-crit': 3,
+        'rune.effect.bolt': 2,
+        'rune.trigger.on-splash': 1,
+      }),
+    ).toEqual({
+      rhaya: {
+        triggerRuneId: 'rune.trigger.on-crit',
+        triggerLevel: 3,
+        effectRuneId: 'rune.effect.bolt',
+        effectLevel: 2,
+      },
     });
   });
 });

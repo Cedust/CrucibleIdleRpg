@@ -25,6 +25,7 @@ import {
 } from '@/shared/utils/prng';
 import { deriveCharacterStats, type CharacterProgression } from './characterStats';
 import type { ImprintEffects } from '@/game/sigils/imprints';
+import type { ActiveTeamRites } from '@/game/runes/types';
 import { buildPendingQueue, momentumBonus } from './turnOrder';
 
 /**
@@ -80,6 +81,8 @@ export interface CombatCharacter {
   counterStacks?: number;
   /** Nicht-Stat-Effekte der Armor-Imprints für Weapon- und Block-Pipeline. */
   imprintEffects?: ImprintEffects;
+  /** Temporärer Rite-Buff; läuft nur im Kampf und ist kein persistierter Stat. */
+  empower?: { attackBonus: number; expiresAfterRound: number };
 }
 
 /** Ein Gegner im Kampf: auf den Floor skalierte Stats plus die gewürfelte Initiative. */
@@ -104,6 +107,8 @@ export interface CombatEnemy {
   sunderedBulwark: number;
   /** Runde der letzten Suppression — höchstens eine je Ziel und Runde (SIGNATURES §1.3). */
   suppressedRound?: number;
+  /** Eine gebundene Mark-Ladung für den nächsten normalen Angriff eines anderen Charakters. */
+  mark?: { sourceCharacterId: CharacterId; damageFactor: number };
 }
 
 export interface CombatState {
@@ -136,6 +141,10 @@ export interface CombatState {
    * Runs mitgeschleppt; erst ein neuer Run setzt ihn zurück.
    */
   secondWindConsumed: boolean;
+  /** Vollständige Rite mit beim Kampfbeginn eingefrorenen Leveln. */
+  rites: ActiveTeamRites;
+  /** Die Runde der Rite-Reservierung je Träger; maximal ein Wurf je Runde. */
+  riteReservedRounds: Readonly<Partial<Record<CharacterId, number>>>;
 }
 
 /** Ein Team-Mitglied für den Kampfaufbau. */
@@ -162,6 +171,8 @@ export interface CombatSetup {
    * (docs/spec/SIGNATURES.md#24-second-wind-nach-rally). Ohne Angabe unverbraucht.
    */
   secondWindConsumed?: boolean;
+  /** Persistierte Rite, bereits auf vollständige Kampfeinträge reduziert. */
+  rites?: ActiveTeamRites;
 }
 
 /* ------------------------------------------------------------------ Seed-Kette */
@@ -338,6 +349,8 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     round: 0,
     pending: [],
     secondWindConsumed: setup.secondWindConsumed ?? false,
+    rites: setup.rites ?? {},
+    riteReservedRounds: {},
   };
 }
 
@@ -367,6 +380,10 @@ export function beginRound(state: CombatState, momentumCap = 0): CombatState {
     ...character,
     barrier: isAlive(character) ? character.stats.defensive.barrier : 0,
     counterStacks: 0,
+    empower:
+      character.empower !== undefined && character.empower.expiresAfterRound < state.round + 1
+        ? undefined
+        : character.empower,
   }));
 
   const next: CombatState = {

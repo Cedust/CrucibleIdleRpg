@@ -1,10 +1,10 @@
 # 037 — Rite-Auslösung & Basis-Effects
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M5      |
-| **Hängt ab von** | 036     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M5     |
+| **Hängt ab von** | 036    |
 
 ## Ziel
 

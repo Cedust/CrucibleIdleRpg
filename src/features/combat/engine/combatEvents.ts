@@ -1,5 +1,6 @@
 import type { ActorRef } from './combatState';
 import type { HitKind } from './damage/outgoingDamage';
+import type { EffectRuneId, TriggerRuneId } from '@/game/runes/types';
 
 /**
  * Kampf-Events — was ein Takt berichtet (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
@@ -101,6 +102,23 @@ export interface RegenerationEvent {
   health: number;
 }
 
+/** Der eine erfolgreiche, seedbare Wurf eines Rite in dieser Runde. */
+export interface RiteTriggerEvent {
+  type: 'riteTrigger';
+  source: ActorRef;
+  triggerRuneId: TriggerRuneId;
+  effectRuneId: EffectRuneId;
+}
+
+/** Ein Basis-Effect des Rite, getrennt vom etwaigen Schadens-Hit für das Playback. */
+export interface RiteEffectEvent {
+  type: 'riteEffect';
+  source: ActorRef;
+  effectRuneId: EffectRuneId;
+  target?: ActorRef;
+  amount?: number;
+}
+
 /** Ein Akteur ist gefallen und fällt aus Zugordnung und Verteilung heraus (COMBAT §1.1). */
 export interface DefeatEvent {
   type: 'defeat';
@@ -139,6 +157,8 @@ export type CombatEvent =
   | EnemyAttackEvent
   | DamageTakenEvent
   | RegenerationEvent
+  | RiteTriggerEvent
+  | RiteEffectEvent
   | DefeatEvent
   | SecondWindEvent
   | RoundEndEvent

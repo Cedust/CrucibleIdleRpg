@@ -34,6 +34,8 @@ const HIT_LABEL: Record<HitKind, string> = {
   aftershock: 'Aftershock',
   secondWind: 'Twin Echo',
   counter: 'Counter',
+  riteBolt: 'Rite Bolt',
+  mark: 'Mark',
 };
 
 function eventText(state: CombatState, event: CombatEvent): string {
@@ -58,6 +60,14 @@ function eventText(state: CombatState, event: CombatEvent): string {
       return `${actorName(state, event.target)}${event.blocked ? ' Blocked' : ''}: ${formatNumber(event.healthLost)} health damage${event.barrierAbsorbed > 0 ? `, ${formatNumber(event.barrierAbsorbed)} absorbed by Barrier` : ''}`;
     case 'regeneration':
       return `${actorName(state, event.actor)} regenerates ${formatNumber(event.healed)} health`;
+    case 'riteTrigger':
+      return `${actorName(state, event.source)} invokes ${event.effectRuneId.replace('rune.effect.', '')}`;
+    case 'riteEffect': {
+      const effect = event.effectRuneId.replace('rune.effect.', '');
+      const target = event.target === undefined ? '' : ` on ${actorName(state, event.target)}`;
+      const amount = event.amount === undefined ? '' : ` (${formatNumber(event.amount)})`;
+      return `${actorName(state, event.source)}: ${effect}${target}${amount}`;
+    }
     case 'defeat':
       return `${actorName(state, event.actor)} is defeated`;
     case 'secondWind':

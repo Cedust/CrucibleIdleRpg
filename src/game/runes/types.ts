@@ -83,3 +83,14 @@ export const RITE_SLOT_CATEGORY: Readonly<Record<RiteSlot, RuneCategory>> = {
 
 /** Es gibt genau einen Talisman-/Rite-Zustand je festem Teammitglied. */
 export type TeamRites = Readonly<Record<CharacterId, Rite>>;
+
+/** Ein vollständig bestückter Rite mit seinen zum Kampfbeginn fixierten Rune-Leveln. */
+export interface ActiveRite {
+  triggerRuneId: TriggerRuneId;
+  triggerLevel: RuneLevel;
+  effectRuneId: EffectRuneId;
+  effectLevel: RuneLevel;
+}
+
+/** Nur vollständige Rite betreten den flüchtigen Kampfzustand. */
+export type ActiveTeamRites = Readonly<Partial<Record<CharacterId, ActiveRite>>>;

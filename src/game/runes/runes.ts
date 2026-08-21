@@ -8,6 +8,8 @@ import {
   RUNE_CATEGORIES,
   TRIGGER_RUNE_IDS,
   type Rite,
+  type ActiveRite,
+  type ActiveTeamRites,
   type RuneCategory,
   type RuneDefinition,
   type RuneGrimoire,
@@ -312,6 +314,30 @@ export function createEmptyTeamRites(): TeamRites {
     rhaya: createEmptyRite(),
     quinn: createEmptyRite(),
   };
+}
+
+/**
+ * Übernimmt ausschließlich vollständige, bekannte Rite in den Kampf. Die Level werden beim
+ * Kampfbeginn eingefroren; eine Save-Änderung kann einen laufenden Kampf nicht verändern.
+ */
+export function activeRitesFrom(rites: TeamRites, grimoire: RuneGrimoire): ActiveTeamRites {
+  const active: Partial<Record<CharacterId, ActiveRite>> = {};
+
+  for (const characterId of TEAM_ORDER) {
+    const rite = rites[characterId];
+    if (rite.triggerRuneId === null || rite.effectRuneId === null) continue;
+    const triggerLevel = grimoire[rite.triggerRuneId];
+    const effectLevel = grimoire[rite.effectRuneId];
+    if (triggerLevel === undefined || effectLevel === undefined) continue;
+    active[characterId] = {
+      triggerRuneId: rite.triggerRuneId,
+      triggerLevel,
+      effectRuneId: rite.effectRuneId,
+      effectLevel,
+    };
+  }
+
+  return active;
 }
 
 /**

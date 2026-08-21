@@ -15,7 +15,9 @@ export type HitKind =
   | 'focusedBlast'
   | 'aftershock'
   | 'secondWind'
-  | 'counter';
+  | 'counter'
+  | 'riteBolt'
+  | 'mark';
 
 export interface Hit {
   kind: HitKind;

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CRUCIBLE_IDS } from '@/game/crucible/crucible';
 import type { Prng } from '@/shared/utils/prng';
 import {
+  availableRunesForRiteSlot,
   createEmptyTeamRites,
   etchCost,
   etchRune,
@@ -10,6 +11,7 @@ import {
   inscribeRune,
   runeDepthFromFirstVictories,
   runeLevelCap,
+  setRuneInRite,
   unlockedRiteSlots,
   validateRuneCatalog,
   validateRuneGrimoire,
@@ -160,5 +162,84 @@ describe('Rune Grimoire actions', () => {
       'rune.trigger.on-crit': 2,
     });
     expect(etchRune({ 'rune.trigger.on-crit': 2 }, 'rune.trigger.on-crit', 2)).toBeNull();
+  });
+});
+
+describe('Rite configuration', () => {
+  const ranks = {
+    [CRUCIBLE_IDS.runeGrimoire]: 1,
+    [CRUCIBLE_IDS.talisman]: 2,
+    [CRUCIBLE_IDS.runicFocus]: 1,
+  };
+  const grimoire = {
+    'rune.trigger.on-crit': 1,
+    'rune.trigger.on-multi-hit': 1,
+    'rune.effect.heal': 1,
+    'rune.effect.barrier': 1,
+    'rune.modifier.echo': 1,
+  } as const;
+
+  it('only exposes known category matches that are not bound in another team slot', () => {
+    const empty = createEmptyTeamRites();
+    const rites = setRuneInRite(
+      empty,
+      grimoire,
+      ranks,
+      'korvin',
+      'triggerRuneId',
+      'rune.trigger.on-crit',
+    );
+    if (rites === null) throw new Error('Rite fehlt');
+
+    expect(
+      availableRunesForRiteSlot(rites, grimoire, 'rhaya', 'triggerRuneId').map((rune) => rune.id),
+    ).toEqual(['rune.trigger.on-multi-hit']);
+    expect(
+      availableRunesForRiteSlot(rites, grimoire, 'korvin', 'triggerRuneId').map((rune) => rune.id),
+    ).toEqual(['rune.trigger.on-crit', 'rune.trigger.on-multi-hit']);
+  });
+
+  it('atomically enforces rank gates, categories and team uniqueness while allowing free removal', () => {
+    const empty = createEmptyTeamRites();
+    const korvinTrigger = setRuneInRite(
+      empty,
+      grimoire,
+      ranks,
+      'korvin',
+      'triggerRuneId',
+      'rune.trigger.on-crit',
+    );
+    if (korvinTrigger === null) throw new Error('Rite fehlt');
+
+    expect(
+      setRuneInRite(
+        korvinTrigger,
+        grimoire,
+        ranks,
+        'rhaya',
+        'triggerRuneId',
+        'rune.trigger.on-crit',
+      ),
+    ).toBeNull();
+    expect(
+      setRuneInRite(
+        korvinTrigger,
+        grimoire,
+        ranks,
+        'rhaya',
+        'triggerRuneId',
+        'rune.effect.barrier',
+      ),
+    ).toBeNull();
+    expect(
+      setRuneInRite(korvinTrigger, grimoire, ranks, 'quinn', 'effectRuneId', 'rune.effect.barrier'),
+    ).toBeNull();
+
+    const cleared = setRuneInRite(korvinTrigger, grimoire, ranks, 'korvin', 'triggerRuneId', null);
+    expect(cleared).toEqual({
+      ...empty,
+      korvin: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+    });
+    expect(grimoire['rune.trigger.on-crit']).toBe(1);
   });
 });

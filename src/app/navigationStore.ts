@@ -23,7 +23,6 @@ export const CHARACTER_SCOPED_VIEWS = [
   'weapon-mastery',
   'blacksmith',
   'jeweler',
-  'runescribe',
 ] as const satisfies readonly View[];
 
 export function isCharacterScopedView(view: View): boolean {

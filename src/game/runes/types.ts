@@ -71,5 +71,15 @@ export interface Rite {
   modifierRuneId: ModifierRuneId | null;
 }
 
+/** Geschlossene Rite-Slots; Kategorie und Save-Key bleiben damit konsistent. */
+export const RITE_SLOTS = ['triggerRuneId', 'effectRuneId', 'modifierRuneId'] as const;
+export type RiteSlot = (typeof RITE_SLOTS)[number];
+
+export const RITE_SLOT_CATEGORY: Readonly<Record<RiteSlot, RuneCategory>> = {
+  triggerRuneId: 'trigger',
+  effectRuneId: 'effect',
+  modifierRuneId: 'modifier',
+};
+
 /** Es gibt genau einen Talisman-/Rite-Zustand je festem Teammitglied. */
 export type TeamRites = Readonly<Record<CharacterId, Rite>>;

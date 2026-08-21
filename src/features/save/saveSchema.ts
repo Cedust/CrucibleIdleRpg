@@ -10,7 +10,7 @@ import {
   validateRuneGrimoire,
   validateTeamRites,
 } from '@/game/runes/runes';
-import type { TeamRites } from '@/game/runes/types';
+import { EFFECT_RUNE_IDS, MODIFIER_RUNE_IDS, RUNE_IDS, TRIGGER_RUNE_IDS } from '@/game/runes/types';
 import { validateActiveImprints } from '@/game/sigils/imprints';
 import { createEmptySigilCodex, sigilById } from '@/game/sigils/sigils';
 import {
@@ -182,14 +182,22 @@ const teamArmorSchema = z
   .strict();
 
 /** Persistierter Wissensstand des Rune Grimoire, keine stapelbaren Rune-Items (RUNES §2). */
-const runeGrimoireSchema = z.record(z.string(), z.number().int().min(1).max(5)).readonly();
+const runeIdSchema = z.enum(RUNE_IDS);
+const runeLevelSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+]);
+const runeGrimoireSchema = z.partialRecord(runeIdSchema, runeLevelSchema).readonly();
 
 /** Ein konfigurierbarer Rite führt alle drei kategorisierten Slots, leer als `null`. */
 const riteSchema = z
   .object({
-    triggerRuneId: z.string().min(1).nullable(),
-    effectRuneId: z.string().min(1).nullable(),
-    modifierRuneId: z.string().min(1).nullable(),
+    triggerRuneId: z.enum(TRIGGER_RUNE_IDS).nullable(),
+    effectRuneId: z.enum(EFFECT_RUNE_IDS).nullable(),
+    modifierRuneId: z.enum(MODIFIER_RUNE_IDS).nullable(),
   })
   .strict();
 
@@ -273,7 +281,7 @@ export const saveSchema = z
     if (grimoireFailure !== null) {
       context.addIssue({ code: 'custom', message: grimoireFailure });
     }
-    const riteFailure = validateTeamRites(save.rites as TeamRites, save.runes, save.crucible);
+    const riteFailure = validateTeamRites(save.rites, save.runes, save.crucible);
     if (riteFailure !== null) {
       context.addIssue({ code: 'custom', message: riteFailure });
     }

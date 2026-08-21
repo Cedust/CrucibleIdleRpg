@@ -98,6 +98,9 @@ describe('AppShell', () => {
     expect(screen.getAllByRole('radiogroup', { name: 'Active character' })).toHaveLength(1);
     expect(screen.getByRole('radio', { name: 'Rhaya' })).toHaveAttribute('aria-checked', 'true');
 
+    await user.click(screen.getByRole('button', { name: 'RUNESCRIBE' }));
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
+
     await user.click(screen.getByRole('button', { name: 'CRUCIBLE' }));
     expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
   });

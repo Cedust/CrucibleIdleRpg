@@ -12,7 +12,7 @@ import {
 } from '@/game/crafting/jeweler';
 import { gemValueRange } from '@/game/items/gems';
 import { attributeRespecCost } from '@/game/rewards/xpRewards';
-import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
+import { CRUCIBLE_IDS, deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
@@ -360,6 +360,105 @@ describe('createSaveStore', () => {
 
     await expect(store.getState().inscribeRune('trigger')).resolves.toBe(false);
     await expect(store.getState().etchRune('rune.trigger.on-crit')).resolves.toBe(false);
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
+  });
+
+  it('persists free Rite reconfiguration atomically without a craft roll or lost Rune level', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        crucible: {
+          [CRUCIBLE_IDS.runeGrimoire]: 1,
+          [CRUCIBLE_IDS.talisman]: 2,
+          [CRUCIBLE_IDS.runicFocus]: 1,
+          [CRUCIBLE_IDS.runeMastery]: 1,
+        },
+        runes: {
+          'rune.trigger.on-crit': 2,
+          'rune.trigger.on-multi-hit': 1,
+          'rune.effect.heal': 1,
+          'rune.effect.barrier': 1,
+          'rune.modifier.echo': 1,
+        },
+      },
+    });
+
+    await expect(
+      store.getState().setRiteRune('korvin', 'triggerRuneId', 'rune.trigger.on-crit'),
+    ).resolves.toBe(true);
+    await expect(
+      store.getState().setRiteRune('korvin', 'effectRuneId', 'rune.effect.heal'),
+    ).resolves.toBe(true);
+    await expect(
+      store.getState().setRiteRune('korvin', 'modifierRuneId', 'rune.modifier.echo'),
+    ).resolves.toBe(true);
+    await expect(store.getState().setRiteRune('korvin', 'triggerRuneId', null)).resolves.toBe(true);
+
+    const configured = store.getState().data;
+    expect(configured?.rites.korvin).toEqual({
+      triggerRuneId: null,
+      effectRuneId: 'rune.effect.heal',
+      modifierRuneId: 'rune.modifier.echo',
+    });
+    expect(configured?.runes['rune.trigger.on-crit']).toBe(2);
+    expect(configured?.craftCounter).toBe(0);
+    expect(configured?.currencies).toEqual(base.currencies);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(configured);
+  });
+
+  it('rejects invalid or locked Rite sockets without a save write', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        crucible: { [CRUCIBLE_IDS.runeGrimoire]: 1, [CRUCIBLE_IDS.talisman]: 2 },
+        runes: {
+          'rune.trigger.on-crit': 1,
+          'rune.effect.heal': 1,
+          'rune.effect.barrier': 1,
+        },
+        rites: {
+          ...base.rites,
+          korvin: { ...base.rites.korvin, triggerRuneId: 'rune.trigger.on-crit' },
+        },
+      },
+    });
+    const before = store.getState().data;
+
+    await expect(
+      store.getState().setRiteRune('rhaya', 'triggerRuneId', 'rune.trigger.on-crit'),
+    ).resolves.toBe(false);
+    await expect(
+      store.getState().setRiteRune('rhaya', 'triggerRuneId', 'rune.effect.barrier'),
+    ).resolves.toBe(false);
+    await expect(
+      store.getState().setRiteRune('quinn', 'effectRuneId', 'rune.effect.barrier'),
+    ).resolves.toBe(false);
+
     expect(store.getState().data).toEqual(before);
     expect(writes).toBe(0);
   });

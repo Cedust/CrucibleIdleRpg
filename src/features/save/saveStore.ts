@@ -21,8 +21,9 @@ import {
   isRuneGrimoireUnlocked,
   runeDepthFromFirstVictories,
   runeLevelCap,
+  setRuneInRite,
 } from '@/game/runes/runes';
-import type { RuneCategory, RuneId } from '@/game/runes/types';
+import type { RiteSlot, RuneCategory, RuneId } from '@/game/runes/types';
 import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
@@ -63,6 +64,11 @@ export interface SaveStoreState {
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
   inscribeRune: (category: RuneCategory) => Promise<boolean>;
   etchRune: (runeId: RuneId) => Promise<boolean>;
+  setRiteRune: (
+    characterId: CharacterId,
+    slot: RiteSlot,
+    runeId: RuneId | null,
+  ) => Promise<boolean>;
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
@@ -372,6 +378,28 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             },
             result: true,
           };
+        }),
+
+      // Rite-Umsockeln hat keine Kosten und keinen Craft-Roll; nur der vollständige Rite-Zustand
+      // wird nach Kategorie, Anvil-Gate und teamweiter Einmaligkeit gespeichert.
+      setRiteRune: (characterId, slot, runeId) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+          const rites = setRuneInRite(
+            current.rites,
+            current.runes,
+            current.crucible,
+            characterId,
+            slot,
+            runeId,
+          );
+          if (rites === null) {
+            return { next: null, result: false };
+          }
+
+          return { next: { ...current, rites }, result: true };
         }),
 
       respecCrucible: (tree) =>

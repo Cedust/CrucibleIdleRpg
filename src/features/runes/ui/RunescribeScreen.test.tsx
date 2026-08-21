@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
@@ -18,6 +18,25 @@ function unlockedRunescribeSave(options: { depth?: number; mastery?: number } = 
       ...(mastery > 0 ? { 'anvil.rune-mastery': mastery } : {}),
     },
     runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+  };
+}
+
+function riteReadySave(): SaveData {
+  const base = unlockedRunescribeSave();
+  return {
+    ...base,
+    crucible: {
+      'anvil.rune-grimoire': 1,
+      'anvil.talisman': 2,
+      'anvil.runic-focus': 1,
+    },
+    runes: {
+      'rune.trigger.on-crit': 1,
+      'rune.trigger.on-multi-hit': 1,
+      'rune.effect.heal': 1,
+      'rune.effect.barrier': 1,
+      'rune.modifier.echo': 1,
+    },
   };
 }
 
@@ -86,5 +105,67 @@ describe('RunescribeScreen', () => {
     });
     expect(saveStore.getState().data?.craftCounter).toBe(0);
     expect(screen.getByLabelText('Rune level 2 of 5')).toBeInTheDocument();
+  });
+
+  it('shows all Talismans with rank-gated Rite sockets outside the Heroes loadout', () => {
+    saveStore.setState({ data: riteReadySave(), status: 'ready' });
+    render(<RunescribeScreen />);
+
+    expect(screen.getByLabelText('Talismans and Rites')).toBeInTheDocument();
+    expect(document.querySelectorAll('[data-character-id]')).toHaveLength(3);
+    expect(screen.getByRole('button', { name: 'Korvin TRIGGER slot, empty' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Rhaya EFFECT slot, empty' })).toBeEnabled();
+    expect(screen.getByLabelText('Rhaya MODIFIER slot locked')).toHaveAttribute(
+      'data-semantic',
+      'locked',
+    );
+    expect(screen.getByLabelText('Quinn TRIGGER slot locked')).toHaveAttribute(
+      'data-semantic',
+      'locked',
+    );
+  });
+
+  it('binds, excludes, replaces and clears a Rite slot through the keyboard', async () => {
+    const user = userEvent.setup();
+    saveStore.setState({ data: riteReadySave(), status: 'ready' });
+    render(<RunescribeScreen />);
+
+    const korvinTrigger = screen.getByRole('button', { name: 'Korvin TRIGGER slot, empty' });
+    korvinTrigger.focus();
+    await user.keyboard('{Enter}');
+    const workbench = screen.getByRole('region', { name: 'Rite socket selection' });
+    const bindOnCrit = within(workbench).getByRole('button', { name: 'Bind On Crit, level 1' });
+    bindOnCrit.focus();
+    await user.keyboard('{Enter}');
+    await waitFor(() => {
+      expect(saveStore.getState().data?.rites.korvin.triggerRuneId).toBe('rune.trigger.on-crit');
+    });
+
+    const rhayaTrigger = screen.getByRole('button', { name: 'Rhaya TRIGGER slot, empty' });
+    rhayaTrigger.focus();
+    await user.keyboard('{Enter}');
+    expect(
+      within(workbench).queryByRole('button', { name: 'Bind On Crit, level 1' }),
+    ).not.toBeInTheDocument();
+    const bindMultiHit = within(workbench).getByRole('button', {
+      name: 'Bind On Multi-Hit, level 1',
+    });
+    bindMultiHit.focus();
+    await user.keyboard('{Enter}');
+    await waitFor(() => {
+      expect(saveStore.getState().data?.rites.rhaya.triggerRuneId).toBe(
+        'rune.trigger.on-multi-hit',
+      );
+    });
+
+    korvinTrigger.focus();
+    await user.keyboard('{Enter}');
+    const clear = within(workbench).getByRole('button', { name: 'Clear Korvin TRIGGER slot' });
+    clear.focus();
+    await user.keyboard('{Enter}');
+    await waitFor(() => {
+      expect(saveStore.getState().data?.rites.korvin.triggerRuneId).toBeNull();
+    });
+    expect(saveStore.getState().data?.runes['rune.trigger.on-crit']).toBe(1);
   });
 });

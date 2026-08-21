@@ -13,6 +13,8 @@ import {
   type RuneGrimoire,
   type RuneId,
   type RuneLevel,
+  RITE_SLOT_CATEGORY,
+  type RiteSlot,
   type TeamRites,
 } from './types';
 
@@ -310,6 +312,62 @@ export function createEmptyTeamRites(): TeamRites {
     rhaya: createEmptyRite(),
     quinn: createEmptyRite(),
   };
+}
+
+/**
+ * Bekannte, teamweit noch nicht gebundene Runen für genau einen Rite-Slot. Die Rune im
+ * aktuell gewählten Slot bleibt wählbar, damit ein geöffneter Ritus unverändert bleiben kann.
+ */
+export function availableRunesForRiteSlot(
+  rites: TeamRites,
+  grimoire: RuneGrimoire,
+  characterId: CharacterId,
+  slot: RiteSlot,
+): readonly RuneDefinition[] {
+  const currentRuneId = rites[characterId][slot];
+  const activeElsewhere = new Set<RuneId>();
+
+  for (const teamMemberId of TEAM_ORDER) {
+    for (const riteSlot of Object.keys(RITE_SLOT_CATEGORY) as RiteSlot[]) {
+      if (teamMemberId === characterId && riteSlot === slot) continue;
+      const runeId = rites[teamMemberId][riteSlot];
+      if (runeId !== null) activeElsewhere.add(runeId);
+    }
+  }
+
+  return runesForCategory(RITE_SLOT_CATEGORY[slot]).filter(
+    (rune) =>
+      grimoire[rune.id] !== undefined &&
+      (rune.id === currentRuneId || !activeElsewhere.has(rune.id)),
+  );
+}
+
+/**
+ * Ändert genau einen Rite-Slot. Das Ergebnis wird als vollständiger Teamzustand validiert,
+ * damit Kategorie, Anvil-Gate und teamweite Einmaligkeit atomar bleiben.
+ */
+export function setRuneInRite(
+  rites: TeamRites,
+  grimoire: RuneGrimoire,
+  ranks: CrucibleRanks,
+  characterId: CharacterId,
+  slot: RiteSlot,
+  runeId: RuneId | null,
+): TeamRites | null {
+  const slotCategory = RITE_SLOT_CATEGORY[slot];
+  if (!unlockedRiteSlots(ranks, characterId)[slotCategory] || rites[characterId][slot] === runeId) {
+    return null;
+  }
+  if (runeId !== null) {
+    const rune = runeById(runeId);
+    if (rune?.category !== slotCategory || grimoire[runeId] === undefined) return null;
+  }
+
+  const next: TeamRites = {
+    ...rites,
+    [characterId]: { ...rites[characterId], [slot]: runeId },
+  };
+  return validateTeamRites(next, grimoire, ranks) === null ? next : null;
 }
 
 /** Leerer Wissensstand zum Start eines neuen Save. */

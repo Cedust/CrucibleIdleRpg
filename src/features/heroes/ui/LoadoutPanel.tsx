@@ -105,7 +105,7 @@ const WEAPON_ICON_CLASS: Record<CharacterId, string> = {
 };
 
 /** Auswählbare Loadout-Einträge; gesperrte Armor-Slots sind bewusst nicht auswählbar. */
-type LoadoutSelection = 'weapon' | 'talisman' | ArmorSlot;
+type LoadoutSelection = 'weapon' | ArmorSlot;
 
 const valueFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
 
@@ -277,19 +277,6 @@ function ArmorDetail({ item, sigils }: { item: ArmorItem; sigils: SigilCodex }) 
   );
 }
 
-function TalismanDetail() {
-  return (
-    <>
-      <h3 className="font-display text-display-sm text-accent-strong">Talisman</h3>
-      <p className="mt-1 text-sm text-text-muted">Ritual Slot</p>
-      <p className="mt-3 border-t border-border/50 pt-3 text-sm text-text-muted">
-        The Talisman is a ritual slot set apart from armor — it will channel Runes instead of plate.
-        Unlocks with Runes (M5).
-      </p>
-    </>
-  );
-}
-
 interface LoadoutPanelProps {
   characterId: CharacterId;
   stats: CharacterStats;
@@ -299,9 +286,8 @@ interface LoadoutPanelProps {
 }
 
 /**
- * Loadout-Bereich von Heroes (Task 024): links Talisman und Signaturwaffe, rechts daneben die
- * anatomische Armor-Säule, außen die Detailkarte. Die Auswahl ändert nur die Detailansicht;
- * die Slot-Wahrheit ist die persistierte Armor des aktiven Charakters.
+ * Loadout-Bereich von Heroes: Signaturwaffe und vier Armor-Slots. Talismane gehören ausschließlich
+ * zu Runescribe und sind bewusst weder Auswahl noch Item-Schicht dieses Screens.
  */
 export function LoadoutPanel({
   characterId,
@@ -312,8 +298,7 @@ export function LoadoutPanel({
 }: LoadoutPanelProps) {
   const [selection, setSelection] = useState<LoadoutSelection>('weapon');
   const weapon = effectiveWeaponValues(characterId, masteryRanks);
-  const selectedItem =
-    selection !== 'weapon' && selection !== 'talisman' ? armor[selection] : undefined;
+  const selectedItem = selection !== 'weapon' ? armor[selection] : undefined;
 
   return (
     <div
@@ -323,65 +308,46 @@ export function LoadoutPanel({
       className="min-h-0 flex-1 overflow-y-auto px-3 py-3"
     >
       <div className="grid min-w-0 content-start gap-5 @min-[60rem]:grid-cols-[minmax(15rem,1.2fr)_minmax(13rem,1fr)_minmax(15rem,1.1fr)]">
-        <div className="flex min-w-0 flex-col gap-5" data-testid="loadout-ritual-column">
-          <section aria-label="Talisman" className="flex min-w-0 flex-1 flex-col">
-            <SectionTitle as="h3">Talisman</SectionTitle>
-            <SlotButton
-              selection="talisman"
-              selected={selection === 'talisman'}
-              semantic="locked"
-              onSelect={() => setSelection('talisman')}
-              label="Talisman, Locked"
-              className="mt-2 flex-1 flex-col items-center justify-center gap-2 px-4 py-6"
-            >
-              <Icon
-                name="crucible-talisman"
-                size="xl"
-                className="bg-text-muted opacity-(--state-deemphasis-medium)"
-              />
-              <span className="flex items-center gap-1.5 text-xs text-text-muted">
-                <LockKeyhole aria-hidden="true" className="size-3.5" />
-                Locked
+        <section
+          aria-label="Signature Weapon"
+          className="min-w-0"
+          data-testid="loadout-weapon-column"
+        >
+          <SectionTitle as="h3">Signature Weapon</SectionTitle>
+          <SlotButton
+            selection="weapon"
+            selected={selection === 'weapon'}
+            onSelect={() => setSelection('weapon')}
+            label={`Signature Weapon ${disciplineLabel('weapon', characterId)}`}
+            className="mt-2 items-center gap-4 px-4 py-4"
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                'inline-block size-11 shrink-0 bg-accent-strong mask-center mask-contain mask-no-repeat',
+                WEAPON_ICON_CLASS[characterId],
+              )}
+            />
+            <span className="min-w-0">
+              <span className="block font-display text-display-sm text-accent-strong">
+                {disciplineLabel('weapon', characterId)}
               </span>
-            </SlotButton>
-          </section>
-          <section aria-label="Signature Weapon" className="min-w-0">
-            <SectionTitle as="h3">Signature Weapon</SectionTitle>
-            <SlotButton
-              selection="weapon"
-              selected={selection === 'weapon'}
-              onSelect={() => setSelection('weapon')}
-              label={`Signature Weapon ${disciplineLabel('weapon', characterId)}`}
-              className="mt-2 items-center gap-4 px-4 py-4"
-            >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'inline-block size-11 shrink-0 bg-accent-strong mask-center mask-contain mask-no-repeat',
-                  WEAPON_ICON_CLASS[characterId],
-                )}
-              />
-              <span className="min-w-0">
-                <span className="block font-display text-display-sm text-accent-strong">
-                  {disciplineLabel('weapon', characterId)}
-                </span>
-                <span className="mt-1 block text-sm text-text-muted">
-                  Damage Range{' '}
-                  <span className="font-medium tabular-nums text-text">
-                    {valueFormatter.format(stats.derived.attack * weapon.damageRange.min)} –{' '}
-                    {valueFormatter.format(stats.derived.attack * weapon.damageRange.max)}
-                  </span>
-                </span>
-                <span className="block text-sm text-text-muted">
-                  Precision{' '}
-                  <span className="font-medium tabular-nums text-text">
-                    {formatPercent(weapon.precision)}
-                  </span>
+              <span className="mt-1 block text-sm text-text-muted">
+                Damage Range{' '}
+                <span className="font-medium tabular-nums text-text">
+                  {valueFormatter.format(stats.derived.attack * weapon.damageRange.min)} –{' '}
+                  {valueFormatter.format(stats.derived.attack * weapon.damageRange.max)}
                 </span>
               </span>
-            </SlotButton>
-          </section>
-        </div>
+              <span className="block text-sm text-text-muted">
+                Precision{' '}
+                <span className="font-medium tabular-nums text-text">
+                  {formatPercent(weapon.precision)}
+                </span>
+              </span>
+            </span>
+          </SlotButton>
+        </section>
         <section
           aria-label="Armor"
           className="flex min-w-0 flex-col gap-3"
@@ -432,8 +398,6 @@ export function LoadoutPanel({
         >
           {selection === 'weapon' ? (
             <WeaponDetail characterId={characterId} stats={stats} masteryRanks={masteryRanks} />
-          ) : selection === 'talisman' ? (
-            <TalismanDetail />
           ) : selectedItem !== undefined ? (
             <ArmorDetail item={selectedItem} sigils={sigils} />
           ) : null}

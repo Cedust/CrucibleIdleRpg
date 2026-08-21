@@ -32,6 +32,7 @@ import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
 import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
+import { RiteConfigurationPanel } from './RiteConfigurationPanel';
 
 const CATEGORY_PRESENTATION: Readonly<
   Record<RuneCategory, { label: string; question: string; icon: LucideIcon }>
@@ -310,7 +311,8 @@ export function RunescribeScreen() {
           </Panel>
         ) : (
           <div className="mt-5 min-h-0 flex-1 overflow-y-auto pb-4 pr-1">
-            <div className="grid min-w-0 gap-4 @min-[58rem]:grid-cols-3">
+            <RiteConfigurationPanel />
+            <div className="mt-5 grid min-w-0 gap-4 @min-[58rem]:grid-cols-3">
               {(['trigger', 'effect', 'modifier'] as const).map((category) => (
                 <RuneCategoryPanel
                   key={category}

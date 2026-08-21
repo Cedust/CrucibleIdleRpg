@@ -1,10 +1,10 @@
 # 036 — Talisman & Rite-Konfiguration
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M5        |
-| **Hängt ab von** | 033, 035  |
+| Feld             | Wert     |
+| ---------------- | -------- |
+| **Status**       | `done`   |
+| **Meilenstein**  | M5       |
+| **Hängt ab von** | 033, 035 |
 
 ## Ziel
 
@@ -38,16 +38,16 @@ Anvil-Rangregeln; [035](035-runescribe-inscribe-etch.md) liefert Runescribe und 
 
 ## Akzeptanzkriterien
 
-- [ ] Runescribe zeigt die Talismane aller drei Charaktere und ihre Rite-Slots; Talisman-Rang
+- [x] Runescribe zeigt die Talismane aller drei Charaktere und ihre Rite-Slots; Talisman-Rang
       `n` öffnet Trigger und Effect nur für Charakter `n`, Runic-Focus-Rang `n` zusätzlich den
       Modifier-Slot
-- [ ] Die Auswahl lässt nur bekannte Runen ihrer Kategorie zu und schließt jede Rune, die bereits
+- [x] Die Auswahl lässt nur bekannte Runen ihrer Kategorie zu und schließt jede Rune, die bereits
       in einem anderen Slot desselben Teams liegt, aus
-- [ ] Ein Umsockeln kostet nichts, verliert keine Rune und erhält deren Level; alle Änderungen
+- [x] Ein Umsockeln kostet nichts, verliert keine Rune und erhält deren Level; alle Änderungen
       sind als vollständiger Rite-Zustand atomar persistiert und überstehen Reloads
-- [ ] Talismane werden nach ihrer Freischaltung ausschließlich in Runescribe konfiguriert; Heroes
+- [x] Talismane werden nach ihrer Freischaltung ausschließlich in Runescribe konfiguriert; Heroes
       behandelt sie nicht mehr als auswählbaren Loadout-Slot
-- [ ] Component- und Store-Tests decken Rang-Gates, Kategorien, teamweite Einmaligkeit,
+- [x] Component- und Store-Tests decken Rang-Gates, Kategorien, teamweite Einmaligkeit,
       kostenloses Umsockeln, Reload und zugängliche Bedienung ab
 
 ## Betroffene Dateien

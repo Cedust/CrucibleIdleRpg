@@ -14,9 +14,9 @@ import { HeroesScreen } from './HeroesScreen';
 import { LoadoutPanel } from './LoadoutPanel';
 
 /**
- * Geprüft wird der Loadout-Bereich aus Task 024: Auswahl und Detailkarte, Sperrbehandlung
- * gesperrter Armor-Slots, der auswählbare Talisman und der Charakterwechsel über den
- * geteilten Kontext. Zahlwerte stammen aus dem Platzhalter-Balancing.
+ * Geprüft wird der Loadout-Bereich: Auswahl und Detailkarte, Sperrbehandlung gesperrter
+ * Armor-Slots und der Charakterwechsel über den geteilten Kontext. Zahlwerte stammen aus dem
+ * Platzhalter-Balancing.
  */
 
 /** Save mit Armory-Rang 2: Chest und Legs offen, Head und Feet gesperrt. */
@@ -198,35 +198,28 @@ describe('LoadoutPanel', () => {
     expect(slots).toEqual(['head', 'chest', 'legs', 'feet']);
   });
 
-  it('zeigt den Talisman als gesperrten, auswählbaren Ritual-Slot mit M5-Erklärung', async () => {
-    const user = userEvent.setup();
+  it('zeigt den Talisman weder als Ausrüstungs-Slot noch als Detailkarte', () => {
     renderLoadout(saveWithArmoryRankTwo());
 
-    const talisman = screen.getByRole('button', { name: 'Talisman, Locked' });
-    expect(talisman).toHaveAttribute('data-semantic', 'locked');
-
-    await user.click(talisman);
-
-    expect(talisman).toHaveAttribute('aria-pressed', 'true');
-    const detail = screen.getByTestId('loadout-detail');
-    expect(within(detail).getByRole('heading', { name: 'Talisman' })).toBeInTheDocument();
-    expect(within(detail).getByText(/Unlocks with Runes \(M5\)/)).toBeInTheDocument();
+    expect(screen.queryByLabelText('Talisman')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Talisman/ })).not.toBeInTheDocument();
+    expect(screen.getByTestId('loadout-weapon-column')).toBeInTheDocument();
   });
 
   it('ist per Tastatur bedienbar und respektiert reduzierte Bewegung über transition-state', async () => {
     const user = userEvent.setup();
     renderLoadout(saveWithArmoryRankTwo());
 
-    const talisman = screen.getByRole('button', { name: 'Talisman, Locked' });
-    talisman.focus();
+    const weapon = screen.getByRole('button', { name: 'Signature Weapon WARHAMMER' });
+    weapon.focus();
     await user.keyboard('{Enter}');
-    expect(talisman).toHaveAttribute('aria-pressed', 'true');
+    expect(weapon).toHaveAttribute('aria-pressed', 'true');
 
     await user.tab();
-    expect(screen.getByRole('button', { name: 'Signature Weapon WARHAMMER' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Chest, Chest Armor +1' })).toHaveFocus();
     await user.keyboard(' ');
     expect(
-      within(screen.getByTestId('loadout-detail')).getByRole('heading', { name: 'WARHAMMER' }),
+      within(screen.getByTestId('loadout-detail')).getByRole('heading', { name: 'Chest Armor +1' }),
     ).toBeInTheDocument();
 
     for (const slot of screen.getByTestId('loadout-armor-column').querySelectorAll('button')) {

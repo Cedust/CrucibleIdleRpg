@@ -81,6 +81,7 @@ export function HeroesScreen() {
             stats={effectiveStatsFromSave(save, characterId)}
             masteryRanks={save.characters[characterId].masteryRanks}
             armor={save.armor[characterId]}
+            sigils={save.sigils}
           />
         )}
       </section>

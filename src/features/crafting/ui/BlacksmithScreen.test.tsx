@@ -36,7 +36,11 @@ describe('BlacksmithScreen', () => {
   beforeEach(() => {
     localStorage.clear();
     useNavigationStore.setState({ activeCharacterId: 'korvin' });
-    useCraftingStore.setState({ selectedSlot: 'chest', activeTab: 'temper' });
+    useCraftingStore.setState({
+      selectedSlot: 'chest',
+      activeTab: 'temper',
+      selectedSigilId: null,
+    });
     saveStore.setState({ data: saveWithStation(), status: 'ready' });
   });
 
@@ -58,7 +62,7 @@ describe('BlacksmithScreen', () => {
     expect(screen.queryByRole('tablist', { name: 'Blacksmith services' })).not.toBeInTheDocument();
   });
 
-  it('trennt die Dienste in Tabs: Temper startet aktiv, Brand bleibt Platzhalter', async () => {
+  it('trennt die Dienste in Tabs: Temper startet aktiv, Brand zeigt seine Magic-Schwelle', async () => {
     const user = userEvent.setup();
     render(<BlacksmithScreen />);
 
@@ -76,11 +80,12 @@ describe('BlacksmithScreen', () => {
 
     await user.click(tablist.getByRole('tab', { name: 'Brand' }));
     expect(screen.getByRole('tabpanel', { name: 'Brand' })).toHaveTextContent(
-      'The branding iron rests in the coals — Sigil brands arrive with a later update.',
+      'Raise this item to Magic before the iron can hold a mark.',
     );
-    expect(screen.queryByTestId('blacksmith-stage')).not.toBeInTheDocument();
+    expect(screen.getByTestId('blacksmith-stage')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Temper' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Masterwork' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Brand' })).toBeDisabled();
   });
 
   it('wählt Slot aus: Chest ist vorausgewählt, gesperrte Slots sind markiert', () => {
@@ -221,5 +226,39 @@ describe('BlacksmithScreen', () => {
     const masterwork = screen.getByRole('button', { name: 'Masterwork' });
     expect(masterwork).toBeDisabled();
     expect(masterwork).toHaveAccessibleDescription('Legendary is the highest rarity.');
+  });
+
+  it('offers only matching recovered Sigils, brands the item and shows the prefix-free Imprint', async () => {
+    const user = userEvent.setup();
+    const branded = withKorvinChest(saveWithStation(), { rarity: 'magic', sockets: [null] });
+    saveStore.setState({
+      data: {
+        ...branded,
+        currencies: { ...branded.currencies, gold: 1_000, cinder: 5 },
+        sigils: { 'sigil.tempered-edge': 2, 'sigil.burning-sentence': 3 },
+      },
+      status: 'ready',
+    });
+    useCraftingStore.setState({ activeTab: 'brand' });
+    render(<BlacksmithScreen />);
+
+    const sigils = screen.getByRole('radiogroup', { name: 'Compatible Sigils' });
+    expect(
+      within(sigils).getByRole('radio', { name: /Tempered Edge, level 2/ }),
+    ).toBeInTheDocument();
+    expect(
+      within(sigils).getByRole('radio', { name: /Burning Sentence, level 3/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /Stormchain/ })).not.toBeInTheDocument();
+
+    await user.click(within(sigils).getByRole('radio', { name: /Burning Sentence, level 3/ }));
+    await user.click(screen.getByRole('button', { name: 'Brand' }));
+
+    expect(screen.getByRole('button', { name: 'Re-Brand' })).toBeInTheDocument();
+    const stage = screen.getByTestId('blacksmith-stage');
+    expect(within(stage).getByText('Burning Sentence')).toBeInTheDocument();
+    expect(within(stage).queryByText('Sigil of Burning Sentence')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Gold amount')).toHaveTextContent('700');
+    expect(screen.getByLabelText('Cinder amount')).toHaveTextContent('2');
   });
 });

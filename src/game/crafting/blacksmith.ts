@@ -1,10 +1,12 @@
 import { prismaticSocketCount, RARITY_LAYER } from '@/game/items/itemLayers';
+import { sigilById } from '@/game/sigils/sigils';
+import type { SigilCodex, SigilId } from '@/game/sigils/types';
 import { RARITIES, type ArmorItem, type Rarity } from '@/game/types';
 
 /**
- * Blacksmith — Temper- und Masterwork-Regeln samt Kosten-Content
- * (docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand). Beide Aktionen sind RNG-frei
- * und vollständig planbar; Brand folgt mit dem Sigil Codex (Task 031).
+ * Blacksmith — Temper-, Masterwork- und Brand-Regeln samt Kosten-Content
+ * (docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand). Alle drei Aktionen sind RNG-frei
+ * und vollständig planbar; Brand bezieht seinen Wissensstand aus dem Sigil Codex.
  */
 
 /** Spieltext der Seltenheitsstufen, Englisch. */
@@ -74,6 +76,90 @@ export function masterworkCost(rarity: Rarity): MasterworkCost | undefined {
 export interface BlacksmithFunds {
   gold: number;
   cinder: number;
+}
+
+/**
+ * PLATZHALTER — Brand-Kosten. Verbindlich sind Cinder plus Gold und die planbare Aktion;
+ * konkrete Beträge bleiben Balancing-Content (docs/backlog/README.md#4-umgang-mit-offenen-balancing-werten).
+ */
+export const BRAND_COST = { gold: 300, cinder: 3 } as const;
+
+/**
+ * PLATZHALTER — Re-Brand kostet deutlich weniger als der Erst-Brand (BALANCING §3): ein
+ * Viertel des Golds und ein einzelnes Cinder. Der Unterschied ist bewusst als Content sichtbar.
+ */
+export const REBRAND_COST = { gold: 75, cinder: 1 } as const;
+
+export interface BrandCost {
+  gold: number;
+  cinder: number;
+  rebrand: boolean;
+}
+
+/** Kosten der nächsten Brand-Aktion; ein bestehendes Imprint schaltet Re-Brand frei. */
+export function brandCost(item: ArmorItem): BrandCost {
+  const cost = item.imprint === undefined ? BRAND_COST : REBRAND_COST;
+  return { ...cost, rebrand: item.imprint !== undefined };
+}
+
+/**
+ * Prüft Brand vor jeder Bezahlung: Codex-Kenntnis, Slot-Bindung, Magic-Schwelle und die
+ * teamweite Einmal-Aktivität. Der aktuelle Item-Sigil ist beim Re-Brand bereits aus der
+ * aktiven Menge herausgefiltert und kann daher nicht als neue Auswahl wiederholt werden.
+ */
+export function brandFailure(
+  item: ArmorItem,
+  sigilId: SigilId,
+  codex: SigilCodex,
+  activeSigilIds: ReadonlySet<SigilId>,
+  funds: BlacksmithFunds,
+): string | null {
+  if (item.rarity === 'common') {
+    return 'Branding requires a Magic item or higher.';
+  }
+
+  const sigil = sigilById(sigilId);
+  if (sigil === undefined || codex[sigil.id] === undefined) {
+    return 'This Sigil is not known in the Codex.';
+  }
+  if (!sigil.slots.includes(item.slot)) {
+    return `This Sigil cannot be branded into the ${item.slot} slot.`;
+  }
+  if (item.imprint?.sigilId === sigil.id) {
+    return 'This Sigil already marks the selected item.';
+  }
+  if (activeSigilIds.has(sigil.id)) {
+    return 'This Sigil is already active on another piece of armor.';
+  }
+
+  const cost = brandCost(item);
+  const missing: string[] = [];
+  if (funds.gold < cost.gold) missing.push('Gold');
+  if (funds.cinder < cost.cinder) missing.push('Cinder');
+  return missing.length > 0 ? `Not enough ${missing.join(' and ')}.` : null;
+}
+
+/**
+ * Brand oder Re-Brand: setzt die identitätsstiftende fünfte Schicht und zieht beide
+ * Zahlmittel atomar ab. `null` bedeutet, dass eine Brand-Regel die Aktion ablehnt.
+ */
+export function applyBrand(
+  item: ArmorItem,
+  sigilId: SigilId,
+  codex: SigilCodex,
+  activeSigilIds: ReadonlySet<SigilId>,
+  funds: BlacksmithFunds,
+): { item: ArmorItem; gold: number; cinder: number } | null {
+  if (brandFailure(item, sigilId, codex, activeSigilIds, funds) !== null) {
+    return null;
+  }
+
+  const cost = brandCost(item);
+  return {
+    item: { ...item, imprint: { sigilId } },
+    gold: funds.gold - cost.gold,
+    cinder: funds.cinder - cost.cinder,
+  };
 }
 
 /** Der Sperrgrund eines Tempers oder `null`, wenn es ausführbar ist. Spieltext, Englisch. */

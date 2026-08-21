@@ -32,6 +32,7 @@ function renderLoadout(save: SaveData, characterId: 'korvin' | 'rhaya' | 'quinn'
       stats={effectiveStatsFromSave(save, characterId)}
       masteryRanks={save.characters[characterId].masteryRanks}
       armor={save.armor[characterId]}
+      sigils={save.sigils}
     />,
   );
 }
@@ -139,6 +140,38 @@ describe('LoadoutPanel', () => {
     expect(within(detail).getByText('Socket 2')).toBeInTheDocument();
     expect(within(detail).getByText('Prismatic Socket 1')).toBeInTheDocument();
     expect(within(detail).getAllByText('Empty')).toHaveLength(2);
+  });
+
+  it('shows a branded Armor Imprint without the Sigil Codex prefix', async () => {
+    const user = userEvent.setup();
+    const base = saveWithArmoryRankTwo();
+    const chest = base.armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const save: SaveData = {
+      ...base,
+      sigils: { 'sigil.burning-sentence': 3 },
+      armor: {
+        ...base.armor,
+        korvin: {
+          ...base.armor.korvin,
+          chest: {
+            ...chest,
+            rarity: 'magic',
+            sockets: [null],
+            imprint: { sigilId: 'sigil.burning-sentence' },
+          },
+        },
+      },
+    };
+
+    renderLoadout(save);
+    await user.click(screen.getByRole('button', { name: 'Chest, Chest Armor +1' }));
+
+    const detail = screen.getByTestId('loadout-detail');
+    expect(within(detail).getByText('Imprint')).toBeInTheDocument();
+    expect(within(detail).getByText('Burning Sentence · Level 3')).toBeInTheDocument();
+    expect(within(detail).getByText('Critical Damage +12%')).toBeInTheDocument();
+    expect(within(detail).queryByText('Sigil of Burning Sentence')).not.toBeInTheDocument();
   });
 
   it('sperrt nicht freigeschaltete Slots ohne Auswahl und ohne Detailkarte', () => {

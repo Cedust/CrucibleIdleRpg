@@ -364,6 +364,53 @@ describe('createSaveStore', () => {
     });
   });
 
+  it('persists Brand and lower-cost Re-Brand atomically while keeping a Sigil team-unique', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    const rhayaChest = armor.rhaya.chest;
+    if (chest === undefined || rhayaChest === undefined) throw new Error('Chest fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 1_000, cinder: 5 },
+        sigils: { 'sigil.tempered-edge': 2, 'sigil.burning-sentence': 3 },
+        crucible: { 'anvil.armory': 1, 'anvil.blacksmith': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...chest, rarity: 'magic', sockets: [null] } },
+          rhaya: { chest: { ...rhayaChest, rarity: 'magic', sockets: [null] } },
+        },
+      },
+    });
+
+    await expect(
+      store.getState().brandArmor('korvin', 'chest', 'sigil.tempered-edge'),
+    ).resolves.toBe(true);
+    await expect(
+      store.getState().brandArmor('rhaya', 'chest', 'sigil.tempered-edge'),
+    ).resolves.toBe(false);
+    await expect(
+      store.getState().brandArmor('korvin', 'chest', 'sigil.burning-sentence'),
+    ).resolves.toBe(true);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.armor.korvin.chest?.imprint).toEqual({
+      sigilId: 'sigil.burning-sentence',
+    });
+    // 1000 − 300 Erst-Brand − 75 Re-Brand; Cinder 5 − 3 − 1.
+    expect(reloaded.getState().data?.currencies.gold).toBe(625);
+    expect(reloaded.getState().data?.currencies.cinder).toBe(1);
+    expect(reloaded.getState().data?.armor.rhaya.chest?.imprint).toBeUndefined();
+  });
+
   it('lehnt unbezahlbare oder unmögliche Blacksmith-Aktionen ohne Save-Schreibvorgang ab', async () => {
     let writes = 0;
     const port: SavePort = {

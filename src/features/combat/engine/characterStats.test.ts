@@ -269,6 +269,41 @@ describe('deriveCharacterStats', () => {
     expect(stats.defensive.regeneration).toBeCloseTo(PROBAND.baseDefensive.regeneration + 1.5, 10);
   });
 
+  it('scales a Gem-covered Crit Damage bonus only above its 100 percent neutral point', () => {
+    const base = createDefaultSave(42);
+    const crucible = { [CRUCIBLE_IDS.armory]: 1 };
+    const armor = createTeamArmor(crucible);
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const gem = { color: 'ruby', affix: 'critDamage', gemLevel: 1, value: 0.1 } as const;
+    const withoutImprint = {
+      ...base,
+      crucible,
+      armor: {
+        ...armor,
+        korvin: { chest: { ...chest, rarity: 'magic' as const, sockets: [gem] } },
+      },
+    };
+    const withImprint = {
+      ...withoutImprint,
+      sigils: { 'sigil.burning-sentence': 3 },
+      armor: {
+        ...withoutImprint.armor,
+        korvin: {
+          chest: {
+            ...withoutImprint.armor.korvin.chest,
+            imprint: { sigilId: 'sigil.burning-sentence' },
+          },
+        },
+      },
+    };
+
+    const before = effectiveStatsFromSave(withoutImprint, 'korvin').offensive.critDamage;
+    const after = effectiveStatsFromSave(withImprint, 'korvin').offensive.critDamage;
+
+    expect(after).toBeCloseTo(1 + (before - 1) * 1.12, 10);
+  });
+
   it('applies the new formulas in their separate core, attribute and crucible layers', () => {
     const stats = deriveCharacterStats(
       PROBAND,

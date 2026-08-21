@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { SigilId } from '@/game/sigils/types';
 import type { ArmorSlot } from '@/game/types';
 
 /** Die drei Dienste der Blacksmith-Station; Brand füllt Task 031. */
@@ -21,6 +22,9 @@ interface CraftingState {
   /** A browser reload always starts at Temper. */
   activeTab: BlacksmithTab;
   setActiveTab: (tab: BlacksmithTab) => void;
+  /** Die für den nächsten Brand angewählte Codex-Marke; nur UI-Zustand, nie Teil des Saves. */
+  selectedSigilId: SigilId | null;
+  setSelectedSigilId: (sigilId: SigilId) => void;
   /** A browser reload always starts at Inlay. */
   jewelerTab: JewelerTab;
   setJewelerTab: (tab: JewelerTab) => void;
@@ -32,6 +36,8 @@ export function createCraftingStore() {
     setSelectedSlot: (selectedSlot) => set({ selectedSlot }),
     activeTab: 'temper',
     setActiveTab: (activeTab) => set({ activeTab }),
+    selectedSigilId: null,
+    setSelectedSigilId: (selectedSigilId) => set({ selectedSigilId }),
     jewelerTab: 'inlay',
     setJewelerTab: (jewelerTab) => set({ jewelerTab }),
   }));

@@ -3,14 +3,19 @@ import { createArmorItem } from '@/game/items/armor';
 import { isValidArmorItemState, MAX_ITEM_LEVEL, RARITY_LAYER } from '@/game/items/itemLayers';
 import type { ArmorItem, Rarity } from '@/game/types';
 import {
+  applyBrand,
   applyMasterwork,
   applyTemper,
+  BRAND_COST,
+  brandCost,
+  brandFailure,
   MASTERWORK_CINDER_COST,
   masterworkCost,
   masterworkFailure,
   nextRarity,
   temperFailure,
   temperGoldCost,
+  REBRAND_COST,
 } from './blacksmith';
 
 /** Gültiges Item auf beliebiger Schichten-Kombination als Test-Eingabe. */
@@ -151,5 +156,59 @@ describe('masterwork (ITEMS §3/§7)', () => {
     const tempered = applyTemper(mastered.item, 1_000_000);
     expect(tempered?.item.itemLevel).toBe(RARITY_LAYER.common.itemLevelCap + 1);
     expect(tempered === null ? false : isValidArmorItemState(tempered.item)).toBe(true);
+  });
+});
+
+describe('brand (ITEMS §5/§7)', () => {
+  const codex = {
+    'sigil.tempered-edge': 2,
+    'sigil.burning-sentence': 3,
+    'sigil.stormchain': 1,
+  } as const;
+  const funds = { gold: 10_000, cinder: 10 };
+
+  it('brands a known, slot-compatible Sigil onto Magic armor and pays Gold plus Cinder', () => {
+    const item = itemAt('magic', 1);
+    const outcome = applyBrand(item, 'sigil.tempered-edge', codex, new Set(), funds);
+
+    expect(outcome?.item.imprint).toEqual({ sigilId: 'sigil.tempered-edge' });
+    expect(outcome?.gold).toBe(funds.gold - BRAND_COST.gold);
+    expect(outcome?.cinder).toBe(funds.cinder - BRAND_COST.cinder);
+    expect(outcome === null ? false : isValidArmorItemState(outcome.item)).toBe(true);
+  });
+
+  it('rejects Common items, unknown Codex entries, slot mismatches and active Sigils', () => {
+    const magicChest = itemAt('magic', 1);
+
+    expect(
+      brandFailure(createArmorItem('chest'), 'sigil.tempered-edge', codex, new Set(), funds),
+    ).toBe('Branding requires a Magic item or higher.');
+    expect(brandFailure(magicChest, 'sigil.stormchain', codex, new Set(), funds)).toBe(
+      'This Sigil cannot be branded into the chest slot.',
+    );
+    expect(brandFailure(magicChest, 'sigil.tempered-edge', {}, new Set(), funds)).toBe(
+      'This Sigil is not known in the Codex.',
+    );
+    expect(
+      brandFailure(
+        magicChest,
+        'sigil.tempered-edge',
+        codex,
+        new Set(['sigil.tempered-edge']),
+        funds,
+      ),
+    ).toBe('This Sigil is already active on another piece of armor.');
+  });
+
+  it('re-brands an existing mark for substantially lower costs', () => {
+    const marked = { ...itemAt('magic', 1), imprint: { sigilId: 'sigil.tempered-edge' } };
+    const outcome = applyBrand(marked, 'sigil.burning-sentence', codex, new Set(), funds);
+
+    expect(brandCost(marked)).toEqual({ ...REBRAND_COST, rebrand: true });
+    expect(BRAND_COST.gold).toBeGreaterThan(REBRAND_COST.gold * 3);
+    expect(BRAND_COST.cinder).toBeGreaterThan(REBRAND_COST.cinder);
+    expect(outcome?.item.imprint).toEqual({ sigilId: 'sigil.burning-sentence' });
+    expect(outcome?.gold).toBe(funds.gold - REBRAND_COST.gold);
+    expect(outcome?.cinder).toBe(funds.cinder - REBRAND_COST.cinder);
   });
 });

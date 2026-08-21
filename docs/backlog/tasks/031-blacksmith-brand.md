@@ -2,7 +2,7 @@
 
 | Feld             | Wert     |
 | ---------------- | -------- |
-| **Status**       | `ready`  |
+| **Status**       | `done`   |
 | **Meilenstein**  | M4       |
 | **Hängt ab von** | 027, 030 |
 
@@ -14,7 +14,7 @@ im Kampf; Re-Brand überschreibt günstiger.
 
 ## Nicht-Ziel
 
-Runen, Talisman und Rite liegen in M5 ([ROADMAP](../ROADMAP.md#m5--runen--sigils)).
+Runen, Talisman und Rite liegen in M5 ([ROADMAP](../ROADMAP.md#m5--runen)).
 
 ## Blockiert durch
 

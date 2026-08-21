@@ -304,12 +304,13 @@ describe('saveSchema', () => {
           null,
         ],
         prismaticSockets: [null, null],
-        imprint: { sigilId: 'sigil.placeholder' },
+        imprint: { sigilId: 'sigil.tempered-edge' },
       });
+      const branded = { ...crafted, sigils: { 'sigil.tempered-edge': 1 } };
 
-      const parsed = saveSchema.safeParse(crafted);
+      const parsed = saveSchema.safeParse(branded);
       expect(parsed.success).toBe(true);
-      expect(parsed.success && parsed.data).toEqual(crafted);
+      expect(parsed.success && parsed.data).toEqual(branded);
     });
 
     it('erzwingt das Item-Level-Cap der Seltenheit', () => {
@@ -368,27 +369,74 @@ describe('saveSchema', () => {
         saveSchema.safeParse(armedSave({ imprint: { sigilId: 'sigil.placeholder' } })).success,
       ).toBe(false);
       expect(
-        saveSchema.safeParse(
-          armedSave({
+        saveSchema.safeParse({
+          ...armedSave({
             rarity: 'magic',
             sockets: [null],
-            imprint: { sigilId: 'sigil.placeholder' },
+            imprint: { sigilId: 'sigil.tempered-edge' },
           }),
-        ).success,
+          sigils: { 'sigil.tempered-edge': 1 },
+        }).success,
       ).toBe(true);
       expect(
-        saveSchema.safeParse(
-          armedSave({
+        saveSchema.safeParse({
+          ...armedSave({
             rarity: 'legendary',
             sockets: [null, null, null, null],
-            imprint: { sigilId: 'sigil.placeholder' },
+            imprint: { sigilId: 'sigil.tempered-edge' },
           }),
-        ).success,
+          sigils: { 'sigil.tempered-edge': 1 },
+        }).success,
       ).toBe(true);
       expect(
         saveSchema.safeParse(
           armedSave({ rarity: 'magic', sockets: [null], imprint: { sigilId: '' } }),
         ).success,
+      ).toBe(false);
+    });
+
+    it('validates known, matching and team-unique Imprints against the Codex', () => {
+      const armed = armedSave({
+        rarity: 'magic',
+        sockets: [null],
+        imprint: { sigilId: 'sigil.tempered-edge' },
+      });
+
+      expect(saveSchema.safeParse(armed).success).toBe(false);
+      expect(saveSchema.safeParse({ ...armed, sigils: { 'sigil.tempered-edge': 1 } }).success).toBe(
+        true,
+      );
+      expect(
+        saveSchema.safeParse({
+          ...armed,
+          sigils: { 'sigil.tempered-edge': 1 },
+          armor: {
+            ...armed.armor,
+            rhaya: {
+              chest: {
+                ...armed.armor.rhaya.chest,
+                rarity: 'magic',
+                sockets: [null],
+                imprint: { sigilId: 'sigil.tempered-edge' },
+              },
+            },
+          },
+        }).success,
+      ).toBe(false);
+      expect(
+        saveSchema.safeParse({
+          ...armed,
+          sigils: { 'sigil.tempered-edge': 1, 'sigil.stormchain': 1 },
+          armor: {
+            ...armed.armor,
+            korvin: {
+              chest: {
+                ...armed.armor.korvin.chest,
+                imprint: { sigilId: 'sigil.stormchain' },
+              },
+            },
+          },
+        }).success,
       ).toBe(false);
     });
   });

@@ -6,6 +6,7 @@ import { CHARACTERS } from '@/game/characters/characters';
 import { smeltingEffects } from '@/game/crucible/crucible';
 import { armorEffects } from '@/game/items/armor';
 import { gemEffects } from '@/game/items/gems';
+import { imprintEffects, type ImprintEffects } from '@/game/sigils/imprints';
 import {
   MASTERY_BALANCE,
   MASTERY_IDS,
@@ -78,6 +79,8 @@ export interface CharacterProgression {
   offensiveBonus?: OffensiveStats;
   /** Additive Defensive-Zuschläge aus gesockelten Sapphire-Gems (ITEMS §8). */
   defensiveBonus?: DefensiveStats;
+  /** Identitäts-Schicht der Armor: reine Imprint-Hebel aus dem Sigil Codex (ITEMS §5.1). */
+  imprints?: ImprintEffects;
 }
 
 /**
@@ -104,6 +107,7 @@ export function progressionFromSave(
   const character = save.characters[characterId];
   const armor = armorEffects(save.armor[characterId]);
   const gems = gemEffects(save.armor[characterId]);
+  const imprints = imprintEffects(save.armor[characterId], save.sigils);
   const smelting = smeltingEffects(save.crucible);
 
   return {
@@ -120,6 +124,7 @@ export function progressionFromSave(
     crucibleInitiative: smelting.initiative + armor.initiative,
     offensiveBonus: gems.offensive,
     defensiveBonus: gems.defensive,
+    imprints,
   };
 }
 
@@ -140,10 +145,19 @@ export function deriveCharacterStats(
 
   const deriveStat = (stat: keyof DerivedStats): number => {
     const source = DERIVED_SOURCES[stat];
-    const base = stat === 'attack' ? definition.weapon.baseDamage : definition.baseDerived[stat];
-    const coreContribution = core[source.core] * CORE_POINT_TO_DERIVED_BASE;
+    const imprints = progression.imprints;
+    const base =
+      stat === 'attack'
+        ? definition.weapon.baseDamage * (1 + (imprints?.weaponBaseDamagePercent ?? 0))
+        : definition.baseDerived[stat];
+    const coreContribution =
+      core[source.core] *
+      CORE_POINT_TO_DERIVED_BASE *
+      (1 + (imprints?.coreContributionPercent[source.core] ?? 0));
     const attributeBonus =
-      progression.attributePoints[source.attribute] * ATTRIBUTE_BONUS_PER_POINT;
+      progression.attributePoints[source.attribute] *
+      ATTRIBUTE_BONUS_PER_POINT *
+      (1 + (imprints?.attributeEffectivenessPercent[source.attribute] ?? 0));
 
     return (base + coreContribution) * (1 + attributeBonus) * (1 + progression.crucibleBonus[stat]);
   };
@@ -159,7 +173,9 @@ export function deriveCharacterStats(
     defensive: { ...definition.baseDefensive },
     utility: {
       ...definition.baseUtility,
-      initiative: definition.baseUtility.initiative + (progression.crucibleInitiative ?? 0),
+      initiative:
+        (definition.baseUtility.initiative + (progression.crucibleInitiative ?? 0)) *
+        (1 + (progression.imprints?.initiativePercent ?? 0)),
     },
   };
 
@@ -171,6 +187,27 @@ export function deriveCharacterStats(
   if (progression.defensiveBonus !== undefined) {
     for (const key of Object.keys(stats.defensive) as (keyof DefensiveStats)[]) {
       stats.defensive[key] += progression.defensiveBonus[key];
+    }
+  }
+
+  const imprintBonus = progression.imprints;
+  if (imprintBonus !== undefined) {
+    for (const [key, percent] of Object.entries(imprintBonus.offensivePercent) as [
+      keyof OffensiveStats,
+      number,
+    ][]) {
+      // Burning Sentence applies to the bonus above its 100 % neutral point. Its three
+      // Damage siblings have a neutral point of zero and therefore multiply directly.
+      stats.offensive[key] =
+        key === 'critDamage'
+          ? 1 + (stats.offensive.critDamage - 1) * (1 + percent)
+          : stats.offensive[key] * (1 + percent);
+    }
+    for (const [key, percent] of Object.entries(imprintBonus.defensivePercent) as [
+      keyof DefensiveStats,
+      number,
+    ][]) {
+      stats.defensive[key] *= 1 + percent;
     }
   }
 

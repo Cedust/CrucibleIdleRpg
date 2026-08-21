@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CHARACTERS } from '@/game/characters/characters';
+import { createArmorItem } from '@/game/items/armor';
+import { imprintEffects } from '@/game/sigils/imprints';
 import type { CharacterId } from '@/game/types';
 import { MASTERY_IDS, nodeById } from '@/game/weaponMastery/mastery';
 import type { CombatCharacter } from './combatState';
@@ -15,7 +17,9 @@ import { effectiveWeaponValues, masteryContextFor } from './masteryCombat';
 function character(
   id: CharacterId,
   masteryRanks: Readonly<Record<string, number>> = {},
-  fluechtig: Partial<Pick<CombatCharacter, 'guarded' | 'zeroing' | 'counterStacks'>> = {},
+  fluechtig: Partial<
+    Pick<CombatCharacter, 'guarded' | 'zeroing' | 'counterStacks' | 'imprintEffects'>
+  > = {},
 ): CombatCharacter {
   return {
     id,
@@ -128,6 +132,28 @@ describe('masteryContextFor — ID→Effekt-Mapping', () => {
 });
 
 describe('masteryContextFor — Weapon-Boni', () => {
+  it('raises only the lower Damage Range bound for Narrowed Fate', () => {
+    const imprints = imprintEffects(
+      {
+        head: {
+          ...createArmorItem('head'),
+          rarity: 'magic',
+          sockets: [null],
+          imprint: { sigilId: 'sigil.narrowed-fate' },
+        },
+      },
+      { 'sigil.narrowed-fate': 2 },
+    );
+
+    const context = masteryContextFor(character('korvin', {}, { imprintEffects: imprints }));
+
+    expect(context.damageRange.min).toBeCloseTo(
+      CHARACTERS.korvin.weapon.damageRange.min + 0.08,
+      10,
+    );
+    expect(context.damageRange.max).toBe(CHARACTERS.korvin.weapon.damageRange.max);
+  });
+
   it('akkumuliert Precision- und MAX-RNG-Boni über Nodes und Ränge', () => {
     const prcI = nodeById('korvin', 'weapon.prc-i');
     const prcII = nodeById('korvin', 'weapon.prc-ii');

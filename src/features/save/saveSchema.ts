@@ -4,6 +4,7 @@ import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
 import { isValidArmorItemState, MAX_ITEM_LEVEL } from '@/game/items/itemLayers';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import { validateActiveImprints } from '@/game/sigils/imprints';
 import { createEmptySigilCodex, sigilById } from '@/game/sigils/sigils';
 import {
   AMBER_AFFIXES,
@@ -119,7 +120,7 @@ const socketedGemSchema = z.discriminatedUnion('color', [
     .strict(),
 ]);
 
-/** Brand-Referenz auf ein Sigil; die Katalog-Prüfung folgt mit dem Sigil Codex (030/031). */
+/** Brand-Referenz auf ein Sigil; Katalog, Codex, Slot-Bindung und Einmaligkeit prüft der Save. */
 const armorImprintSchema = z.object({ sigilId: z.string().min(1) }).strict();
 
 /** Persistierter Wissensstand des Sigil Codex, keine Sigil-Gegenstände (ITEMS §5). */
@@ -233,6 +234,10 @@ export const saveSchema = z
     }
     if (!hasArmorForUnlockedSlots(save.armor, save.crucible)) {
       context.addIssue({ code: 'custom', message: 'Ungültige Armory-Items.' });
+    }
+    const imprintFailure = validateActiveImprints(save.armor, save.sigils);
+    if (imprintFailure !== null) {
+      context.addIssue({ code: 'custom', message: imprintFailure });
     }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,

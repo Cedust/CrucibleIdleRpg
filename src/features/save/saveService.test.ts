@@ -97,6 +97,7 @@ describe('createSaveService', () => {
     };
     const armedSave = (chest: Record<string, unknown>) => ({
       ...createDefaultSave(42),
+      sigils: { 'sigil.tempered-edge': 1 },
       crucible: { 'anvil.armory': 1 },
       armor: { ...createTeamArmor({ 'anvil.armory': 1 }), korvin: { chest } },
     });
@@ -111,7 +112,7 @@ describe('createSaveService', () => {
     expect(console.warn).toHaveBeenCalledOnce();
 
     // Gegenprobe: derselbe Save mit dem aktuellen Feldnamen lädt unverändert.
-    const current = armedSave({ ...brandedChest, imprint: { sigilId: 'sigil.placeholder' } });
+    const current = armedSave({ ...brandedChest, imprint: { sigilId: 'sigil.tempered-edge' } });
     const currentService = createSaveService(memoryPort(JSON.stringify(current)), () => fallback);
     await expect(currentService.load()).resolves.toEqual(current);
     expect(console.warn).toHaveBeenCalledOnce();

@@ -6,9 +6,11 @@ import {
   respecCrucibleTree,
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
-import { applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
+import { applyBrand, applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
 import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/crafting/jeweler';
 import { createTeamArmor } from '@/game/items/armor';
+import { activeImprintSigilIds } from '@/game/sigils/imprints';
+import type { SigilId } from '@/game/sigils/types';
 import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
@@ -50,6 +52,7 @@ export interface SaveStoreState {
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
+  brandArmor: (characterId: CharacterId, slot: ArmorSlot, sigilId: SigilId) => Promise<boolean>;
   inlayGem: (
     characterId: CharacterId,
     slot: ArmorSlot,
@@ -333,6 +336,39 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
           }
 
           const outcome = applyMasterwork(item, current.currencies);
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold, cinder: outcome.cinder },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Brand und Re-Brand sind wie Temper/Masterwork RNG-frei: das Zielitem, beide
+      // Zahlmittel und die teamweite Sigil-Einmaligkeit werden gegen denselben Save geplant.
+      brandArmor: (characterId, slot, sigilId) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyBrand(
+            item,
+            sigilId,
+            current.sigils,
+            activeImprintSigilIds(current.armor, { characterId, slot }),
+            current.currencies,
+          );
           if (outcome === null) {
             return { next: null, result: false };
           }

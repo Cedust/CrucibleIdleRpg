@@ -4,6 +4,9 @@ import { effectiveWeaponValues } from '@/features/combat/engine/masteryCombat';
 import { disciplineLabel } from '@/features/weaponMastery/masteryPresentation';
 import { innateValue } from '@/game/items/armor';
 import { RARITY_LAYER } from '@/game/items/itemLayers';
+import { imprintEffectText } from '@/game/sigils/imprints';
+import { sigilById } from '@/game/sigils/sigils';
+import type { SigilCodex } from '@/game/sigils/types';
 import {
   AMBER_AFFIXES,
   RUBY_AFFIXES,
@@ -222,9 +225,11 @@ function gemLabel(gem: SocketedGem): string {
   return `+${value} ${GEM_AFFIX_LABEL[gem.affix]} (${GEM_COLOR_LABEL[gem.color]})`;
 }
 
-function ArmorDetail({ item }: { item: ArmorItem }) {
+function ArmorDetail({ item, sigils }: { item: ArmorItem; sigils: SigilCodex }) {
   const base = ARMOR_BASE_LABEL[item.itemType];
   const socketCount = item.sockets.length + item.prismaticSockets.length;
+  const imprint = item.imprint === undefined ? undefined : sigilById(item.imprint.sigilId);
+  const imprintLevel = imprint === undefined ? undefined : sigils[imprint.id];
 
   return (
     <>
@@ -240,6 +245,12 @@ function ArmorDetail({ item }: { item: ArmorItem }) {
           value={`+${item.itemLevel} / +${RARITY_LAYER[item.rarity].itemLevelCap}`}
         />
         <DetailRow term="Innate" value={`+${innateValue(item)} ${INNATE_LABEL[item.innate]}`} />
+        {imprint !== undefined && imprintLevel !== undefined ? (
+          <>
+            <DetailRow term="Imprint" value={`${imprint.name} · Level ${imprintLevel}`} />
+            <DetailRow term="Imprint Effect" value={imprintEffectText(imprint, imprintLevel)} />
+          </>
+        ) : null}
         {socketCount === 0 ? (
           <DetailRow term="Sockets" value="None" />
         ) : (
@@ -284,6 +295,7 @@ interface LoadoutPanelProps {
   stats: CharacterStats;
   masteryRanks: Readonly<Record<string, number>>;
   armor: ArmorLoadout;
+  sigils: SigilCodex;
 }
 
 /**
@@ -291,7 +303,13 @@ interface LoadoutPanelProps {
  * anatomische Armor-Säule, außen die Detailkarte. Die Auswahl ändert nur die Detailansicht;
  * die Slot-Wahrheit ist die persistierte Armor des aktiven Charakters.
  */
-export function LoadoutPanel({ characterId, stats, masteryRanks, armor }: LoadoutPanelProps) {
+export function LoadoutPanel({
+  characterId,
+  stats,
+  masteryRanks,
+  armor,
+  sigils,
+}: LoadoutPanelProps) {
   const [selection, setSelection] = useState<LoadoutSelection>('weapon');
   const weapon = effectiveWeaponValues(characterId, masteryRanks);
   const selectedItem =
@@ -417,7 +435,7 @@ export function LoadoutPanel({ characterId, stats, masteryRanks, armor }: Loadou
           ) : selection === 'talisman' ? (
             <TalismanDetail />
           ) : selectedItem !== undefined ? (
-            <ArmorDetail item={selectedItem} />
+            <ArmorDetail item={selectedItem} sigils={sigils} />
           ) : null}
         </Panel>
       </div>

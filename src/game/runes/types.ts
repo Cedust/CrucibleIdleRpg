@@ -90,6 +90,9 @@ export interface ActiveRite {
   triggerLevel: RuneLevel;
   effectRuneId: EffectRuneId;
   effectLevel: RuneLevel;
+  /** Optionaler Modifier samt beim Kampfbeginn eingefrorenem Level. */
+  modifierRuneId?: ModifierRuneId;
+  modifierLevel?: RuneLevel;
 }
 
 /** Nur vollständige Rite betreten den flüchtigen Kampfzustand. */

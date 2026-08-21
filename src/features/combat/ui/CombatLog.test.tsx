@@ -179,6 +179,38 @@ describe('CombatLog', () => {
     expect(entry).toHaveTextContent('Rite Bolt: 22 damage');
   });
 
+  it('nennt Modifier und verzögerte Rite-Effekte im Combat Log', () => {
+    const state = combat();
+    const tick: TickResult = {
+      state,
+      actor: { side: 'enemy', index: 0 },
+      outcome: 'ongoing',
+      events: [
+        {
+          type: 'riteTrigger',
+          source: { side: 'character', index: 1 },
+          triggerRuneId: 'rune.trigger.on-crit',
+          effectRuneId: 'rune.effect.bolt',
+          modifierRuneId: 'rune.modifier.lingering',
+        },
+        {
+          type: 'riteEffect',
+          source: { side: 'character', index: 1 },
+          effectRuneId: 'rune.effect.bolt',
+          target: { side: 'enemy', index: 0 },
+          modifierRuneId: 'rune.modifier.lingering',
+          phase: 'lingering',
+        },
+      ],
+    };
+    useCombatStore.setState({ combat: state, outcome: 'ongoing', tickLog: [{ id: 0, tick }] });
+    render(<CombatLog />);
+
+    const entry = screen.getByRole('listitem');
+    expect(entry).toHaveTextContent('Rhaya invokes bolt through lingering');
+    expect(entry).toHaveTextContent('Rhaya: lingering bolt on');
+  });
+
   it('zeigt Zugblöcke chronologisch von alt nach neu', () => {
     const state = combat();
     const first: TickResult = {

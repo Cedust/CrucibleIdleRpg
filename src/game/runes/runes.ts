@@ -329,11 +329,15 @@ export function activeRitesFrom(rites: TeamRites, grimoire: RuneGrimoire): Activ
     const triggerLevel = grimoire[rite.triggerRuneId];
     const effectLevel = grimoire[rite.effectRuneId];
     if (triggerLevel === undefined || effectLevel === undefined) continue;
+    const modifierLevel = rite.modifierRuneId === null ? undefined : grimoire[rite.modifierRuneId];
     active[characterId] = {
       triggerRuneId: rite.triggerRuneId,
       triggerLevel,
       effectRuneId: rite.effectRuneId,
       effectLevel,
+      ...(rite.modifierRuneId === null || modifierLevel === undefined
+        ? {}
+        : { modifierRuneId: rite.modifierRuneId, modifierLevel }),
     };
   }
 

@@ -4,7 +4,12 @@ import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import type { Prng } from '@/shared/utils/prng';
 import { applyBulwark, bulwarkDamageFactor } from './bulwark';
 import type { ActorRef, CombatCharacter, CombatState } from '../combatState';
-import { selectPrimaryTarget, selectSplashTargets, type EnemyTarget } from '../targeting';
+import {
+  livingEnemies,
+  selectPrimaryTarget,
+  selectSplashTargets,
+  type EnemyTarget,
+} from '../targeting';
 
 export type HitKind =
   | 'base'
@@ -304,8 +309,12 @@ export function resolveCharacterAttack(
   attacker: CombatCharacter,
   prng: Prng,
   context: AttackContext,
+  targetOverride?: ActorRef,
 ): AttackResult {
-  const primary = selectPrimaryTarget(state, attacker);
+  const primary =
+    targetOverride === undefined
+      ? selectPrimaryTarget(state, attacker)
+      : livingEnemies(state).find((target) => target.ref.index === targetOverride.index);
   if (!primary) {
     return {
       primaryTarget: undefined,

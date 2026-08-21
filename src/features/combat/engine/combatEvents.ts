@@ -1,6 +1,6 @@
 import type { ActorRef } from './combatState';
 import type { HitKind } from './damage/outgoingDamage';
-import type { EffectRuneId, TriggerRuneId } from '@/game/runes/types';
+import type { EffectRuneId, ModifierRuneId, TriggerRuneId } from '@/game/runes/types';
 
 /**
  * Kampf-Events — was ein Takt berichtet (docs/spec/DAMAGE-SYSTEM.md#15-feststehende-regeln).
@@ -108,6 +108,7 @@ export interface RiteTriggerEvent {
   source: ActorRef;
   triggerRuneId: TriggerRuneId;
   effectRuneId: EffectRuneId;
+  modifierRuneId?: ModifierRuneId;
 }
 
 /** Ein Basis-Effect des Rite, getrennt vom etwaigen Schadens-Hit für das Playback. */
@@ -117,6 +118,9 @@ export interface RiteEffectEvent {
   effectRuneId: EffectRuneId;
   target?: ActorRef;
   amount?: number;
+  /** Macht Echo, Chain, Surge und Lingering im Playback explizit nachvollziehbar. */
+  modifierRuneId?: ModifierRuneId;
+  phase?: 'echo' | 'chain' | 'surge' | 'lingering';
 }
 
 /** Ein Akteur ist gefallen und fällt aus Zugordnung und Verteilung heraus (COMBAT §1.1). */

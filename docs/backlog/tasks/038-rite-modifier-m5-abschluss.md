@@ -1,10 +1,10 @@
 # 038 — Rite-Modifier & M5-Abschluss
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M5        |
-| **Hängt ab von** | 037       |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M5     |
+| **Hängt ab von** | 037    |
 
 ## Ziel
 

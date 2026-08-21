@@ -82,6 +82,35 @@ describe('activeRitesFrom', () => {
       },
     });
   });
+
+  it('friert einen gebundenen Modifier mit seinem eigenen Level für den Kampf ein', () => {
+    const empty = createEmptyTeamRites();
+    const rites = {
+      ...empty,
+      korvin: {
+        triggerRuneId: 'rune.trigger.on-crit' as const,
+        effectRuneId: 'rune.effect.bolt' as const,
+        modifierRuneId: 'rune.modifier.surge' as const,
+      },
+    };
+
+    expect(
+      activeRitesFrom(rites, {
+        'rune.trigger.on-crit': 2,
+        'rune.effect.bolt': 3,
+        'rune.modifier.surge': 4,
+      }),
+    ).toEqual({
+      korvin: {
+        triggerRuneId: 'rune.trigger.on-crit',
+        triggerLevel: 2,
+        effectRuneId: 'rune.effect.bolt',
+        effectLevel: 3,
+        modifierRuneId: 'rune.modifier.surge',
+        modifierLevel: 4,
+      },
+    });
+  });
 });
 
 describe('Rune Grimoire grant and Rite validation', () => {

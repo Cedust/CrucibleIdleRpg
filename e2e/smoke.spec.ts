@@ -34,6 +34,68 @@ async function elementWidth(locator: Locator) {
  */
 const FRAME_BLEED = 8;
 
+const RITE_CONFIGURATION_SAVE = {
+  version: 1,
+  saveSeed: 42,
+  runCounter: 0,
+  craftCounter: 0,
+  playbackSpeed: 1,
+  characters: {
+    korvin: {
+      level: 1,
+      xp: 0,
+      freeAttributePoints: 1,
+      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+      freeMasteryPoints: 1,
+      masteryRanks: {},
+    },
+    rhaya: {
+      level: 1,
+      xp: 0,
+      freeAttributePoints: 1,
+      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+      freeMasteryPoints: 1,
+      masteryRanks: {},
+    },
+    quinn: {
+      level: 1,
+      xp: 0,
+      freeAttributePoints: 1,
+      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+      freeMasteryPoints: 1,
+      masteryRanks: {},
+    },
+  },
+  currencies: { gold: 0, relicShards: 0, cinder: 0, runewords: 0 },
+  gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+  sigils: {},
+  runes: {
+    'rune.trigger.on-crit': 1,
+    'rune.effect.heal': 1,
+    'rune.modifier.echo': 1,
+  },
+  rites: {
+    korvin: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+    rhaya: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+    quinn: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+  },
+  firstVictories: [],
+  crucible: {
+    'anvil.rune-grimoire': 1,
+    'anvil.talisman': 2,
+    'anvil.runic-focus': 1,
+    'anvil.rune-mastery': 1,
+  },
+  armor: { korvin: {}, rhaya: {}, quinn: {} },
+  completedDungeons: {
+    'A1-D1': false,
+    'A1-D2': false,
+    'A1-D3': false,
+    'A1-D4': false,
+    'A1-D5': false,
+  },
+} as const;
+
 async function scrollState(locator: Locator, tolerance = 0) {
   return locator.evaluate((element, slack) => {
     const scrollContainer = element as unknown as {
@@ -153,6 +215,51 @@ test('separates the character-bound Runescribe from the shared Rune Grimoire', a
   await expect(page.getByRole('heading', { name: 'Rune Grimoire', exact: true })).toBeVisible();
   await expect(page.getByRole('radiogroup', { name: 'Active character' })).toHaveCount(0);
   await expect(page.locator('[data-character-id]')).toHaveCount(0);
+});
+
+test('persists a bound Rite Modifier and keeps the Runescribe inside the viewport', async ({
+  page,
+}) => {
+  await page.addInitScript((save) => {
+    if (localStorage.getItem('crucible-idle-rpg:save') === null) {
+      localStorage.setItem('crucible-idle-rpg:save', JSON.stringify(save));
+    }
+  }, RITE_CONFIGURATION_SAVE);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'RUNESCRIBE', exact: true }).click();
+
+  const bind = async (slot: 'TRIGGER' | 'EFFECT' | 'MODIFIER', rune: string) => {
+    await page.getByRole('button', { name: `Korvin ${slot} slot, empty` }).click();
+    const workbench = page.getByRole('region', { name: 'Rite socket selection' });
+    await workbench.getByRole('button', { name: `Bind ${rune}, level 1` }).click();
+    await expect(page.getByRole('button', { name: `Korvin ${slot} slot, ${rune}` })).toBeVisible();
+    await page.getByRole('button', { name: 'Close Rite socket selection' }).click();
+  };
+
+  await bind('TRIGGER', 'On Crit');
+  await bind('EFFECT', 'Heal');
+  await bind('MODIFIER', 'Echo');
+  await expect(page.getByText('Frequency · Echoes the Effect at 50% strength.')).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const saved = localStorage.getItem('crucible-idle-rpg:save');
+        return saved === null
+          ? null
+          : (JSON.parse(saved) as typeof RITE_CONFIGURATION_SAVE).rites.korvin;
+      }),
+    )
+    .toEqual({
+      triggerRuneId: 'rune.trigger.on-crit',
+      effectRuneId: 'rune.effect.heal',
+      modifierRuneId: 'rune.modifier.echo',
+    });
+  expect(await scrollState(page.locator('html'))).toEqual({ scrollsX: false, scrollsY: false });
+
+  await page.reload();
+  await page.getByRole('button', { name: 'RUNESCRIBE', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Korvin MODIFIER slot, Echo' })).toBeVisible();
+  await expect(page.getByText('Frequency · Echoes the Effect at 50% strength.')).toBeVisible();
 });
 
 test('keeps Heroes local to the shared character context and its own scroll area', async ({

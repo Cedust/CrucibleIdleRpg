@@ -3,9 +3,10 @@ import { RUNE_BALANCING } from '@/game/runes/runes';
 import {
   RITE_EFFECT_BALANCING,
   riteEffectMagnitude,
+  riteModifierMagnitude,
   riteTriggerChance,
 } from '@/game/runes/riteEffects';
-import type { ActiveRite, EffectRuneId } from '@/game/runes/types';
+import type { ActiveRite, EffectRuneId, ModifierRuneId } from '@/game/runes/types';
 import { MASTERY_BALANCE } from '@/game/weaponMastery/mastery';
 import { resumePrng, type ResumablePrng } from '@/shared/utils/prng';
 import { applySunder, type SunderEffect } from './damage/bulwark';
@@ -16,6 +17,7 @@ import {
   type CombatCharacter,
   type CombatEnemy,
   type CombatState,
+  type LingeringRiteEffect,
 } from './combatState';
 import type { CombatEvent } from './combatEvents';
 import { resolveCounters } from './damage/counter';
@@ -28,6 +30,7 @@ import {
 import { masteryContextFor } from './masteryCombat';
 import { resolveCharacterAttack, type AttackContext, type Hit } from './damage/outgoingDamage';
 import { resolveRegeneration } from './damage/regeneration';
+import { attackableEnemies, comparePriority, livingEnemies } from './targeting';
 import { pruneDefeated, sameActor, suppressPendingAction, takeNextActor } from './turnOrder';
 
 /**
@@ -117,7 +120,10 @@ export const DEFAULT_COMBAT_CONTEXT: CombatContext = {
 export interface TickResult {
   /** Der Folgezustand; bei bereits entschiedenem Kampf der unveränderte Eingangszustand. */
   state: CombatState;
-  /** Der Akteur dieses Takts — `undefined` nur, wenn der Kampf bereits entschieden war. */
+  /**
+   * Der Akteur dieses Takts — auch `undefined`, wenn fällige Lingering-Effects den Kampf am
+   * Rundenbeginn entscheiden.
+   */
   actor: ActorRef | undefined;
   /** Der Zug-Block in fester Reihenfolge (combatEvents.ts). */
   events: readonly CombatEvent[];
@@ -156,6 +162,7 @@ interface TurnDraft {
   /** Second-Wind-Verbrauch nach diesem Takt (SIGNATURES §2.4). */
   secondWindConsumed: boolean;
   riteReservedRounds: Partial<Record<CharacterId, number>>;
+  lingeringEffects: LingeringRiteEffect[];
 }
 
 function draftOf(state: CombatState, finalDamageFactor: number): TurnDraft {
@@ -167,6 +174,7 @@ function draftOf(state: CombatState, finalDamageFactor: number): TurnDraft {
     finalDamageFactor,
     secondWindConsumed: state.secondWindConsumed,
     riteReservedRounds: { ...state.riteReservedRounds },
+    lingeringEffects: [...state.lingeringEffects],
   };
 }
 
@@ -244,6 +252,85 @@ function effectNeedsEnemy(effectRuneId: EffectRuneId): boolean {
   return effectRuneId === 'rune.effect.bolt' || effectRuneId === 'rune.effect.mark';
 }
 
+type RiteEffectPhase = 'echo' | 'chain' | 'surge' | 'lingering';
+
+interface RiteEffectOptions {
+  modifierRuneId?: ModifierRuneId;
+  phase?: RiteEffectPhase;
+  markMode?: 'replace' | 'append';
+  empowerMode?: 'replace' | 'add';
+  chainAdditionalTargets?: number;
+}
+
+function modifierMagnitude(rite: ActiveRite, modifierRuneId: ModifierRuneId): number {
+  return rite.modifierRuneId === modifierRuneId && rite.modifierLevel !== undefined
+    ? riteModifierMagnitude(modifierRuneId, rite.modifierLevel)
+    : 0;
+}
+
+/** Chain-Reihenfolge: gleiche Lane, dann normale Gegnerpriorität, ohne bereits gewählte Ziele. */
+function chainEnemyTargets(
+  state: CombatState,
+  primary: ActorRef,
+  count: number,
+  legalTargets = livingEnemies(state),
+): readonly ActorRef[] {
+  const primaryEnemy = state.enemies[primary.index];
+  if (primaryEnemy === undefined || count <= 0) return [];
+
+  const candidates = legalTargets.filter((target) => target.ref.index !== primary.index);
+  const sameLane = candidates
+    .filter((target) => target.enemy.lane === primaryEnemy.lane)
+    .sort(comparePriority);
+  const otherLane = candidates
+    .filter((target) => target.enemy.lane !== primaryEnemy.lane)
+    .sort(comparePriority);
+  return [...sameLane, ...otherLane].slice(0, count).map((target) => target.ref);
+}
+
+/** Ziele eines nicht-Reprisal-Effects; Self-Effects starten stets beim Träger. */
+function effectTargets(
+  state: CombatState,
+  draft: TurnDraft,
+  source: ActorRef,
+  effectRuneId: EffectRuneId,
+  target: ActorRef | undefined,
+  chainAdditionalTargets: number,
+): readonly ActorRef[] {
+  const current = draftToState(state, draft);
+  if (effectNeedsEnemy(effectRuneId)) {
+    if (target?.side !== 'enemy' || !isAlive(current.enemies[target.index] ?? { health: 0 })) {
+      return [];
+    }
+    return [target, ...chainEnemyTargets(current, target, chainAdditionalTargets)];
+  }
+
+  const character = current.characters[source.index];
+  if (source.side !== 'character' || character === undefined || !isAlive(character)) return [];
+  const allies = current.characters.flatMap((candidate, index) =>
+    index !== source.index && isAlive(candidate) ? [{ side: 'character' as const, index }] : [],
+  );
+  return [source, ...allies.slice(0, chainAdditionalTargets)];
+}
+
+function riteEffectEvent(
+  source: ActorRef,
+  effectRuneId: EffectRuneId,
+  options: RiteEffectOptions,
+  target?: ActorRef,
+  amount?: number,
+): CombatEvent {
+  return {
+    type: 'riteEffect',
+    source,
+    effectRuneId,
+    ...(target === undefined ? {} : { target }),
+    ...(amount === undefined ? {} : { amount }),
+    ...(options.modifierRuneId === undefined ? {} : { modifierRuneId: options.modifierRuneId }),
+    ...(options.phase === undefined ? {} : { phase: options.phase }),
+  };
+}
+
 /** Verbraucht Mark nach einem normalen Angriff, nie nach Rune-Schaden. */
 function consumeMarks(
   draft: TurnDraft,
@@ -260,10 +347,11 @@ function consumeMarks(
   }
   for (const [targetIndex, rawDamage] of rawDamageByTarget) {
     const enemy = draft.enemies[targetIndex];
-    const mark = enemy?.mark;
+    const mark = enemy?.marks?.[0];
     if (enemy === undefined || mark === undefined || mark.sourceCharacterId === attacker.id)
       continue;
-    delete enemy.mark;
+    const remainingMarks = enemy.marks?.slice(1) ?? [];
+    enemy.marks = remainingMarks.length === 0 ? undefined : remainingMarks;
     damageEnemy(draft, source, {
       kind: 'mark',
       target: { side: 'enemy', index: targetIndex },
@@ -282,24 +370,122 @@ function resolveReprisal(
   prng: ResumablePrng,
   context: CombatContext,
   magnitude: number,
+  chainAdditionalTargets = 0,
 ): void {
   const character = draft.characters[source.index];
   if (character === undefined || !isAlive(character)) return;
-  const empowered = characterWithEmpower(character, state.round);
-  const attack = resolveCharacterAttack(
+  const resolveAt = (target?: ActorRef): ActorRef | undefined => {
+    const current = draftToState(state, draft);
+    const currentCharacter = current.characters[source.index];
+    if (currentCharacter === undefined || !isAlive(currentCharacter)) return undefined;
+    const empowered = characterWithEmpower(currentCharacter, state.round);
+    const attack = resolveCharacterAttack(
+      current,
+      empowered,
+      prng,
+      context.contextFor(empowered),
+      target,
+    );
+    for (const hit of attack.hits) {
+      damageEnemy(draft, source, {
+        ...hit,
+        rawDamage: hit.rawDamage * magnitude,
+        damage: hit.damage * magnitude,
+      });
+    }
+    consumeMarks(draft, source, currentCharacter, attack.hits);
+    return attack.primaryTarget;
+  };
+
+  const primaryTarget = resolveAt();
+  if (primaryTarget === undefined || chainAdditionalTargets === 0) return;
+  const legalTargets = attackableEnemies(draftToState(state, draft), character);
+  for (const target of chainEnemyTargets(
     draftToState(state, draft),
-    empowered,
-    prng,
-    context.contextFor(empowered),
-  );
-  for (const hit of attack.hits) {
-    damageEnemy(draft, source, {
-      ...hit,
-      rawDamage: hit.rawDamage * magnitude,
-      damage: hit.damage * magnitude,
-    });
+    primaryTarget,
+    chainAdditionalTargets,
+    legalTargets,
+  )) {
+    resolveAt(target);
   }
-  consumeMarks(draft, source, character, attack.hits);
+}
+
+/** Führt eine bereits ausgelöste Effect-Anwendung aus; sie erzeugt nie neue Rite-Kandidaten. */
+function resolveRiteEffect(
+  state: CombatState,
+  draft: TurnDraft,
+  source: ActorRef,
+  effectRuneId: EffectRuneId,
+  magnitude: number,
+  target: ActorRef | undefined,
+  prng: ResumablePrng,
+  context: CombatContext,
+  options: RiteEffectOptions = {},
+): void {
+  const chainAdditionalTargets = options.chainAdditionalTargets ?? 0;
+  const targets = effectTargets(state, draft, source, effectRuneId, target, chainAdditionalTargets);
+
+  switch (effectRuneId) {
+    case 'rune.effect.heal':
+      for (const targetRef of targets) {
+        const character = draft.characters[targetRef.index];
+        if (character === undefined || !isAlive(character)) continue;
+        const healed = Math.min(magnitude, Math.max(character.maxHealth - character.health, 0));
+        character.health += healed;
+        draft.events.push(riteEffectEvent(source, effectRuneId, options, targetRef, healed));
+      }
+      return;
+    case 'rune.effect.barrier':
+      for (const targetRef of targets) {
+        const character = draft.characters[targetRef.index];
+        if (character === undefined || !isAlive(character)) continue;
+        character.barrier += magnitude;
+        draft.events.push(riteEffectEvent(source, effectRuneId, options, targetRef, magnitude));
+      }
+      return;
+    case 'rune.effect.empower':
+      for (const targetRef of targets) {
+        const character = draft.characters[targetRef.index];
+        if (character === undefined || !isAlive(character)) continue;
+        const expiresAfterRound = state.round + RITE_EFFECT_BALANCING.empowerDuration;
+        const attackBonus =
+          options.empowerMode === 'add' &&
+          character.empower?.expiresAfterRound === expiresAfterRound
+            ? character.empower.attackBonus + magnitude
+            : magnitude;
+        character.empower = { attackBonus, expiresAfterRound };
+        draft.events.push(riteEffectEvent(source, effectRuneId, options, targetRef, magnitude));
+      }
+      return;
+    case 'rune.effect.bolt':
+      for (const targetRef of targets) {
+        draft.events.push(riteEffectEvent(source, effectRuneId, options, targetRef));
+        damageEnemy(draft, source, {
+          kind: 'riteBolt',
+          target: targetRef,
+          rawDamage: magnitude,
+          crit: false,
+          bulwarkFactor: 1,
+          damage: magnitude,
+        });
+      }
+      return;
+    case 'rune.effect.mark':
+      for (const targetRef of targets) {
+        const enemy = draft.enemies[targetRef.index];
+        if (enemy === undefined || !isAlive(enemy)) continue;
+        const sourceCharacterId = draft.characters[source.index]?.id;
+        if (sourceCharacterId === undefined) continue;
+        const charge = { sourceCharacterId, damageFactor: magnitude };
+        enemy.marks = options.markMode === 'append' ? [...(enemy.marks ?? []), charge] : [charge];
+        draft.events.push(riteEffectEvent(source, effectRuneId, options, targetRef));
+      }
+      return;
+    case 'rune.effect.reprisal':
+      if (source.side !== 'character') return;
+      draft.events.push(riteEffectEvent(source, effectRuneId, options));
+      resolveReprisal(state, draft, source, prng, context, magnitude, chainAdditionalTargets);
+  }
 }
 
 /** Reserviert den Rite beim ersten eigenen Event und würfelt anschließend genau einmal. */
@@ -325,78 +511,176 @@ function resolveRite(
   ) {
     return;
   }
-  if (!prng.chance(riteTriggerChance(rite.triggerLevel, RUNE_BALANCING.triggerAttunement))) return;
+  const prismBonus = modifierMagnitude(rite, 'rune.modifier.prism');
+  const triggerChance = riteTriggerChance(
+    rite.triggerLevel,
+    RUNE_BALANCING.triggerAttunement,
+    prismBonus,
+  );
+  if (!prng.chance(triggerChance)) return;
 
   draft.events.push({
     type: 'riteTrigger',
     source,
     triggerRuneId: rite.triggerRuneId,
     effectRuneId: rite.effectRuneId,
+    ...(rite.modifierRuneId === undefined ? {} : { modifierRuneId: rite.modifierRuneId }),
   });
-  const magnitude = riteEffectMagnitude(
+  const baseMagnitude = riteEffectMagnitude(
     rite.effectRuneId,
     rite.effectLevel,
     RUNE_BALANCING.effectMagnitude,
   );
+  const magnitude =
+    rite.modifierRuneId === 'rune.modifier.surge'
+      ? baseMagnitude * (1 + modifierMagnitude(rite, 'rune.modifier.surge'))
+      : baseMagnitude;
+  const effectMagnitude =
+    rite.effectRuneId === 'rune.effect.bolt' ? candidate.rawDamage * magnitude : magnitude;
   const target = candidate.target;
 
-  switch (rite.effectRuneId) {
-    case 'rune.effect.heal': {
-      const healed = Math.min(magnitude, Math.max(character.maxHealth - character.health, 0));
-      character.health += healed;
-      draft.events.push({
-        type: 'riteEffect',
+  switch (rite.modifierRuneId) {
+    case 'rune.modifier.echo':
+      resolveRiteEffect(
+        state,
+        draft,
         source,
-        effectRuneId: rite.effectRuneId,
-        amount: healed,
-      });
-      return;
-    }
-    case 'rune.effect.barrier':
-      character.barrier += magnitude;
-      draft.events.push({
-        type: 'riteEffect',
-        source,
-        effectRuneId: rite.effectRuneId,
-        amount: magnitude,
-      });
-      return;
-    case 'rune.effect.empower':
-      character.empower = {
-        attackBonus: magnitude,
-        expiresAfterRound: state.round + RITE_EFFECT_BALANCING.empowerDuration,
-      };
-      draft.events.push({
-        type: 'riteEffect',
-        source,
-        effectRuneId: rite.effectRuneId,
-        amount: magnitude,
-      });
-      return;
-    case 'rune.effect.bolt':
-      if (target === undefined) return;
-      draft.events.push({ type: 'riteEffect', source, effectRuneId: rite.effectRuneId, target });
-      damageEnemy(draft, source, {
-        kind: 'riteBolt',
+        rite.effectRuneId,
+        effectMagnitude,
         target,
-        rawDamage: candidate.rawDamage * magnitude,
-        crit: false,
-        bulwarkFactor: 1,
-        damage: candidate.rawDamage * magnitude,
+        prng,
+        context,
+        {
+          modifierRuneId: rite.modifierRuneId,
+          phase: 'echo',
+        },
+      );
+      resolveRiteEffect(
+        state,
+        draft,
+        source,
+        rite.effectRuneId,
+        effectMagnitude * modifierMagnitude(rite, 'rune.modifier.echo'),
+        target,
+        prng,
+        context,
+        {
+          modifierRuneId: rite.modifierRuneId,
+          phase: 'echo',
+          markMode: 'append',
+          empowerMode: 'add',
+        },
+      );
+      return;
+    case 'rune.modifier.chain':
+      resolveRiteEffect(
+        state,
+        draft,
+        source,
+        rite.effectRuneId,
+        effectMagnitude,
+        target,
+        prng,
+        context,
+        {
+          modifierRuneId: rite.modifierRuneId,
+          phase: 'chain',
+          chainAdditionalTargets: modifierMagnitude(rite, 'rune.modifier.chain'),
+        },
+      );
+      return;
+    case 'rune.modifier.surge':
+      resolveRiteEffect(
+        state,
+        draft,
+        source,
+        rite.effectRuneId,
+        effectMagnitude,
+        target,
+        prng,
+        context,
+        {
+          modifierRuneId: rite.modifierRuneId,
+          phase: 'surge',
+        },
+      );
+      return;
+    case 'rune.modifier.lingering':
+      resolveRiteEffect(
+        state,
+        draft,
+        source,
+        rite.effectRuneId,
+        effectMagnitude,
+        target,
+        prng,
+        context,
+      );
+      draft.lingeringEffects.push({
+        source,
+        effectRuneId: rite.effectRuneId,
+        ...(target === undefined ? {} : { target }),
+        magnitude: effectMagnitude,
+        remainingRounds: modifierMagnitude(rite, 'rune.modifier.lingering'),
       });
       return;
-    case 'rune.effect.mark': {
-      if (target === undefined) return;
-      const enemy = draft.enemies[target.index];
-      if (enemy === undefined || !isAlive(enemy)) return;
-      enemy.mark = { sourceCharacterId: character.id, damageFactor: magnitude };
-      draft.events.push({ type: 'riteEffect', source, effectRuneId: rite.effectRuneId, target });
-      return;
-    }
-    case 'rune.effect.reprisal':
-      draft.events.push({ type: 'riteEffect', source, effectRuneId: rite.effectRuneId });
-      resolveReprisal(state, draft, source, prng, context, magnitude);
+    case 'rune.modifier.prism':
+    case undefined:
+      resolveRiteEffect(
+        state,
+        draft,
+        source,
+        rite.effectRuneId,
+        effectMagnitude,
+        target,
+        prng,
+        context,
+      );
   }
+}
+
+/** Lässt fällige Lingering-Effects nach dem Barrier-Reset in Speicherreihenfolge auslaufen. */
+function resolveLingeringEffects(
+  state: CombatState,
+  draft: TurnDraft,
+  prng: ResumablePrng,
+  context: CombatContext,
+): void {
+  const next: LingeringRiteEffect[] = [];
+  for (const effect of state.lingeringEffects) {
+    const character = draft.characters[effect.source.index];
+    const targetAlive =
+      effect.target === undefined ||
+      (effect.target.side === 'enemy' &&
+        isAlive(draft.enemies[effect.target.index] ?? { health: 0 }));
+    if (
+      effect.source.side === 'character' &&
+      character !== undefined &&
+      isAlive(character) &&
+      targetAlive
+    ) {
+      resolveRiteEffect(
+        state,
+        draft,
+        effect.source,
+        effect.effectRuneId,
+        effect.magnitude,
+        effect.target,
+        prng,
+        context,
+        { modifierRuneId: 'rune.modifier.lingering', phase: 'lingering', markMode: 'append' },
+      );
+    }
+    if (
+      effect.remainingRounds > 1 &&
+      character !== undefined &&
+      isAlive(character) &&
+      targetAlive
+    ) {
+      next.push({ ...effect, remainingRounds: effect.remainingRounds - 1 });
+    }
+  }
+  draft.lingeringEffects = next;
 }
 
 function draftToState(state: CombatState, draft: TurnDraft): CombatState {
@@ -493,6 +777,24 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
   if (current.pending.length === 0) {
     current = beginRound(current, context.momentum?.cap ?? 0);
     events.push({ type: 'roundStart', round: current.round });
+    const lingeringPrng = resumePrng(current.combatPrngState);
+    const lingeringDraft = draftOf(current, 1);
+    resolveLingeringEffects(current, lingeringDraft, lingeringPrng, context);
+    current = {
+      ...current,
+      combatPrngState: lingeringPrng.state(),
+      characters: lingeringDraft.characters,
+      effectiveDamage: lingeringDraft.effectiveDamage,
+      enemies: lingeringDraft.enemies,
+      lingeringEffects: lingeringDraft.lingeringEffects,
+    };
+    events.push(...lingeringDraft.events);
+    current = { ...current, pending: pruneDefeated(current, current.pending) };
+    const lingeringOutcome = combatOutcome(current);
+    if (lingeringOutcome !== 'ongoing') {
+      events.push({ type: 'combatEnd', outcome: lingeringOutcome });
+      return { state: current, actor: undefined, events, outcome: lingeringOutcome };
+    }
   }
 
   const { actor, remaining } = takeNextActor(current.pending);
@@ -529,6 +831,7 @@ export function nextTick(state: CombatState, context: CombatContext): TickResult
     pending: remaining,
     secondWindConsumed: draft.secondWindConsumed,
     riteReservedRounds: draft.riteReservedRounds,
+    lingeringEffects: draft.lingeringEffects,
   };
   let next: CombatState = { ...applied, pending: pruneDefeated(applied, remaining) };
 

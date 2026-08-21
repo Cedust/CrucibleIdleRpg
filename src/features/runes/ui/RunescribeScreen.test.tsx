@@ -131,6 +131,24 @@ describe('RunescribeScreen', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the bound Modifier facet and its current strength on the Rite', () => {
+    const save = riteReadySave();
+    saveStore.setState({
+      data: {
+        ...save,
+        rites: {
+          ...save.rites,
+          korvin: { ...save.rites.korvin, modifierRuneId: 'rune.modifier.echo' },
+        },
+      },
+      status: 'ready',
+    });
+    render(<RunescribeScreen />);
+
+    expect(screen.getByRole('button', { name: 'Korvin MODIFIER slot, Echo' })).toBeInTheDocument();
+    expect(screen.getByText('Frequency · Echoes the Effect at 50% strength.')).toBeInTheDocument();
+  });
+
   it('binds, excludes, replaces and clears a Rite slot through the keyboard', async () => {
     const user = userEvent.setup();
     saveStore.setState({ data: riteReadySave(), status: 'ready' });

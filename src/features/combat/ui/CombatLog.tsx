@@ -61,12 +61,13 @@ function eventText(state: CombatState, event: CombatEvent): string {
     case 'regeneration':
       return `${actorName(state, event.actor)} regenerates ${formatNumber(event.healed)} health`;
     case 'riteTrigger':
-      return `${actorName(state, event.source)} invokes ${event.effectRuneId.replace('rune.effect.', '')}`;
+      return `${actorName(state, event.source)} invokes ${event.effectRuneId.replace('rune.effect.', '')}${event.modifierRuneId === undefined ? '' : ` through ${event.modifierRuneId.replace('rune.modifier.', '')}`}`;
     case 'riteEffect': {
       const effect = event.effectRuneId.replace('rune.effect.', '');
       const target = event.target === undefined ? '' : ` on ${actorName(state, event.target)}`;
       const amount = event.amount === undefined ? '' : ` (${formatNumber(event.amount)})`;
-      return `${actorName(state, event.source)}: ${effect}${target}${amount}`;
+      const phase = event.phase === undefined ? '' : `${event.phase} `;
+      return `${actorName(state, event.source)}: ${phase}${effect}${target}${amount}`;
     }
     case 'defeat':
       return `${actorName(state, event.actor)} is defeated`;

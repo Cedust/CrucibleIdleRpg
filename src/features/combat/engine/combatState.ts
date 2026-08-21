@@ -25,7 +25,7 @@ import {
 } from '@/shared/utils/prng';
 import { deriveCharacterStats, type CharacterProgression } from './characterStats';
 import type { ImprintEffects } from '@/game/sigils/imprints';
-import type { ActiveTeamRites } from '@/game/runes/types';
+import type { ActiveTeamRites, EffectRuneId } from '@/game/runes/types';
 import { buildPendingQueue, momentumBonus } from './turnOrder';
 
 /**
@@ -107,8 +107,26 @@ export interface CombatEnemy {
   sunderedBulwark: number;
   /** Runde der letzten Suppression — höchstens eine je Ziel und Runde (SIGNATURES §1.3). */
   suppressedRound?: number;
-  /** Eine gebundene Mark-Ladung für den nächsten normalen Angriff eines anderen Charakters. */
-  mark?: { sourceCharacterId: CharacterId; damageFactor: number };
+  /** Verbrauchbare Mark-Ladungen für normale Angriffe anderer Charaktere. */
+  marks?: readonly MarkCharge[];
+}
+
+/** Eine einzelne Mark-Ladung; Echo und Lingering legen weitere Einträge in fester Reihenfolge ab. */
+export interface MarkCharge {
+  sourceCharacterId: CharacterId;
+  damageFactor: number;
+}
+
+/**
+ * Ein zu Rundenbeginn fälliger Rite-Effect. Stärke und Ziel entstehen bei der ersten Auslösung;
+ * nur Lingering-Reprisal bestimmt sein Ziel bei jeder Wiederholung frisch.
+ */
+export interface LingeringRiteEffect {
+  source: ActorRef;
+  effectRuneId: EffectRuneId;
+  target?: ActorRef;
+  magnitude: number;
+  remainingRounds: number;
 }
 
 export interface CombatState {
@@ -145,6 +163,8 @@ export interface CombatState {
   rites: ActiveTeamRites;
   /** Die Runde der Rite-Reservierung je Träger; maximal ein Wurf je Runde. */
   riteReservedRounds: Readonly<Partial<Record<CharacterId, number>>>;
+  /** Nach Barrier-Reset fällige Lingering-Effects in ihrer ursprünglichen Auslösungsreihenfolge. */
+  lingeringEffects: readonly LingeringRiteEffect[];
 }
 
 /** Ein Team-Mitglied für den Kampfaufbau. */
@@ -351,6 +371,7 @@ export function buildCombatState(setup: CombatSetup): CombatState {
     secondWindConsumed: setup.secondWindConsumed ?? false,
     rites: setup.rites ?? {},
     riteReservedRounds: {},
+    lingeringEffects: [],
   };
 }
 

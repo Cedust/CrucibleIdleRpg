@@ -4,7 +4,14 @@ import { CHARACTERS } from '@/game/characters/characters';
 import { CombatPortrait } from '@/features/combat/ui/CombatPortrait';
 import { useSaveStore } from '@/features/save/saveStore';
 import { availableRunesForRiteSlot, runeById, unlockedRiteSlots } from '@/game/runes/runes';
-import { RITE_SLOT_CATEGORY, type RiteSlot, type RuneId, type RuneLevel } from '@/game/runes/types';
+import { riteModifierDescription, riteModifierFacet } from '@/game/runes/riteEffects';
+import {
+  RITE_SLOT_CATEGORY,
+  type ModifierRuneId,
+  type RiteSlot,
+  type RuneId,
+  type RuneLevel,
+} from '@/game/runes/types';
 import type { CharacterId } from '@/game/types';
 import { Button } from '@/shared/ui/controls/Button';
 import { Icon } from '@/shared/ui/icons/Icon';
@@ -44,6 +51,11 @@ function RuneSocket({
   const { label, question } = RITE_SLOT_PRESENTATION[slot];
   const rune = runeId === null ? undefined : runeById(runeId);
   const description = rune === undefined ? 'Empty' : `${rune.name} · Level ${runeLevel ?? 0}`;
+  const modifierRuneId = rune?.category === 'modifier' ? (rune.id as ModifierRuneId) : undefined;
+  const modifierDescription =
+    modifierRuneId !== undefined && runeLevel !== undefined
+      ? `${riteModifierFacet(modifierRuneId)} · ${riteModifierDescription(modifierRuneId, runeLevel)}`
+      : undefined;
 
   if (!unlocked) {
     return (
@@ -92,6 +104,9 @@ function RuneSocket({
         <span className="block truncate text-xs font-semibold text-text group-data-[semantic=empty]:text-text-muted">
           {description}
         </span>
+        {modifierDescription === undefined ? null : (
+          <span className="mt-0.5 block text-2xs leading-4 text-arcane">{modifierDescription}</span>
+        )}
       </span>
     </button>
   );

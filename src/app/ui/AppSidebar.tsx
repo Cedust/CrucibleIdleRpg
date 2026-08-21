@@ -10,11 +10,12 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import { Fragment } from 'react';
 import {
   isCharacterScopedView,
+  NAV_GROUPS,
   useNavigationStore,
   VIEW_LABELS,
-  VIEWS,
   type View,
 } from '../navigationStore';
 import { cn } from '@/shared/ui/utils/cn';
@@ -24,14 +25,14 @@ import { CharacterSwitcher } from './CharacterSwitcher';
 
 const VIEW_ICONS: Record<View, LucideIcon> = {
   dungeons: Castle,
-  heroes: Users,
   crucible: Flame,
+  heroes: Users,
   'weapon-mastery': Swords,
   blacksmith: Hammer,
   jeweler: Gem,
+  runescribe: ScrollText,
   'sigil-codex': BookMarked,
   'rune-grimoire': BookOpen,
-  runescribe: ScrollText,
 };
 
 const ACTIVE_NAV_ITEM_CLASS = [
@@ -91,20 +92,25 @@ export function AppSidebar() {
           aria-label="Primary navigation"
           className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto"
         >
-          {VIEWS.map((view) => {
-            const selected = view === activeView;
-            return (
-              <div key={view}>
-                <SidebarNavItem view={view} selected={selected} onSelect={setActiveView} />
-                {selected && isCharacterScopedView(view) ? (
-                  <CharacterSwitcher
-                    activeCharacterId={activeCharacterId}
-                    onSelect={setActiveCharacterId}
-                  />
-                ) : null}
-              </div>
-            );
-          })}
+          {NAV_GROUPS.map((group, groupIndex) => (
+            <Fragment key={group[0]}>
+              {groupIndex > 0 ? <Divider variant="thin" className="my-1" /> : null}
+              {group.map((view) => {
+                const selected = view === activeView;
+                return (
+                  <div key={view}>
+                    <SidebarNavItem view={view} selected={selected} onSelect={setActiveView} />
+                    {selected && isCharacterScopedView(view) ? (
+                      <CharacterSwitcher
+                        activeCharacterId={activeCharacterId}
+                        onSelect={setActiveCharacterId}
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </Fragment>
+          ))}
         </nav>
       </div>
     </aside>

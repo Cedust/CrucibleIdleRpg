@@ -7,16 +7,27 @@ import type { CharacterId } from '@/game/types';
  */
 export const VIEWS = [
   'dungeons',
-  'heroes',
   'crucible',
+  'heroes',
   'weapon-mastery',
   'blacksmith',
   'jeweler',
+  'runescribe',
   'sigil-codex',
   'rune-grimoire',
-  'runescribe',
 ] as const;
 export type View = (typeof VIEWS)[number];
+
+/**
+ * Blöcke der Sidebar in Anzeige-Reihenfolge: global, charaktergebunden, teamweite Sammlungen
+ * (docs/spec/UI.md#1-viewport--und-screen-contract). Ein Test bindet sie an `VIEWS` und
+ * `CHARACTER_SCOPED_VIEWS`.
+ */
+export const NAV_GROUPS = [
+  ['dungeons', 'crucible'],
+  ['heroes', 'weapon-mastery', 'blacksmith', 'jeweler', 'runescribe'],
+  ['sigil-codex', 'rune-grimoire'],
+] as const satisfies readonly (readonly View[])[];
 
 /** Views whose content is scoped to one member of the fixed party. */
 export const CHARACTER_SCOPED_VIEWS = [
@@ -33,14 +44,14 @@ export function isCharacterScopedView(view: View): boolean {
 
 export const VIEW_LABELS: Record<View, string> = {
   dungeons: 'DUNGEONS',
-  heroes: 'HEROES',
   crucible: 'CRUCIBLE',
+  heroes: 'HEROES',
   'weapon-mastery': 'WEAPON MASTERY',
   blacksmith: 'BLACKSMITH',
   jeweler: 'JEWELER',
+  runescribe: 'RUNESCRIBE',
   'sigil-codex': 'SIGIL CODEX',
   'rune-grimoire': 'RUNE GRIMOIRE',
-  runescribe: 'RUNESCRIBE',
 };
 
 interface NavigationState {

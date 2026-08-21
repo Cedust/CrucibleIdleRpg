@@ -92,6 +92,7 @@ export function commitFloorVictory(save: SaveData, input: FloorRewardDefinition)
         gold: save.currencies.gold + input.gold,
         relicShards: save.currencies.relicShards + relicShards,
         cinder: save.currencies.cinder + input.loot.cinder,
+        runewords: save.currencies.runewords,
       },
       gems: addGems(save.gems, input.loot.gems),
       sigils: applySigilDrop(save.sigils, input.loot.sigil),

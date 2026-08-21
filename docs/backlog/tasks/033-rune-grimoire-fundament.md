@@ -1,10 +1,10 @@
 # 033 — Rune-Grimoire-Fundament
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M5      |
-| **Hängt ab von** | 031     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M5     |
+| **Hängt ab von** | 031    |
 
 ## Ziel
 

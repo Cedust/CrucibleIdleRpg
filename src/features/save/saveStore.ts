@@ -11,6 +11,7 @@ import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/craft
 import { createTeamArmor } from '@/game/items/armor';
 import { activeImprintSigilIds } from '@/game/sigils/imprints';
 import type { SigilId } from '@/game/sigils/types';
+import { grantRuneGrimoireStarters } from '@/game/runes/runes';
 import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
@@ -271,6 +272,8 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               crucible: purchase.ranks,
+              // Der Grimoire-Kauf grantet beide Starter atomar mit Rang und Bezahlung.
+              runes: grantRuneGrimoireStarters(current.runes, purchase.ranks),
               // Armor-Menge und -Basis folgen atomar dem neuen Armory-Rang.
               armor: createTeamArmor(purchase.ranks),
               currencies: { ...current.currencies, relicShards: purchase.relicShards },

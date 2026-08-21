@@ -86,8 +86,8 @@ const node = (
 
 /**
  * Der vollständige Katalog (PROGRESSION §3.1–§3.3). Gesperrte Nodes erscheinen sichtbar als
- * Voraussetzungen späterer Systeme; kaufbar sind seit M4 Waystones, Armory, Blacksmith,
- * Jeweler, Smelting und der komplette Molten-Tree — zusammen 202 aktive Relic-Shard-Kosten.
+ * Voraussetzungen späterer Systeme; kaufbar sind ab M5 Waystones, Armory, Blacksmith,
+ * Jeweler, der Rune-Ast, Smelting und der komplette Molten-Tree.
  */
 export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
   node(
@@ -181,13 +181,9 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'Rune Grimoire',
     1,
     'Unlocks the Rune system and Rune level cap 1.',
-    {
-      lockedUntil: 'Runes (M5)',
-    },
   ),
   node(CRUCIBLE_IDS.talisman, 'anvil', 'Talisman', 3, 'Unlocks the Rite for character 1 / 2 / 3.', {
     prerequisites: [{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }],
-    lockedUntil: 'Runes (M5)',
   }),
   node(
     CRUCIBLE_IDS.runicFocus,
@@ -197,7 +193,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'Unlocks the Modifier for character 1 / 2 / 3.',
     {
       prerequisites: [{ nodeId: CRUCIBLE_IDS.talisman, rank: 'matching' }],
-      lockedUntil: 'Runes (M5)',
     },
   ),
   node(
@@ -208,7 +203,6 @@ export const CRUCIBLE_NODES: readonly CrucibleNode[] = [
     'Raises the Rune level cap to 2 / 3 / 4 / 5.',
     {
       prerequisites: [{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }],
-      lockedUntil: 'Runes (M5)',
     },
   ),
 ];

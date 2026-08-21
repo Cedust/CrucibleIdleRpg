@@ -207,15 +207,17 @@ describe('CrucibleScreen', () => {
     ).toHaveAttribute('data-state', 'locked');
   });
 
-  it('selects locked future nodes without mutating the save and names their lock reason', async () => {
+  it('selects an unaffordable Rune Grimoire without mutating the save and names its cost', async () => {
     const before = saveStore.getState().data;
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
-    await user.click(screen.getByRole('button', { name: /Rune Grimoire, rank 0 of 1, Locked/ }));
+    await user.click(
+      screen.getByRole('button', { name: /Rune Grimoire, rank 0 of 1, Needs 1 Relic Shard/ }),
+    );
 
     expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
-    expect(screen.getByText('Locked until Runes (M5).')).toBeInTheDocument();
+    expect(screen.getByText('Requires 1 Relic Shard.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
     expect(saveStore.getState().data).toEqual(before);
   });

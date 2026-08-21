@@ -25,7 +25,7 @@ describe('commitFloorVictory', () => {
       relicShards: 1,
       loot: M1_REWARD.loot,
     });
-    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1, runewords: 0 });
     expect(result.save.gems).toEqual({ amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 });
     expect(result.save.characters.korvin).toMatchObject({
       level: 1,
@@ -47,7 +47,7 @@ describe('commitFloorVictory', () => {
       relicShards: 0,
       loot: M1_REWARD.loot,
     });
-    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1, cinder: 2 });
+    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1, cinder: 2, runewords: 0 });
     expect(second.save.gems).toEqual({ amber: 4, ruby: 0, sapphire: 2, emerald: 0, diamond: 0 });
     expect(second.save.characters.korvin.xp).toBe(10);
     expect(second.save.firstVictories).toEqual(['A1-D1-01']);

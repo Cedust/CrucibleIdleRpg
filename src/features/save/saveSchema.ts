@@ -4,6 +4,13 @@ import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
 import { isValidArmorItemState, MAX_ITEM_LEVEL } from '@/game/items/itemLayers';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import {
+  createEmptyRuneGrimoire,
+  createEmptyTeamRites,
+  validateRuneGrimoire,
+  validateTeamRites,
+} from '@/game/runes/runes';
+import type { TeamRites } from '@/game/runes/types';
 import { validateActiveImprints } from '@/game/sigils/imprints';
 import { createEmptySigilCodex, sigilById } from '@/game/sigils/sigils';
 import {
@@ -174,6 +181,26 @@ const teamArmorSchema = z
   })
   .strict();
 
+/** Persistierter Wissensstand des Rune Grimoire, keine stapelbaren Rune-Items (RUNES §2). */
+const runeGrimoireSchema = z.record(z.string(), z.number().int().min(1).max(5)).readonly();
+
+/** Ein konfigurierbarer Rite führt alle drei kategorisierten Slots, leer als `null`. */
+const riteSchema = z
+  .object({
+    triggerRuneId: z.string().min(1).nullable(),
+    effectRuneId: z.string().min(1).nullable(),
+    modifierRuneId: z.string().min(1).nullable(),
+  })
+  .strict();
+
+const teamRitesSchema = z
+  .object({
+    korvin: riteSchema,
+    rhaya: riteSchema,
+    quinn: riteSchema,
+  })
+  .strict();
+
 export const saveSchema = z
   .object({
     version: z.literal(SAVE_VERSION),
@@ -198,6 +225,7 @@ export const saveSchema = z
         gold: z.number().int().nonnegative(),
         relicShards: z.number().int().nonnegative(),
         cinder: z.number().int().nonnegative(),
+        runewords: z.number().int().nonnegative(),
       })
       .strict(),
     /** Globale Gem-Bestände als Zähler, kein Inventar (PERSISTENCE §2). */
@@ -211,6 +239,8 @@ export const saveSchema = z
       })
       .strict(),
     sigils: sigilCodexSchema,
+    runes: runeGrimoireSchema,
+    rites: teamRitesSchema,
     firstVictories: z
       .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
       .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
@@ -238,6 +268,14 @@ export const saveSchema = z
     const imprintFailure = validateActiveImprints(save.armor, save.sigils);
     if (imprintFailure !== null) {
       context.addIssue({ code: 'custom', message: imprintFailure });
+    }
+    const grimoireFailure = validateRuneGrimoire(save.runes, save.crucible);
+    if (grimoireFailure !== null) {
+      context.addIssue({ code: 'custom', message: grimoireFailure });
+    }
+    const riteFailure = validateTeamRites(save.rites as TeamRites, save.runes, save.crucible);
+    if (riteFailure !== null) {
+      context.addIssue({ code: 'custom', message: riteFailure });
     }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,
@@ -319,9 +357,11 @@ export function createDefaultSave(saveSeed: number): SaveData {
       rhaya: createLevelOneProgression(),
       quinn: createLevelOneProgression(),
     },
-    currencies: { gold: 0, relicShards: 0, cinder: 0 },
+    currencies: { gold: 0, relicShards: 0, cinder: 0, runewords: 0 },
     gems: createEmptyGemStock(),
     sigils: createEmptySigilCodex(),
+    runes: createEmptyRuneGrimoire(),
+    rites: createEmptyTeamRites(),
     firstVictories: [],
     crucible: {},
     armor: createTeamArmor({}),

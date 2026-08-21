@@ -91,7 +91,12 @@ describe('createSaveStore', () => {
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
 
-    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(reloaded.getState().data?.currencies).toEqual({
+      gold: 10,
+      relicShards: 1,
+      cinder: 1,
+      runewords: 0,
+    });
     expect(reloaded.getState().data?.gems).toEqual({
       amber: 1,
       ruby: 0,
@@ -234,6 +239,36 @@ describe('createSaveStore', () => {
       'A1-D1',
       'A1-D2',
     ]);
+  });
+
+  it('grants the two Rune Grimoire starters atomically and idempotently with its Anvil purchase', async () => {
+    const port = memoryPort();
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: { ...base, currencies: { ...base.currencies, relicShards: 1 } },
+    });
+
+    await expect(store.getState().buyCrucibleNode('anvil.rune-grimoire')).resolves.toBe(true);
+    expect(store.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
+
+    const reloaded = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
+    await expect(reloaded.getState().buyCrucibleNode('anvil.rune-grimoire')).resolves.toBe(false);
+    expect(reloaded.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
   });
 
   it('creates all three permanent Common +1 Armor bases atomically with each Armory rank and reloads them', async () => {
@@ -838,7 +873,12 @@ describe('createSaveStore', () => {
       }),
     ).rejects.toThrow('Reward-Save fehlgeschlagen');
 
-    expect(store.getState().data?.currencies).toEqual({ gold: 0, relicShards: 0, cinder: 0 });
+    expect(store.getState().data?.currencies).toEqual({
+      gold: 0,
+      relicShards: 0,
+      cinder: 0,
+      runewords: 0,
+    });
     expect(store.getState().data?.characters.korvin.xp).toBe(0);
     expect(store.getState().status).toBe('error');
   });

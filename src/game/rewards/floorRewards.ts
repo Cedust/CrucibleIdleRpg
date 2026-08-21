@@ -1,4 +1,5 @@
 import type { CharacterId, EncounterClass, FloorRewardDefinition } from '@/game/types';
+import type { SigilCodex } from '@/game/sigils/types';
 import { lootStreamPrng, rollFloorLoot } from './lootRewards';
 import { distributeFloorXp } from './xpRewards';
 
@@ -16,6 +17,8 @@ export interface FloorRewardInput {
   floorSeed: number;
   classification: EncounterClass;
   enemyCount: number;
+  /** Codex-Stand vor diesem Sieg; Sigil-Progression wird daraus über den Loot-Strom gerollt. */
+  sigils: SigilCodex;
   effectiveDamage: Readonly<Record<CharacterId, number>>;
 }
 
@@ -30,6 +33,10 @@ export function createFloorReward(input: FloorRewardInput): FloorRewardDefinitio
     floorId,
     gold: FLOOR_GOLD_REWARD,
     characterXp: distributeFloorXp({ floorIndex, enemyCount, effectiveDamage }),
-    loot: rollFloorLoot({ classification, floorIndex, enemyCount }, lootStreamPrng(floorSeed)),
+    loot: rollFloorLoot(
+      { floorId, classification, floorIndex, enemyCount },
+      input.sigils,
+      lootStreamPrng(floorSeed),
+    ),
   };
 }

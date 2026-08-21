@@ -212,9 +212,17 @@ export function resolveIncomingDamage(
     };
   }
 
-  // 3. Block — partielle Reduktion um einen festen %-Wert, nicht all-or-nothing.
+  // 3. Block — Warden's Bastion erhöht die globale Grundreduktion um Prozentpunkte; wie
+  // jeder chance-artige Wert bleibt sie bei 100 % gedeckelt (ITEMS §5.1).
   const blocked = prng.chance(defensive.blockChance);
-  const afterBlock = blocked ? tick * (1 - BLOCK_DAMAGE_REDUCTION) : tick;
+  const blockReduction = Math.min(
+    Math.max(
+      BLOCK_DAMAGE_REDUCTION + (character.imprintEffects?.blockDamageReductionBonus ?? 0),
+      0,
+    ),
+    1,
+  );
+  const afterBlock = blocked ? tick * (1 - blockReduction) : tick;
 
   // 4. Defense — proportionale Mitigation, strukturell unter 100 %.
   const afterDefense = afterBlock * defenseDamageFactor(character.stats.derived.defense);

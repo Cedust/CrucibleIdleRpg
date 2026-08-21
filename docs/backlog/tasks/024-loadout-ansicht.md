@@ -15,7 +15,7 @@ Item-Interaktion vorzutäuschen.
 ## Nicht-Ziel
 
 Weapon Mastery bleibt in seinem eigenen Screen. Der Loadout enthält weder Ausrüsten, Tausch noch
-Handwerksaktionen; Sockel, Seltenheit und Implicit entstehen erst in M4. Der Talisman ist in M3
+Handwerksaktionen; Sockel, Seltenheit und Imprint entstehen erst in M4. Der Talisman ist in M3
 nicht nutzbar und erhält keinen eigenen Heroes-Tab.
 
 ## Blockiert durch
@@ -48,7 +48,7 @@ Bereich bereit.
 - [ ] Die freigeschaltete Signaturwaffe ist auswählbar und zeigt aktuelle effektive Waffenwerte
       einschließlich bereits wirksamer Weapon-Mastery-Effekte, aber keinen Skilltree
 - [ ] Freigeschaltete Armor-Slots sind auswählbar und zeigen ausschließlich Basis, Item-Level und
-      Innate-Wert; es gibt keine leeren Sockel-, Seltenheits- oder Implicit-Platzhalter
+      Innate-Wert; es gibt keine leeren Sockel-, Seltenheits- oder Imprint-Platzhalter
 - [ ] Gesperrte Armor-Slots sind nicht auswählbar, zeigen keine Detailkarte und tragen einen
       zugänglichen Locked-Status; ihre konkrete Freischaltung erklärt nur der Crucible-Inspector
 - [ ] Der Talisman ist als nicht-Armor-Ritual-Slot sichtbar und auswählbar, bleibt gesperrt und

@@ -28,6 +28,32 @@ describe('ScreenLayout', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(0);
   });
 
+  it('unterstützt den Dungeons-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="dungeons">
+        <h1>Dungeons</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="dungeons"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/dungeons-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
+  it('unterstützt den Heroes-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="heroes">
+        <h1>Heroes</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="heroes"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/heroes-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
   it('unterstützt den Crucible-Hintergrund mit eigenem Kontrast-Overlay', () => {
     const { container } = render(
       <ScreenLayout background="crucible">
@@ -50,6 +76,19 @@ describe('ScreenLayout', () => {
 
     expect(container.querySelector('[data-screen-background="weapon-mastery"]')).toHaveClass(
       'bg-[url(/assets/backgrounds/weapon-mastery-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
+  it('unterstützt den Blacksmith-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="blacksmith">
+        <h1>Blacksmith</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="blacksmith"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/blacksmith-view.png)]',
     );
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });

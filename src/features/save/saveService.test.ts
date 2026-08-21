@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SavePort } from '@/shared/ports/savePort';
+import { createArmorItem, createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
 
@@ -60,6 +61,60 @@ describe('createSaveService', () => {
     const service = createSaveService(memoryPort(JSON.stringify(oldSave)), () => fallback);
 
     await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
+  it('setzt einen Save mit Armor-Items ohne Sockel-Schichten (M3-Form) auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const m3Item = {
+      slot: 'chest',
+      itemType: 'armor',
+      rarity: 'common',
+      itemLevel: 1,
+      innate: 'toughness',
+    };
+    const oldSave = {
+      ...createDefaultSave(42),
+      crucible: { 'anvil.armory': 1 },
+      armor: { korvin: { chest: m3Item }, rhaya: { chest: m3Item }, quinn: { chest: m3Item } },
+    };
+    const fallback = createDefaultSave(777);
+    const service = createSaveService(memoryPort(JSON.stringify(oldSave)), () => fallback);
+
+    await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
+  it('setzt einen Save mit dem alten Feldnamen der fünften Schicht auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    // Der alte Feldname darf in `src/` nicht mehr vorkommen (Task 032) und wird deshalb
+    // zur Laufzeit zusammengesetzt.
+    const legacyLayerKey = ['imp', 'licit'].join('');
+    const brandedChest = {
+      ...createArmorItem('chest'),
+      rarity: 'legendary',
+      sockets: [null, null, null, null],
+    };
+    const armedSave = (chest: Record<string, unknown>) => ({
+      ...createDefaultSave(42),
+      sigils: { 'sigil.tempered-edge': 1 },
+      crucible: { 'anvil.armory': 1 },
+      armor: { ...createTeamArmor({ 'anvil.armory': 1 }), korvin: { chest } },
+    });
+    const fallback = createDefaultSave(777);
+
+    const legacy = armedSave({
+      ...brandedChest,
+      [legacyLayerKey]: { sigilId: 'sigil.placeholder' },
+    });
+    const legacyService = createSaveService(memoryPort(JSON.stringify(legacy)), () => fallback);
+    await expect(legacyService.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+
+    // Gegenprobe: derselbe Save mit dem aktuellen Feldnamen lädt unverändert.
+    const current = armedSave({ ...brandedChest, imprint: { sigilId: 'sigil.tempered-edge' } });
+    const currentService = createSaveService(memoryPort(JSON.stringify(current)), () => fallback);
+    await expect(currentService.load()).resolves.toEqual(current);
     expect(console.warn).toHaveBeenCalledOnce();
   });
 

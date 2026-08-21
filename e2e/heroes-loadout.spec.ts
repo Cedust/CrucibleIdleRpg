@@ -7,13 +7,23 @@ import { expect, test, type Page } from '@playwright/test';
  */
 
 const ARMOR_ITEMS = {
-  chest: { slot: 'chest', itemType: 'armor', rarity: 'common', itemLevel: 1, innate: 'toughness' },
+  chest: {
+    slot: 'chest',
+    itemType: 'armor',
+    rarity: 'common',
+    itemLevel: 1,
+    innate: 'toughness',
+    sockets: [],
+    prismaticSockets: [],
+  },
   legs: {
     slot: 'legs',
     itemType: 'legguards',
     rarity: 'common',
     itemLevel: 1,
     innate: 'toughness',
+    sockets: [],
+    prismaticSockets: [],
   },
 } as const;
 
@@ -30,10 +40,12 @@ const SEEDED_SAVE = {
   version: 1,
   saveSeed: 42,
   runCounter: 0,
+  craftCounter: 0,
   playbackSpeed: 1,
   characters: { korvin: LEVEL_ONE, rhaya: LEVEL_ONE, quinn: LEVEL_ONE },
   currencies: { gold: 0, relicShards: 0, cinder: 0 },
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+  sigils: {},
   firstVictories: [],
   crucible: { 'anvil.armory': 2 },
   armor: { korvin: ARMOR_ITEMS, rhaya: ARMOR_ITEMS, quinn: ARMOR_ITEMS },
@@ -108,7 +120,10 @@ test('arranges talisman, signature weapon, armor column and detail without docum
   expect(slotOrder).toEqual(['head', 'chest', 'legs', 'feet']);
 
   expect(await scrollState(page, 'html')).toEqual({ scrollsX: false, scrollsY: false });
-  const mainScroll = await page.getByRole('main').evaluate((element) => {
+  // `main` traegt den Frame-Bleed des Screen-Hintergrunds (UI.md 1); der
+  // Rahmen-Wrapper klippt ihn, `main` selbst ist kein Scroll-Container.
+  const FRAME_BLEED = 8;
+  const mainScroll = await page.getByRole('main').evaluate((element, slack) => {
     const scrollContainer = element as unknown as {
       clientWidth: number;
       scrollWidth: number;
@@ -116,10 +131,10 @@ test('arranges talisman, signature weapon, armor column and detail without docum
       scrollHeight: number;
     };
     return (
-      scrollContainer.scrollHeight > scrollContainer.clientHeight ||
-      scrollContainer.scrollWidth > scrollContainer.clientWidth
+      scrollContainer.scrollHeight - scrollContainer.clientHeight > slack ||
+      scrollContainer.scrollWidth - scrollContainer.clientWidth > slack
     );
-  });
+  }, FRAME_BLEED);
   expect(mainScroll).toBe(false);
 });
 
@@ -135,7 +150,11 @@ test('selection only swaps the detail card and locked slots stay inert', async (
   await expect(detail.getByRole('heading', { name: 'Chest Armor +1' })).toBeVisible();
   await expect(detail.getByText('Base Item Type')).toBeVisible();
   await expect(detail.getByText('+1 Toughness')).toBeVisible();
-  await expect(detail.getByText('Common', { exact: true })).toHaveCount(0);
+  // Die persistierten Schichten Seltenheit, Item-Level-Cap und Sockel (Task 026).
+  await expect(detail.getByText('Common', { exact: true })).toBeVisible();
+  await expect(detail.getByText('+1 / +20')).toBeVisible();
+  await expect(detail.getByText('Sockets')).toBeVisible();
+  await expect(detail.getByText('None', { exact: true })).toBeVisible();
 
   // Gesperrte Slots sind keine Buttons, tragen aber einen zugänglichen Locked-Status.
   const lockedHead = page.locator('[data-loadout-slot="head"]');

@@ -14,7 +14,10 @@
   [Gegnerformation](COMBAT-RUN.md#13-gegnerformation)).
 - **Elite-Floor:** Floor 20 der Dungeons 1–4 eines Akts. **Boss-Floor:** Floor 20 des
   **letzten** Dungeons eines Akts.
-  - Akt-Bosse: _The Ashen Warden_ (A1), _The Emberbound Sovereign_ (A2), _The Gilded Empress_ (A3).
+  - Akt-Bosse: _Garran Holt, the Ashen Warden_ (A1), _Ysara Vale, Saint of the Last Ember_ (A2),
+    eine **Empress** (A3, Name offen —
+    [OPEN_ISSUES §2](../backlog/OPEN_ISSUES.md#2-offene-spec-punkte)). Jeder Akt-Boss und jeder
+    Elite-Floor ist zugleich die Quelle eines Sigils ([Katalog](ITEMS.md#51-katalog)).
 - **Ramp-Up:** Die volle Gegnervielfalt wird **einmal im ersten Dungeon eines Akts** in vier
   Phasen eingeführt: (1) nur eine Lane, wenige Gegner → (2) beide Lanes, wenige → (3) beide
   Lanes, mehrere → (4) beide Lanes, mehrere inkl. Tank-Gegner.

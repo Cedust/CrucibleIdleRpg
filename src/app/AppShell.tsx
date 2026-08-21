@@ -18,8 +18,10 @@ export function AppShell() {
       ) : (
         <>
           <AppSidebar />
+          {/* Clipping übernimmt der Rahmen-Container an seiner Padding-Box, damit
+              die Screen-Hintergründe um das Gutter bis unter den Rahmen bluten. */}
           <div className="border-image-frame relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
-            <main className="min-h-0 flex-1 overflow-hidden">
+            <main className="min-h-0 flex-1">
               <ActiveView />
             </main>
           </div>

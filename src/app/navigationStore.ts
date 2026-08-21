@@ -12,6 +12,7 @@ export const VIEWS = [
   'weapon-mastery',
   'blacksmith',
   'jeweler',
+  'sigil-codex',
   'runescribe',
 ] as const;
 export type View = (typeof VIEWS)[number];
@@ -36,6 +37,7 @@ export const VIEW_LABELS: Record<View, string> = {
   'weapon-mastery': 'WEAPON MASTERY',
   blacksmith: 'BLACKSMITH',
   jeweler: 'JEWELER',
+  'sigil-codex': 'SIGIL CODEX',
   runescribe: 'RUNESCRIBE',
 };
 

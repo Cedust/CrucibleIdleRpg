@@ -71,7 +71,11 @@ describe('DungeonRunScreen', () => {
         gold: 10,
         xp: 15,
         relicShards: 1,
-        loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+        loot: {
+          gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+          cinder: 0,
+          sigil: null,
+        },
       },
     });
 
@@ -93,7 +97,11 @@ describe('DungeonRunScreen', () => {
         gold: 10,
         xp: 15,
         relicShards: 1,
-        loot: { gems: { amber: 2, ruby: 0, sapphire: 0, emerald: 1, diamond: 0 }, cinder: 1 },
+        loot: {
+          gems: { amber: 2, ruby: 0, sapphire: 0, emerald: 1, diamond: 0 },
+          cinder: 1,
+          sigil: null,
+        },
       },
     });
 
@@ -115,7 +123,11 @@ describe('DungeonRunScreen', () => {
         gold: 10,
         xp: 15,
         relicShards: 1,
-        loot: { gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+        loot: {
+          gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+          cinder: 0,
+          sigil: null,
+        },
       },
     });
 

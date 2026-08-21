@@ -6,9 +6,19 @@ import {
   respecCrucibleTree,
   type RespeccableTreeId,
 } from '@/game/crucible/crucible';
+import { applyBrand, applyMasterwork, applyTemper } from '@/game/crafting/blacksmith';
+import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/crafting/jeweler';
 import { createTeamArmor } from '@/game/items/armor';
-import { respecAttributes, spendAttributePoint } from '@/game/rewards/xpRewards';
-import type { AttributePoints, CharacterId, FloorRewardDefinition } from '@/game/types';
+import { activeImprintSigilIds } from '@/game/sigils/imprints';
+import type { SigilId } from '@/game/sigils/types';
+import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
+import type {
+  ArmorSlot,
+  AttributePoints,
+  CharacterId,
+  FloorRewardDefinition,
+  RegularGemColor,
+} from '@/game/types';
 import {
   purchaseMasteryNode,
   respecMasteryDiscipline,
@@ -31,11 +41,26 @@ export interface SaveStoreState {
     characterId: CharacterId,
     attribute: keyof AttributePoints,
   ) => Promise<boolean>;
-  respecAttributes: (characterId: CharacterId, goldCost: number) => Promise<boolean>;
+  /** Attribut-Respec: schreibt eine Neuverteilung derselben Punktsumme gegen Gold. */
+  redistributeAttributePoints: (
+    characterId: CharacterId,
+    target: AttributePoints,
+  ) => Promise<boolean>;
   buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
+  temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
+  masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
+  brandArmor: (characterId: CharacterId, slot: ArmorSlot, sigilId: SigilId) => Promise<boolean>;
+  inlayGem: (
+    characterId: CharacterId,
+    slot: ArmorSlot,
+    socketIndex: number,
+    color: RegularGemColor,
+  ) => Promise<boolean>;
+  attuneGem: (characterId: CharacterId, slot: ArmorSlot, socketIndex: number) => Promise<boolean>;
+  recutGem: (characterId: CharacterId, slot: ArmorSlot, socketIndex: number) => Promise<boolean>;
   completeDungeon: (dungeonId: Act1DungeonId) => Promise<SaveData>;
   setPlaybackSpeed: (speed: SaveData['playbackSpeed']) => Promise<void>;
 }
@@ -156,12 +181,16 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
           };
         }),
 
-      respecAttributes: (characterId, goldCost) =>
+      redistributeAttributePoints: (characterId, target) =>
         persist((current) => {
-          const respec = respecAttributes(
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+
+          const respec = redistributeAttributePoints(
             current.characters[characterId],
             current.currencies.gold,
-            goldCost,
+            target,
           );
           if (respec === null) {
             return { next: null, result: false };
@@ -266,6 +295,192 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
               ...current,
               crucible: respec.ranks,
               currencies: { ...current.currencies, relicShards: respec.relicShards },
+            },
+            result: true,
+          };
+        }),
+
+      // Beide Blacksmith-Aktionen sind RNG-frei und schreiben Item und Bezahlung in einem
+      // atomaren Save (docs/spec/ITEMS.md#7-blacksmith--temper-masterwork--brand); während
+      // eines Runs sperrt das Optimierungs-Prädikat (docs/spec/PROGRESSION.md#4-checkpoints-wipe--abbruch).
+      temperArmor: (characterId, slot) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyTemper(item, current.currencies.gold);
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      masterworkArmor: (characterId, slot) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyMasterwork(item, current.currencies);
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold, cinder: outcome.cinder },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Brand und Re-Brand sind wie Temper/Masterwork RNG-frei: das Zielitem, beide
+      // Zahlmittel und die teamweite Sigil-Einmaligkeit werden gegen denselben Save geplant.
+      brandArmor: (characterId, slot, sigilId) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyBrand(
+            item,
+            sigilId,
+            current.sigils,
+            activeImprintSigilIds(current.armor, { characterId, slot }),
+            current.currencies,
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold, cinder: outcome.cinder },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Der einzige Zufall im Handwerk: Der Roll läuft über den loot-Strom des Craft-Seeds
+      // (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut); der craftCounter wird atomar mit
+      // Item, Bestand und Bezahlung persistiert, ein Reload liefert denselben Roll.
+      inlayGem: (characterId, slot, socketIndex, color) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyInlay(
+            item,
+            socketIndex,
+            color,
+            { gold: current.currencies.gold, gems: current.gems },
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              gems: outcome.gems,
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Attune ist RNG-frei (Positions-Erhalt in der wachsenden Range) und zahlt Gold plus
+      // Fodder gleicher Farbe atomar mit dem Item (docs/spec/ITEMS.md#8-jeweler--inlay-attune--recut).
+      attuneGem: (characterId, slot, socketIndex) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyAttune(item, socketIndex, {
+            gold: current.currencies.gold,
+            gems: current.gems,
+          });
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              gems: outcome.gems,
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
+            },
+            result: true,
+          };
+        }),
+
+      // Recut rollt wie das Inlay über den loot-Strom des Craft-Seeds; der craftCounter
+      // wird atomar mit Item und Bezahlung persistiert, ein Reload liefert denselben Wert.
+      recutGem: (characterId, slot, socketIndex) =>
+        persist((current) => {
+          const item = current.armor[characterId][slot];
+          if (!canOptimize() || item === undefined) {
+            return { next: null, result: false };
+          }
+
+          const outcome = applyRecut(
+            item,
+            socketIndex,
+            current.currencies.gold,
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: { ...current.currencies, gold: outcome.gold },
+              armor: {
+                ...current.armor,
+                [characterId]: { ...current.armor[characterId], [slot]: outcome.item },
+              },
             },
             result: true,
           };

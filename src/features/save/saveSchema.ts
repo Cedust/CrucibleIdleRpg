@@ -2,8 +2,18 @@ import { z } from 'zod';
 import { crucibleNodeById, meetsPrerequisites } from '@/game/crucible/crucible';
 import type { Act1DungeonId } from '@/game/encounters/act1';
 import { createTeamArmor, hasArmorForUnlockedSlots } from '@/game/items/armor';
+import { isValidArmorItemState, MAX_ITEM_LEVEL } from '@/game/items/itemLayers';
 import { createEmptyGemStock } from '@/game/rewards/lootRewards';
-import type { CharacterProgressionState } from '@/game/types';
+import { validateActiveImprints } from '@/game/sigils/imprints';
+import { createEmptySigilCodex, sigilById } from '@/game/sigils/sigils';
+import {
+  AMBER_AFFIXES,
+  EMERALD_AFFIXES,
+  RUBY_AFFIXES,
+  SAPPHIRE_AFFIXES,
+  type ArmorItem,
+  type CharacterProgressionState,
+} from '@/game/types';
 import { minimumLevel, nodesFor } from '@/game/weaponMastery/mastery';
 
 /**
@@ -72,16 +82,80 @@ const completedDungeonsSchema = z
   })
   .strict();
 
-/** M3 speichert nur kanonische Common-+1-Basen; der Armory-Rang bestimmt ihre Menge. */
+/** Gem-Werte je Sockel: gerollter Affix strikt aus dem Farb-Pool (ITEMS §8). */
+const gemLevelSchema = z.number().int().min(1);
+const gemValueSchema = z.number().nonnegative();
+const socketedGemSchema = z.discriminatedUnion('color', [
+  z
+    .object({
+      color: z.literal('amber'),
+      affix: z.enum(AMBER_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('ruby'),
+      affix: z.enum(RUBY_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('sapphire'),
+      affix: z.enum(SAPPHIRE_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      color: z.literal('emerald'),
+      affix: z.enum(EMERALD_AFFIXES),
+      gemLevel: gemLevelSchema,
+      value: gemValueSchema,
+    })
+    .strict(),
+]);
+
+/** Brand-Referenz auf ein Sigil; Katalog, Codex, Slot-Bindung und Einmaligkeit prüft der Save. */
+const armorImprintSchema = z.object({ sigilId: z.string().min(1) }).strict();
+
+/** Persistierter Wissensstand des Sigil Codex, keine Sigil-Gegenstände (ITEMS §5). */
+const sigilCodexSchema = z
+  .record(z.string(), z.number().int().min(1).max(5))
+  .readonly()
+  .superRefine((sigils, context) => {
+    if (Object.keys(sigils).some((id) => sigilById(id) === undefined)) {
+      context.addIssue({ code: 'custom', message: 'Unbekanntes Sigil im Codex.' });
+    }
+  });
+
+/**
+ * Ein Armor-Item mit allen fünf Schichten (ITEMS §2). Die seltenheits-abgeleiteten
+ * Invarianten — Item-Level ≤ Cap, Sockelzahl nach Tabelle, Prismatic-Formel, Imprint ab
+ * Magic — prüft `isValidArmorItemState`. Prismatic-Sockel bleiben leer, bis die
+ * Diamond-Effekte entschieden sind (OPEN_ISSUES §2, Drops ab Akt 2 → M6).
+ */
 const armorItemSchema = z
   .object({
     slot: z.enum(['chest', 'legs', 'head', 'feet']),
     itemType: z.enum(['armor', 'legguards', 'helmet', 'boots']),
-    rarity: z.literal('common'),
-    itemLevel: z.literal(1),
+    rarity: z.enum(['common', 'magic', 'rare', 'epic', 'legendary']),
+    itemLevel: z.number().int().min(1).max(MAX_ITEM_LEVEL),
     innate: z.enum(['toughness', 'vitality', 'initiative']),
+    sockets: z.array(socketedGemSchema.nullable()).readonly(),
+    prismaticSockets: z.array(z.null()).readonly(),
+    imprint: armorImprintSchema.optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((item, context) => {
+    if (!isValidArmorItemState(item)) {
+      context.addIssue({ code: 'custom', message: 'Ungültige Item-Schichten.' });
+    }
+  });
 
 const armorLoadoutSchema = z
   .object({
@@ -105,6 +179,12 @@ export const saveSchema = z
     version: z.literal(SAVE_VERSION),
     saveSeed: uint32Schema,
     runCounter: z.number().int().nonnegative(),
+    /**
+     * Monoton steigender Zähler der Handwerks-Rolls (Jeweler): pro Roll um 1 erhöht und
+     * atomar mit dem Ergebnis persistiert — ein Reload liefert denselben Zähler und damit
+     * denselben Roll (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme, analog `runCounter`).
+     */
+    craftCounter: z.number().int().nonnegative(),
     playbackSpeed: z.union([z.literal(1), z.literal(2)]),
     characters: z
       .object({
@@ -130,6 +210,7 @@ export const saveSchema = z
         diamond: z.number().int().nonnegative(),
       })
       .strict(),
+    sigils: sigilCodexSchema,
     firstVictories: z
       .array(z.string().regex(/^A\d+-D\d+-\d{2}$/))
       .refine((ids) => new Set(ids).size === ids.length, 'Doppelte Erstsiege.')
@@ -153,6 +234,10 @@ export const saveSchema = z
     }
     if (!hasArmorForUnlockedSlots(save.armor, save.crucible)) {
       context.addIssue({ code: 'custom', message: 'Ungültige Armory-Items.' });
+    }
+    const imprintFailure = validateActiveImprints(save.armor, save.sigils);
+    if (imprintFailure !== null) {
+      context.addIssue({ code: 'custom', message: imprintFailure });
     }
     for (const [characterId, progression] of Object.entries(save.characters) as [
       keyof typeof save.characters,
@@ -206,6 +291,12 @@ export type CharacterProgressionStateMatchesSchema = AssertExtends<
   SchemaCharacterProgression
 >;
 
+type SchemaArmorItem = z.infer<typeof armorItemSchema>;
+
+/** Dieselbe Drift-Sicherung für die fünf Item-Schichten des Armor-Items. */
+export type ArmorItemSchemaProducesState = AssertExtends<SchemaArmorItem, ArmorItem>;
+export type ArmorItemMatchesSchema = AssertExtends<ArmorItem, SchemaArmorItem>;
+
 export function createDefaultCompletedDungeons(): Readonly<Record<Act1DungeonId, boolean>> {
   return {
     'A1-D1': false,
@@ -221,6 +312,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     version: SAVE_VERSION,
     saveSeed,
     runCounter: 0,
+    craftCounter: 0,
     playbackSpeed: 1,
     characters: {
       korvin: createLevelOneProgression(),
@@ -229,6 +321,7 @@ export function createDefaultSave(saveSeed: number): SaveData {
     },
     currencies: { gold: 0, relicShards: 0, cinder: 0 },
     gems: createEmptyGemStock(),
+    sigils: createEmptySigilCodex(),
     firstVictories: [],
     crucible: {},
     armor: createTeamArmor({}),

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
+import { createTeamArmor } from '@/game/items/armor';
 import { CrucibleScreen } from './CrucibleScreen';
 
 /** Schema-valid state: completed first dungeon, Relic Shards and invested Smelting ranks. */
@@ -211,12 +212,23 @@ describe('CrucibleScreen', () => {
     const user = userEvent.setup();
     render(<CrucibleScreen />);
 
+    await user.click(screen.getByRole('button', { name: /Rune Grimoire, rank 0 of 1, Locked/ }));
+
+    expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
+    expect(screen.getByText('Locked until Runes (M5).')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
+    expect(saveStore.getState().data).toEqual(before);
+  });
+
+  it('sells the Blacksmith unlock behind Armory rank 1 (ITEMS §1)', async () => {
+    const user = userEvent.setup();
+    render(<CrucibleScreen />);
+
     await user.click(screen.getByRole('button', { name: /Blacksmith, rank 0 of 1, Locked/ }));
 
     expect(screen.getByRole('heading', { name: 'Blacksmith' })).toBeInTheDocument();
-    expect(screen.getByText('Locked until Crafting (M4).')).toBeInTheDocument();
+    expect(screen.getByText('A prerequisite node is missing.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Invest' })).toBeDisabled();
-    expect(saveStore.getState().data).toEqual(before);
   });
 
   it('names the next team-wide Armory slot and its rank cost in the inspector', async () => {
@@ -226,56 +238,7 @@ describe('CrucibleScreen', () => {
         ...base,
         currencies: { ...base.currencies, relicShards: 10 },
         crucible: { 'anvil.armory': 2 },
-        armor: {
-          korvin: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-          rhaya: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-          quinn: {
-            chest: {
-              slot: 'chest',
-              itemType: 'armor',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-            legs: {
-              slot: 'legs',
-              itemType: 'legguards',
-              rarity: 'common',
-              itemLevel: 1,
-              innate: 'toughness',
-            },
-          },
-        },
+        armor: createTeamArmor({ 'anvil.armory': 2 }),
       },
       status: 'ready',
     });

@@ -42,7 +42,7 @@ export function Dialog({ label, onClose, className, children }: DialogProps) {
         className,
       )}
     >
-      <Panel variant="thin" padding="none">
+      <Panel variant="standard" padding="none">
         <div className="relative p-5">{children(close)}</div>
       </Panel>
     </dialog>

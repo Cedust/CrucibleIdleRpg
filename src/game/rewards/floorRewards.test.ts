@@ -12,6 +12,7 @@ describe('createFloorReward', () => {
       floorSeed: 0xc0ffee,
       classification: 'normal',
       enemyCount: 4,
+      sigils: {},
       effectiveDamage,
     } as const;
 
@@ -24,7 +25,8 @@ describe('createFloorReward', () => {
     );
     expect(reward.loot).toEqual(
       rollFloorLoot(
-        { classification: 'normal', floorIndex: 2, enemyCount: 4 },
+        { floorId: 'A1-D1-03', classification: 'normal', floorIndex: 2, enemyCount: 4 },
+        input.sigils,
         lootStreamPrng(0xc0ffee),
       ),
     );
@@ -37,9 +39,24 @@ describe('createFloorReward', () => {
       floorSeed: 42,
       classification: 'elite',
       enemyCount: 6,
+      sigils: {},
       effectiveDamage: { korvin: 1, rhaya: 1, quinn: 1 },
     } as const;
 
     expect(createFloorReward(input)).toEqual(createFloorReward(input));
+  });
+
+  it('rolls the guaranteed first Sigil through the same floor loot stream', () => {
+    const reward = createFloorReward({
+      floorId: 'A1-D1-20',
+      floorIndex: 19,
+      floorSeed: 42,
+      classification: 'elite',
+      enemyCount: 6,
+      sigils: {},
+      effectiveDamage: { korvin: 1, rhaya: 1, quinn: 1 },
+    });
+
+    expect(reward.loot.sigil).toEqual({ sigilId: 'sigil.tempered-edge', level: 1 });
   });
 });

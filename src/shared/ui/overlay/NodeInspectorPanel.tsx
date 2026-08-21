@@ -42,7 +42,7 @@ export function NodeInspectorPanel({
   children,
 }: NodeInspectorPanelProps) {
   return (
-    <Panel as="aside" variant="thin" padding="none" className="min-w-0" aria-label={label}>
+    <Panel as="aside" variant="standard" padding="none" className="min-w-0" aria-label={label}>
       <div className="p-5">
         <div className="flex flex-col items-center text-center">
           <span className="flex size-24 items-center justify-center rounded-full border-2 border-ornament bg-ember/10 text-ember-bright shadow-glow-accent">

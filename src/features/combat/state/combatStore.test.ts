@@ -18,7 +18,11 @@ const SAVED_REWARD: RewardSummary = {
   gold: 10,
   xp: 15,
   relicShards: 1,
-  loot: { gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 }, cinder: 0 },
+  loot: {
+    gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+    cinder: 0,
+    sigil: null,
+  },
 };
 
 function combat(): CombatState {

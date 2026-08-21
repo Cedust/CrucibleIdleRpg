@@ -39,10 +39,12 @@ export interface EffectiveWeaponValues {
 export function effectiveWeaponValues(
   characterId: CharacterId,
   ranks: MasteryRanks = {},
+  damageRangeFloorBonus = 0,
 ): EffectiveWeaponValues {
   const weapon = CHARACTERS[characterId].weapon;
 
-  let min = weapon.damageRange.min + weaponBonus(characterId, ranks, 'minRng');
+  let min =
+    weapon.damageRange.min + weaponBonus(characterId, ranks, 'minRng') + damageRangeFloorBonus;
   let max = weapon.damageRange.max + weaponBonus(characterId, ranks, 'maxRng');
   let precision = weapon.precision + weaponBonus(characterId, ranks, 'precision');
 
@@ -60,7 +62,11 @@ export function effectiveWeaponValues(
 
 /** Builds the complete, save-derived combat context for one character. */
 export function masteryContextFor(character: CombatCharacter): AttackContext {
-  const { damageRange, precision } = effectiveWeaponValues(character.id, character.masteryRanks);
+  const { damageRange, precision } = effectiveWeaponValues(
+    character.id,
+    character.masteryRanks,
+    character.imprintEffects?.damageRangeFloorBonus ?? 0,
+  );
 
   const mastery: MasteryEffects = {
     executioner: has(character, MASTERY_IDS.executioner),

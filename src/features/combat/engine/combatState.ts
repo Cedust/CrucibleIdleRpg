@@ -24,6 +24,7 @@ import {
   type ResumablePrng,
 } from '@/shared/utils/prng';
 import { deriveCharacterStats, type CharacterProgression } from './characterStats';
+import type { ImprintEffects } from '@/game/sigils/imprints';
 import { buildPendingQueue, momentumBonus } from './turnOrder';
 
 /**
@@ -77,6 +78,8 @@ export interface CombatCharacter {
   zeroing?: { target: number; stacks: number };
   /** Escalating Retaliation, zu Rundenbeginn zurueckgesetzt. */
   counterStacks?: number;
+  /** Nicht-Stat-Effekte der Armor-Imprints für Weapon- und Block-Pipeline. */
+  imprintEffects?: ImprintEffects;
 }
 
 /** Ein Gegner im Kampf: auf den Floor skalierte Stats plus die gewürfelte Initiative. */
@@ -289,6 +292,7 @@ function buildCharacter(setup: TeamMemberSetup, slotIndex: number): CombatCharac
     // Die Barrier setzt erst der Rundenbeginn (COMBAT §1.1, Schritt 1).
     barrier: 0,
     masteryRanks: setup.progression.masteryRanks,
+    imprintEffects: setup.progression.imprints,
     guarded: false,
     counterStacks: 0,
   };

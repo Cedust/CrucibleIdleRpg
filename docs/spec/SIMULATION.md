@@ -75,6 +75,11 @@ saveSeed              einmal bei Anlage des Spielstands erzeugt, im Save persist
 - **`runCounter`** ist ein monoton steigender, **beim Run-Start persistierter** Zähler. Daraus
   folgt beides: Beim Farmen würfelt jeder Durchlauf frisch, und **Save-Scumming ist unmöglich** —
   ein Reload liefert denselben Zähler und damit exakt denselben Verlauf.
+- **Handwerks-Rolls** (Jeweler, [Items](ITEMS.md#8-jeweler--inlay-attune--recut)) laufen über den
+  `loot`-Strom eines eigenen Craft-Seeds: `craftSeed = derive(saveSeed, 'craft', craftCounter)`.
+  Der **`craftCounter`** ist das Handwerks-Gegenstück zum `runCounter` — pro Roll um 1 erhöht und
+  atomar mit dem Ergebnis persistiert, jeder Roll würfelt frisch und ein Reload liefert denselben
+  Roll.
 - Die Label der Ströme sind Teil des Determinismus und liegen als Konstanten an einer Stelle.
 
 ## 5. Kampfzustand und Reload

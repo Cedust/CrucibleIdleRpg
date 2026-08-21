@@ -27,4 +27,12 @@ describe('SectionTitle', () => {
     expect(heading).toHaveAttribute('id', 'frontline-heading');
     expect(heading).not.toHaveClass('text-center');
   });
+
+  it('hebt den Titel über die Size-Prop auf die nächste Display-Stufe', () => {
+    render(<SectionTitle size="md">Attributes</SectionTitle>);
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Attributes' });
+    expect(heading).toHaveClass('text-display');
+    expect(heading).not.toHaveClass('text-display-sm');
+  });
 });

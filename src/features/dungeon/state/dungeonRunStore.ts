@@ -24,6 +24,7 @@ async function commitFloorReward(result: CombatState): Promise<RewardSummary> {
       floorSeed: result.floorSeed,
       classification: resolveAct1Encounter(result.floorId).classification,
       enemyCount: result.enemies.length,
+      sigils: saveStore.getState().data?.sigils ?? {},
       effectiveDamage: result.effectiveDamage,
     }),
   );

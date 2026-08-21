@@ -7,6 +7,7 @@ import {
   lootStreamPrng,
   rollFloorLoot,
 } from './lootRewards';
+import type { FloorLootInput } from './lootRewards';
 
 /** Stellt Chance- und Farbwürfe fest — die Tests prüfen Struktur, nicht Platzhalter-Tuning. */
 function stubPrng(chanceResult: boolean, colorIndex = 0): Prng {
@@ -18,9 +19,13 @@ function stubPrng(chanceResult: boolean, colorIndex = 0): Prng {
   };
 }
 
+function rollTestLoot(input: Omit<FloorLootInput, 'floorId'>, prng: Prng) {
+  return rollFloorLoot({ floorId: 'A1-D1-01', ...input }, {}, prng);
+}
+
 describe('rollFloorLoot', () => {
   it('vergibt Boss-Cinder garantiert, auch wenn jeder Chance-Wurf fehlschlägt', () => {
-    const loot = rollFloorLoot(
+    const loot = rollTestLoot(
       { classification: 'boss', floorIndex: 99, enemyCount: 4 },
       stubPrng(false),
     );
@@ -32,22 +37,22 @@ describe('rollFloorLoot', () => {
   it('vergibt Elite-Cinder nur über den Chance-Wurf und normalen Floors nie Cinder', () => {
     const elite = { classification: 'elite', floorIndex: 19, enemyCount: 4 } as const;
 
-    expect(rollFloorLoot(elite, stubPrng(true)).cinder).toBe(1);
-    expect(rollFloorLoot(elite, stubPrng(false)).cinder).toBe(0);
-    expect(rollFloorLoot({ ...elite, classification: 'normal' }, stubPrng(true)).cinder).toBe(0);
+    expect(rollTestLoot(elite, stubPrng(true)).cinder).toBe(1);
+    expect(rollTestLoot(elite, stubPrng(false)).cinder).toBe(0);
+    expect(rollTestLoot({ ...elite, classification: 'normal' }, stubPrng(true)).cinder).toBe(0);
   });
 
   it('zählt je besiegtem Gegner höchstens einen regulären Gem der gewürfelten Farbe', () => {
     const input = { classification: 'normal', floorIndex: 0, enemyCount: 5 } as const;
 
-    expect(rollFloorLoot(input, stubPrng(true, 0)).gems).toEqual({
+    expect(rollTestLoot(input, stubPrng(true, 0)).gems).toEqual({
       amber: 5,
       ruby: 0,
       sapphire: 0,
       emerald: 0,
       diamond: 0,
     });
-    expect(rollFloorLoot(input, stubPrng(true, 3)).gems.emerald).toBe(5);
+    expect(rollTestLoot(input, stubPrng(true, 3)).gems.emerald).toBe(5);
   });
 
   it('hält Diamond bis Akt 2 bei 0 und öffnet ihn dort nur für Elite und Boss', () => {
@@ -55,23 +60,23 @@ describe('rollFloorLoot', () => {
     const firstAct2Floor = 100;
 
     expect(
-      rollFloorLoot(
+      rollTestLoot(
         { classification: 'elite', floorIndex: lastAct1Floor, enemyCount: 0 },
         stubPrng(true),
       ).gems.diamond,
     ).toBe(0);
     expect(
-      rollFloorLoot(
+      rollTestLoot(
         { classification: 'elite', floorIndex: firstAct2Floor, enemyCount: 0 },
         stubPrng(true),
       ).gems.diamond,
     ).toBe(1);
     expect(
-      rollFloorLoot({ classification: 'boss', floorIndex: 199, enemyCount: 0 }, stubPrng(true)).gems
+      rollTestLoot({ classification: 'boss', floorIndex: 199, enemyCount: 0 }, stubPrng(true)).gems
         .diamond,
     ).toBe(1);
     expect(
-      rollFloorLoot(
+      rollTestLoot(
         { classification: 'normal', floorIndex: firstAct2Floor, enemyCount: 0 },
         stubPrng(true),
       ).gems.diamond,
@@ -81,15 +86,15 @@ describe('rollFloorLoot', () => {
   it('liefert für denselben Floor-Seed exakt denselben Loot', () => {
     const input = { classification: 'elite', floorIndex: 19, enemyCount: 6 } as const;
 
-    const first = rollFloorLoot(input, lootStreamPrng(0xc0ffee));
-    const second = rollFloorLoot(input, lootStreamPrng(0xc0ffee));
+    const first = rollTestLoot(input, lootStreamPrng(0xc0ffee));
+    const second = rollTestLoot(input, lootStreamPrng(0xc0ffee));
 
     expect(second).toEqual(first);
   });
 
   it('liefert nichtnegative Ganzzahlen in Gegnerzahl-Grenzen über viele Seeds', () => {
     for (let seed = 1; seed <= 50; seed += 1) {
-      const loot = rollFloorLoot(
+      const loot = rollTestLoot(
         { classification: 'normal', floorIndex: 42, enemyCount: 6 },
         createPrng(seed),
       );
@@ -107,7 +112,7 @@ describe('rollFloorLoot', () => {
     const before = derivePrng(floorSeed, PRNG_STREAM.combat);
     const reference = [before.next(), before.next(), before.next()];
 
-    rollFloorLoot(
+    rollTestLoot(
       { classification: 'elite', floorIndex: 19, enemyCount: 6 },
       lootStreamPrng(floorSeed),
     );

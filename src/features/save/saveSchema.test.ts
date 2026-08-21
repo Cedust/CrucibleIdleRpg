@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createTeamArmor } from '@/game/items/armor';
+import { createArmorItem, createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave, saveSchema } from './saveSchema';
 
 describe('saveSchema', () => {
@@ -8,6 +8,7 @@ describe('saveSchema', () => {
       version: 1,
       saveSeed: 0x12345678,
       runCounter: 0,
+      craftCounter: 0,
       playbackSpeed: 1,
       characters: {
         korvin: {
@@ -37,6 +38,7 @@ describe('saveSchema', () => {
       },
       currencies: { gold: 0, relicShards: 0, cinder: 0 },
       gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
+      sigils: {},
       firstVictories: [],
       crucible: {},
       armor: {
@@ -71,6 +73,18 @@ describe('saveSchema', () => {
     const save = createDefaultSave(123);
 
     expect(saveSchema.safeParse({ ...save, version: 2 }).success).toBe(false);
+  });
+
+  it('verlangt den craftCounter als nichtnegative Ganzzahl', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, craftCounter: 7 }).success).toBe(true);
+    expect(saveSchema.safeParse({ ...save, craftCounter: -1 }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, craftCounter: 0.5 }).success).toBe(false);
+    const withoutCounter = Object.fromEntries(
+      Object.entries(save).filter(([key]) => key !== 'craftCounter'),
+    );
+    expect(saveSchema.safeParse(withoutCounter).success).toBe(false);
   });
 
   it('accepts Relic Shards and rejects the removed legacy currency field', () => {
@@ -116,6 +130,21 @@ describe('saveSchema', () => {
       Object.entries(save.gems).filter(([color]) => color !== 'diamond'),
     );
     expect(saveSchema.safeParse({ ...save, gems: withoutDiamond }).success).toBe(false);
+  });
+
+  it('persists only known Sigils at levels 1 through 5', () => {
+    const save = createDefaultSave(123);
+
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 3 } }).success).toBe(
+      true,
+    );
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.unknown': 1 } }).success).toBe(false);
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 0 } }).success).toBe(
+      false,
+    );
+    expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 5.5 } }).success).toBe(
+      false,
+    );
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {
@@ -215,7 +244,7 @@ describe('saveSchema', () => {
     ).toBe(true);
   });
 
-  it('accepts only the Common +1 items exactly derived from the Armory rank', () => {
+  it('accepts only items on their canonical slot base, exactly derived from the Armory rank', () => {
     const save = createDefaultSave(123);
     const armed = {
       ...save,
@@ -236,6 +265,180 @@ describe('saveSchema', () => {
     expect(
       saveSchema.safeParse({ ...armed, armor: createTeamArmor({ 'anvil.armory': 1 }) }).success,
     ).toBe(false);
+  });
+
+  describe('Item-Schichten (ITEMS §2–§4)', () => {
+    /** Save mit Armory-Rang 1, dessen Chest-Item gezielt überschriebene Schichten trägt. */
+    function armedSave(chestLayers: Record<string, unknown>) {
+      const save = createDefaultSave(123);
+      const armor = createTeamArmor({ 'anvil.armory': 1 });
+      return {
+        ...save,
+        crucible: { 'anvil.armory': 1 },
+        armor: {
+          ...armor,
+          korvin: { chest: { ...createArmorItem('chest'), ...chestLayers } },
+        },
+      };
+    }
+
+    it('startet der Default weiterhin als Common +1 ohne Sockel', () => {
+      const item = createArmorItem('chest');
+      expect(item).toMatchObject({
+        rarity: 'common',
+        itemLevel: 1,
+        sockets: [],
+        prismaticSockets: [],
+      });
+      expect(saveSchema.safeParse(armedSave({})).success).toBe(true);
+    });
+
+    it('persistiert alle fünf Schichten eines voll ausgebauten Items im Roundtrip', () => {
+      const crafted = armedSave({
+        rarity: 'legendary',
+        itemLevel: 100,
+        sockets: [
+          { color: 'amber', affix: 'critChance', gemLevel: 2, value: 0.03 },
+          { color: 'emerald', affix: 'might', gemLevel: 1, value: 2 },
+          null,
+          null,
+        ],
+        prismaticSockets: [null, null],
+        imprint: { sigilId: 'sigil.tempered-edge' },
+      });
+      const branded = { ...crafted, sigils: { 'sigil.tempered-edge': 1 } };
+
+      const parsed = saveSchema.safeParse(branded);
+      expect(parsed.success).toBe(true);
+      expect(parsed.success && parsed.data).toEqual(branded);
+    });
+
+    it('erzwingt das Item-Level-Cap der Seltenheit', () => {
+      expect(saveSchema.safeParse(armedSave({ itemLevel: 20 })).success).toBe(true);
+      expect(saveSchema.safeParse(armedSave({ itemLevel: 21 })).success).toBe(false);
+      expect(
+        saveSchema.safeParse(armedSave({ rarity: 'magic', itemLevel: 21, sockets: [null] }))
+          .success,
+      ).toBe(true);
+      expect(saveSchema.safeParse(armedSave({ itemLevel: 0 })).success).toBe(false);
+    });
+
+    it('erzwingt die Sockelzahl nach Seltenheits-Tabelle plus Prismatic-Formel', () => {
+      expect(saveSchema.safeParse(armedSave({ sockets: [null] })).success).toBe(false);
+      expect(saveSchema.safeParse(armedSave({ rarity: 'magic' })).success).toBe(false);
+      expect(
+        saveSchema.safeParse(armedSave({ rarity: 'rare', itemLevel: 50, sockets: [null, null] }))
+          .success,
+      ).toBe(false);
+      expect(
+        saveSchema.safeParse(
+          armedSave({
+            rarity: 'rare',
+            itemLevel: 50,
+            sockets: [null, null],
+            prismaticSockets: [null],
+          }),
+        ).success,
+      ).toBe(true);
+    });
+
+    it('bindet Gem-Affixe an ihren Farb-Pool und Prismatic-Sockel an Leere', () => {
+      const gem = { color: 'amber', affix: 'critChance', gemLevel: 1, value: 0.02 } as const;
+      expect(saveSchema.safeParse(armedSave({ rarity: 'magic', sockets: [gem] })).success).toBe(
+        true,
+      );
+      expect(
+        saveSchema.safeParse(
+          armedSave({ rarity: 'magic', sockets: [{ ...gem, affix: 'critDamage' }] }),
+        ).success,
+      ).toBe(false);
+      expect(
+        saveSchema.safeParse(
+          armedSave({
+            rarity: 'rare',
+            itemLevel: 50,
+            sockets: [null, null],
+            prismaticSockets: [gem],
+          }),
+        ).success,
+      ).toBe(false);
+    });
+
+    it('erlaubt ein Imprint ab Magic und lehnt es auf Common ab', () => {
+      expect(
+        saveSchema.safeParse(armedSave({ imprint: { sigilId: 'sigil.placeholder' } })).success,
+      ).toBe(false);
+      expect(
+        saveSchema.safeParse({
+          ...armedSave({
+            rarity: 'magic',
+            sockets: [null],
+            imprint: { sigilId: 'sigil.tempered-edge' },
+          }),
+          sigils: { 'sigil.tempered-edge': 1 },
+        }).success,
+      ).toBe(true);
+      expect(
+        saveSchema.safeParse({
+          ...armedSave({
+            rarity: 'legendary',
+            sockets: [null, null, null, null],
+            imprint: { sigilId: 'sigil.tempered-edge' },
+          }),
+          sigils: { 'sigil.tempered-edge': 1 },
+        }).success,
+      ).toBe(true);
+      expect(
+        saveSchema.safeParse(
+          armedSave({ rarity: 'magic', sockets: [null], imprint: { sigilId: '' } }),
+        ).success,
+      ).toBe(false);
+    });
+
+    it('validates known, matching and team-unique Imprints against the Codex', () => {
+      const armed = armedSave({
+        rarity: 'magic',
+        sockets: [null],
+        imprint: { sigilId: 'sigil.tempered-edge' },
+      });
+
+      expect(saveSchema.safeParse(armed).success).toBe(false);
+      expect(saveSchema.safeParse({ ...armed, sigils: { 'sigil.tempered-edge': 1 } }).success).toBe(
+        true,
+      );
+      expect(
+        saveSchema.safeParse({
+          ...armed,
+          sigils: { 'sigil.tempered-edge': 1 },
+          armor: {
+            ...armed.armor,
+            rhaya: {
+              chest: {
+                ...armed.armor.rhaya.chest,
+                rarity: 'magic',
+                sockets: [null],
+                imprint: { sigilId: 'sigil.tempered-edge' },
+              },
+            },
+          },
+        }).success,
+      ).toBe(false);
+      expect(
+        saveSchema.safeParse({
+          ...armed,
+          sigils: { 'sigil.tempered-edge': 1, 'sigil.stormchain': 1 },
+          armor: {
+            ...armed.armor,
+            korvin: {
+              chest: {
+                ...armed.armor.korvin.chest,
+                imprint: { sigilId: 'sigil.stormchain' },
+              },
+            },
+          },
+        }).success,
+      ).toBe(false);
+    });
   });
 
   it('lehnt Waystone-Ränge ohne die Vollendet-Flags der vorherigen Dungeons ab', () => {

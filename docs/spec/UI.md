@@ -65,13 +65,13 @@ Fluidität lebt in einzelnen `@theme`-Tokens nach einem gemeinsamen Muster:
 
 ## 3. Zuordnung fixed und fluid
 
-| Kategorie              | Elemente                                                                                                             | Mechanik                                      |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| **Fixed**              | 9-Slice-Frame-Geometrie der Panels, Vollrahmen und Buttons, Frame-Gutter, Gaps und Radii                             | px/rem-konstant                               |
-| **Leicht fluid**       | Nav-Breite, Tab-Strip samt Tab-Chrome, Inspector-Spalte, Page-Padding, Text-Skala, Medallions, Portraits, Akt-Banner | Clamp-Tokens nach dem Muster aus §2           |
-| **Voll fluid**         | Graph- und Tree-Spalten, Arena-Spalten, Karten-Grids, Tor-Grid, Listenflächen, Log                                   | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0` |
-| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips            | `min-h-0 flex-1 overflow-y-auto`              |
-| **max-width-begrenzt** | Screen-Flächen, zentriert je Screen-Typ: Trees, Listen/Detail, Run-Arena                                             | `mx-auto w-full max-w-*`                      |
+| Kategorie              | Elemente                                                                                                                                | Mechanik                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Fixed**              | 9-Slice-Frame-Geometrie der Panels, Vollrahmen und Buttons, Frame-Gutter, Gaps und Radii                                                | px/rem-konstant                               |
+| **Leicht fluid**       | Nav-Breite, Tab-Strip samt Tab-Chrome, Inspector-Spalte, Page-Padding, Text-Skala, Medallions, Portraits, Akt-Panel-Höhe, Tor-Kunst-Cap | Clamp-Tokens nach dem Muster aus §2           |
+| **Voll fluid**         | Graph- und Tree-Spalten, Arena-Spalten, Karten-Grids, Tor-Grid, Listenflächen, Log                                                      | Grid/Flex/`fr`/`minmax` + `min-w-0`/`min-h-0` |
+| **Lokal scrollbar**    | Sidebar-Nav, ScreenLayout-Default-Scroller, Mastery-Tree-Canvas, Combat-Log, Arena, TurnOrder, Tab-Strips                               | `min-h-0 flex-1 overflow-y-auto`              |
+| **max-width-begrenzt** | Screen-Flächen, zentriert je Screen-Typ: Trees, Listen/Detail, Run-Arena                                                                | `mx-auto w-full max-w-*`                      |
 
 Die Caps sind pro Screen-Typ definiert; ein globales Maximum bleibt offen.
 
@@ -85,6 +85,23 @@ Die Caps sind pro Screen-Typ definiert; ein globales Maximum bleibt offen.
   für Glows und Kontrast.
 - Farben laufen über Palette-Tokens und `color-mix`. Schwarz-Literale bleiben Scrims und Schatten
   vorbehalten.
+- Die Palette trennt zwei Schichten. Die **Statusfarben** (`--color-danger`, `--color-success`,
+  `--color-info`) gehören dem Feedback: Health- und Barrier-Balken, Fehlermeldungen, nicht
+  bezahlbare Kosten, gefallene Helden. Die vier **Stat-Achsen** (`--color-offense`,
+  `--color-defense`, `--color-vitality`, `--color-utility`) tönen die Heroes-Ansicht im
+  Ruhezustand — Attribute, Combat Stats, Core Stats und die drei Listen-Gruppen. Jeder Achsen-Ton
+  liegt in OKLCH unter dem Chroma von `--color-accent` (0.164), damit Gold die lauteste Farbe der
+  UI bleibt; die Helligkeit staffelt sie nach Gewicht von Defense (0.71) bis Utility (0.63).
+- Der `progress`-Tone der `ProgressBar` trägt als einziger einen mehrfarbigen Verlauf: die
+  Flamme aus `--color-flame-core`, `--color-flame-mid` und `--color-flame-tip`. Alle drei Stops
+  sind bei jedem Füllstand sichtbar, der Balken wächst allein in der Breite. Ihn tragen die
+  Balken, deren Füllen ein Ereignis ankündigt: XP bis zum Level-Up und die Floors eines
+  Dungeons. Health und Barrier bleiben einfarbig, der Item-Level-Balken des Blacksmith bleibt
+  auf `accent`, weil er eine Obergrenze zeigt und kein Ereignis. `--color-arcane` trägt damit
+  Magie, Epic-Seltenheit und Schatten-Gegner, `--color-utility` die Stat-Achse.
+- Die Achsen-Töne bleiben ein zweiter Kanal: Bei Rot-Grün-Schwäche fallen Stahl und Amethyst
+  nahezu zusammen, was die Helligkeitsstaffelung mildert statt aufhebt. Die Zuordnung tragen
+  Glyphe, Label und Gruppentitel, jede Stat-Zeile also unabhängig von ihrer Farbe.
 - Query-Stützstellen bleiben statische Literale, weil Tailwind sie build-seitig in die
   `@container`-Queries inlined.
 - State-Übergänge laufen über die gemeinsame `transition-state`-Utility, kombiniert mit
@@ -150,7 +167,7 @@ Hover-Affordance; `aria-current` bleibt.
 | ----------- | ---------------------------------------------------------------------------------- |
 | `utils/`    | `cn()`, State-System und Roving-Focus — die geteilte Mechanik ohne eigenes Markup  |
 | `controls/` | fokussierbare Elemente: Button, Node-Button, Ornate-Tabs                           |
-| `layout/`   | Flächen und Gerüste: Panel, ScreenLayout, ScreenHeader, SectionTitle               |
+| `layout/`   | Flächen und Gerüste: Panel, ScreenLayout, ScreenHeader, SectionTitle, Divider      |
 | `overlay/`  | über dem Fluss liegende Ebenen: Dialog, ConfirmDialog, Tooltip, NodeInspectorPanel |
 | `tree/`     | Tree-Bausteine: Node-Medaillon mit Rang-Pips, Connector-Messung und SVG-Layer      |
 | `feedback/` | Zustandsanzeige: ProgressBar, ErrorBoundary                                        |
@@ -161,9 +178,15 @@ Kompositionsregeln:
 - **className-Policy:** `className` erweitert die Klassenliste eines Primitives und überschreibt
   keine Property, die das Primitive selbst setzt. Variation läuft über Props, weil `cn()` keine
   Merge-Logik trägt. Alle Klassenkompositionen laufen über `cn()`.
-- **Panel-Rollen:** ornate für große Screen-Panels, thin für Karten, Inspectors und Bars, plain
-  für ruhige Log-Flächen. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von
-  Dialogen bis zu kompakten Slots.
+- **Panel-Rollen:** standard (Default) trägt alle Panels mit 9-Slice-Goldrahmen — große
+  Screen-Panels, Karten, Inspectors, Bars und die Goldrahmen-Flächen der Dungeon-Auswahl —, plain
+  für ruhige Log-Flächen; ornate und thin bleiben als Varianten erhalten, werden aber aktuell
+  nirgends eingesetzt. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von Dialogen
+  bis zu kompakten Slots.
+- **Divider-Rollen:** ornate (Default) trägt das große Ornament unter dem Sidebar-Titel, thin den
+  feinen Trenner zwischen den Stat-Gruppen der Heroes-Panels. Beide skalieren ein vollbreites
+  Asset per `object-cover` auf die Höhe ihres Streifens; die thin-Variante trägt zusätzlich eine
+  Haarlinie, damit die Trennung auch ohne geladenes Asset steht.
 - Ein Screen nutzt vorhandene Primitive; ein neues Primitive entsteht mit dem zweiten Konsumenten.
 - Ein Primitive bleibt zustandslos gegenüber Spiellogik: Es empfängt State über Props und
   `stateAttrs`.
@@ -199,13 +222,14 @@ Dokumentierte, bleibende Abweichungen:
 - Das Crucible-Tree-Panel trägt einen Höhen-Floor für die gestapelte Ansicht; ab dem
   zweispaltigen Threshold streckt das Grid die Reihe.
 - Dungeon-Tore sind freigestellte `<img>`-Illustrationen direkt auf dem Screen-Hintergrund; ihre
-  Zustände laufen über CSS auf dem Art-Layer. Ein Gold-Pfad mit Status-Medaillons verbindet die
-  Tore zur Akt-Route.
-- Die Akt-Banner tragen einen vertikal streckbaren 9-Slice-Rahmen, dessen sämtliche Maße
-  Anteile der Breiten-Token `--spacing-banner` sind: Der horizontale Maßstab bleibt
-  asset-gebunden bei 1 (Kopf-Krone und Spitzen-Diamant liegen im gestreckten Mittelband), die
-  Höhe streckt allein das Schienenband. Die Banner teilen die Zeilenhöhe der Auswahl im
-  Flex-Gewicht 1.3 : 1 zugunsten des gewählten Akts.
+  Zustände laufen über CSS auf dem Art-Layer. Die Dungeon-Numerale liegt als cqw-skaliertes
+  Text-Overlay auf dem Rauten-Zentrum der Tor-Crops (`@container`-Wrapper der Kachel, Offsets je
+  Tor-Variante in `gateArt.ts`) und bleibt auf gesperrten Toren voll lesbar. Ein Gold-Pfad mit
+  Status-Medaillons verbindet die Tore zur Akt-Route.
+- Die Akt-Panels tragen den rechteckigen 9-Slice-Goldrahmen `border-image-standard` (px-konstant)
+  über der Akt-Szenerie; die Höhe kommt aus dem Clamp-Token `--spacing-act-panel`, die Breite
+  aus dem 3er-Grid des Screens. Das Medaillon-Asset trägt die Akt-Numerale als Text-Overlay,
+  der Lock-Indikator sitzt am Akt-Label.
 - Die Tree-Tabs sind Segmente einer durchgehenden flachen Leiste: Haarlinien-Rahmen und
   Eckwinkel tragen das Chrome, Gold und der Ember-Inset-Glow allein das aktive Segment. Der
   Ember-Inset-Glow bleibt dabei das einzige komponentenspezifische State-Token. Eckwinkel und
@@ -216,6 +240,25 @@ Dokumentierte, bleibende Abweichungen:
   Selektion getrennt lesbar bleiben.
 - Der CharacterSwitcher trägt einen verkleinerten Focus-Offset und handjustierte
   Prozent-Geometrie, beides auf das Portrait-Frame-Asset abgestimmt.
+- Das Charakterportal der Heroes-Stats trägt ebenfalls handjustierte Prozent-Geometrie, am
+  Asset vermessen: die Bogenöffnung nimmt die freigestellte Ganzkörper-Figur auf, ihre
+  Hintergrundfläche ist ein Rechteck, das hinter dem deckenden Stein über dem Spitzbogen
+  hochläuft und seine Bogenform vom Rahmen-Asset ausgeschnitten bekommt, die Figur steht in
+  einer eigenen Box ab der Bogenspitze, und die Steinfläche über dem Bogen trägt den
+  Charakternamen als Text-Overlay. Das Portal füllt die Breite seiner Spalte; das Clamp-Token
+  `--spacing-portal` cappt sie in den ein- und zweispaltigen Klassen, die Höhe folgt dem
+  3:4-Format des Assets. Portal und Level-Panel sitzen am Fuß der Mittelspalte, der
+  Höhenunterschied zu den Stat-Spalten liegt als Weißraum darüber.
+- Der Stats-Bereich von Heroes trägt seine sechs Stat-Gruppen in zwei Spalten-Panels statt in
+  sechs Einzelrahmen: links Combat, Attributes und Core, rechts Offensive, Defensive und Utility,
+  je durch den feinen Divider getrennt. Das Grid streckt beide Panels auf dieselbe Höhe,
+  `justify-between` verteilt den Rest. Combat steht links zuoberst und ist damit das optische
+  Hauptpanel. Die Offensive Stats stehen paarweise — eine Zeile je Muster mit zwei Wertspalten,
+  einmal klein als „Chance" und „Damage" im Kopf beschriftet; für Screenreader trägt jede Zelle
+  ihren Qualifier selbst. Die rechte Spalte kommt damit auf 12 Zeilen und der Bereich in jeder
+  dreispaltigen Klasse ohne Scroll aus. Unterhalb des 68rem-Thresholds spannt das Portal über
+  beide Stat-Spalten und stapelt darüber; dort übernimmt der lokale Scroller des Tabpanels. Die
+  Zeilen tragen in allen Klassen die volle Icon- und Textgröße.
 - Controls senken im Disabled-Zustand ihre Opacity ganzheitlich, weil sie keinen
   Informationsgehalt tragen.
 - Der TurnOrder-Akteur kombiniert Selection-Ring und Glow-Fläche — Bestandsschutz der

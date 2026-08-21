@@ -1123,7 +1123,7 @@ to 28 pixels. No text, frames, grid lines, color, gradients, shadows, glow, or
 watermark anywhere on the sheet.
 ```
 
-## 29. Akt-Bannerrahmen (9-Slice, vertikal)
+## 30. Akt-Bannerrahmen (9-Slice, vertikal)
 
 - **Zieldatei:** `public/assets/frames/banner-act.png`
 - **Format:** Hochformat 3:4, mindestens 1152×1536
@@ -1186,6 +1186,610 @@ Avoid: a long needle-like tail, a centered crest that blocks the stretchable mid
 filigree, asymmetry, broken rails, large curls, excessive spikes, bright solid-gold metal,
 colored gemstones, painted cloth banner instead of a metal frame, separate state versions,
 multiple banners in one image, mockup presentation
+```
+
+## 31. Blacksmith-View-Hintergrund — Die Schmiede
+
+- **Zieldatei:** `public/assets/backgrounds/blacksmith-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Blacksmith-Ansicht hinter Überschrift,
+  Gold/Cinder-Bestand, Service-Tabs (Temper, Masterwork, Brand), Slot-Liste, Werkstück-Bühne
+  und Dienst-Panel. Das Bild wird per `background-size: cover` eingesetzt. Esse und Amboss
+  bleiben auch bei engerem Crop das zentrale Motiv; die UI-relevanten Bereiche sind dunkel
+  und kontrastarm gehalten.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial blacksmith workshop as the defining visual heart of
+the Blacksmith view, where armor recovered from the depths is tempered, reforged into
+higher rarities, and branded — a working forge of a fallen golden empire, alive again
+Scene/backdrop: a vaulted stone forge-hall carved into the ruins of a golden empire, built
+around one broad blackened-iron forge hearth with banked glowing coals and a massive
+scarred anvil on a low stone dais before it; behind and beside them, heavy soot-darkened
+masonry, cracked pillars with tarnished gold inlays, hanging tongs and hammers as quiet
+silhouettes, a stone quenching trough, and racks of half-finished armor plates receding
+into the surrounding darkness
+Subject: the forge hearth and anvil together form one unmistakable focal group; the hearth
+glows with contained banked coals rather than open fire, and the anvil is heavy, worn, and
+clearly in use — the workshop feels ancient, functional, and dignified rather than
+decorative or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+forge hearth and anvil in the lower central third, large enough to remain the clear focal
+point but low enough that UI panels can occupy the middle of the screen; preserve a broad,
+dark, low-detail field across the central and upper-middle area for service tabs, a slot
+list on the left, an item stage in the center, and an action panel on the right; keep the
+upper-left corner especially calm for the live "Blacksmith" heading and resource display;
+distribute secondary workshop elements symmetrically toward the outer edges; crop-safe from
+wide desktop down to roughly 4:5 mobile, with hearth and anvil remaining recognizable near
+the center
+Lighting/mood: the only strong light rises from the banked coals of the hearth, casting a
+controlled ember glow onto the anvil, the nearest floor slabs, and the lower edges of the
+pillars; sparse drifting sparks and fine ash catch the light; the rest of the hall stays in
+cool shadow with soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened iron,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), concentrated ember orange (#e25822) and
+restrained amber highlights (#f59e0b)
+Materials/textures: soot-darkened stone, forged black iron, worn gold inlays, glowing
+coals, scorched wood, aged leather straps, fine ash and subtle smoke haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast
+outside the hearth glow; retain enough negative space for large opaque or translucent
+panels; no border or frame; no text, letters, readable runes, icons, characters, logos,
+interface elements, or watermark
+Avoid: a blacksmith figure or any hands at work, one large centered weapon, open
+wall-to-wall flames, bright orange full-frame lighting, excessive bloom or sparks, busy
+foreground clutter, modern industrial machinery, horror imagery, photorealistic photography
+```
+
+## 32. Jeweler-View-Hintergrund — Die Juwelierwerkstatt
+
+- **Zieldatei:** `public/assets/backgrounds/jeweler-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Jeweler-Ansicht hinter Überschrift,
+  Gem-Beständen, Service-Tabs (Inlay, Attune, Recut), Slot-Liste, Werkstück-Bühne und
+  Dienst-Panel. Das Bild wird per `background-size: cover` eingesetzt. Werkbank und
+  Schleifrad bleiben auch bei engerem Crop das zentrale Motiv; die UI-relevanten Bereiche
+  sind dunkel und kontrastarm gehalten.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial jeweler's workshop as the defining visual heart of
+the Jeweler view, where gems recovered from the depths are cut, set into armor sockets,
+attuned, and recut — a precise lapidary atelier of a fallen golden empire, alive again
+Scene/backdrop: a vaulted stone atelier carved into the ruins of a golden empire, built
+around one heavy gem-cutter's workbench of dark stone and blackened iron with a brass
+lapidary wheel and a gold-rimmed magnifying lens suspended above it on an articulated
+arm; behind and beside it, soot-darkened masonry, cracked pillars with tarnished gold
+inlays, wall shelves with small brass trays and bowls holding uncut gems in amber, deep
+ruby red, sapphire blue, and emerald green, fine tongs and engraving tools resting as
+quiet silhouettes, and one small locked crystal case holding a single pale diamond,
+receding into the surrounding darkness
+Subject: the workbench with its lapidary wheel and hanging lens forms one unmistakable
+focal group; a few cut gems lie on the bench catching the light, and the wheel and tools
+are worn and clearly in use — the atelier feels ancient, functional, and dignified rather
+than decorative or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+workbench with wheel and lens in the lower central third, large enough to remain the clear
+focal point but low enough that UI panels can occupy the middle of the screen; preserve a
+broad, dark, low-detail field across the central and upper-middle area for service tabs, a
+slot list on the left, an item stage in the center, and an action panel on the right; keep
+the upper-left corner especially calm for the live "Jeweler" heading and gem inventory
+display; distribute secondary workshop elements symmetrically toward the outer edges;
+crop-safe from wide desktop down to roughly 4:5 mobile, with workbench and wheel remaining
+recognizable near the center
+Lighting/mood: the only strong light is a low shielded lamp glow at the workbench, casting
+a controlled warm light onto the wheel, the lens, and the nearest floor slabs; the gems on
+the bench and in the trays answer with small, dim colored glints of amber, ruby, sapphire,
+and emerald; fine dust catches the light; the rest of the atelier stays in cool shadow
+with soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened iron,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), restrained amber highlights (#f59e0b),
+sparse ember orange (#e25822), and small localized jewel accents of ruby red, sapphire
+blue, and emerald green that stay subordinate to the warm gold light
+Materials/textures: soot-darkened stone, forged black iron, worn gold inlays, polished
+brass, faceted crystal and raw gemstone, velvet-lined trays, aged leather tool rolls, fine
+dust haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast
+outside the workbench light; keep every colored gem glint small and localized; retain
+enough negative space for large opaque or translucent panels; no border or frame; no text,
+letters, readable runes, icons, characters, logos, interface elements, or watermark
+Avoid: a jeweler figure or any hands at work, one large centered gemstone, piles of
+treasure or coins, a merchant counter or shop display, rainbow or prismatic full-frame
+lighting, excessive sparkle and bloom, busy foreground clutter, modern machinery or
+optics, horror imagery, photorealistic photography
+```
+
+## 33. Dungeon-Asset-Sheet — Tore, Akt-Medaillon und Akt-Rahmen
+
+- **Quelldatei:** `concept/ui-draft-3/dungeon-asset-sheet.png` (1024×1536, 2×3-Raster)
+- **Zieldateien:** die sechs Zellen des Sheets, freigestellt ausgeschnitten:
+  - oben links → `public/assets/gates/gate-open.png`
+  - oben rechts → `public/assets/gates/gate-locked.png`
+  - Mitte links → `public/assets/gates/gate-boss-open.png`
+  - Mitte rechts → `public/assets/gates/gate-boss-locked.png`
+  - unten links → `public/assets/frames/medallion-act.png`
+  - unten rechts → `public/assets/frames/panel-standard.png`
+- **Verwendung:** Dungeon-Auswahl (concept/ui-draft-3/ui-dungeons-selection-v1.png + v2.png).
+  Die Tore ersetzen die §27-Illustrationen; offene Tore haben eine transparente Bogen-Öffnung
+  für künftige Hintergrund-Layer. Das Stachel-Medaillon trägt die Akt-Numerale der Akt-Panels,
+  der rechteckige Goldrahmen ist die 9-Slice-Basis von `border-image-standard`, dem Standard-
+  Panel-Rahmen (Akt-Panels, unteres Dungeon-Panel und alle übrigen Panels ohne eigene Variante).
+- **Prompt:** liegt beim Generierungstool; bei erneuter Generierung hier nachtragen.
+
+## 34. Dungeons-View-Hintergrund — Vor den Toren Veyras
+
+- **Zieldatei:** `public/assets/backgrounds/dungeons-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Dungeon-Auswahl hinter Überschrift,
+  Akt-Panels, Tor-Kacheln, Progress-Schiene und Dungeon-Panel. Das Bild wird per
+  `background-size: cover` eingesetzt. Sichtbar bleiben vor allem der Himmelsstreifen oben,
+  das Mittelband zwischen den freigestellten Tor-Kacheln und der Bodenstreifen unterhalb des
+  Dungeon-Panels; die Akt-Panel-Reihe im oberen Viertel und das breite Dungeon-Panel im
+  unteren Drittel überdecken ihre Zonen fast vollständig.
+- **Lore:** Die Ankunftsnacht aus
+  [crucible-story-foundation.md](lore/crucible-story-foundation.md) — die bei Dämmerung
+  wiederkehrende Reichsstraße, schwarzer Ascheregen unter klarem Himmel und das vom Beben
+  freigelegte, zerborstene Außentor der begrabenen Stadt Veyra.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: the night of arrival before the buried city of Veyra — a long-forgotten
+imperial road that has reappeared at dusk, ending at a ruined monumental outer gate recently
+torn open by an earthquake, twenty-three years after the golden empire's capital vanished
+beneath the earth
+Scene/backdrop: a desolate highland valley under a clear deep-blue night sky from which fine
+black ash silently falls; a broken imperial road of cracked, gold-veined paving slabs and
+leaning milestones runs from the lower edge of the frame into the distance, flanked by
+ash-covered fields, dead trees, toppled statues, and half-sunken fragments of tarnished
+golden walls; the road ends at one colossal ruined triumphal gate of blackened stone and
+aged brass, its arch split open and partly swallowed by the mountainside; behind the gate
+the dark mountain rises into the sky, cleft by a narrow ravine from which a faint warm
+golden-ember glow breathes upward out of the buried city
+Subject: the ruined outer gate of Veyra and the abandoned road leading to it form one
+unmistakable focal axis; the gate feels monumental, ancient, and recently reopened —
+an invitation into the depths — while the valley around it feels emptied, silent, and
+half-erased from memory
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong silhouettes, matching the project's heavy stone-carved imperial style and
+gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen; place the
+ruined gate at the horizontal center at roughly mid-height, large enough to anchor the scene
+but subdued enough to stay background; run the foreground road and ash-covered ground as a
+calm dark strip along the entire lower edge; keep the sky band across the top third quiet
+and gradient-like, with the upper-left corner especially calm for the live "Dungeons"
+heading and subtitle; keep the horizontal middle band low-contrast and atmospheric, because
+a row of large UI gate tiles sits on top of it; keep the zone between the middle band and
+the foreground strip dark and free of important detail, because a wide UI info panel covers
+it; distribute secondary ruins symmetrically toward the outer edges; crop-safe from wide
+desktop down to roughly 4:5 mobile, with the gate and the glowing mountain cleft remaining
+recognizable near the center
+Lighting/mood: cold blue night light with a last pale glimmer of dusk on the horizon; the
+only warm light is the restrained golden-ember glow (#e25822) rising from the ravine behind
+the gate and seeping through its broken arch, catching the nearest paving slabs and the
+falling ash; sparse drifting embers and soft atmospheric depth
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened stone,
+tarnished brass and aged gold (#8a6d3b to #fbbf24), concentrated ember orange (#e25822) and
+restrained amber highlights (#f59e0b)
+Materials/textures: cracked imperial paving stone, weathered milestones, blackened masonry,
+worn gold inlays and reliefs, dry dead grass under grey ash, fine falling ash and thin haze
+Constraints: prioritize UI readability; keep most of the image dark and low-contrast outside
+the gate glow; retain generous negative space for large opaque or translucent panels; no
+border or frame; no text, letters, readable runes, icons, characters, figures on the road,
+logos, interface elements, or watermark
+Avoid: the three heroes or any travelers, a city skyline above ground, an intact
+gleaming gate, a bright moon or starfield as focal point, daylight, green lush landscape,
+bright full-frame fire, excessive bloom, busy foreground clutter, modern elements, horror
+imagery, photorealistic photography
+```
+
+## 35. Sidebar-Hintergrund — Steinwand mit erloschenen Reliefs
+
+- **Zieldatei:** `public/assets/backgrounds/sidebar-stone.png` (oder `.webp`)
+- **Format:** Hochformat 2:3, mindestens 1024×1536
+- **Verwendung:** Hintergrund der linken Menüleiste (288 CSS-Pixel breit, viewport-hoch),
+  per `background-size: cover` eingesetzt. Das Bild liegt zuunterst; Ornamentrahmen (§16),
+  Ember-Glow (§17), Emblem, Navigationseinträge und Selektionsmarker bleiben separate
+  Layer darüber. Durch `cover` auf der schmalen Spalte bleibt horizontal nur ein
+  mittiger Streifen von grob einem Drittel der Bildbreite sichtbar — jeder vertikale
+  Streifen des Bildes muss deshalb für sich funktionieren.
+- **Zweck:** Reines Material statt Motiv — die Sidebar erhält die Stofflichkeit des
+  behauenen Reichssteins der Tore und Hintergründe, ohne mit den Navigationseinträgen
+  um Aufmerksamkeit zu konkurrieren.
+
+```text
+Use case: stylized-concept
+Asset type: subtle material background for a dark fantasy game UI sidebar
+Primary request: a quiet wall of ancient hewn imperial stone, seen from very close, serving
+as the barely noticeable material backdrop of a narrow full-height navigation column — pure
+texture and atmosphere, never a picture that draws the eye
+Scene/backdrop: large flat blocks of soot-darkened, finely dressed stone from a fallen golden
+empire, stacked in calm horizontal courses with slim mortar lines; within a few blocks,
+almost extinguished fragments of worn imperial relief carving — faint laurel curves, shallow
+geometric borders, the ghost of a wing or spear tip — eroded to the point of near
+invisibility; one or two hairline veins of tarnished gold inlay run through the joints, dull
+and matte, catching no light
+Style/medium: painterly dark fantasy texture study with restrained detail, matching the
+project's heavy stone-carved imperial style and gilded ruins mood — noble and mysterious,
+never hopeless
+Composition/framing: portrait 2:3 canvas treated as a seamless material surface; distribute
+the stone courses evenly across the full canvas with no focal object, no composition center,
+and no single dominant block; keep the texture statistically uniform from left to right so
+the image survives a hard horizontal crop to a narrow center strip; keep the vertical middle
+of the canvas especially calm and even, because navigation text sits on top of it; relief
+fragments and gold veins stay sparse, scattered, and near the edges rather than clustered
+Lighting/mood: almost no directional light — a flat, cool ambient darkness as if lit only by
+distant embers; extremely low contrast overall, with block edges and carvings defined by
+subtle value shifts rather than highlights or cast shadows
+Color palette: dominated by deep blue-black and cool slate (#0f172a to #1e293b), charcoal
+stone, traces of soot; only whisper-quiet accents of tarnished brass and aged gold (#8a6d3b,
+far below full #fbbf24 brightness) and no ember orange, because a separate ember-glow layer
+is rendered on top
+Materials/textures: finely dressed dark stone, shallow eroded relief carving, thin mortar
+seams, matte gold inlay veins, a faint film of ash and dust
+Constraints: prioritize UI readability above all; the texture must stay darker and calmer
+than every element rendered on top; keep contrast so low that the wall reads as a surface,
+not as an image; no border or frame; no light source, glow, lens flare, or bloom; no text,
+letters, readable runes, numbers, icons, characters, faces, logos, interface elements, or
+watermark
+Avoid: bright highlights, strong shadows, a centered medallion or crest, one large readable
+relief scene, statues or figures, doorways or windows, torches or flames, visible tiling
+seams, busy micro-detail, cracked dramatic rubble, photorealistic photography
+```
+
+## 36. Charakter-Figuren-Sheet — Korvin, Rhaya und Quinn (Ganzkörper)
+
+- **Zielrohdatei:** `concept/ui-draft-3/character-figures-sheet-v3.png` (1536×1024, 3×1-Raster)
+- **Format:** exakt 1536×1024 mit transparentem Hintergrund; unsichtbares 3×1-Raster aus
+  512×1024 großen Hochformat-Zellen
+- **Zieldateien:** die drei Figuren des Sheets, freigestellt ausgeschnitten:
+  - links → `public/assets/figures/korvin.png`
+  - Mitte → `public/assets/figures/rhaya.png`
+  - rechts → `public/assets/figures/quinn.png`
+
+  Geschnitten wird an den Leerspalten zwischen den Figuren (Sheet vom 2026-08-19:
+  x 82–566, 632–996 und 1065–1402), jeweils über die volle Höhe von 1024 Pixeln — die
+  gemeinsame Grundlinie und die Größenrelation der drei Figuren bleiben über die
+  unterschiedlich breiten Zuschnitte erhalten. `character-figures-sheet-v1.png` und
+  `-v2.png` sind frühere Iterationen (Referenz, unbenutzt); v2 ist eine „highlighted“-
+  Variante mit hellerem Goldlicht und eigenen Silhouetten.
+- **Verwendung:** Stations-Personas der Crafting-Ansichten — Korvin im Panel der
+  Blacksmith-Ansicht, Rhaya im Panel der Jeweler-Ansicht, Quinn im Panel der
+  Runescribe-Ansicht. Die freigestellten Ganzkörper-Figuren liegen direkt auf den dunklen
+  View-Hintergründen (§31, §32) und werden dort grob 300–500 CSS-Pixel hoch dargestellt.
+  Gemeinsame Grundlinie, gleiche Kamerahöhe und gleiche Figurenhöhe im Sheet halten die
+  drei Panels untereinander konsistent. Identität, Ausrüstung und Lichtführung folgen den
+  Bust-Portraits (§2–§4); die Figuren sind unbewaffnet. Dieselben Figuren stehen im
+  Charakterportal der Heroes-Stats-Ansicht (§37) in der Bogenöffnung des Portal-Rahmens.
+
+```text
+Use case: stylized-concept
+Asset type: production character sheet containing three cut-out full-body hero figures on
+a fully transparent background for dark fantasy game UI panels
+Primary request: one internally consistent trio of frontal full-body figure shots of the
+heroes Korvin, Rhaya, and Quinn — unarmed, wearing only their personal equipment — rendered
+as clean alpha cut-outs that will later be cropped into three individual portrait PNG files
+and placed inside the dark crafting-station panels of the game UI
+Canvas and grid: exact 1536 by 1024 pixel fully transparent canvas, divided conceptually
+into an invisible three-column grid of exact 512 by 1024 pixel portrait cells; do not draw
+grid lines, cell borders, guides, labels, captions, numbers, or cell backgrounds
+Placement and safe area: center exactly one standing figure in each cell; every visible
+pixel of a figure stays inside the central 416 by 960 pixel safe area of its cell; all
+three figures stand on one shared invisible ground line near the bottom of the safe area,
+share the same camera height at chest level, the same optical figure height relative to
+their builds, and the same level of finish; figures never touch, overlap, or extend into
+neighboring cells
+Fixed left-to-right order and figures:
+1. left — KORVIN: a heavily armored male human knight-warden in his late forties, broad
+thickset build; full dark blued-steel plate armor with tarnished gold inlay, visibly
+battle-repaired with riveted patches and scorch marks along the edges, heavy plate
+gauntlets and armored boots; short cropped grey-streaked hair, long beard; calm, patient,
+protective expression; standing square and planted, arms relaxed at his sides
+2. center — RHAYA: a lean athletic female human blade dancer in her late twenties; light
+layered armor of dark leather with battered bronze-gold plates over her shoulders, wrapped
+forearms, fitted dark trousers and worn leather boots; dark auburn hair in a rough braid
+coming undone, a few strands loose around her face, warm bronze skin; hot-tempered,
+challenging half-smile; standing with her weight on one hip, arms loosely crossed
+3. right — QUINN: a wiry androgynous non-binary human archer in their early thirties; worn
+high-collared imperial uniform vest over rolled-up shirtsleeves, fitted dark trousers,
+sturdy leather boots, a slim leather surveyor's belt with small map and tool pouches; short
+black hair combed severely back, one side shaved above the ear, light-dark skin, sharp
+features; dry, analytical, faintly impatient expression; standing upright and composed,
+hands clasped behind their back
+Pose and framing: strict frontal full-body shots from the top of the head to the soles of
+the boots, each hero facing the camera directly and looking into it; grounded, calm,
+self-contained standing poses with compact silhouettes; all limbs and hair stay inside the
+safe area
+Style/medium: painterly dark fantasy character concept art, high fantasy, heroic realism,
+muted painterly colors, matching the existing bust portraits of the same three heroes;
+gilded ruins mood — noble and mysterious, never hopeless
+Lighting/mood: one identical lighting setup for all three figures — a soft neutral key with
+warm gold rim light (#fbbf24) along shoulders and outer contours, as if each hero stands in
+a dark ember-lit imperial stone hall; dim warm bounce from below, restrained contrast, and
+edge lighting chosen to read cleanly against dark blue-slate UI backgrounds (#0f172a to
+#1e293b)
+Color palette: blued steel, dark leather, tarnished brass and aged gold (#8a6d3b to
+#fbbf24), muted warm skin tones, restrained amber accents (#f59e0b); overall values dark
+enough to sit in the game's night palette yet clearly separated from near-black backgrounds
+Materials/textures: worn plate steel with gold inlay, battered bronze, scuffed dark
+leather, rough cloth, aged straps and buckles, a faint film of ash on boots and shoulders
+Alpha rendering: fully transparent background around and between the figures; crisp, clean
+silhouette edges with minimal antialiasing; no ground plane, no cast or contact shadow, no
+glow halo, no background gradient, no checkerboard pattern
+Readability: designed for display at roughly 300 to 500 CSS pixels of height — strong
+readable silhouettes, clear value separation between figure and any dark backdrop, detail
+concentrated on faces, chest, and equipment rather than fine micro-texture
+Constraints: the heroes are completely unarmed — no warhammer, no tower shield, no swords
+or sword hilts, no bow, no quiver, no arrows, no scabbards, no weapon straps or holsters;
+no text, letters, readable runes, numbers, icons, logos, frames, pedestals, interface
+elements, or watermark
+Avoid: three inconsistent art styles, differing camera angles or eye levels, dynamic action
+poses, walking or mid-motion stances, three-quarter or profile views, cropped feet or
+heads, props held in hands, capes or hoods, background scenery, floor tiles or shadows,
+bright full-frame lighting, oversaturated colors, photorealistic photography
+```
+
+## 37. Charakter-Portal-Rahmen
+
+- **Zieldatei:** `public/assets/frames/character-portal-frame.png`
+- **Rohdatei:** `concept/ui-draft-3/character-portal-frame.png`
+- **Format:** 1086×1448, exakt 3:4, transparenter Außenbereich und transparente Bogenöffnung
+- **Verwendung:** Charakterportal der Heroes-Stats-Ansicht. In der Bogenöffnung steht die
+  freigestellte Ganzkörper-Figur des aktiven Charakters (§36), auf der Steinfläche über dem
+  Bogen liegt der Charaktername als Live-Text. Das Asset füllt die Breite seiner Rasterspalte
+  und wird bei rund 370 bis 525 CSS-Pixeln Breite dargestellt; das Clamp-Token
+  `--spacing-portal` cappt es bei 528 bis 560 Pixeln.
+- **Vermessung des Assets** (Grundlage der Prozent-Geometrie in `CharacterPortal.tsx`,
+  [UI.md §9](../docs/spec/UI.md#9-bewusste-sonderfälle)):
+  - Opake Bounds: x 3–1081, y 2–1436 — das Bild wird als vollflächiges Overlay skaliert.
+  - Bogenöffnung transparent von x 232–851 (21,4 %–78,4 %) und y 321–1374 (22,2 %–94,9 %).
+  - Der Spitzbogen läuft von der Spitze bei y 321 bis zur vollen Öffnungsbreite bei y 619 und
+    springt direkt unter der Spitze weit auf: 4 px unter der Spitze ist er 266 px breit.
+  - Der Stein über dem Bogen deckt y 149–292 auf der ganzen Öffnungsbreite und schneidet die
+    Bogenform selbst aus; die Hintergrundfläche der Öffnung läuft dahinter bis y 174 (12 %)
+    hoch.
+  - Dunkle Namensfläche zwischen oberem Steinbogen und Goldband bei y 91–256 (6,3 %–17,7 %),
+    auf Höhe des Namens x 330–752 (30,4 %–69,2 %) breit.
+- **Prompt:** außerhalb dieses Dokuments generiert; der Prompt-Text ist nachzutragen.
+
+## 38. Heroes-Stat-Icon-Sheet
+
+- **Zielrohdatei:** `concept/ui-draft-3/icon-asset-sheet.png`
+- **Format des gelieferten Sheets:** 1254×1254 mit transparentem Hintergrund, unsichtbares
+  4×4-Raster; angefordert waren 2048×2048 mit 512×512-Feldern.
+- **Verwendung:** Gemeinsame Produktionsgrundlage für die 14 Stat-Glyphen der
+  Heroes-Stats-Panels. Das Sheet wird nicht direkt in der Anwendung verwendet.
+- **Kachelreihenfolge (row-major):** `Attack`, `Defense`, `Health`, `Might` · `Toughness`,
+  `Vitality`, `Barrier`, `Block Chance` · `Evasion`, `Regeneration`, `Initiative`,
+  `Multi Hit Chain` · `Multi Hit Chain Factor`, `Splash Radius`, leeres Feld, leeres Feld.
+- **Nicht im Sheet:** Ferocity, Resilience und Vigor nutzen die Glyphe ihres gekoppelten
+  Derived Stats (Attack, Defense, Health) in der Akzentfarbe des Attributs; die acht Offensive
+  Stats nutzen paarweise die vorhandenen Discipline-Icons der Weapon-Mastery-Tabs (§25):
+  Crit → Finesse, Multi Hit → Tempest, Splash → Dominance, Counter → Valor.
+- **Aufbereitung:** Ein Schnitt an den Rasterlinien würde Inhalt abschneiden — das Sheet hält
+  die Sicherheitszone nicht ein, bei Attack, Toughness und Health reicht die Glyphe bis an die
+  Zellkante, und die optische Größe streut zwischen 73 % und 92 % der Zellbreite. Statt am
+  Raster wird darum inhaltsbezogen geschnitten:
+  1. Alpha-Kanal rampen (< 80 → 0, ≥ 220 → 255, dazwischen linear). Das entfernt das
+     fast-transparente Rauschen des Sheets (13,6 % der Fläche bei Alpha 1–16).
+  2. Zusammenhangskomponenten bilden; nur einzelne Streupixel (< 16 px) fallen aus. Ein
+     höherer Schwellwert verwirft echte Details — Pommel des Schwerts, Nieten der
+     Schulterplatte, Klingenspitze des Block-Icons.
+  3. Jede Komponente über ihren Schwerpunkt einer Rasterzelle zuordnen; die Vereinigung der
+     Boxen einer Zelle ist die Glyphe, auch wenn sie über die Rasterlinie hinausragt.
+  4. Glyphe freistellen und mittig in eine 512×512-Kachel setzen, längste Seite 384 px —
+     dieselbe 384/512-Sicherheitszone wie die übrigen Icon-Sheets. Damit sind alle 14 Icons
+     zentriert und optisch gleich groß.
+
+  Ergebnis: `public/assets/icons/stats/stat-attack.png` bis `stat-splash-radius.png`, als
+  CSS-Alpha-Masken über das `Icon`-Primitive eingebunden.
+
+```text
+Use case: stylized-concept
+Asset type: production icon sheet containing fourteen monochrome alpha-mask glyphs for the
+character stat panels of a dark fantasy game UI
+Primary request: create one internally consistent family of fourteen bold imperial combat
+symbols that stay unmistakable at only 16 to 20 CSS pixels in dense stat lists, while the
+first three also read cleanly when enlarged to about 56 pixels; the symbols will later be cut
+into individual square PNG files and recolored through CSS masks
+Canvas and grid: exact 2048 by 2048 pixel transparent canvas, divided conceptually into an
+invisible four-column by four-row grid of exact 512 by 512 pixel cells; do not draw grid
+lines, cell borders, guides, labels, captions, numbers, or tile backgrounds; keep the last two
+cells of the bottom row completely empty and transparent
+Placement and safe area: center exactly one symbol in each occupied cell; every visible pixel
+of each symbol must remain inside the central 384 by 384 pixel safe area of its cell; use the
+same optical size, line weight, visual density, orientation logic, and amount of negative
+space for all fourteen symbols; symbols must never touch, overlap, or extend into neighboring
+cells
+Fixed row-major order and motifs:
+1. ATTACK: one heavy straight broadsword seen from the front, blade pointing up, with a wide
+plain crossguard and a compact pommel
+2. DEFENSE: one heraldic kite shield in strict front view with a single strong vertical spine
+and a plain face
+3. HEALTH: one bold equal-armed cross with slightly flared arm ends, plain and solid
+4. MIGHT: one clenched armored fist seen from the knuckle side, with a short banded wrist cuff
+5. TOUGHNESS: one segmented armor pauldron of three overlapping curved plates, seen from the
+front, with clear transparent gaps between the plates
+6. VITALITY: one broad symmetrical heart with a plain surface and a small notch at the top
+7. BARRIER: one wide curved ward arc floating in front of a smaller solid disc core,
+expressing an absorbing shell rather than a shield
+8. BLOCK CHANCE: one kite shield in three-quarter tilt with one short blade tip deflecting off
+its upper edge along a sharp outward angle
+9. EVASION: one slim empty silhouette outline stepping aside, accompanied by two tapered
+motion streaks that mark the vacated position
+10. REGENERATION: one single broad leaf enclosed by one open circular renewal arrow with a
+clear arrowhead
+11. INITIATIVE: one sharp arrow shooting diagonally upward, trailed by two short tapered speed
+strokes
+12. MULTI HIT CHAIN: three identical interlocking oval chain links in one straight horizontal
+row, with fully transparent link openings
+13. MULTI HIT CHAIN FACTOR: three interlocking oval chain links in one descending row, each
+link visibly smaller than the one before, expressing a decaying chain
+14. SPLASH RADIUS: one small solid impact core at the center with two concentric broken impact
+rings around it and one short straight radius marker reaching from the core to the outer ring
+15. and 16. EMPTY: no mark, ornament, placeholder, guide, or residual shadow
+Visual language: one coherent set of ancient imperial dark-fantasy glyphs from a fallen golden
+empire, in the same family as the existing Weapon Mastery and Crucible tab glyphs; bold
+engraved-emblem silhouettes, controlled symmetry where appropriate, strong outer contours,
+only a few large interior cutouts, no delicate filigree, and clear semantic separation between
+all fourteen motifs
+Mask rendering: each glyph is a single fully opaque warm-white shape on true transparent
+alpha; all intended holes and negative spaces are fully transparent; no intentional
+semi-transparent shading inside the glyphs, with partial alpha allowed only for minimal clean
+edge antialiasing; no material color, gradient, texture, lighting, shadow, glow, outline halo,
+ambient occlusion, or background fill
+Readability: design for severe downscaling to 16 to 20 pixels; prefer one dominant silhouette
+and two or three large internal separations over small detail; maintain at least a robust
+medium stroke weight after downscaling
+Constraints: icons only; no medallions, circles around the icons, frames, UI panels, letters,
+words, readable runes, numbers, percent signs, characters, faces, hands other than the named
+fist, scenery, flames, particles, logos, mockup, watermark, checkerboard transparency, or
+visible grid
+Avoid: fourteen unrelated art styles, inconsistent scale, duplicate silhouettes between the
+shield motifs of cells 2, 7 and 8 or between the chain motifs of cells 12 and 13,
+photorealistic objects, painterly color, black backgrounds, clipped shapes, thin scratchy
+lines, busy engraving, soft blurry edges, merged neighboring cells, any content in cells 15
+and 16
+```
+
+## 39. Heroes-View-Hintergrund — Halle der Wächter
+
+- **Zieldatei:** `public/assets/backgrounds/heroes-view.png` (oder `.webp`)
+- **Format:** Querformat 16:9, mindestens 2560×1440
+- **Verwendung:** Vollflächiger Hintergrund der gesamten Heroes-Ansicht hinter Überschrift,
+  Stats/Loadout-Tabs, den beiden Stat-Spalten, dem Charakterportal (§37) und dem Level-Panel.
+  Das Bild wird per `background-size: cover` mit Ankerpunkt `center bottom` eingesetzt und
+  liegt unter dem Kontrast-Overlay des `ScreenLayout`; auf breiten Viewports wird oben
+  beschnitten. Sichtbar bleiben vor allem das Band über den Tabs, der hohe freie Streifen
+  über dem Charakterportal in der Mittelspalte und die Ränder um die Panels; die linke und
+  die rechte Spalte sind von je drei Panels fast vollständig überdeckt.
+- **Lore:** Die Musterhalle der Wächter an der Prozessionsstraße von Veyra aus
+  [crucible-story-foundation.md](lore/crucible-story-foundation.md) — der Ort, an dem die
+  Kompanien des Reichs vor dem Marsch gemustert und gerüstet wurden und an dem die drei
+  Helden nun ihre Ausrüstung prüfen, bevor sie in die Tiefe absteigen.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: the muster hall of an ancient imperial order of wardens as the ceremonial
+home of the Heroes view — a place where a single armored hero is inspected, equipped, and
+readied before descending into the buried city, built around one empty central standing bay,
+without depicting any person
+Scene/backdrop: a tall vaulted stone chamber just inside the ruins of a golden empire,
+seen frontally and symmetrically; the back wall is heavy masonry with a row of tall narrow
+standing niches that once held the wardens of the order, now empty and dark apart from a few
+worn iron armor stands, hanging harness straps, and dulled steel fittings; the walls carry
+faded reliefs of a guardian order and thin tarnished gold inlays; a large circular imperial
+seal is inlaid into the floor in brass and worn stone, half buried under drifting grey ash;
+overhead the ribs of a broken vault converge on the central axis, one rib split open to a
+narrow shaft of pale night sky
+Subject: the central bay of the hall is the subject — a slightly raised stone dais beneath
+the converging vault ribs, flanked by two low shielded braziers, forming an empty standing
+place that reads as prepared and waiting for one hero; the hall feels ancient, solemn,
+disciplined, and still tended rather than looted or abandoned
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained
+detail and strong architectural silhouettes, matching the project's heavy stone-carved
+imperial style and gilded ruins mood — noble and mysterious, never hopeless
+Composition/framing: wide 16:9 landscape background for a responsive game screen, anchored
+at center bottom and cropped from the top on wide displays; hold a strictly symmetrical
+frontal composition around the vertical center axis; concentrate the visual interest in the
+upper central area — converging vault ribs, the pale light shaft, and the upper back wall —
+because a tall UI portal frame with a hero figure covers the lower central third and must
+stand in front of the empty dais; keep that lower central third dark and free of important
+detail; keep the left and right thirds very dark, flat, and low-detail, because two
+full-height columns of stat panels sit on top of them; keep the top band across the full
+width quiet for the live "Heroes" heading, one intro line, and a wide two-tab bar;
+distribute niches, armor stands, and reliefs symmetrically toward the outer edges; crop-safe
+from wide desktop down to roughly 4:5 mobile, with the central bay and the vault axis
+remaining recognizable
+Lighting/mood: cool ambient darkness; a pale cold shaft of night light falls through the
+broken vault onto the central dais and the ash-covered floor seal, while two low shielded
+braziers add a restrained warm ember glow along the lower center and catch the nearest gold
+inlays; sparse dust and fine ash drift through the shaft; soft atmospheric depth and a mood
+of preparation and quiet resolve before the descent
+Color palette: dominant deep blue-black and cool slate shadows (#0f172a), blackened stone
+and steel, tarnished brass and aged gold (#8a6d3b to #fbbf24), restrained amber highlights
+(#f59e0b), and only sparse concentrated ember orange (#e25822) around the braziers
+Materials/textures: cracked imperial masonry, weathered gold inlays and faded reliefs,
+brass floor seal, forged black iron stands, dulled steel harness fittings, aged leather
+straps, grey ash drifts and thin dust haze
+Constraints: prioritize UI readability; keep most of the image dark, low-contrast, and
+low-detail; leave the central bay completely empty; keep the central axis free of any
+free-standing arch, gateway, or doorway outline, because the UI portal frame already
+provides that shape; retain generous negative space for large opaque or translucent panels;
+no border or frame; no text, letters, readable runes, numbers, icons, characters, logos,
+interface elements, or watermark
+Avoid: any hero, guard, or humanoid figure; a complete standing suit of armor, statue, or
+armor stand that reads as a person near the center; a throne, altar, mirror, or portal gate
+as the central object; one large centered weapon; a literal character-select stage or
+spotlight pedestal; crowded weapon racks or a forge, which belong to other views; hanging
+banners with emblems; bright full-frame fire, daylight, god-ray spectacle, excessive bloom;
+busy foreground clutter; modern elements; horror imagery; photorealistic photography
+```
+
+## 40. Stat-Medaillon
+
+- **Zieldatei:** `public/assets/frames/medallion-stat.png`
+- **Format:** quadratisch, mindestens 768×768, transparenter Hintergrund
+- **Verwendung:** Medaillon der drei Combat-Stat-Zeilen der Heroes-Stats-Ansicht (Attack,
+  Defense, Health). Das Asset liegt als CSS-Background hinter einer zentrierten Stat-Glyphe (§38)
+  und wird bei 56 bis 70 CSS-Pixeln Breite dargestellt (`size-portrait-md`), die Glyphe darin in
+  `size-lg` (32 px).
+- **Geometrie — der kritische Punkt:** Die **transparente Öffnung nimmt 70 % der Bildbreite** ein,
+  der Ring also **15 % je Seite**. Bei 56 px Medaillon sind das 8,4 px Ring und 39 px Öffnung; die
+  32-px-Glyphe steht frei darin und füllt 57 % des Medaillons. Zwei Gegenproben, beide zu weit
+  außen:
+  - `medallion-act.png` (§33) trägt nur 36–40 % Öffnung (453×464 px bei 179×166 px) — genug für
+    eine Numerale, zu wenig für eine Glyphe.
+  - Der erste Wurf dieses Assets kam mit 89 % Öffnung und damit 4,5 % Ringbreite: bei 56 px
+    Medaillon 2,5 px Ring, der als Haarlinie verschwindet statt als Ornament zu tragen.
+
+```text
+Round ornamental ring frame for a dark fantasy game UI icon, square format, fully
+transparent background. The transparent circular opening in the center takes up exactly
+70 percent of the image width, so the ring itself is a substantial band occupying 15
+percent of the image width on each side — clearly a carved ring, not a hairline. Forged
+tarnished brass and warm gold (#8a6d3b to #fbbf24) with visible depth and bevel: a raised
+outer edge, a recessed channel, and four round rivets at the cardinal points. Heavy
+stone-carved imperial style, gilded ruins mood, subtle worn-metal texture, strict radial
+symmetry, crisp clean vector-like edges. Do not make the ring thin or wiry, do not leave
+more than 70 percent of the width transparent. No spikes, no thorns, no flourishes
+reaching inward, no inner disc or plaque, no glow, no background, no text, no numerals,
+no watermark.
+```
+
+## 41. Feiner Divider
+
+- **Zieldatei:** `public/assets/ornaments/divider-thin.png`
+- **Format:** Querformat, mindestens 2048 px breit, transparenter Hintergrund; die gelieferte
+  Datei ist 2048×768 (2,67:1).
+- **Verwendung:** Trenner zwischen den Stat-Gruppen der beiden Spalten-Panels der
+  Heroes-Stats-Ansicht — je zwei Trenner links (Combat / Attributes / Core) und rechts
+  (Offensive / Defensive / Utility).
+- **Technik:** Vollbreiter CSS-Background (`bg-cover bg-center`) auf einem 16 px hohen Streifen,
+  das Seitenverhältnis der Datei spielt damit keine Rolle: Die Linie muss auf der senkrechten
+  Bildmitte liegen, weil der Streifen dort beschneidet. Ein `<img>` wäre hier falsch, weil ein
+  fehlendes Asset den Broken-Image-Platzhalter zeigen würde, ein fehlender Background nichts.
+  Strikte horizontale Spiegelsymmetrie und spitz auslaufende Enden. Die zurückgenommene
+  Schwester des Sidebar-Dividers (§6): vier Trenner in einem Panel dürfen zusammen nicht
+  auftragen.
+
+```text
+Horizontal ornamental divider for a dark fantasy game UI, wide 8:1 landscape format,
+fully transparent background. A single very thin hairline of tarnished brass (#8a6d3b)
+running the full width at constant thickness, swelling at the exact center into nothing
+more than a tiny plain diamond, tapering to fine sharp points at both ends. Deliberately
+restrained and low contrast, much thinner and quieter than an ornate divider: no
+filigree, no medallion, no gemstone, no specular highlight, no glow. Heavy stone-carved
+imperial style, gilded ruins mood, strict left-right mirror symmetry, perfectly straight
+horizontal axis, crisp clean vector-like edges, no background, no text, no watermark.
 ```
 
 ## Hinweise zur Ablage

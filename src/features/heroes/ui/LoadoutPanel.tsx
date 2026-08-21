@@ -3,14 +3,23 @@ import { LockKeyhole } from 'lucide-react';
 import { effectiveWeaponValues } from '@/features/combat/engine/masteryCombat';
 import { disciplineLabel } from '@/features/weaponMastery/masteryPresentation';
 import { innateValue } from '@/game/items/armor';
-import type {
-  ArmorInnateStat,
-  ArmorItem,
-  ArmorItemType,
-  ArmorLoadout,
-  ArmorSlot,
-  CharacterId,
-  CharacterStats,
+import { RARITY_LAYER } from '@/game/items/itemLayers';
+import { imprintEffectText } from '@/game/sigils/imprints';
+import { sigilById } from '@/game/sigils/sigils';
+import type { SigilCodex } from '@/game/sigils/types';
+import {
+  AMBER_AFFIXES,
+  RUBY_AFFIXES,
+  type ArmorInnateStat,
+  type ArmorItem,
+  type ArmorItemType,
+  type ArmorLoadout,
+  type ArmorSlot,
+  type CharacterId,
+  type CharacterStats,
+  type GemAffix,
+  type Rarity,
+  type SocketedGem,
 } from '@/game/types';
 import { Icon } from '@/shared/ui/icons/Icon';
 import { Panel } from '@/shared/ui/layout/Panel';
@@ -46,6 +55,47 @@ const INNATE_LABEL: Record<ArmorInnateStat, string> = {
   vitality: 'Vitality',
   initiative: 'Initiative',
 };
+
+const RARITY_LABEL: Record<Rarity, string> = {
+  common: 'Common',
+  magic: 'Magic',
+  rare: 'Rare',
+  epic: 'Epic',
+  legendary: 'Legendary',
+};
+
+const GEM_COLOR_LABEL: Record<SocketedGem['color'], string> = {
+  amber: 'Amber',
+  ruby: 'Ruby',
+  sapphire: 'Sapphire',
+  emerald: 'Emerald',
+};
+
+const GEM_AFFIX_LABEL: Record<GemAffix, string> = {
+  critChance: 'Crit Chance',
+  multiHitChance: 'Multi Hit Chance',
+  splashChance: 'Splash Chance',
+  counterChance: 'Counter Chance',
+  critDamage: 'Crit Damage',
+  multiHitDamage: 'Multi Hit Damage',
+  splashDamage: 'Splash Damage',
+  counterDamage: 'Counter Damage',
+  barrier: 'Barrier',
+  blockChance: 'Block Chance',
+  evasion: 'Evasion',
+  regeneration: 'Regeneration',
+  might: 'Might',
+  toughness: 'Toughness',
+  vitality: 'Vitality',
+};
+
+/** Affixe mit Anteils-Semantik (0..1) erscheinen als Prozentwert, alle übrigen flach. */
+const PERCENT_AFFIXES: ReadonlySet<GemAffix> = new Set([
+  ...AMBER_AFFIXES,
+  ...RUBY_AFFIXES,
+  'blockChance',
+  'evasion',
+]);
 
 // Statische Klassen-Strings, damit Tailwind die mask-Utilities beim Scan findet.
 const WEAPON_ICON_CLASS: Record<CharacterId, string> = {
@@ -167,8 +217,19 @@ function WeaponDetail({
   );
 }
 
-function ArmorDetail({ item }: { item: ArmorItem }) {
+/** Anzeige eines gebundenen Gems: gerollter Wert, Affix und Farbe (ITEMS §8). */
+function gemLabel(gem: SocketedGem): string {
+  const value = PERCENT_AFFIXES.has(gem.affix)
+    ? formatPercent(gem.value)
+    : valueFormatter.format(gem.value);
+  return `+${value} ${GEM_AFFIX_LABEL[gem.affix]} (${GEM_COLOR_LABEL[gem.color]})`;
+}
+
+function ArmorDetail({ item, sigils }: { item: ArmorItem; sigils: SigilCodex }) {
   const base = ARMOR_BASE_LABEL[item.itemType];
+  const socketCount = item.sockets.length + item.prismaticSockets.length;
+  const imprint = item.imprint === undefined ? undefined : sigilById(item.imprint.sigilId);
+  const imprintLevel = imprint === undefined ? undefined : sigils[imprint.id];
 
   return (
     <>
@@ -178,8 +239,39 @@ function ArmorDetail({ item }: { item: ArmorItem }) {
       <p className="mt-1 text-sm text-text-muted">{ARMOR_SLOT_LABEL[item.slot]} Slot</p>
       <dl className="mt-3 divide-y divide-border/50 border-t border-border/50">
         <DetailRow term="Base Item Type" value={base} />
-        <DetailRow term="Item Level" value={`+${item.itemLevel}`} />
+        <DetailRow term="Rarity" value={RARITY_LABEL[item.rarity]} />
+        <DetailRow
+          term="Item Level"
+          value={`+${item.itemLevel} / +${RARITY_LAYER[item.rarity].itemLevelCap}`}
+        />
         <DetailRow term="Innate" value={`+${innateValue(item)} ${INNATE_LABEL[item.innate]}`} />
+        {imprint !== undefined && imprintLevel !== undefined ? (
+          <>
+            <DetailRow term="Imprint" value={`${imprint.name} · Level ${imprintLevel}`} />
+            <DetailRow term="Imprint Effect" value={imprintEffectText(imprint, imprintLevel)} />
+          </>
+        ) : null}
+        {socketCount === 0 ? (
+          <DetailRow term="Sockets" value="None" />
+        ) : (
+          <>
+            {item.sockets.map((gem, index) => (
+              <DetailRow
+                // Sockel sind positionsfest; der Index ist die Identität des Sockels.
+                key={`socket-${index}`}
+                term={`Socket ${index + 1}`}
+                value={gem === null ? 'Empty' : gemLabel(gem)}
+              />
+            ))}
+            {item.prismaticSockets.map((_, index) => (
+              <DetailRow
+                key={`prismatic-${index}`}
+                term={`Prismatic Socket ${index + 1}`}
+                value="Empty"
+              />
+            ))}
+          </>
+        )}
       </dl>
     </>
   );
@@ -203,6 +295,7 @@ interface LoadoutPanelProps {
   stats: CharacterStats;
   masteryRanks: Readonly<Record<string, number>>;
   armor: ArmorLoadout;
+  sigils: SigilCodex;
 }
 
 /**
@@ -210,7 +303,13 @@ interface LoadoutPanelProps {
  * anatomische Armor-Säule, außen die Detailkarte. Die Auswahl ändert nur die Detailansicht;
  * die Slot-Wahrheit ist die persistierte Armor des aktiven Charakters.
  */
-export function LoadoutPanel({ characterId, stats, masteryRanks, armor }: LoadoutPanelProps) {
+export function LoadoutPanel({
+  characterId,
+  stats,
+  masteryRanks,
+  armor,
+  sigils,
+}: LoadoutPanelProps) {
   const [selection, setSelection] = useState<LoadoutSelection>('weapon');
   const weapon = effectiveWeaponValues(characterId, masteryRanks);
   const selectedItem =
@@ -325,18 +424,18 @@ export function LoadoutPanel({ characterId, stats, masteryRanks, armor }: Loadou
         </section>
         <Panel
           as="aside"
-          variant="thin"
-          padding="none"
+          variant="standard"
+          padding="md"
           aria-label="Loadout details"
           data-testid="loadout-detail"
-          className="min-w-0 self-start px-4 py-3"
+          className="min-w-0 self-start"
         >
           {selection === 'weapon' ? (
             <WeaponDetail characterId={characterId} stats={stats} masteryRanks={masteryRanks} />
           ) : selection === 'talisman' ? (
             <TalismanDetail />
           ) : selectedItem !== undefined ? (
-            <ArmorDetail item={selectedItem} />
+            <ArmorDetail item={selectedItem} sigils={sigils} />
           ) : null}
         </Panel>
       </div>

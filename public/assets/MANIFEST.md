@@ -40,6 +40,36 @@
 | [icons/crucible/crucible-tree-smelting.png](icons/crucible/crucible-tree-smelting.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §29](../../concept/PROMPTS.md) | Timo Sudeck | projektintern                                             | Sheet 2172×724 statt angefordertem 2048×512; je Viertel ein 543×543-Fenster auf gemeinsamer Grundlinie, auf 512×512 skaliert, als CSS-Alpha-Maske eingebunden |
 | [icons/crucible/crucible-tree-molten.png](icons/crucible/crucible-tree-molten.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §29](../../concept/PROMPTS.md) | Timo Sudeck | projektintern                                             | Sheet 2172×724 statt angefordertem 2048×512; je Viertel ein 543×543-Fenster auf gemeinsamer Grundlinie, auf 512×512 skaliert, als CSS-Alpha-Maske eingebunden |
 
+## Stat-Icons
+
+Die 14 Glyphen der Heroes-Stat-Panels. Alle stammen aus einem gemeinsamen Sheet
+([concept/PROMPTS.md §38](../../concept/PROMPTS.md), `concept/ui-draft-3/icon-asset-sheet.png`,
+1254×1254, 4×4-Raster) und sind identisch aufbereitet: Alpha-Kanal gerampt (< 80 → 0, ≥ 220 →
+255, dazwischen linear) gegen das fast-transparente Rauschen des Sheets, Glyphe an ihrer
+Inhalts-Bounding-Box freigestellt (das Sheet hält die Sicherheitszone nicht ein, mehrere
+Glyphen reichen bis an ihre Rasterkante) und mittig in eine 512×512-Kachel gesetzt, längste
+Seite 384 px. Eingebunden als CSS-Alpha-Masken über das `Icon`-Primitive.
+
+| Datei                                                                        | Stat                   |
+| ---------------------------------------------------------------------------- | ---------------------- |
+| [icons/stats/stat-attack.png](icons/stats/stat-attack.png)                   | Attack, Ferocity       |
+| [icons/stats/stat-defense.png](icons/stats/stat-defense.png)                 | Defense, Resilience    |
+| [icons/stats/stat-health.png](icons/stats/stat-health.png)                   | Health, Vigor          |
+| [icons/stats/stat-might.png](icons/stats/stat-might.png)                     | Might                  |
+| [icons/stats/stat-toughness.png](icons/stats/stat-toughness.png)             | Toughness              |
+| [icons/stats/stat-vitality.png](icons/stats/stat-vitality.png)               | Vitality               |
+| [icons/stats/stat-barrier.png](icons/stats/stat-barrier.png)                 | Barrier                |
+| [icons/stats/stat-block.png](icons/stats/stat-block.png)                     | Block Chance           |
+| [icons/stats/stat-evasion.png](icons/stats/stat-evasion.png)                 | Evasion                |
+| [icons/stats/stat-regeneration.png](icons/stats/stat-regeneration.png)       | Regeneration           |
+| [icons/stats/stat-initiative.png](icons/stats/stat-initiative.png)           | Initiative             |
+| [icons/stats/stat-multi-hit-chain.png](icons/stats/stat-multi-hit-chain.png) | Multi Hit Chain        |
+| [icons/stats/stat-chain-factor.png](icons/stats/stat-chain-factor.png)       | Multi Hit Chain Factor |
+| [icons/stats/stat-splash-radius.png](icons/stats/stat-splash-radius.png)     | Splash Radius          |
+
+Alle 14: KI-generiert (ChatGPT), Autor Timo Sudeck, projektintern. Die acht Offensive Stats
+nutzen stattdessen paarweise die vorhandenen `icons/mastery/discipline-*.png`.
+
 ## Hintergründe
 
 | Datei                                                                                        | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                     |
@@ -53,34 +83,45 @@
 | [backgrounds/crucible-tab-molten-cast.png](backgrounds/crucible-tab-molten-cast.png)         | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §20](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2172×724, aktuell ungenutzt                                     |
 | [backgrounds/crucible-view.png](backgrounds/crucible-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §21](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
 | [backgrounds/weapon-mastery-view.png](backgrounds/weapon-mastery-view.png)                   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §22](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
+| [backgrounds/blacksmith-view.png](backgrounds/blacksmith-view.png)                           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §31](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
+| [backgrounds/jeweler-view.png](backgrounds/jeweler-view.png)                                 | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §32](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941                                                        |
+| [backgrounds/sigil-codex-view.png](backgrounds/sigil-codex-view.png)                         | KI-generiert (ChatGPT), Task 030                                                   | Timo Sudeck | projektintern | Dunkelfantasy-Archiv; Hintergrund des Sigil Codex               |
+| [backgrounds/dungeons-view.png](backgrounds/dungeons-view.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §34](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941; Hintergrund der Dungeon-Auswahl                       |
+| [backgrounds/heroes-view.png](backgrounds/heroes-view.png)                                   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §39](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1672×941; Hintergrund der Heroes-Ansicht                        |
+| [backgrounds/sidebar-stone.png](backgrounds/sidebar-stone.png)                               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §35](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; Hintergrund der Menüleiste                           |
 
 ## Rahmen
 
-| Datei                                                                      | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                                                                                                                 |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [frames/panel-ornate.png](frames/panel-ornate.png)                         | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md)            | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis)                                                                                       |
-| [frames/panel-thin.png](frames/panel-thin.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §7](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                                                                                                                           |
-| [frames/mainview-ornate.png](frames/mainview-ornate.png)                   | KI-generiert, Prompt: [concept/PROMPTS.md §16](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; gemeinsamer Rahmen für Sidebar und Main-Area                                                                                                     |
-| [frames/character-portrait-frame.png](frames/character-portrait-frame.png) | KI-generiert, Prompt: [concept/PROMPTS.md §23](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; natives 2:3-Format statt angefordertem 7:10                                                                                                      |
-| [frames/tab-ornate.png](frames/tab-ornate.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §26](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:2 statt angefordertem 4:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (1536×424); aktuell ungenutzt, dient §26 und §28 als Stilreferenz |
-| [frames/button-ornate.png](frames/button-ornate.png)                       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §28](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:1 statt angefordertem 2:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (2172×423)                                                        |
-| [frames/banner-act.png](frames/banner-act.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §29](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 2:3 (1024×1536) statt angefordertem 3:4; vertikaler 9-Slice-Rahmen der Akt-Banner                                                                   |
+| Datei                                                                      | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                                                                                                                                            |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [frames/panel-ornate.png](frames/panel-ornate.png)                         | KI-generiert, Prompt: [concept/PROMPTS.md §5](../../concept/PROMPTS.md)            | Timo Sudeck | projektintern | Auf die Ornament-Bounding-Box zugeschnitten (1137×987, 9-Slice-Basis); aktuell ungenutzt, seit dem Standard-Panel-Rahmen (panel-standard.png) nicht mehr Default                       |
+| [frames/panel-thin.png](frames/panel-thin.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §7](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | Aktuell ungenutzt, seit dem Standard-Panel-Rahmen (panel-standard.png) nicht mehr Default                                                                                              |
+| [frames/mainview-ornate.png](frames/mainview-ornate.png)                   | KI-generiert, Prompt: [concept/PROMPTS.md §16](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; gemeinsamer Rahmen für Sidebar und Main-Area                                                                                                                                |
+| [frames/character-portrait-frame.png](frames/character-portrait-frame.png) | KI-generiert, Prompt: [concept/PROMPTS.md §23](../../concept/PROMPTS.md)           | Timo Sudeck | projektintern | 1024×1536; natives 2:3-Format statt angefordertem 7:10                                                                                                                                 |
+| [frames/tab-ornate.png](frames/tab-ornate.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §26](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:2 statt angefordertem 4:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (1536×424); aktuell ungenutzt, dient §26 und §28 als Stilreferenz                            |
+| [frames/button-ornate.png](frames/button-ornate.png)                       | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §28](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 3:1 statt angefordertem 2:1; vertikal auf die Ornament-Bounding-Box zugeschnitten (2172×423)                                                                                   |
+| [frames/banner-act.png](frames/banner-act.png)                             | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §30](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Natives 2:3 (1024×1536) statt angefordertem 3:4; aktuell ungenutzt                                                                                                                     |
+| [frames/medallion-act.png](frames/medallion-act.png)                       | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (453×464); Akt-Numerale-Medaillon der Akt-Panels                                                                                         |
+| [frames/panel-standard.png](frames/panel-standard.png)                     | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (559×327); 9-Slice-Basis von `border-image-standard`, dem Standard-Panel-Rahmen (Goldlinien Zeilen 22–23/301–302, Spalten 24–25/535–536) |
+| [frames/character-portal-frame.png](frames/character-portal-frame.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §37](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1086×1448 (exakt 3:4); Bogenöffnung transparent (x 232–851, y 320–1375), Namensfläche über dem Bogen (y 91–256); Charakterportal der Heroes-Stats                                      |
+| [frames/medallion-stat.png](frames/medallion-stat.png)                     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §40](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1254×1254; Ring mit transparenter Mitte, Medaillon der Combat-Stat-Zeilen der Heroes-Stats                                                                                             |
 
 ## Ornamente
 
-| Datei                                                        | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------- |
-| [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
-| [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | —           |
+| Datei                                                        | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                   |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------------------- |
+| [ornaments/divider-ornate.png](ornaments/divider-ornate.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §6](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                             |
+| [ornaments/divider-thin.png](ornaments/divider-thin.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §41](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 2048×768; Trenner zwischen den Stat-Gruppen der Heroes-Panels |
+| [ornaments/nav-selection.png](ornaments/nav-selection.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §8](../../concept/PROMPTS.md)  | Timo Sudeck | projektintern | —                                                             |
 
 ## Tore
 
-| Datei                                                    | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                                    |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | ------------------------------------------------------------------------------ |
-| [gates/gate-open.png](gates/gate-open.png)               | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §27](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; natives 2:3 statt angefordertem 3:4, weich auslaufende Alpha-Ränder |
-| [gates/gate-locked.png](gates/gate-locked.png)           | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §27](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; natives 2:3 statt angefordertem 3:4, weich auslaufende Alpha-Ränder |
-| [gates/gate-boss-open.png](gates/gate-boss-open.png)     | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §27](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; natives 2:3 statt angefordertem 3:4, weich auslaufende Alpha-Ränder |
-| [gates/gate-boss-locked.png](gates/gate-boss-locked.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §27](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | 1024×1536; natives 2:3 statt angefordertem 3:4, weich auslaufende Alpha-Ränder |
+| Datei                                                    | Quelle                                                                            | Autor       | Lizenz        | Bearbeitung                                                                         |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------- | ------------- | ----------------------------------------------------------------------------------- |
+| [gates/gate-open.png](gates/gate-open.png)               | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (466×519); transparente Bogen-Öffnung |
+| [gates/gate-locked.png](gates/gate-locked.png)           | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (471×527)                             |
+| [gates/gate-boss-open.png](gates/gate-boss-open.png)     | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (517×604); transparente Bogen-Öffnung |
+| [gates/gate-boss-locked.png](gates/gate-boss-locked.png) | KI-generiert (ChatGPT), Sheet: [concept/PROMPTS.md §33](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem 2×3-Sheet freigestellt ausgeschnitten (531×596)                             |
 
 ## Effekte
 
@@ -98,6 +139,17 @@
 
 KI-generierte Hintergründe und Portraits nennen als Quelle das Generierungstool und
 verweisen auf den Prompt in [concept/PROMPTS.md](../../concept/PROMPTS.md).
+
+## Figuren
+
+| Datei                                    | Quelle                                                                             | Autor       | Lizenz        | Bearbeitung                                                                      |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- | ----------- | ------------- | -------------------------------------------------------------------------------- |
+| [figures/korvin.png](figures/korvin.png) | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 82–566, volle Höhe), 484×1024    |
+| [figures/rhaya.png](figures/rhaya.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 632–996, volle Höhe), 364×1024   |
+| [figures/quinn.png](figures/quinn.png)   | KI-generiert (ChatGPT), Prompt: [concept/PROMPTS.md §36](../../concept/PROMPTS.md) | Timo Sudeck | projektintern | Aus dem Sheet an den Leerspalten geschnitten (x 1065–1402, volle Höhe), 337×1024 |
+
+Die Figuren tragen zwei Verwendungen: die Stations-Personas der Crafting-Ansichten (§36) und
+den Charakter im Portal-Rahmen der Heroes-Stats (§37).
 
 ## Schriften (npm-Pakete, im Bundle)
 

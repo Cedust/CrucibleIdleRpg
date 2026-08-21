@@ -81,14 +81,12 @@ describe('crucible node catalog', () => {
     );
   });
 
-  it('keeps future crafting and rune unlocks locked while Armory is available in M3', () => {
+  it('keeps the rune unlocks locked while Blacksmith and Jeweler are available in M4', () => {
     const lockedIds = CRUCIBLE_NODES.filter((node) => node.lockedUntil !== undefined).map(
       (node) => node.id,
     );
     expect(lockedIds.sort()).toEqual(
       [
-        CRUCIBLE_IDS.blacksmith,
-        CRUCIBLE_IDS.jeweler,
         CRUCIBLE_IDS.runeGrimoire,
         CRUCIBLE_IDS.talisman,
         CRUCIBLE_IDS.runicFocus,
@@ -121,14 +119,14 @@ describe('crucible node catalog', () => {
     expect(runeMastery?.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }]);
   });
 
-  it('offers exactly 200 active relic shard costs: 20 anvil, 60 smelting, 120 molten', () => {
+  it('offers exactly 202 active relic shard costs: 22 anvil, 60 smelting, 120 molten', () => {
     const active = CRUCIBLE_NODES.filter((node) => node.lockedUntil === undefined);
     const costOf = (tree: string): number =>
       active
         .filter((node) => node.tree === tree)
         .reduce((total, node) => total + totalRankCost(node.maxRank), 0);
 
-    expect(costOf('anvil')).toBe(20);
+    expect(costOf('anvil')).toBe(22);
     expect(costOf('smelting')).toBe(60);
     expect(costOf('molten')).toBe(120);
   });
@@ -194,9 +192,38 @@ describe('purchase rules', () => {
     expect(purchaseFailure({}, 0, NO_DUNGEONS, CRUCIBLE_IDS.overpower)).toBe(
       'Requires 1 Relic Shard.',
     );
-    for (const id of [CRUCIBLE_IDS.blacksmith, CRUCIBLE_IDS.jeweler, CRUCIBLE_IDS.runeGrimoire]) {
-      expect(purchaseFailure({}, 100, ALL_DUNGEONS, id)).toMatch(/^Locked until /);
-    }
+    expect(purchaseFailure({}, 100, ALL_DUNGEONS, CRUCIBLE_IDS.runeGrimoire)).toMatch(
+      /^Locked until /,
+    );
+  });
+
+  it('sells the Jeweler unlock once Blacksmith rank 1 is owned', () => {
+    expect(purchaseFailure({}, 100, NO_DUNGEONS, CRUCIBLE_IDS.jeweler)).toBe(
+      'A prerequisite node is missing.',
+    );
+    expect(
+      purchaseFailure(
+        { [CRUCIBLE_IDS.armory]: 1, [CRUCIBLE_IDS.blacksmith]: 1 },
+        100,
+        NO_DUNGEONS,
+        CRUCIBLE_IDS.jeweler,
+      ),
+    ).toBeNull();
+  });
+
+  it('sells the Blacksmith unlock once Armory rank 1 is owned', () => {
+    expect(purchaseFailure({}, 100, NO_DUNGEONS, CRUCIBLE_IDS.blacksmith)).toBe(
+      'A prerequisite node is missing.',
+    );
+    expect(
+      purchaseFailure({ [CRUCIBLE_IDS.armory]: 1 }, 100, NO_DUNGEONS, CRUCIBLE_IDS.blacksmith),
+    ).toBeNull();
+    expect(
+      purchaseCrucibleNode({ [CRUCIBLE_IDS.armory]: 1 }, 1, NO_DUNGEONS, CRUCIBLE_IDS.blacksmith),
+    ).toEqual({
+      ranks: { [CRUCIBLE_IDS.armory]: 1, [CRUCIBLE_IDS.blacksmith]: 1 },
+      relicShards: 0,
+    });
   });
 
   it('sells each molten deepening only from rank 1 of its base node (PROGRESSION §3.3)', () => {

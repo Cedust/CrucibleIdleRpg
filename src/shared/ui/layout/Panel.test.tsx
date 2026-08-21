@@ -1,6 +1,7 @@
+import { describe, expect, it } from 'vitest';
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+
 import { Panel } from './Panel';
 
 describe('Panel', () => {
@@ -18,10 +19,20 @@ describe('Panel', () => {
   });
 
   it('unterstützt große, dünne und ruhige Rahmenvarianten', () => {
-    const { container, rerender } = render(<Panel>Ornate</Panel>);
+    const { container, rerender } = render(<Panel>Standard</Panel>);
     const panel = container.firstElementChild as HTMLElement;
     expect(panel.tagName).toBe('DIV');
-    expect(panel).toHaveClass('border-image-ornate', 'p-4');
+    expect(panel).toHaveClass('bg-surface/70', 'px-4 py-3');
+    expect(panel.querySelector('.border-image-standard')).toBeInTheDocument();
+
+    rerender(
+      <Panel variant="ornate" padding="none">
+        Ornate
+      </Panel>,
+    );
+    expect(panel).toHaveClass('border-image-ornate', 'border-ornament', 'bg-surface/90');
+    expect(panel).not.toHaveClass('bg-surface/70', 'px-4 py-3');
+    expect(panel.querySelector('.border-image-standard')).not.toBeInTheDocument();
 
     rerender(
       <Panel variant="thin" padding="none">
@@ -29,7 +40,7 @@ describe('Panel', () => {
       </Panel>,
     );
     expect(panel).toHaveClass('bg-surface/70');
-    expect(panel).not.toHaveClass('border-image-ornate', 'bg-surface/90', 'p-4');
+    expect(panel).not.toHaveClass('border-image-ornate', 'bg-surface/90', 'px-4 py-3');
     expect(panel.querySelector('.border-image-thin')).toBeInTheDocument();
 
     rerender(
@@ -38,7 +49,7 @@ describe('Panel', () => {
       </Panel>,
     );
     expect(panel).toHaveClass('rounded-lg', 'border-border', 'bg-surface/90', 'shadow-panel');
-    expect(panel).not.toHaveClass('border-image-ornate', 'p-4');
+    expect(panel).not.toHaveClass('border-image-ornate', 'px-4 py-3');
     expect(panel.querySelector('.border-image-thin')).not.toBeInTheDocument();
   });
 });

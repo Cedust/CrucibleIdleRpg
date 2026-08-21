@@ -1,22 +1,15 @@
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { xpRequiredForNextLevel } from '@/game/rewards/xpRewards';
-import type { Role } from '@/game/types';
 import { useCombatStore } from '@/features/combat/state/combatStore';
 import { useSaveStore } from '@/features/save/saveStore';
 import { cn } from '@/shared/ui/utils/cn';
 import { Panel } from '@/shared/ui/layout/Panel';
 import { ProgressBar } from '@/shared/ui/feedback/ProgressBar';
-import { ROLE_ICON } from '@/shared/ui/icons/roleIcons';
+import { ROLE_ICON, ROLE_LABEL } from '@/shared/ui/icons/roleIcons';
 import { SectionTitle } from '@/shared/ui/layout/SectionTitle';
 import { formatNumber } from '@/shared/utils/formatNumber';
 import { useShallow } from 'zustand/react/shallow';
 import { CombatPortrait } from './CombatPortrait';
-
-const ROLE_LABEL: Record<Role, string> = {
-  tank: 'Tank',
-  melee: 'Melee',
-  ranged: 'Ranged',
-};
 
 interface TeamPanelProps {
   className?: string;
@@ -53,7 +46,7 @@ function CharacterCard({ index }: { index: number }) {
   const xpRequired = xpRequiredForNextLevel(progression.level);
 
   return (
-    <Panel as="article" variant="thin" className="flex min-w-0 items-center gap-3">
+    <Panel as="article" variant="standard" className="flex min-w-0 items-center gap-3">
       <CombatPortrait
         characterId={character.id}
         size="xl"
@@ -101,7 +94,7 @@ function CharacterCard({ index }: { index: number }) {
               : `${formatNumber(progression.xp)}/${formatNumber(xpRequired)} XP`
           }
           endLabel={xpRequired === 0 ? 'MAX' : formatNumber(progression.level + 1)}
-          tone="xp"
+          tone="progress"
           size="sm"
         />
       </div>

@@ -1,32 +1,25 @@
-import { useState } from 'react';
-import { Coins, Flame, Gem, ScrollText, Stone } from 'lucide-react';
-import { formatLootGains, GEM_NAMES } from '@/features/dungeon/rewards';
-import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
-import { createEmptyGemStock } from '@/game/rewards/lootRewards';
-import { GEM_COLORS, type GemColor } from '@/game/types';
-import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
 import { ACT_1_DISPLAY_META, ACT_1_DUNGEON_DISPLAY_META } from '@/game/encounters/actMeta';
-import { useSaveStore } from '@/features/save/saveStore';
+import { Coins, Flame, ScrollText, Stone } from 'lucide-react';
+import { GEM_NAMES, formatLootGains } from '@/features/dungeon/rewards';
+import { isFinalAct1Floor, resolveAct1Encounter } from '@/game/encounters/act1';
+
 import { Button } from '@/shared/ui/controls/Button';
+import { CombatLog } from '@/features/combat/ui/CombatLog';
+import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
+import { GEM_COLORS } from '@/game/types';
+import { GemIcon } from '@/shared/ui/icons/GemIcon';
 import { Panel } from '@/shared/ui/layout/Panel';
 import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
-import { formatNumber } from '@/shared/utils/formatNumber';
-import { CombatLog } from '@/features/combat/ui/CombatLog';
-import { useCombatStore } from '@/features/combat/state/combatStore';
-import { EnemyFormation } from '@/features/combat/ui/EnemyFormation';
 import { TeamPanel } from '@/features/combat/ui/TeamPanel';
 import { TurnOrderBar } from '@/features/combat/ui/TurnOrderBar';
+import { createEmptyGemStock } from '@/game/rewards/lootRewards';
+import { formatNumber } from '@/shared/utils/formatNumber';
 import { formatRelicShards } from '@/game/crucible/crucible';
-
-/** Icon-Einfärbung über die eigenen Gem-Tokens — unabhängig von den Statusfarben. */
-const GEM_ICON_CLASS: Readonly<Record<GemColor, string>> = {
-  amber: 'text-gem-amber',
-  ruby: 'text-gem-ruby',
-  sapphire: 'text-gem-sapphire',
-  emerald: 'text-gem-emerald',
-  diamond: 'text-gem-diamond',
-};
+import { useCombatStore } from '@/features/combat/state/combatStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import { useSaveStore } from '@/features/save/saveStore';
+import { useState } from 'react';
 
 /** Im Run können keine Ausgaben erfolgen; die Differenz seit Mount entspricht den Run-Rewards. */
 function RunRewardSummary() {
@@ -41,7 +34,7 @@ function RunRewardSummary() {
   return (
     <dl aria-label="Run rewards" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
       <div className="flex items-center gap-1.5">
-        <Coins aria-hidden="true" className="size-4 text-accent" />
+        <Coins aria-hidden="true" className="size-4 text-gold" />
         <dt className="sr-only">Gold</dt>
         <dd aria-label="Gold amount" className="font-semibold text-text">
           {formatNumber(gold)}
@@ -55,7 +48,7 @@ function RunRewardSummary() {
         </dd>
       </div>
       <div className="flex items-center gap-1.5">
-        <Flame aria-hidden="true" className="size-4 text-warning" />
+        <Flame aria-hidden="true" className="size-4 text-cinder" />
         <dt className="sr-only">Cinder</dt>
         <dd aria-label="Cinder amount" className="font-semibold text-text">
           {formatNumber(cinder)}
@@ -70,7 +63,7 @@ function RunRewardSummary() {
       </div>
       {GEM_COLORS.map((color) => (
         <div key={color} className="flex items-center gap-1.5">
-          <Gem aria-hidden="true" className={`size-4 ${GEM_ICON_CLASS[color]}`} />
+          <GemIcon color={color} />
           <dt className="sr-only">{GEM_NAMES[color]}</dt>
           <dd aria-label={`${GEM_NAMES[color]} amount`} className="font-semibold text-text">
             {formatNumber(Math.max((gems?.[color] ?? 0) - startingGems[color], 0))}
@@ -119,10 +112,10 @@ function RunStatusBar({
   return (
     <Panel
       as="footer"
-      variant="thin"
-      padding="none"
+      variant="standard"
+      padding="md"
       data-testid="run-status-bar"
-      className="grid items-center gap-3 px-4 py-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
+      className="grid items-center gap-3 @min-[60rem]:grid-cols-[1fr_auto_1fr]"
     >
       <div
         role="group"

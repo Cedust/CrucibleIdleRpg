@@ -4,10 +4,15 @@ import {
   XP_PER_ENEMY_BY_FLOOR,
   XP_REQUIRED_PER_LEVEL,
 } from '@/game/curves/progressionCurves';
-import type { CharacterId, CharacterProgressionState } from '@/game/types';
+import type { AttributePoints, CharacterId, CharacterProgressionState } from '@/game/types';
 
 const CHARACTER_COUNT = TEAM_ORDER.length;
 const GUARANTEED_SHARE = 0.25;
+const ATTRIBUTE_KEYS = [
+  'ferocity',
+  'resilience',
+  'vigor',
+] as const satisfies readonly (keyof AttributePoints)[];
 
 export interface FloorXpInput {
   /** Nullbasierter globaler Floor-Index. */
@@ -106,24 +111,64 @@ export function spendAttributePoint(
   };
 }
 
-/** Respec erstattet alle verteilten Attributpunkte und zieht den vom Aufrufer bestimmten Goldpreis ab. */
-export function respecAttributes(
+/** Summe der drei Attribute; die Punktsumme bleibt über jede Neuverteilung erhalten. */
+function totalAttributePoints(points: AttributePoints): number {
+  return points.ferocity + points.resilience + points.vigor;
+}
+
+/**
+ * Punkte, die eine Neuverteilung aus ihren Attributen zurückholt — die Bemessungsgrundlage des
+ * Goldpreises. Punkte, die nur aus dem freien Pool nachgelegt werden, kosten nichts.
+ */
+export function refundedAttributePoints(current: AttributePoints, target: AttributePoints): number {
+  return ATTRIBUTE_KEYS.reduce(
+    (sum, attribute) => sum + Math.max(current[attribute] - target[attribute], 0),
+    0,
+  );
+}
+
+/** Preis eines Attribut-Respecs je erstatteten Punkt (CHARACTERS §3). */
+export function attributeRespecCost(refundedPoints: number): number {
+  // Explicit balancing placeholder; replace only after OPEN_ISSUES decision.
+  return Math.max(Math.trunc(refundedPoints), 0) * 25;
+}
+
+/**
+ * Attribut-Respec als Neuverteilung: schreibt das Ziel, verbucht die Restpunkte als frei und
+ * zieht den aus den erstatteten Punkten berechneten Goldpreis ab. Ein vollständiger Respec ist
+ * das Ziel `{ ferocity: 0, resilience: 0, vigor: 0 }`. `null` bei ungültigem Ziel, wenn das Ziel
+ * mehr Punkte verlangt als der Charakter besitzt, oder ohne Gold-Deckung.
+ */
+export function redistributeAttributePoints(
   progression: CharacterProgressionState,
   gold: number,
-  goldCost: number,
+  target: AttributePoints,
 ): { progression: CharacterProgressionState; gold: number } | null {
-  const cost = Math.max(Math.trunc(goldCost), 0);
+  if (
+    ATTRIBUTE_KEYS.some(
+      (attribute) => !Number.isSafeInteger(target[attribute]) || target[attribute] < 0,
+    )
+  ) {
+    return null;
+  }
+
+  const available =
+    totalAttributePoints(progression.attributePoints) + progression.freeAttributePoints;
+  const requested = totalAttributePoints(target);
+  if (requested > available) {
+    return null;
+  }
+
+  const cost = attributeRespecCost(refundedAttributePoints(progression.attributePoints, target));
   if (gold < cost) {
     return null;
   }
 
-  const { ferocity, resilience, vigor } = progression.attributePoints;
-  const refunded = ferocity + resilience + vigor;
   return {
     progression: {
       ...progression,
-      freeAttributePoints: progression.freeAttributePoints + refunded,
-      attributePoints: { ferocity: 0, resilience: 0, vigor: 0 },
+      freeAttributePoints: available - requested,
+      attributePoints: { ...target },
     },
     gold: gold - cost,
   };

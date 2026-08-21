@@ -30,6 +30,35 @@ describe('createDungeonEntryCombat', () => {
     expect(reloadedSecond).toEqual(second);
   });
 
+  it('feeds a branded Imprint into combat without changing the same-seed sequence', () => {
+    const armor = createTeamArmor({ 'anvil.armory': 1 });
+    const chest = armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const save = {
+      ...createDefaultSave(4242),
+      runCounter: 1,
+      crucible: { 'anvil.armory': 1 },
+      sigils: { 'sigil.tempered-edge': 2 },
+      armor: {
+        ...armor,
+        korvin: {
+          chest: {
+            ...chest,
+            rarity: 'magic' as const,
+            sockets: [null],
+            imprint: { sigilId: 'sigil.tempered-edge' },
+          },
+        },
+      },
+    };
+
+    const first = runCombat(createDungeonEntryCombat(save, 'A1-D1'), DEFAULT_COMBAT_CONTEXT);
+    const second = runCombat(createDungeonEntryCombat(save, 'A1-D1'), DEFAULT_COMBAT_CONTEXT);
+
+    expect(first).toEqual(second);
+    expect(first.state.characters[0]?.stats.derived.attack).toBeGreaterThan(14);
+  });
+
   it('chains floors with carried health and deterministic seeds from one run', () => {
     const save = { ...createDefaultSave(4242), runCounter: 3 };
     const first = createDungeonEntryCombat(save, 'A1-D1');

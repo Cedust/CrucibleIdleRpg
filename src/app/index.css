@@ -74,8 +74,23 @@
   --color-ember: #e25822;
   --color-ember-bright: #ff8a4d;
 
-  /* Arkan (XP, Magie, Schatten-Gegner) */
+  /* Arkan (Magie, Epic-Seltenheit, Schatten-Gegner) */
   --color-arcane: #8b5cf6;
+
+  /*
+   * Flamme: die Rampe des Fortschritts-Tones der ProgressBar (XP-Balken, Dungeon-Floors).
+   * Drei Stops, die bei jedem Füllstand alle sichtbar sind — Gelb am Anfang, Rot an der
+   * vorauslaufenden Kante; der Balken wächst allein in der Breite.
+   * Die Rampe schreitet in OKLCH gleichmäßig fort (ΔE 0.162 / 0.157, Spannweite 0.315);
+   * Kontrast auf --color-background 12.11 / 7.70 / 4.34.
+   *   Kern   L 0.84 C 0.164 h 84 — das Gold des Design-Systems, unverändert übernommen
+   *   Flamme L 0.72 C 0.170 h 52
+   *   Spitze L 0.58 C 0.170 h 28 — dunkler als --color-danger (L 0.64), damit der Balken
+   *                                nicht als zweiter Health-Balken liest
+   */
+  --color-flame-core: #fbbf24;
+  --color-flame-mid: #f58028;
+  --color-flame-tip: #cb473d;
 
   /* Statusfarben (Kampf) */
   --color-danger: #ef4444;
@@ -83,7 +98,26 @@
   --color-warning: #fbbf24;
   --color-info: #06b6d4;
 
-  /* Gem-Farben (Loot-Zähler, ab M4 Jeweler) — eigene Identität, unabhängig von Statusfarben */
+  /*
+   * Stat-Achsen der Heroes-Ansicht (UI.md §4): Werkstoffe eines vergoldeten Ruins.
+   * Jeder Ton liegt in OKLCH unter dem Chroma von --color-accent (0.164), damit Gold
+   * die lauteste Farbe der UI bleibt; die Helligkeit staffelt die Achsen nach Gewicht.
+   * Kontrast auf --color-surface: 5.31 / 7.15 / 6.52 / 5.07.
+   *   Glut     L 0.65 C 0.145 h  38 — Attack, Ferocity, Might, Offensive Stats
+   *   Stahl    L 0.71 C 0.098 h 250 — Defense, Resilience, Toughness, Defensive Stats
+   *   Patina   L 0.67 C 0.104 h 170 — Health, Vigor, Vitality
+   *   Amethyst L 0.63 C 0.125 h 296 — Utility Stats
+   */
+  --color-offense: #d66a48;
+  --color-defense: #70a5db;
+  --color-vitality: #47aa8b;
+  --color-utility: #9078cc;
+
+  /* Ressourcen-Farben */
+  --color-gold: #fbbf24;
+  --color-cinder: #f59e0b;
+
+  /* Gem-Farben */
   --color-gem-amber: #f59e0b;
   --color-gem-ruby: #ef4444;
   --color-gem-sapphire: #3b82f6;
@@ -108,12 +142,22 @@
   --spacing-portrait-md: clamp(3.5rem, calc(3.5rem + var(--fluid-delta) * 0.0072917), 4.375rem);
   --spacing-portrait-lg: clamp(5.5rem, calc(5.5rem + var(--fluid-delta) * 0.0114583), 6.875rem);
   --spacing-portrait-xl: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
-  /* Akt-Banner-Breite; Rahmen-, Flächen- und Höhengeometrie hängen als
-     Anteile daran (border-image-banner, .banner-act-surface, ActBanner.tsx) */
-  --spacing-banner: clamp(14.5rem, calc(14.5rem + var(--fluid-delta) * 0.0302083), 18.125rem);
+  /* Akt-Panel-Höhe der Dungeon-Auswahl; die Breite kommt aus dem 3er-Grid */
+  --spacing-act-panel: clamp(9rem, calc(9rem + var(--fluid-delta) * 0.01875), 11.25rem);
+  /* Breiten-Cap der Tor-Illustrationen; die Kachel bleibt fluid, die Kunst cappt */
+  --spacing-gate-art: clamp(11.5rem, calc(11.5rem + var(--fluid-delta) * 0.025), 14.5rem);
+  /* Breiten-Cap des Heroes-Charakterportals; die Höhe folgt dem 3:4-Format des Assets */
+  --spacing-portal: clamp(32rem, calc(32rem + var(--fluid-delta) * 0.025), 35rem);
 
   /* Layout (fix): Gutter der Vollrahmen (border-image-frame) */
   --spacing-frame-pad: 0.75rem;
+  /* Goldlinien-Versatz des Vollrahmens zur Containerkante. Vermessung des
+     Assets: Linienmitte bei 45/48 Asset-px × 40/275 minus Outset 3/4 px
+     ≈ 3–3.6 px; 4 px liegen auf allen Seiten im deckenden Rahmenband.
+     Hintergrund-Flächen enden hier, damit sie den Rahmen nicht überragen. */
+  --spacing-frame-line: 4px;
+  /* Bleed absoluter Hintergrund-Layer aus dem Gutter bis unter die Goldlinie */
+  --spacing-frame-bleed: calc(var(--spacing-frame-pad) - var(--spacing-frame-line));
 
   /* Screen-Caps pro Screen-Typ; kein globales Maximum */
   --container-page: 96rem;
@@ -157,20 +201,22 @@
  */
 @utility transition-state {
   transition-property:
-    color, background-color, border-color, outline-color, opacity, box-shadow, filter;
+    color, background-color, border-color, outline-color, opacity, box-shadow, filter,
+    backdrop-filter;
   transition-duration: 150ms;
 }
 
 /*
  * Aktive Navigation: Die Fläche beginnt erst an den Spitzen des linken
  * Selektionsornaments. Die 3 px entsprechen dessen sichtbarer Position nach
- * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx.
+ * dem Ausgleich des transparenten Asset-Rands in AppShell.tsx. Die 55 %
+ * lassen die Steintextur der Sidebar durchscheinen.
  */
 @utility nav-selection-surface {
   background-image: linear-gradient(
     to right,
     transparent 0 3px,
-    color-mix(in srgb, var(--color-surface) 70%, transparent) 3px
+    color-mix(in srgb, var(--color-surface) 55%, transparent) 3px
   );
 }
 
@@ -185,6 +231,37 @@
 
 .nav-selection-surface::after {
   filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-accent) 25%, transparent));
+}
+
+/*
+ * Nav-Hover als Vorstufe der Selektion: dieselbe Verlaufsform wie
+ * nav-selection-surface in stark transparenter Tönung, dazu hellt
+ * backdrop-filter die dahinterliegende Steintextur leicht auf.
+ */
+@utility nav-hover-surface {
+  background-image: linear-gradient(
+    to right,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-surface) 28%, transparent) 3px
+  );
+  backdrop-filter: brightness(1.35);
+}
+
+/*
+ * Sidebar-Fläche: Steintextur (concept/PROMPTS.md §35) unter einer
+ * verlaufenden Abschwächungslage der Grundfarbe (30 % oben bis 60 % unten).
+ * Die Prozentwerte steuern die effektive Deckkraft der Textur.
+ */
+@utility sidebar-stone-surface {
+  background-color: var(--color-background);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--color-background) 80%, transparent),
+      color-mix(in srgb, var(--color-background) 25%, transparent)
+    ),
+    url('/assets/backgrounds/sidebar-stone.png');
+  background-size: cover;
+  background-position: center;
 }
 
 /*
@@ -305,55 +382,23 @@
 }
 
 /*
- * Vertikaler 9-Slice-Bannerrahmen der Akt-Banner (Asset aus
- * concept/PROMPTS.md §29, 1024×1536). Vermessung: Kopfschiene samt Finials
- * und Schienen-Nieten in den Zeilen 0–305, Schwanzspitze ab Zeile 1148,
- * Schienen in den Spalten 136–189 und 833–886 mit pixelkonstantem Profil von
- * Zeile 306 bis 1148. Kopf-Krone und Spitzen-Diamant liegen im horizontal
- * gestreckten Mittelband; alle Border-Widths sind deshalb Anteile der
- * Elementbreite --spacing-banner (306/1024, 304/1024, 388/1024) — der
- * horizontale Maßstab bleibt exakt 1, und nur das Schienenband streckt
- * vertikal. Die Elementhöhe ist dadurch frei; unter der Chrome-Mindesthöhe
- * von 0.678 Breiten skaliert der Browser die Border-Widths proportional.
+ * Rechteckiger 9-Slice-Rahmen des Standard-Panels (Ausschnitt aus
+ * concept/ui-draft-3/dungeon-asset-sheet.png, Zelle unten rechts; Asset
+ * 559×327, freigestellt). Vermessung: Goldlinien in den Zeilen 22–23 und
+ * 301–302 sowie den Spalten 24–25 und 535–536; die Stern-Ecken ragen bis
+ * ~12 px über die Linien hinaus (Motiv-Bounds x 12–548, y 10–316), die
+ * Mittelkanten-Diamanten liegen in den linken/rechten Seitenbändern. Die
+ * Slices 60/80 fassen die Stern-Ecken vollständig in die Eck-Slices; die
+ * Border-Widths 24 px / 32 px rendern mit Maßstab 0.4, das Outset legt die
+ * Goldlinien-Mitte (22.5/23.5/25.5/24.5 Asset-px × 0.4) auf die Elementkante.
+ * Nur die Stern-Spitzen ragen hinaus; umgebende Elemente dürfen daher kein
+ * overflow-hidden clippen.
  */
-@utility border-image-banner {
-  --banner-frame-top: calc(var(--spacing-banner) * 0.2988);
-  --banner-frame-x: calc(var(--spacing-banner) * 0.2969);
-  --banner-frame-bottom: calc(var(--spacing-banner) * 0.3789);
+@utility border-image-standard {
   border-style: solid;
-  border-width: var(--banner-frame-top) var(--banner-frame-x) var(--banner-frame-bottom);
-  border-image: url('/assets/frames/banner-act.png') 306 304 388 304 / var(--banner-frame-top)
-    var(--banner-frame-x) var(--banner-frame-bottom) stretch;
-}
-
-/*
- * Bild- und Scrim-Fläche unter dem Bannerrahmen. Die Insets fassen die Fläche
- * rund 25 Asset-Pixel hinter die gezeichneten Innenkanten des Rahmens
- * (Schienen-Innenkanten Asset-Spalten 190/833, Kopfschienen-Unterkante Zeile
- * 154, V-Schulter Zeile 1224): Die painterly Kanten laufen über mehrere Pixel
- * weich aus, und erst diese Reserve schließt die Fläche sichtbar an die
- * Rahmenzeichnung an. Die V-Zone endet als flacher Boden statt als Spitze:
- * Neben dem Spitzen-Diamanten liegen transparente Taschen (Spalten 468–556
- * bis Zeile ~1400), die der Boden auf Zeile 1408 vollständig unterfasst —
- * dort deckt das massive Spitzen-Ornament (Zeilen 1359–1470) die Fläche ab.
- * Alle Maße sind Anteile von --spacing-banner wie beim Rahmen.
- */
-.banner-act-surface {
-  --banner-surface-inset-x: calc(var(--spacing-banner) * 0.18);
-  --banner-surface-inset-top: calc(var(--spacing-banner) * 0.14);
-  --banner-surface-inset-bottom: calc(var(--spacing-banner) * 0.125);
-  --banner-surface-notch: calc(var(--spacing-banner) * 0.18);
-  position: absolute;
-  inset: var(--banner-surface-inset-top) var(--banner-surface-inset-x)
-    var(--banner-surface-inset-bottom);
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--banner-surface-notch)),
-    60% 100%,
-    40% 100%,
-    0 calc(100% - var(--banner-surface-notch))
-  );
+  border-width: 24px 32px;
+  border-image: url('/assets/frames/panel-standard.png') 80 80 / 24px 32px stretch;
+  border-image-outset: 9px 9.5px 10px 10px;
 }
 
 /*

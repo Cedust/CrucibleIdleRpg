@@ -134,22 +134,22 @@
 | ----------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **Ausrüstung / Armor**                          | _Equipment / Armor_ | Items in **vier Slots**: Head, Chest, Legs, Feet. **Das Item ist der Slot** — kein Inventar, kein Tausch         |
 | **Item-Basis**                                  | _Base_              | Item-Typ + Slot; legt den **Innate**-Affix fest. **Item-Basen droppen nicht**                                    |
-| **Innate**                                      | _Innate_            | Der feste Basis-Stat eines Slots. Abzugrenzen vom **Gem**-Affix und vom **Implicit**                             |
+| **Innate**                                      | _Innate_            | Der feste Basis-Stat eines Slots. Abzugrenzen vom **Gem**-Affix und vom **Imprint**                              |
 | **Item-Level**                                  | _Item Level_ (`+n`) | **Stamm** des Ausbaus, gehoben per **Temper**. Abzugrenzen von der **Seltenheit**                                |
 | **Seltenheit**                                  | _Rarity_            | **Master-Regler** eines Armor-Items, gehoben per **Masterwork**. Abzugrenzen von **Mastery Rank** und Item-Level |
 | **Sockel**                                      | _Socket_            | Steckplatz für einen **Gem**                                                                                     |
 | **Prismatic-Sockel**                            | _Prismatic Socket_  | Sonder-Sockel nur für **Diamond**-Gems                                                                           |
 | **Gem**                                         | _Gem_               | Affix-Träger. Un-gesockelt eine **Ressource** (Bestands-Zähler), gesockelt **am Item gebunden**                  |
 | **Amber / Ruby / Sapphire / Emerald / Diamond** | —                   | Die fünf **Gem-Farben** mit je eigenem Affix-Pool                                                                |
-| **Sigil**                                       | _Sigil_             | Codex-Eintrag mit vordefinierter **Implicit**-Identität und Slot(-Typ)-Bindung                                   |
+| **Sigil**                                       | _Sigil_             | Codex-Eintrag mit **Imprint**-Identität, fester **Quelle** und Slot(-Typ)-Bindung. Angezeigt als `Sigil of …`    |
 | **Sigil Codex**                                 | —                   | Sammlung der bekannten Sigils — reiner **Wissensstand**, keine Ressource. Modellform wie das **Rune Grimoire**   |
-| **Implicit**                                    | _Implicit_          | Affix aus einem **Sigil**, per **Brand** auf dem Item. Abzugrenzen von **Innate** und **Gem**-Affix              |
+| **Imprint**                                     | _Imprint_           | Affix aus einem **Sigil**, per **Brand** auf dem Item. Abzugrenzen von **Innate** und **Gem**-Affix              |
 | **Cinder**                                      | _Cinder_            | Boss-/Elite-Währung für **Masterwork** und **Brand**. Abzugrenzen von **Relic Shard** und **Runedust**           |
 | **Drop / Loot**                                 | —                   | Was ein Sieg ausschüttet. Wohnort ist die **Ressource**, nicht der Sieg                                          |
 | **Blacksmith**                                  | _Blacksmith_        | Station für **Temper**, **Masterwork**, **Brand** — **RNG-frei**. Abzugrenzen vom **Jeweler**                    |
 | **Temper**                                      | _Temper_            | Blacksmith-Aktion auf dem **Item-Level**                                                                         |
 | **Masterwork**                                  | _Masterwork_        | Blacksmith-Aktion auf der **Seltenheit**. Abzugrenzen von **Weapon Mastery**                                     |
-| **Brand / Re-Brand**                            | _Brand_             | Blacksmith-Aktion auf dem **Implicit**; **Re-Brand** überschreibt                                                |
+| **Brand / Re-Brand**                            | _Brand_             | Blacksmith-Aktion auf dem **Imprint**; **Re-Brand** überschreibt                                                 |
 | **Jeweler**                                     | _Jeweler_           | Station für **Inlay**, **Attune**, **Recut** — der **einzige Zufall im Handwerk**                                |
 | **Inlay**                                       | _Inlay_             | Jeweler-Aktion: Gem sockeln, Affix rollen                                                                        |
 | **Attune**                                      | _Attune_            | Jeweler-Aktion: gesockelten Gem aufleveln                                                                        |

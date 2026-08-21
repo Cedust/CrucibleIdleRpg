@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BLOCK_DAMAGE_REDUCTION, DEFENSE_CONSTANT_K } from '@/game/curves/combatConstants';
+import { createArmorItem } from '@/game/items/armor';
+import { imprintEffects } from '@/game/sigils/imprints';
 import type { CombatCharacter } from '../combatState';
 import {
   defenseDamageFactor,
@@ -283,6 +285,46 @@ describe('Schritt 3 — Block ist partiell', () => {
 
     expect(result.blocked).toBe(false);
     expect(result.afterBlock).toBe(100);
+  });
+
+  it("applies Warden's Bastion as capped percentage points on Block reduction", () => {
+    const imprints = imprintEffects(
+      {
+        chest: {
+          ...createArmorItem('chest'),
+          rarity: 'magic',
+          sockets: [null],
+          imprint: { sigilId: 'sigil.wardens-bastion' },
+        },
+      },
+      { 'sigil.wardens-bastion': 5 },
+    );
+    const marked = {
+      ...character({ id: 'korvin', role: 'tank', slotIndex: 0, defensive: { blockChance: 1 } }),
+      imprintEffects: imprints,
+    };
+
+    const result = resolveIncomingDamage(
+      { side: 'character', index: 0 },
+      marked,
+      100,
+      1,
+      scriptedPrng([0.1, 0.1]),
+    );
+
+    expect(result.afterBlock).toBeCloseTo(40, 10);
+
+    const capped = resolveIncomingDamage(
+      { side: 'character', index: 0 },
+      {
+        ...marked,
+        imprintEffects: { ...imprints, blockDamageReductionBonus: 2 },
+      },
+      100,
+      1,
+      scriptedPrng([0.1, 0.1]),
+    );
+    expect(capped.afterBlock).toBe(0);
   });
 });
 

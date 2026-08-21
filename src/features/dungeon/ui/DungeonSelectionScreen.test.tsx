@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 // @vitest-environment jsdom
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
-import { createDefaultSave } from '@/features/save/saveSchema';
-import { saveStore } from '@/features/save/saveStore';
+
 import { ACT_1_ENCOUNTERS } from '@/game/encounters/act1';
 import { DungeonSelectionScreen } from './DungeonSelectionScreen';
+import { createDefaultSave } from '@/features/save/saveSchema';
+import { saveStore } from '@/features/save/saveStore';
+import { useDungeonRunStore } from '@/features/dungeon/state/dungeonRunStore';
+import userEvent from '@testing-library/user-event';
 
 describe('DungeonSelectionScreen', () => {
   beforeEach(() => {
@@ -30,7 +31,7 @@ describe('DungeonSelectionScreen', () => {
     expect(acts[0]).toHaveTextContent(/ACT I\b.*The Ashen Depths/);
     expect(acts[0]).toHaveAttribute('aria-current', 'true');
     expect(acts[0]).toHaveAttribute('data-selected');
-    expect(acts[0]?.querySelector('.border-image-banner')).toBeInTheDocument();
+    expect(acts[0]?.querySelector('.border-image-standard')).toBeInTheDocument();
     expect(acts[1]).toHaveAttribute('data-semantic', 'locked');
     expect(acts[2]).toHaveAttribute('data-semantic', 'locked');
     expect(within(acts[1] as HTMLElement).getByText('ACT II')).toBeInTheDocument();
@@ -38,11 +39,18 @@ describe('DungeonSelectionScreen', () => {
     expect(within(acts[2] as HTMLElement).getByText('ACT III')).toBeInTheDocument();
     expect(within(acts[2] as HTMLElement).getByText('The Forgotten Citadel')).toBeInTheDocument();
 
+    // Medaillon-Numerale pro Akt, scoped gegen die Tor-Numerale der Kacheln.
+    expect(within(acts[0] as HTMLElement).getByText('I')).toBeInTheDocument();
+    expect(within(acts[1] as HTMLElement).getByText('II')).toBeInTheDocument();
+    expect(within(acts[2] as HTMLElement).getByText('III')).toBeInTheDocument();
+    expect(
+      acts[0]?.querySelector('img[src="/assets/frames/medallion-act.png"]'),
+    ).toBeInTheDocument();
+
     const actTwoLockLabel = within(acts[1] as HTMLElement).getByText('Locked');
     expect(actTwoLockLabel).toHaveClass('sr-only');
     expect(actTwoLockLabel.previousElementSibling?.tagName).toBe('svg');
-    expect(actTwoLockLabel.parentElement).toHaveClass('rounded-full');
-    expect(actTwoLockLabel.closest('div')).toContainElement(
+    expect(actTwoLockLabel.closest('p')).toContainElement(
       within(acts[1] as HTMLElement).getByText('ACT II'),
     );
   });
@@ -58,9 +66,9 @@ describe('DungeonSelectionScreen', () => {
     expect(gateGrid).toHaveClass('grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))]');
 
     const details = screen.getByRole('region', { name: 'Cinder Gate details' });
-    expect(details).toHaveClass('mx-4', 'grid', 'px-4', 'py-3');
+    expect(details).toHaveClass('px-4', 'py-3', 'mx-4', 'grid');
     expect(details).toHaveClass('@min-[42rem]:grid-cols-[minmax(0,1fr)_auto]');
-    expect(details.querySelector('.border-image-thin')).toBeInTheDocument();
+    expect(details.querySelector('.border-image-standard')).toBeInTheDocument();
     expect(within(details).getByText('ACT I - The Ashen Depths')).toBeInTheDocument();
     expect(
       within(details).getByRole('heading', { name: 'DUNGEON I - Cinder Gate' }),
@@ -71,7 +79,7 @@ describe('DungeonSelectionScreen', () => {
         'The outer gate to the Ashen Depths. Once a grand entrance, now reduced to ember and stone.',
       ),
     ).toBeInTheDocument();
-    expect(within(details).getByText('0 / 20')).toBeInTheDocument();
+    expect(within(details).getByText('Floor 0 / 20')).toBeInTheDocument();
     expect(within(details).getByRole('progressbar')).toBeInTheDocument();
     const enterButton = within(details).getByRole('button', { name: 'ENTER DUNGEON' });
     expect(enterButton).toBeEnabled();
@@ -95,7 +103,7 @@ describe('DungeonSelectionScreen', () => {
       ),
     ).toBeInTheDocument();
     expect(within(details).queryByRole('progressbar')).not.toBeInTheDocument();
-    expect(within(details).queryByText('0 / 20')).not.toBeInTheDocument();
+    expect(within(details).queryByText('Floor 0 / 20')).not.toBeInTheDocument();
     expect(
       within(details).queryByRole('button', { name: 'ENTER DUNGEON' }),
     ).not.toBeInTheDocument();
@@ -111,7 +119,7 @@ describe('DungeonSelectionScreen', () => {
     render(<DungeonSelectionScreen />);
 
     const details = screen.getByRole('region', { name: 'Cinder Gate details' });
-    expect(within(details).getByText('18 / 20')).toBeInTheDocument();
+    expect(within(details).getByText('Floor 18 / 20')).toBeInTheDocument();
     expect(within(details).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '18');
   });
 

@@ -43,7 +43,7 @@ export function MasteryTreeGraph({
   return (
     <Panel
       as="section"
-      variant="thin"
+      variant="standard"
       padding="none"
       role="tabpanel"
       id={`mastery-tree-panel-${nodes[0]?.discipline ?? 'unknown'}`}

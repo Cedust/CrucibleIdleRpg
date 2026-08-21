@@ -9,7 +9,7 @@ interface ProgressBarProps {
   valueText?: string;
   endLabel?: string;
   hideLabel?: boolean;
-  tone?: 'health' | 'barrier' | 'xp' | 'accent';
+  tone?: 'health' | 'barrier' | 'progress' | 'accent';
   size?: 'sm' | 'md';
   labelSize?: 'xs' | 'sm';
   className?: string;
@@ -18,7 +18,7 @@ interface ProgressBarProps {
 const TONE_CLASSES = {
   health: 'from-danger/80 to-danger',
   barrier: 'from-info/80 to-info',
-  xp: 'from-arcane/80 to-arcane',
+  progress: 'from-flame-core via-flame-mid to-flame-tip',
   accent: 'from-accent/80 to-accent',
 } as const;
 

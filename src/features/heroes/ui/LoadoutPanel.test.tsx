@@ -7,7 +7,7 @@ import { effectiveStatsFromSave } from '@/features/combat/engine/characterStats'
 import { createDefaultSave, type SaveData } from '@/features/save/saveSchema';
 import { saveStore } from '@/features/save/saveStore';
 import { CRUCIBLE_IDS } from '@/game/crucible/crucible';
-import { createTeamArmor } from '@/game/items/armor';
+import { createArmorItem, createTeamArmor, innateValue } from '@/game/items/armor';
 import { nodeById } from '@/game/weaponMastery/mastery';
 import { useHeroesStore } from '../heroesStore';
 import { HeroesScreen } from './HeroesScreen';
@@ -32,6 +32,7 @@ function renderLoadout(save: SaveData, characterId: 'korvin' | 'rhaya' | 'quinn'
       stats={effectiveStatsFromSave(save, characterId)}
       masteryRanks={save.characters[characterId].masteryRanks}
       armor={save.armor[characterId]}
+      sigils={save.sigils}
     />,
   );
 }
@@ -79,7 +80,7 @@ describe('LoadoutPanel', () => {
     expect(within(detail).getByText(expected)).toBeInTheDocument();
   });
 
-  it('macht freigeschaltete Slots auswählbar und zeigt nur Basis, Item-Level und Innate', async () => {
+  it('macht freigeschaltete Slots auswählbar und zeigt Basis, Seltenheit, Item-Level und Sockel', async () => {
     const user = userEvent.setup();
     renderLoadout(saveWithArmoryRankTwo());
 
@@ -88,13 +89,15 @@ describe('LoadoutPanel', () => {
     const detail = screen.getByTestId('loadout-detail');
     expect(within(detail).getByRole('heading', { name: 'Chest Armor +1' })).toBeInTheDocument();
     expect(within(detail).getByText('Base Item Type')).toBeInTheDocument();
+    expect(within(detail).getByText('Rarity')).toBeInTheDocument();
+    expect(within(detail).getByText('Common')).toBeInTheDocument();
     expect(within(detail).getByText('Item Level')).toBeInTheDocument();
+    // Common +1 bis zum Cap der Seltenheit (+20); ohne Sockel.
+    expect(within(detail).getByText('+1 / +20')).toBeInTheDocument();
+    expect(within(detail).getByText('Sockets')).toBeInTheDocument();
+    expect(within(detail).getByText('None')).toBeInTheDocument();
     expect(within(detail).getByText('+1 Toughness')).toBeInTheDocument();
-    // Spätere Item-Schichten existieren in M3 nicht einmal als Platzhalter.
-    expect(within(detail).queryByText(/common/i)).not.toBeInTheDocument();
-    expect(within(detail).queryByText(/rarity/i)).not.toBeInTheDocument();
-    expect(within(detail).queryByText(/socket/i)).not.toBeInTheDocument();
-    expect(within(detail).queryByText(/implicit/i)).not.toBeInTheDocument();
+    expect(within(detail).queryByText(/imprint/i)).not.toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: 'Chest, Chest Armor +1' })).toHaveAttribute(
       'aria-pressed',
@@ -104,6 +107,71 @@ describe('LoadoutPanel', () => {
       'aria-pressed',
       'false',
     );
+  });
+
+  it('zeigt die persistierten Schichten eines ausgebauten Items: Seltenheit, Level-Cap und Sockelbelegung', async () => {
+    const user = userEvent.setup();
+    const base = saveWithArmoryRankTwo();
+    const craftedChest = {
+      ...createArmorItem('chest'),
+      rarity: 'rare',
+      itemLevel: 50,
+      sockets: [{ color: 'amber', affix: 'critChance', gemLevel: 2, value: 0.05 }, null],
+      prismaticSockets: [null],
+    } as const;
+    const save: SaveData = {
+      ...base,
+      armor: {
+        ...base.armor,
+        korvin: { ...base.armor.korvin, chest: craftedChest },
+      },
+    };
+
+    renderLoadout(save);
+    await user.click(screen.getByRole('button', { name: 'Chest, Chest Armor +50' }));
+
+    const detail = screen.getByTestId('loadout-detail');
+    expect(within(detail).getByRole('heading', { name: 'Chest Armor +50' })).toBeInTheDocument();
+    expect(within(detail).getByText('Rare')).toBeInTheDocument();
+    expect(within(detail).getByText('+50 / +60')).toBeInTheDocument();
+    expect(within(detail).getByText(`+${innateValue(craftedChest)} Toughness`)).toBeInTheDocument();
+    expect(within(detail).getByText('Socket 1')).toBeInTheDocument();
+    expect(within(detail).getByText('+5% Crit Chance (Amber)')).toBeInTheDocument();
+    expect(within(detail).getByText('Socket 2')).toBeInTheDocument();
+    expect(within(detail).getByText('Prismatic Socket 1')).toBeInTheDocument();
+    expect(within(detail).getAllByText('Empty')).toHaveLength(2);
+  });
+
+  it('shows a branded Armor Imprint without the Sigil Codex prefix', async () => {
+    const user = userEvent.setup();
+    const base = saveWithArmoryRankTwo();
+    const chest = base.armor.korvin.chest;
+    if (chest === undefined) throw new Error('Chest fehlt');
+    const save: SaveData = {
+      ...base,
+      sigils: { 'sigil.burning-sentence': 3 },
+      armor: {
+        ...base.armor,
+        korvin: {
+          ...base.armor.korvin,
+          chest: {
+            ...chest,
+            rarity: 'magic',
+            sockets: [null],
+            imprint: { sigilId: 'sigil.burning-sentence' },
+          },
+        },
+      },
+    };
+
+    renderLoadout(save);
+    await user.click(screen.getByRole('button', { name: 'Chest, Chest Armor +1' }));
+
+    const detail = screen.getByTestId('loadout-detail');
+    expect(within(detail).getByText('Imprint')).toBeInTheDocument();
+    expect(within(detail).getByText('Burning Sentence · Level 3')).toBeInTheDocument();
+    expect(within(detail).getByText('Critical Damage +12%')).toBeInTheDocument();
+    expect(within(detail).queryByText('Sigil of Burning Sentence')).not.toBeInTheDocument();
   });
 
   it('sperrt nicht freigeschaltete Slots ohne Auswahl und ohne Detailkarte', () => {

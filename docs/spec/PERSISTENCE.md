@@ -19,8 +19,9 @@
 
 ## 2. Save-Inhalt
 
-- Global: Save-Version, `saveSeed`, `runCounter`, Playback-Geschwindigkeit
-  ([Playback](SIMULATION.md#2-playback--takt-und-geschwindigkeit)).
+- Global: Save-Version, `saveSeed`, `runCounter`, `craftCounter`, Playback-Geschwindigkeit
+  ([Playback](SIMULATION.md#2-playback--takt-und-geschwindigkeit),
+  [Seeds und Zufalls-Ströme](SIMULATION.md#4-seeds-und-zufalls-ströme)).
 - Pro Charakter: Level, Rest-XP, freie und verteilte Attributpunkte sowie freie Mastery Points
   und Node-Ränge jeder Weapon-Mastery-Discipline
   ([Weapon Mastery](WEAPON-MASTERY.md#8-persistenz-und-laufzeitzustand)).
@@ -65,6 +66,7 @@ implementierten Teil des [Save-Inhalts](#2-save-inhalt):
 version: 1
 saveSeed: uint32
 runCounter: nichtnegative Ganzzahl
+craftCounter: nichtnegative Ganzzahl
 playbackSpeed: 1 | 2
 characters:
   korvin | rhaya | quinn:
@@ -81,6 +83,8 @@ currencies:
   cinder: nichtnegative Ganzzahl
 gems:
   amber | ruby | sapphire | emerald | diamond: nichtnegative Ganzzahl
+sigils:
+  Sigil-ID → Level 1–5, gegen den Sigil-Katalog validiert
 armor:
   korvin | rhaya | quinn:
     Chest | Legs | Head | Feet: nur kanonische Common-+1-Basen der aus anvil.armory abgeleiteten Slots

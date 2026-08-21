@@ -3,6 +3,7 @@ import {
   Flame,
   Gem,
   Hammer,
+  BookMarked,
   ScrollText,
   Swords,
   Users,
@@ -16,6 +17,7 @@ import {
   type View,
 } from '../navigationStore';
 import { cn } from '@/shared/ui/utils/cn';
+import { Divider } from '@/shared/ui/layout/Divider';
 import { focusRing, stateAttrs, transitionState } from '@/shared/ui/utils/state';
 import { CharacterSwitcher } from './CharacterSwitcher';
 
@@ -26,6 +28,7 @@ const VIEW_ICONS: Record<View, LucideIcon> = {
   'weapon-mastery': Swords,
   blacksmith: Hammer,
   jeweler: Gem,
+  'sigil-codex': BookMarked,
   runescribe: ScrollText,
 };
 
@@ -45,7 +48,10 @@ export function AppSidebar() {
   const setActiveCharacterId = useNavigationStore((state) => state.setActiveCharacterId);
 
   return (
-    <aside className="border-image-frame flex w-nav shrink-0 flex-col px-4 py-4">
+    <aside className="border-image-frame isolate flex w-nav shrink-0 flex-col px-4 py-4">
+      {/* Steintextur füllt die Sidebar bis unter die Goldlinie des Rahmens; -z-10 hält
+          sie unter Emblem, Divider und Nav (isolate bindet den Stacking-Kontext). */}
+      <div aria-hidden="true" className="sidebar-stone-surface absolute inset-frame-line -z-10" />
       {/* Endet an der sichtbaren Außenkante des Rahmens; vor den Nav-Buttons im DOM, damit deren positionierte Elemente darüber liegen. */}
       <img
         alt=""
@@ -53,8 +59,7 @@ export function AppSidebar() {
         src="/assets/effects/ember-glow.png"
         className="pointer-events-none absolute bottom-1.25 left-1.25 w-[calc(100%-0.5rem)] opacity-80"
       />
-      {/* Der Wrapper trägt die Fläche, damit sie an der Goldlinie endet (Utility-Padding). */}
-      <div className="flex min-h-0 flex-1 flex-col bg-background">
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="px-2 text-center">
           <div className="mx-auto h-24 w-40 overflow-hidden">
             <img
@@ -78,13 +83,7 @@ export function AppSidebar() {
           </p>
         </div>
 
-        <div aria-hidden="true" className="my-3 h-7 overflow-hidden">
-          <img
-            alt=""
-            src="/assets/ornaments/divider-ornate.png"
-            className="size-full object-cover"
-          />
-        </div>
+        <Divider className="my-3" />
 
         <nav
           aria-label="Primary navigation"
@@ -136,7 +135,7 @@ function SidebarNavItem({
         // ::before/::after-Regeln aus index.css greifen.
         selected
           ? ACTIVE_NAV_ITEM_CLASS
-          : 'text-accent-strong/70 hover:bg-surface hover:text-accent-strong',
+          : 'text-accent-strong/70 hover:nav-hover-surface hover:text-accent-strong',
       )}
     >
       {selected ? (

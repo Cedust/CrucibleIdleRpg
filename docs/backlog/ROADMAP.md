@@ -28,7 +28,7 @@ Ob dieser Kern trägt, zeigt sich am Bildschirm, nicht in der Testsuite.
 | **M2.5** | [UI-Fundament](#m25--ui-fundament)                               | „Gilded Ruins“-Design-System, Assets, Combat View und Skill Trees in Spiel-Optik |
 | **M3**   | [Ausrüstung](#m3--ausrüstung)                                    | Armor-Slots, Innate, Item-Drops, Equip-Ansicht                                   |
 | **M4**   | [Handwerk](#m4--handwerk)                                        | Blacksmith, Jeweler, Gems, Cinder                                                |
-| **M5**   | [Runen & Sigils](#m5--runen--sigils)                             | Talisman, Rite, Grimoire, Sigil Codex                                            |
+| **M5**   | [Runen](#m5--runen)                                              | Talisman, Rite, Grimoire, Sigil Codex                                            |
 | **M6**   | [Endgame & Politur](#m6--endgame--politur)                       | Akt 2/3, Bosse, Balancing-Pass, Deploy                                           |
 
 Nur der **aktive** Meilenstein hat ausformulierte Tasks. Spätere Meilensteine stehen als
@@ -126,11 +126,29 @@ Materialien.
 
 ## M4 — Handwerk
 
-Sigil-Katalog und Sigil Codex vor Blacksmith-Brand; Blacksmith (Temper, Masterwork, Brand),
-Jeweler (Inlay, Attune, Recut), Gems, Cinder-Ökonomie
-([Items, Loot & Handwerk](../spec/ITEMS.md)).
+**Fertig, wenn:** Der Spieler entwickelt die permanente Armor über die Stationen weiter: Temper
+und Masterwork heben Item-Level und Seltenheit gegen Gold und Cinder, Inlay, Attune und Recut
+bewirtschaften Gem-Affixe, Sigils füllen den Sigil Codex, und Brand prägt Imprints auf Items ab
+Magic — alle Effekte wirken sichtbar im Kampf ([Items, Loot & Handwerk](../spec/ITEMS.md)).
 
-## M5 — Runen & Sigils
+| Reihenfolge | Task                                                                                              | Status | Hängt ab von |
+| ----------- | ------------------------------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [026 — Item-Schichten & Handwerks-Fundament](tasks/026-item-schichten-und-handwerks-fundament.md) | done   | 025          |
+| 2           | [027 — Blacksmith: Temper & Masterwork](tasks/027-blacksmith-temper-und-masterwork.md)            | done   | 026          |
+| 3           | [028 — Jeweler: Inlay & Gem-Affixe](tasks/028-jeweler-inlay-und-gem-affixe.md)                    | done   | 026, 027     |
+| 4           | [029 — Jeweler: Attune & Recut](tasks/029-jeweler-attune-und-recut.md)                            | done   | 028          |
+| 5           | [032 — Imprint-Begriff & Brand-Schwelle](tasks/032-imprint-und-brand-schwelle.md)                 | done   | 026          |
+| 6           | [030 — Sigil-Drops & Sigil Codex](tasks/030-sigil-drops-und-sigil-codex.md)                       | done   | 026, 032     |
+| 7           | [031 — Blacksmith: Brand & Re-Brand](tasks/031-blacksmith-brand.md)                               | done   | 027, 030     |
+
+**032** benennt Schicht 5 in `Imprint` um und öffnet Brand für Items ab Magic; es steht vor
+**030**, damit der Sigil-Content nicht gegen die alte Benennung schreibt. **030** ist von den
+Jeweler-Tasks unabhängig; beide Stränge ändern das Save-Schema, der später gemergte Task rebased.
+Der Sigil-Katalog ist entschieden und liegt in [ITEMS §5.1](../spec/ITEMS.md#51-katalog).
+Prismatic-/Diamond-Effekte bleiben außerhalb von M4 (offener Spec-Punkt, Drops ab Akt 2 →
+[M6](#m6--endgame--politur)).
+
+## M5 — Runen
 
 Talisman, Rite, Rune Grimoire, Runedust, Etch/Inscribe ([Runen](../spec/RUNES.md)).
 

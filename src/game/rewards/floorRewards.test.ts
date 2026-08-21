@@ -13,6 +13,7 @@ describe('createFloorReward', () => {
       classification: 'normal',
       enemyCount: 4,
       sigils: {},
+      runeGrimoireUnlocked: true,
       effectiveDamage,
     } as const;
 
@@ -25,7 +26,13 @@ describe('createFloorReward', () => {
     );
     expect(reward.loot).toEqual(
       rollFloorLoot(
-        { floorId: 'A1-D1-03', classification: 'normal', floorIndex: 2, enemyCount: 4 },
+        {
+          floorId: 'A1-D1-03',
+          classification: 'normal',
+          floorIndex: 2,
+          enemyCount: 4,
+          runeGrimoireUnlocked: true,
+        },
         input.sigils,
         lootStreamPrng(0xc0ffee),
       ),
@@ -40,6 +47,7 @@ describe('createFloorReward', () => {
       classification: 'elite',
       enemyCount: 6,
       sigils: {},
+      runeGrimoireUnlocked: true,
       effectiveDamage: { korvin: 1, rhaya: 1, quinn: 1 },
     } as const;
 
@@ -54,6 +62,7 @@ describe('createFloorReward', () => {
       classification: 'elite',
       enemyCount: 6,
       sigils: {},
+      runeGrimoireUnlocked: true,
       effectiveDamage: { korvin: 1, rhaya: 1, quinn: 1 },
     });
 

@@ -9,6 +9,7 @@ const M1_REWARD = {
   loot: {
     gems: { amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 },
     cinder: 1,
+    runewords: 0,
     sigil: null,
   },
 } as const;
@@ -25,7 +26,7 @@ describe('commitFloorVictory', () => {
       relicShards: 1,
       loot: M1_REWARD.loot,
     });
-    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(result.save.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1, runewords: 0 });
     expect(result.save.gems).toEqual({ amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 });
     expect(result.save.characters.korvin).toMatchObject({
       level: 1,
@@ -47,7 +48,7 @@ describe('commitFloorVictory', () => {
       relicShards: 0,
       loot: M1_REWARD.loot,
     });
-    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1, cinder: 2 });
+    expect(second.save.currencies).toEqual({ gold: 20, relicShards: 1, cinder: 2, runewords: 0 });
     expect(second.save.gems).toEqual({ amber: 4, ruby: 0, sapphire: 2, emerald: 0, diamond: 0 });
     expect(second.save.characters.korvin.xp).toBe(10);
     expect(second.save.firstVictories).toEqual(['A1-D1-01']);
@@ -64,6 +65,18 @@ describe('commitFloorVictory', () => {
 
     expect(result.save.sigils).toEqual({ 'sigil.tempered-edge': 1 });
     expect(formatLootGains(result.reward.loot)).toContain('Sigil of Tempered Edge — Level 1');
+  });
+
+  it('commits Runewords atomically into the global currency and reward text', () => {
+    const reward = {
+      ...M1_REWARD,
+      loot: { ...M1_REWARD.loot, runewords: 7 },
+    } as const;
+
+    const result = commitFloorVictory(createDefaultSave(1), reward);
+
+    expect(result.save.currencies.runewords).toBe(7);
+    expect(formatLootGains(result.reward.loot)).toContain('+7 Runewords');
   });
 });
 

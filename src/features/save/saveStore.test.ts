@@ -12,7 +12,7 @@ import {
 } from '@/game/crafting/jeweler';
 import { gemValueRange } from '@/game/items/gems';
 import { attributeRespecCost } from '@/game/rewards/xpRewards';
-import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
+import { CRUCIBLE_IDS, deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
 import { createTeamArmor } from '@/game/items/armor';
 import { createDefaultSave } from './saveSchema';
 import { createSaveService } from './saveService';
@@ -21,6 +21,7 @@ import { createSaveStore } from './saveStore';
 const NO_LOOT = {
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
   cinder: 0,
+  runewords: 0,
   sigil: null,
 } as const;
 
@@ -84,6 +85,7 @@ describe('createSaveStore', () => {
       loot: {
         gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 2, diamond: 0 },
         cinder: 1,
+        runewords: 4,
         sigil: null,
       },
     });
@@ -91,7 +93,12 @@ describe('createSaveStore', () => {
     const reloaded = createSaveStore(service);
     await reloaded.getState().hydrate();
 
-    expect(reloaded.getState().data?.currencies).toEqual({ gold: 10, relicShards: 1, cinder: 1 });
+    expect(reloaded.getState().data?.currencies).toEqual({
+      gold: 10,
+      relicShards: 1,
+      cinder: 1,
+      runewords: 4,
+    });
     expect(reloaded.getState().data?.gems).toEqual({
       amber: 1,
       ruby: 0,
@@ -130,6 +137,7 @@ describe('createSaveStore', () => {
       loot: {
         gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
         cinder: 0,
+        runewords: 0,
         sigil: null,
       },
     });
@@ -234,6 +242,225 @@ describe('createSaveStore', () => {
       'A1-D1',
       'A1-D2',
     ]);
+  });
+
+  it('grants the two Rune Grimoire starters atomically and idempotently with its Anvil purchase', async () => {
+    const port = memoryPort();
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: { ...base, currencies: { ...base.currencies, relicShards: 1 } },
+    });
+
+    await expect(store.getState().buyCrucibleNode('anvil.rune-grimoire')).resolves.toBe(true);
+    expect(store.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
+
+    const reloaded = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
+    await expect(reloaded.getState().buyCrucibleNode('anvil.rune-grimoire')).resolves.toBe(false);
+    expect(reloaded.getState().data?.runes).toEqual({
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    });
+  });
+
+  it('inscribes one reachable unknown Rune atomically through the persisted craft stream', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 500, runewords: 100 },
+        firstVictories: ['A1-D1-03'],
+        crucible: { 'anvil.rune-grimoire': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+
+    await expect(store.getState().inscribeRune('trigger')).resolves.toBe(true);
+    const inscribed = store.getState().data;
+    expect(inscribed?.craftCounter).toBe(1);
+    expect(inscribed?.currencies).toMatchObject({ gold: 460, runewords: 94 });
+    expect(Object.keys(inscribed?.runes ?? {})).toHaveLength(3);
+    expect(inscribed?.runes['rune.trigger.on-crit']).toBe(1);
+    expect(inscribed?.runes['rune.effect.heal']).toBe(1);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(inscribed);
+  });
+
+  it('etches a known Rune atomically without consuming the craft stream', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 500, runewords: 100 },
+        crucible: { 'anvil.rune-grimoire': 1, 'anvil.rune-mastery': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+
+    await expect(store.getState().etchRune('rune.trigger.on-crit')).resolves.toBe(true);
+    const etched = store.getState().data;
+    expect(etched?.runes['rune.trigger.on-crit']).toBe(2);
+    expect(etched?.currencies).toMatchObject({ gold: 400, runewords: 92 });
+    expect(etched?.craftCounter).toBe(0);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(etched);
+  });
+
+  it('rejects impossible Rune actions without a save write', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 0, runewords: 0 },
+        crucible: { 'anvil.rune-grimoire': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+    const before = store.getState().data;
+
+    await expect(store.getState().inscribeRune('trigger')).resolves.toBe(false);
+    await expect(store.getState().etchRune('rune.trigger.on-crit')).resolves.toBe(false);
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
+  });
+
+  it('persists free Rite reconfiguration atomically without a craft roll or lost Rune level', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        crucible: {
+          [CRUCIBLE_IDS.runeGrimoire]: 1,
+          [CRUCIBLE_IDS.talisman]: 2,
+          [CRUCIBLE_IDS.runicFocus]: 1,
+          [CRUCIBLE_IDS.runeMastery]: 1,
+        },
+        runes: {
+          'rune.trigger.on-crit': 2,
+          'rune.trigger.on-multi-hit': 1,
+          'rune.effect.heal': 1,
+          'rune.effect.barrier': 1,
+          'rune.modifier.echo': 1,
+        },
+      },
+    });
+
+    await expect(
+      store.getState().setRiteRune('korvin', 'triggerRuneId', 'rune.trigger.on-crit'),
+    ).resolves.toBe(true);
+    await expect(
+      store.getState().setRiteRune('korvin', 'effectRuneId', 'rune.effect.heal'),
+    ).resolves.toBe(true);
+    await expect(
+      store.getState().setRiteRune('korvin', 'modifierRuneId', 'rune.modifier.echo'),
+    ).resolves.toBe(true);
+    await expect(store.getState().setRiteRune('korvin', 'triggerRuneId', null)).resolves.toBe(true);
+
+    const configured = store.getState().data;
+    expect(configured?.rites.korvin).toEqual({
+      triggerRuneId: null,
+      effectRuneId: 'rune.effect.heal',
+      modifierRuneId: 'rune.modifier.echo',
+    });
+    expect(configured?.runes['rune.trigger.on-crit']).toBe(2);
+    expect(configured?.craftCounter).toBe(0);
+    expect(configured?.currencies).toEqual(base.currencies);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(configured);
+  });
+
+  it('rejects invalid or locked Rite sockets without a save write', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        crucible: { [CRUCIBLE_IDS.runeGrimoire]: 1, [CRUCIBLE_IDS.talisman]: 2 },
+        runes: {
+          'rune.trigger.on-crit': 1,
+          'rune.effect.heal': 1,
+          'rune.effect.barrier': 1,
+        },
+        rites: {
+          ...base.rites,
+          korvin: { ...base.rites.korvin, triggerRuneId: 'rune.trigger.on-crit' },
+        },
+      },
+    });
+    const before = store.getState().data;
+
+    await expect(
+      store.getState().setRiteRune('rhaya', 'triggerRuneId', 'rune.trigger.on-crit'),
+    ).resolves.toBe(false);
+    await expect(
+      store.getState().setRiteRune('rhaya', 'triggerRuneId', 'rune.effect.barrier'),
+    ).resolves.toBe(false);
+    await expect(
+      store.getState().setRiteRune('quinn', 'effectRuneId', 'rune.effect.barrier'),
+    ).resolves.toBe(false);
+
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
   });
 
   it('creates all three permanent Common +1 Armor bases atomically with each Armory rank and reloads them', async () => {
@@ -838,7 +1065,12 @@ describe('createSaveStore', () => {
       }),
     ).rejects.toThrow('Reward-Save fehlgeschlagen');
 
-    expect(store.getState().data?.currencies).toEqual({ gold: 0, relicShards: 0, cinder: 0 });
+    expect(store.getState().data?.currencies).toEqual({
+      gold: 0,
+      relicShards: 0,
+      cinder: 0,
+      runewords: 0,
+    });
     expect(store.getState().data?.characters.korvin.xp).toBe(0);
     expect(store.getState().status).toBe('error');
   });

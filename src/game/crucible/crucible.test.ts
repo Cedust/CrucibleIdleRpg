@@ -81,18 +81,19 @@ describe('crucible node catalog', () => {
     );
   });
 
-  it('keeps the rune unlocks locked while Blacksmith and Jeweler are available in M4', () => {
-    const lockedIds = CRUCIBLE_NODES.filter((node) => node.lockedUntil !== undefined).map(
-      (node) => node.id,
-    );
-    expect(lockedIds.sort()).toEqual(
-      [
-        CRUCIBLE_IDS.runeGrimoire,
-        CRUCIBLE_IDS.talisman,
-        CRUCIBLE_IDS.runicFocus,
-        CRUCIBLE_IDS.runeMastery,
-      ].sort(),
-    );
+  it('enables the complete rune unlock branch in M5', () => {
+    const runeNodes = [
+      CRUCIBLE_IDS.runeGrimoire,
+      CRUCIBLE_IDS.talisman,
+      CRUCIBLE_IDS.runicFocus,
+      CRUCIBLE_IDS.runeMastery,
+    ].map((id) => {
+      const node = crucibleNodeById(id);
+      if (node === undefined) throw new Error(`Rune-Node fehlt: ${id}`);
+      return node;
+    });
+    expect(runeNodes).toHaveLength(4);
+    expect(runeNodes.every((node) => node.lockedUntil === undefined)).toBe(true);
   });
 
   it('places the rune unlock branch in Anvil Sparks with stable prerequisites', () => {
@@ -119,14 +120,14 @@ describe('crucible node catalog', () => {
     expect(runeMastery?.prerequisites).toEqual([{ nodeId: CRUCIBLE_IDS.runeGrimoire, rank: 1 }]);
   });
 
-  it('offers exactly 202 active relic shard costs: 22 anvil, 60 smelting, 120 molten', () => {
+  it('offers exactly 225 active relic shard costs: 45 anvil, 60 smelting, 120 molten', () => {
     const active = CRUCIBLE_NODES.filter((node) => node.lockedUntil === undefined);
     const costOf = (tree: string): number =>
       active
         .filter((node) => node.tree === tree)
         .reduce((total, node) => total + totalRankCost(node.maxRank), 0);
 
-    expect(costOf('anvil')).toBe(22);
+    expect(costOf('anvil')).toBe(45);
     expect(costOf('smelting')).toBe(60);
     expect(costOf('molten')).toBe(120);
   });
@@ -187,14 +188,12 @@ describe('purchase rules', () => {
     expect(purchaseCrucibleNode(ranks, 100, NO_DUNGEONS, CRUCIBLE_IDS.overpower)).toBeNull();
   });
 
-  it('rejects unknown nodes, unaffordable ranks and locked nodes', () => {
+  it('rejects unknown nodes and unaffordable ranks while selling Rune Grimoire in M5', () => {
     expect(purchaseFailure({}, 100, NO_DUNGEONS, 'anvil.unknown')).toBe('Unknown Crucible node.');
     expect(purchaseFailure({}, 0, NO_DUNGEONS, CRUCIBLE_IDS.overpower)).toBe(
       'Requires 1 Relic Shard.',
     );
-    expect(purchaseFailure({}, 100, ALL_DUNGEONS, CRUCIBLE_IDS.runeGrimoire)).toMatch(
-      /^Locked until /,
-    );
+    expect(purchaseFailure({}, 1, ALL_DUNGEONS, CRUCIBLE_IDS.runeGrimoire)).toBeNull();
   });
 
   it('sells the Jeweler unlock once Blacksmith rank 1 is owned', () => {

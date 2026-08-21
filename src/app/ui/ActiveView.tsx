@@ -8,6 +8,8 @@ import { ScreenHeader } from '@/shared/ui/layout/ScreenHeader';
 import { ScreenLayout } from '@/shared/ui/layout/ScreenLayout';
 import { WeaponMasteryScreen } from '@/features/weaponMastery/ui/WeaponMasteryScreen';
 import { SigilCodexScreen } from '@/features/sigils/ui/SigilCodexScreen';
+import { RuneGrimoireScreen } from '@/features/runes/ui/RuneGrimoireScreen';
+import { RunescribeScreen } from '@/features/runes/ui/RunescribeScreen';
 
 /** Renders the currently selected normal-shell view. */
 export function ActiveView() {
@@ -28,6 +30,10 @@ export function ActiveView() {
       return <JewelerScreen />;
     case 'sigil-codex':
       return <SigilCodexScreen />;
+    case 'rune-grimoire':
+      return <RuneGrimoireScreen />;
+    case 'runescribe':
+      return <RunescribeScreen />;
     default:
       return (
         <ScreenLayout>

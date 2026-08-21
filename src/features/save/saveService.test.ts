@@ -64,6 +64,18 @@ describe('createSaveService', () => {
     expect(console.warn).toHaveBeenCalledOnce();
   });
 
+  it('setzt einen Save vor dem M5-Rune-Modell vollständig auf Default zurück', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const oldSave = JSON.parse(JSON.stringify(createDefaultSave(42))) as Record<string, unknown>;
+    delete oldSave.runes;
+    delete oldSave.rites;
+    const fallback = createDefaultSave(777);
+    const service = createSaveService(memoryPort(JSON.stringify(oldSave)), () => fallback);
+
+    await expect(service.load()).resolves.toEqual(fallback);
+    expect(console.warn).toHaveBeenCalledOnce();
+  });
+
   it('setzt einen Save mit Armor-Items ohne Sockel-Schichten (M3-Form) auf Default zurück', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const m3Item = {

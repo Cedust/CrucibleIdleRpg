@@ -6,6 +6,8 @@ import {
   gemDropChance,
   lootStreamPrng,
   rollFloorLoot,
+  rollRunewords,
+  runewordClassificationBonus,
 } from './lootRewards';
 import type { FloorLootInput } from './lootRewards';
 
@@ -22,6 +24,13 @@ function stubPrng(chanceResult: boolean, colorIndex = 0): Prng {
 function rollTestLoot(input: Omit<FloorLootInput, 'floorId'>, prng: Prng) {
   return rollFloorLoot({ floorId: 'A1-D1-01', ...input }, {}, prng);
 }
+
+const maxRollPrng: Prng = {
+  seed: 0,
+  next: () => 0,
+  nextInt: (_min, max) => max,
+  chance: () => true,
+};
 
 describe('rollFloorLoot', () => {
   it('vergibt Boss-Cinder garantiert, auch wenn jeder Chance-Wurf fehlschlägt', () => {
@@ -113,12 +122,53 @@ describe('rollFloorLoot', () => {
     const reference = [before.next(), before.next(), before.next()];
 
     rollTestLoot(
-      { classification: 'elite', floorIndex: 19, enemyCount: 6 },
+      { classification: 'elite', floorIndex: 19, enemyCount: 6, runeGrimoireUnlocked: true },
       lootStreamPrng(floorSeed),
     );
 
     const after = derivePrng(floorSeed, PRNG_STREAM.combat);
     expect([after.next(), after.next(), after.next()]).toEqual(reference);
+  });
+});
+
+describe('Runewords', () => {
+  const normalInput = {
+    floorId: 'A1-D1-01',
+    classification: 'normal',
+    floorIndex: 0,
+    enemyCount: 3,
+  } as const;
+
+  it('gates every enemy reward behind Rune Grimoire and grants all enemies afterwards', () => {
+    expect(rollRunewords({ ...normalInput, runeGrimoireUnlocked: false }, maxRollPrng)).toBe(0);
+    expect(rollRunewords({ ...normalInput, runeGrimoireUnlocked: true }, maxRollPrng)).toBe(3);
+  });
+
+  it('adds an increasing depth range and structural Elite/Boss bonuses', () => {
+    const shallow = rollRunewords({ ...normalInput, runeGrimoireUnlocked: true }, maxRollPrng);
+    const deep = rollRunewords(
+      { ...normalInput, floorIndex: 25, runeGrimoireUnlocked: true },
+      maxRollPrng,
+    );
+    const elite = rollRunewords(
+      { ...normalInput, classification: 'elite', runeGrimoireUnlocked: true },
+      maxRollPrng,
+    );
+    const boss = rollRunewords(
+      { ...normalInput, classification: 'boss', runeGrimoireUnlocked: true },
+      maxRollPrng,
+    );
+
+    expect(deep).toBeGreaterThan(shallow);
+    expect(elite - shallow).toBe(runewordClassificationBonus('elite'));
+    expect(boss - shallow).toBe(runewordClassificationBonus('boss'));
+  });
+
+  it('is deterministic through the floor loot stream', () => {
+    const input = { ...normalInput, floorIndex: 52, runeGrimoireUnlocked: true };
+    expect(rollFloorLoot(input, {}, lootStreamPrng(77))).toEqual(
+      rollFloorLoot(input, {}, lootStreamPrng(77)),
+    );
   });
 });
 

@@ -31,6 +31,17 @@ export const LOOT_BALANCING = {
   eliteCinderChanceCap: 0.75,
 } as const;
 
+/**
+ * PLATZHALTER — Runewords folgen derselben deklarativen Balancing-Policy wie das übrige Loot.
+ * Regel bleibt: jeder besiegte Gegner liefert nach Grimoire-Freischaltung mindestens einen
+ * Runeword, die Tiefe fügt einen Seed-basierten Bonus hinzu, Elite und Boss einen festen Bonus.
+ */
+export const RUNEWORD_BALANCING = {
+  depthFloorsPerTier: 25,
+  eliteBonus: 2,
+  bossBonus: 5,
+} as const;
+
 /** Eingaben der Loot-Auswertung eines Floor-Siegs — alle drei stehen mit dem Encounter fest. */
 export interface FloorLootInput {
   floorId: FloorId;
@@ -38,6 +49,8 @@ export interface FloorLootInput {
   /** Globaler Floor-Index `0..299` über alle drei Akte. */
   floorIndex: number;
   enemyCount: number;
+  /** Das Rune Grimoire ist das strikte System-Gate vor jedem Runewords-Drop. */
+  runeGrimoireUnlocked?: boolean;
 }
 
 /** Akt-Nummer eines globalen Floor-Index — Grundlage der Akt-2-Diamond-Grenze (ITEMS §6). */
@@ -61,6 +74,34 @@ export function eliteCinderChance(floorIndex: number): number {
   );
 }
 
+/** Fester Elite-/Boss-Zuschlag zusätzlich zur Beute aller besiegten Gegner. */
+export function runewordClassificationBonus(classification: EncounterClass): number {
+  switch (classification) {
+    case 'elite':
+      return RUNEWORD_BALANCING.eliteBonus;
+    case 'boss':
+      return RUNEWORD_BALANCING.bossBonus;
+    case 'normal':
+      return 0;
+  }
+}
+
+/**
+ * Runewords sind nach der Grimoire-Freischaltung Beute aller Gegner. Jeder Gegner garantiert
+ * eine Währung; je 25 globale Floors erweitert der `loot`-Wurf den möglichen Einzelbonus um
+ * eine Stufe. Die Werte sind ausdrücklich austauschbarer Balancing-Content.
+ */
+export function rollRunewords(input: FloorLootInput, prng: Prng): number {
+  if (input.runeGrimoireUnlocked !== true) return 0;
+
+  const depthBonusLimit = Math.floor(input.floorIndex / RUNEWORD_BALANCING.depthFloorsPerTier);
+  let runewords = runewordClassificationBonus(input.classification);
+  for (let enemy = 0; enemy < input.enemyCount; enemy += 1) {
+    runewords += 1 + prng.nextInt(0, depthBonusLimit);
+  }
+  return runewords;
+}
+
 /** Alle fünf Gem-Zähler auf `0` — Basis des Loot-Ergebnisses und des Save-Defaults. */
 export function createEmptyGemStock(): Record<GemColor, number> {
   return { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 };
@@ -74,8 +115,8 @@ export function lootStreamPrng(floorSeed: number): ResumablePrng {
 /**
  * Wertet den Loot eines Floor-Siegs aus — rein und deterministisch über den übergebenen
  * `loot`-Strom. Die Wurf-Reihenfolge ist Teil des Determinismus: erst je Gegner der reguläre
- * Gem-Wurf, dann der Diamond-Wurf (nur Elite/Boss ab Akt 2), zuletzt der Elite-Cinder-Wurf.
- * Der Boss-Cinder ist garantiert und verbraucht keinen Wurf.
+ * Gem-Wurf, dann der Diamond-Wurf (nur Elite/Boss ab Akt 2), der Elite-Cinder-Wurf, Sigil und
+ * zuletzt Runewords. Der Boss-Cinder ist garantiert und verbraucht keinen Wurf.
  */
 export function rollFloorLoot(input: FloorLootInput, codex: SigilCodex, prng: Prng): FloorLoot {
   const gems = createEmptyGemStock();
@@ -104,5 +145,10 @@ export function rollFloorLoot(input: FloorLootInput, codex: SigilCodex, prng: Pr
     cinder = 1;
   }
 
-  return { gems, cinder, sigil: rollSigilDrop(input.floorId, codex, prng) };
+  return {
+    gems,
+    cinder,
+    sigil: rollSigilDrop(input.floorId, codex, prng),
+    runewords: rollRunewords(input, prng),
+  };
 }

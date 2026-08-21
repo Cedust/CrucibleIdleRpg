@@ -28,6 +28,17 @@ Crucible Idle RPG is a React 19, TypeScript, and Vite single-page app. Read [REA
 - Pre-release save policy: there is exactly one current save schema. Schema changes replace the default save, schema, and tests atomically; saves in any other format reset to the default on load. Write a save migration only when a spec or task explicitly requires one.
 - Do not install new libraries unless asked.
 
+## Writing Style
+
+Apply this to all prose: documentation, specs, comments, commit messages, and PR descriptions.
+
+- Use short sentences. Use the active voice. Give each word one meaning. Cut the clutter.
+- Follow Zinsser's four principles: clarity, simplicity, brevity, humanity.
+- Write in Simplified Technical English.
+- Break long paragraphs into bullet points.
+- Keep the writing warm and human. A person wrote it, not a manual.
+- Describe the current state. Avoid contrast or negation sentences such as "X no longer does Y". State each fact once and link to it from elsewhere.
+
 ## Coding Style & Naming Conventions
 
 - Write TypeScript and TSX with two-space indentation, semicolons, single quotes, trailing commas, and a 100-character line width.

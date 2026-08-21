@@ -28,7 +28,7 @@ Ob dieser Kern trägt, zeigt sich am Bildschirm, nicht in der Testsuite.
 | **M2.5** | [UI-Fundament](#m25--ui-fundament)                               | „Gilded Ruins“-Design-System, Assets, Combat View und Skill Trees in Spiel-Optik |
 | **M3**   | [Ausrüstung](#m3--ausrüstung)                                    | Armor-Slots, Innate, Item-Drops, Equip-Ansicht                                   |
 | **M4**   | [Handwerk](#m4--handwerk)                                        | Blacksmith, Jeweler, Gems, Cinder                                                |
-| **M5**   | [Runen](#m5--runen)                                              | Talisman, Rite, Grimoire, Sigil Codex                                            |
+| **M5**   | [Runen](#m5--runen)                                              | Talisman, Rite, Grimoire                                                         |
 | **M6**   | [Endgame & Politur](#m6--endgame--politur)                       | Akt 2/3, Bosse, Balancing-Pass, Deploy                                           |
 
 Nur der **aktive** Meilenstein hat ausformulierte Tasks. Spätere Meilensteine stehen als
@@ -150,7 +150,26 @@ Prismatic-/Diamond-Effekte bleiben außerhalb von M4 (offener Spec-Punkt, Drops 
 
 ## M5 — Runen
 
-Talisman, Rite, Rune Grimoire, Runedust, Etch/Inscribe ([Runen](../spec/RUNES.md)).
+**Fertig, wenn:** Der Spieler schaltet das Rune Grimoire über Anvil Sparks frei, erhält und
+investiert Runewords, entdeckt und levelt Runen im Rune Grimoire und legt einzigartige Rites auf die
+Talismane des Teams. Trigger, Effects und Modifier wirken als lesbare, deterministische
+Kampfereignisse ([Runen](../spec/RUNES.md)).
+
+| Reihenfolge | Task                                                                            | Status | Hängt ab von |
+| ----------- | ------------------------------------------------------------------------------- | ------ | ------------ |
+| 1           | [033 — Rune-Grimoire-Fundament](tasks/033-rune-grimoire-fundament.md)           | done   | 031          |
+| 2           | [034 — Runewords-Drops & Reward-Commit](tasks/034-runewords-drops.md)           | done   | 033          |
+| 3           | [035 — Runescribe: Inscribe & Etch](tasks/035-runescribe-inscribe-etch.md)      | done   | 033, 034     |
+| 4           | [036 — Talisman & Rite-Konfiguration](tasks/036-talisman-rite-konfiguration.md) | done   | 033, 035     |
+| 5           | [037 — Rite-Auslösung & Basis-Effects](tasks/037-rite-ausloesung-effects.md)    | done   | 036          |
+| 6           | [038 — Rite-Modifier & M5-Abschluss](tasks/038-rite-modifier-m5-abschluss.md)   | done   | 037          |
+
+**033 → 034 → 035 → 036 → 037** etabliert zuerst das vollständige, streng validierte M5-Modell und
+seinen Spieler-Loop. **038** baut anschließend auf der verbindlichen Ausführungs- und Zielregel
+der Rite-Effects auf; Runen-Katalog, Drop-Kurven, Kosten und Stärken bleiben bis zum
+Balancing-Pass ausdrücklich deklarativer Content. Der Talisman
+verlässt mit 036 die Heroes-Loadout-Ansicht und wird ausschließlich in Runescribe konfiguriert,
+wie es die SPEC verlangt.
 
 ## M6 — Endgame & Politur
 

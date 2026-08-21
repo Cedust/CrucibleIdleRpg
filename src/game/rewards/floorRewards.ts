@@ -17,6 +17,8 @@ export interface FloorRewardInput {
   floorSeed: number;
   classification: EncounterClass;
   enemyCount: number;
+  /** Persistierter System-Gate vor dem Sieg; verhindert Runewords vor dem Grimoire. */
+  runeGrimoireUnlocked?: boolean;
   /** Codex-Stand vor diesem Sieg; Sigil-Progression wird daraus über den Loot-Strom gerollt. */
   sigils: SigilCodex;
   effectiveDamage: Readonly<Record<CharacterId, number>>;
@@ -28,13 +30,21 @@ export interface FloorRewardInput {
  * ausschließlich über den vom Floor-Seed abgeleiteten `loot`-Strom.
  */
 export function createFloorReward(input: FloorRewardInput): FloorRewardDefinition {
-  const { floorId, floorIndex, floorSeed, classification, enemyCount, effectiveDamage } = input;
+  const {
+    floorId,
+    floorIndex,
+    floorSeed,
+    classification,
+    enemyCount,
+    runeGrimoireUnlocked,
+    effectiveDamage,
+  } = input;
   return {
     floorId,
     gold: FLOOR_GOLD_REWARD,
     characterXp: distributeFloorXp({ floorIndex, enemyCount, effectiveDamage }),
     loot: rollFloorLoot(
-      { floorId, classification, floorIndex, enemyCount },
+      { floorId, classification, floorIndex, enemyCount, runeGrimoireUnlocked },
       input.sigils,
       lootStreamPrng(floorSeed),
     ),

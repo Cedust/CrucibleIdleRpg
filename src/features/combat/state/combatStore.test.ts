@@ -21,6 +21,7 @@ const SAVED_REWARD: RewardSummary = {
   loot: {
     gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
     cinder: 0,
+    runewords: 0,
     sigil: null,
   },
 };

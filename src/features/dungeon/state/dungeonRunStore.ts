@@ -8,6 +8,7 @@ import {
 } from '@/features/dungeon/dungeonCombat';
 import type { RewardSummary } from '@/features/dungeon/rewards';
 import { deriveUnlockedDungeonIds } from '@/game/crucible/crucible';
+import { isRuneGrimoireUnlocked } from '@/game/runes/runes';
 import { createFloorReward } from '@/game/rewards/floorRewards';
 import { isFinalAct1Floor, resolveAct1Encounter, type Act1DungeonId } from '@/game/encounters/act1';
 import { registerOptimizationGuard, saveStore } from '@/features/save/saveStore';
@@ -17,6 +18,7 @@ export type DungeonRunMode = 'selection' | 'starting' | 'run';
 
 /** Gemeinsamer Sieg-Commit jedes Floors: Reward erzeugen, persistieren, Summary melden. */
 async function commitFloorReward(result: CombatState): Promise<RewardSummary> {
+  const save = saveStore.getState().data;
   const commit = await saveStore.getState().commitVictory(
     createFloorReward({
       floorId: result.floorId,
@@ -24,7 +26,8 @@ async function commitFloorReward(result: CombatState): Promise<RewardSummary> {
       floorSeed: result.floorSeed,
       classification: resolveAct1Encounter(result.floorId).classification,
       enemyCount: result.enemies.length,
-      sigils: saveStore.getState().data?.sigils ?? {},
+      sigils: save?.sigils ?? {},
+      runeGrimoireUnlocked: save !== null && isRuneGrimoireUnlocked(save.crucible),
       effectiveDamage: result.effectiveDamage,
     }),
   );

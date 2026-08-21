@@ -74,6 +74,7 @@ describe('DungeonRunScreen', () => {
         loot: {
           gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
           cinder: 0,
+          runewords: 0,
           sigil: null,
         },
       },
@@ -100,6 +101,7 @@ describe('DungeonRunScreen', () => {
         loot: {
           gems: { amber: 2, ruby: 0, sapphire: 0, emerald: 1, diamond: 0 },
           cinder: 1,
+          runewords: 3,
           sigil: null,
         },
       },
@@ -108,7 +110,7 @@ describe('DungeonRunScreen', () => {
     render(<DungeonRunScreen />);
 
     expect(screen.getByText(/Reward saved:/)).toHaveTextContent(
-      'Reward saved: +10 Gold / +15 XP / +1 Relic Shard / +2 Amber / +1 Emerald / +1 Cinder',
+      'Reward saved: +10 Gold / +15 XP / +1 Relic Shard / +2 Amber / +1 Emerald / +1 Cinder / +3 Runewords',
     );
   });
 
@@ -126,6 +128,7 @@ describe('DungeonRunScreen', () => {
         loot: {
           gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
           cinder: 0,
+          runewords: 0,
           sigil: null,
         },
       },
@@ -154,8 +157,8 @@ describe('DungeonRunScreen', () => {
     );
     expect(screen.getByTestId('run-status-bar')).toBeInTheDocument();
     const rewards = within(screen.getByLabelText('Run rewards'));
-    // Gold, Relic Shards, fünf Gems und Cinder starten als sichtbare 0-Zähler.
-    expect(rewards.getAllByText('0')).toHaveLength(8);
+    // Gold, Relic Shards, fünf Gems, Cinder und Runewords starten als sichtbare 0-Zähler.
+    expect(rewards.getAllByText('0')).toHaveLength(9);
     expect(rewards.getByLabelText('Gold amount')).toHaveTextContent('0');
     expect(rewards.getByLabelText('Relic Shards amount')).toHaveTextContent('0');
     expect(container.querySelector('svg.lucide-stone')).not.toBeNull();
@@ -164,8 +167,8 @@ describe('DungeonRunScreen', () => {
     expect(rewards.getByText('Relic Shards')).toHaveClass('sr-only');
     expect(rewards.getByText('Cinder')).toHaveClass('sr-only');
     expect(rewards.getByText('Amber')).toHaveClass('sr-only');
-    expect(rewards.getByText('Runedust')).toHaveClass('sr-only');
-    expect(screen.getByLabelText('Runedust amount')).toHaveTextContent('—');
+    expect(rewards.getByText('Runewords')).toHaveClass('sr-only');
+    expect(screen.getByLabelText('Runewords amount')).toHaveTextContent('0');
 
     const save = saveStore.getState().data;
     if (save === null) throw new Error('expected save data');
@@ -178,6 +181,7 @@ describe('DungeonRunScreen', () => {
             gold: save.currencies.gold + 12,
             relicShards: save.currencies.relicShards + 3,
             cinder: save.currencies.cinder + 2,
+            runewords: save.currencies.runewords + 5,
           },
           gems: { ...save.gems, amber: save.gems.amber + 4, sapphire: save.gems.sapphire + 1 },
         },
@@ -187,6 +191,7 @@ describe('DungeonRunScreen', () => {
     expect(rewards.getByText('12')).toBeInTheDocument();
     expect(rewards.getByText('3')).toBeInTheDocument();
     expect(rewards.getByLabelText('Cinder amount')).toHaveTextContent('2');
+    expect(rewards.getByLabelText('Runewords amount')).toHaveTextContent('5');
     expect(rewards.getByLabelText('Amber amount')).toHaveTextContent('4');
     expect(rewards.getByLabelText('Sapphire amount')).toHaveTextContent('1');
     expect(rewards.getByLabelText('Emerald amount')).toHaveTextContent('0');

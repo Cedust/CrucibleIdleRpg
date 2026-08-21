@@ -120,8 +120,8 @@
 | **Waystone**                 | _Waystone_    | Anvil-Sparks-Node, der einen späteren Dungeon-Einstieg dauerhaft freischaltet                                                                                                                            |
 | **Belohnung**                | _Reward_      | Ergebnis eines gewonnenen Kampfes; einziger Fortschritts-Input                                                                                                                                           |
 | **XP**                       | _Experience_  | Belohnung → **Charakterlevel**                                                                                                                                                                           |
-| **Gold**                     | _Gold_        | Laufende globale Währung. Abzugrenzen von **Relic Shard**, **Cinder**, **Runedust**                                                                                                                      |
-| **Relic Shard**              | _Relic Shard_ | Fragment alter Waffen, Siegel oder Schmiedewerke des gefallenen Reiches; Erstsieg-Währung für den **Crucible**. Abzugrenzen von **Gems**, **Cinder** und **Runedust**                                    |
+| **Gold**                     | _Gold_        | Laufende globale Währung. Abzugrenzen von **Relic Shard**, **Cinder**, **Runewords**                                                                                                                     |
+| **Relic Shard**              | _Relic Shard_ | Fragment alter Waffen, Siegel oder Schmiedewerke des gefallenen Reiches; Erstsieg-Währung für den **Crucible**. Abzugrenzen von **Gems**, **Cinder** und **Runewords**                                   |
 | **Crucible**                 | _Crucible_    | Der **globale** Skilltree: **Anvil Sparks** (permanente Zugänge und alle Systemfreischaltungen), **Smelting Flames** (Charakterwerte), **Molten Cast** (Kampfregeln). Abzugrenzen von **Weapon Mastery** |
 | **Respec**                   | _Respec_      | Vollständiger Rücksetzer eines flexiblen Crucible-Trees gegen volle Relic-Shard-Erstattung; Anvil ist permanent                                                                                          |
 | **Prestige**                 | —             | **Bewusstes Nicht-Ziel** — kein Reset-Loop geplant                                                                                                                                                       |
@@ -144,7 +144,7 @@
 | **Sigil**                                       | _Sigil_             | Codex-Eintrag mit **Imprint**-Identität, fester **Quelle** und Slot(-Typ)-Bindung. Angezeigt als `Sigil of …`    |
 | **Sigil Codex**                                 | —                   | Sammlung der bekannten Sigils — reiner **Wissensstand**, keine Ressource. Modellform wie das **Rune Grimoire**   |
 | **Imprint**                                     | _Imprint_           | Affix aus einem **Sigil**, per **Brand** auf dem Item. Abzugrenzen von **Innate** und **Gem**-Affix              |
-| **Cinder**                                      | _Cinder_            | Boss-/Elite-Währung für **Masterwork** und **Brand**. Abzugrenzen von **Relic Shard** und **Runedust**           |
+| **Cinder**                                      | _Cinder_            | Boss-/Elite-Währung für **Masterwork** und **Brand**. Abzugrenzen von **Relic Shard** und **Runewords**          |
 | **Drop / Loot**                                 | —                   | Was ein Sieg ausschüttet. Wohnort ist die **Ressource**, nicht der Sieg                                          |
 | **Blacksmith**                                  | _Blacksmith_        | Station für **Temper**, **Masterwork**, **Brand** — **RNG-frei**. Abzugrenzen vom **Jeweler**                    |
 | **Temper**                                      | _Temper_            | Blacksmith-Aktion auf dem **Item-Level**                                                                         |
@@ -159,14 +159,14 @@
 
 ## Runen (Endgame)
 
-| Begriff                         | EN / Code    | Abgrenzung                                                                                                  |
-| ------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
-| **Rune**                        | _Rune_       | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse           |
-| **Trigger / Effect / Modifier** | —            | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                                        |
-| **Runescribe**                  | _Runescribe_ | Station/Persona für **Rune Grimoire**, **Talisman/Rites**, **Inscribe** und **Etch**; nicht das Rune-System |
-| **Rune Grimoire**               | —            | Katalog aller Runen; in Runescribe für **Inscribe** und **Etch**. Kein Bestand, kein Inventar               |
-| **Talisman**                    | _Talisman_   | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**                    |
-| **Rite**                        | _Rite_       | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                                 |
-| **Runedust**                    | _Runedust_   | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Relic Shard**                 |
-| **Inscribe**                    | _Inscribe_   | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                            |
-| **Etch**                        | _Etch_       | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                                    |
+| Begriff                         | EN / Code    | Abgrenzung                                                                                        |
+| ------------------------------- | ------------ | ------------------------------------------------------------------------------------------------- |
+| **Rune**                        | _Rune_       | Träger eines **konditionalen Kampf-Ereignisses** — die einzige **qualitative** Fortschritts-Achse |
+| **Trigger / Effect / Modifier** | —            | Die drei Runen-Kategorien: _wann?_ · _was?_ · _wie?_                                              |
+| **Runescribe**                  | _Runescribe_ | Station/Persona für den **Talisman/Rite** des gewählten Charakters; nicht das Rune-System         |
+| **Rune Grimoire**               | —            | Eigene Sammlung aller Runen für **Inscribe** und **Etch**. Kein Bestand, kein Inventar            |
+| **Talisman**                    | _Talisman_   | Schmuckstück, eines pro Charakter, trägt genau einen **Rite**. **Kein Ausrüstungs-Slot**          |
+| **Rite**                        | _Rite_       | Die Zeile auf dem Talisman: **Trigger + Effect + Modifier**                                       |
+| **Runewords**                   | _Runewords_  | Runen-Währung für **Inscribe** und **Etch**. Abzugrenzen von **Cinder** und **Relic Shard**       |
+| **Inscribe**                    | _Inscribe_   | Grimoire-Aktion: liefert eine **noch unbekannte** Rune. Abzugrenzen von **Etch**                  |
+| **Etch**                        | _Etch_       | Grimoire-Aktion: hebt das **Level** einer bekannten Rune                                          |

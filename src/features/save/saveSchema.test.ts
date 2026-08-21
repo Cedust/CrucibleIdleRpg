@@ -36,9 +36,15 @@ describe('saveSchema', () => {
           masteryRanks: {},
         },
       },
-      currencies: { gold: 0, relicShards: 0, cinder: 0 },
+      currencies: { gold: 0, relicShards: 0, cinder: 0, runewords: 0 },
       gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
       sigils: {},
+      runes: {},
+      rites: {
+        korvin: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+        rhaya: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+        quinn: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+      },
       firstVictories: [],
       crucible: {},
       armor: {
@@ -87,14 +93,14 @@ describe('saveSchema', () => {
     expect(saveSchema.safeParse(withoutCounter).success).toBe(false);
   });
 
-  it('accepts Relic Shards and rejects the removed legacy currency field', () => {
+  it('accepts all currencies including Runewords and rejects the removed legacy field', () => {
     const save = createDefaultSave(123);
     const legacyCurrencyKey = ['crys', 'tals'].join('');
 
     expect(
       saveSchema.safeParse({
         ...save,
-        currencies: { gold: 0, relicShards: 7, cinder: 0 },
+        currencies: { gold: 0, relicShards: 7, cinder: 0, runewords: 2 },
       }).success,
     ).toBe(true);
     expect(
@@ -145,6 +151,46 @@ describe('saveSchema', () => {
     expect(saveSchema.safeParse({ ...save, sigils: { 'sigil.tempered-edge': 5.5 } }).success).toBe(
       false,
     );
+  });
+
+  it('validates M5 Grimoire knowledge, level cap, Rite ranks and team uniqueness', () => {
+    const save = createDefaultSave(123);
+    const unlocked = {
+      ...save,
+      crucible: { 'anvil.rune-grimoire': 1, 'anvil.talisman': 2 },
+      runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+    };
+
+    expect(saveSchema.safeParse(unlocked).success).toBe(true);
+    expect(
+      saveSchema.safeParse({ ...unlocked, runes: { ...unlocked.runes, 'rune.unknown': 1 } })
+        .success,
+    ).toBe(false);
+    expect(
+      saveSchema.safeParse({
+        ...unlocked,
+        runes: { ...unlocked.runes, 'rune.trigger.on-crit': 2 },
+      }).success,
+    ).toBe(false);
+    expect(
+      saveSchema.safeParse({
+        ...unlocked,
+        rites: {
+          ...unlocked.rites,
+          korvin: { ...unlocked.rites.korvin, triggerRuneId: 'rune.trigger.on-crit' },
+          rhaya: { ...unlocked.rites.rhaya, triggerRuneId: 'rune.trigger.on-crit' },
+        },
+      }).success,
+    ).toBe(false);
+    expect(
+      saveSchema.safeParse({
+        ...unlocked,
+        rites: {
+          ...unlocked.rites,
+          quinn: { ...unlocked.rites.quinn, effectRuneId: 'rune.effect.heal' },
+        },
+      }).success,
+    ).toBe(false);
   });
 
   it('uses free mastery points directly and rejects the removed skill-point sums', () => {

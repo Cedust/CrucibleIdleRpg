@@ -11,6 +11,19 @@ import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/craft
 import { createTeamArmor } from '@/game/items/armor';
 import { activeImprintSigilIds } from '@/game/sigils/imprints';
 import type { SigilId } from '@/game/sigils/types';
+import {
+  etchCost,
+  etchRune,
+  grantRuneGrimoireStarters,
+  inscribeCost,
+  inscribeRune,
+  isRuneLevel,
+  isRuneGrimoireUnlocked,
+  runeDepthFromFirstVictories,
+  runeLevelCap,
+  setRuneInRite,
+} from '@/game/runes/runes';
+import type { RiteSlot, RuneCategory, RuneId } from '@/game/runes/types';
 import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
@@ -49,6 +62,13 @@ export interface SaveStoreState {
   buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
+  inscribeRune: (category: RuneCategory) => Promise<boolean>;
+  etchRune: (runeId: RuneId) => Promise<boolean>;
+  setRiteRune: (
+    characterId: CharacterId,
+    slot: RiteSlot,
+    runeId: RuneId | null,
+  ) => Promise<boolean>;
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
@@ -271,12 +291,115 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
             next: {
               ...current,
               crucible: purchase.ranks,
+              // Der Grimoire-Kauf grantet beide Starter atomar mit Rang und Bezahlung.
+              runes: grantRuneGrimoireStarters(current.runes, purchase.ranks),
               // Armor-Menge und -Basis folgen atomar dem neuen Armory-Rang.
               armor: createTeamArmor(purchase.ranks),
               currencies: { ...current.currencies, relicShards: purchase.relicShards },
             },
             result: true,
           };
+        }),
+
+      // Inscribe zieht ausschließlich aus dem aktuellen, tiefen-gestaffelten Unbekannt-Pool.
+      // Bezahlung, Craft-Roll, Counter und Wissensstand werden als eine Save-Transaktion geplant.
+      inscribeRune: (category) =>
+        persist((current) => {
+          if (!canOptimize() || !isRuneGrimoireUnlocked(current.crucible)) {
+            return { next: null, result: false };
+          }
+
+          const cost = inscribeCost(category);
+          if (
+            current.currencies.gold < cost.gold ||
+            current.currencies.runewords < cost.runewords
+          ) {
+            return { next: null, result: false };
+          }
+
+          const outcome = inscribeRune(
+            current.runes,
+            category,
+            runeDepthFromFirstVictories(current.firstVictories),
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: {
+                ...current.currencies,
+                gold: current.currencies.gold - cost.gold,
+                runewords: current.currencies.runewords - cost.runewords,
+              },
+              runes: outcome.grimoire,
+            },
+            result: true,
+          };
+        }),
+
+      // Etch ist RNG-frei: nur die bekannte Rune, ihre beiden Kosten und der Save ändern sich.
+      etchRune: (runeId) =>
+        persist((current) => {
+          if (!canOptimize() || !isRuneGrimoireUnlocked(current.crucible)) {
+            return { next: null, result: false };
+          }
+
+          const currentLevel = current.runes[runeId];
+          if (currentLevel === undefined || !isRuneLevel(currentLevel)) {
+            return { next: null, result: false };
+          }
+          const cost = etchCost(currentLevel);
+          if (
+            current.currencies.gold < cost.gold ||
+            current.currencies.runewords < cost.runewords
+          ) {
+            return { next: null, result: false };
+          }
+
+          const runes = etchRune(current.runes, runeId, runeLevelCap(current.crucible));
+          if (runes === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: {
+                ...current.currencies,
+                gold: current.currencies.gold - cost.gold,
+                runewords: current.currencies.runewords - cost.runewords,
+              },
+              runes,
+            },
+            result: true,
+          };
+        }),
+
+      // Rite-Umsockeln hat keine Kosten und keinen Craft-Roll; nur der vollständige Rite-Zustand
+      // wird nach Kategorie, Anvil-Gate und teamweiter Einmaligkeit gespeichert.
+      setRiteRune: (characterId, slot, runeId) =>
+        persist((current) => {
+          if (!canOptimize()) {
+            return { next: null, result: false };
+          }
+          const rites = setRuneInRite(
+            current.rites,
+            current.runes,
+            current.crucible,
+            characterId,
+            slot,
+            runeId,
+          );
+          if (rites === null) {
+            return { next: null, result: false };
+          }
+
+          return { next: { ...current, rites }, result: true };
         }),
 
       respecCrucible: (tree) =>

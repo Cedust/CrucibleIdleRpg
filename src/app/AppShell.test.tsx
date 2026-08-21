@@ -52,7 +52,7 @@ describe('AppShell', () => {
 
     await user.click(screen.getByRole('button', { name: 'RUNESCRIBE' }));
 
-    expect(screen.getByRole('heading', { name: 'RUNESCRIBE' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Runescribe' })).toBeInTheDocument();
     expect(useNavigationStore.getState().activeView).toBe('runescribe');
   });
 
@@ -65,6 +65,17 @@ describe('AppShell', () => {
     expect(screen.getByRole('heading', { name: 'Sigil Codex' })).toBeInTheDocument();
     expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
     expect(useNavigationStore.getState().activeView).toBe('sigil-codex');
+  });
+
+  it('opens the shared Rune Grimoire without a character switcher', async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.click(screen.getByRole('button', { name: 'RUNE GRIMOIRE' }));
+
+    expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
+    expect(useNavigationStore.getState().activeView).toBe('rune-grimoire');
   });
 
   it('opens the weapon mastery tree from navigation', async () => {
@@ -97,6 +108,13 @@ describe('AppShell', () => {
     await user.click(screen.getByRole('button', { name: 'WEAPON MASTERY' }));
     expect(screen.getAllByRole('radiogroup', { name: 'Active character' })).toHaveLength(1);
     expect(screen.getByRole('radio', { name: 'Rhaya' })).toHaveAttribute('aria-checked', 'true');
+
+    await user.click(screen.getByRole('button', { name: 'RUNESCRIBE' }));
+    expect(screen.getAllByRole('radiogroup', { name: 'Active character' })).toHaveLength(1);
+    expect(screen.getByRole('radio', { name: 'Rhaya' })).toHaveAttribute('aria-checked', 'true');
+
+    await user.click(screen.getByRole('button', { name: 'RUNE GRIMOIRE' }));
+    expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'CRUCIBLE' }));
     expect(screen.queryByRole('radiogroup', { name: 'Active character' })).not.toBeInTheDocument();

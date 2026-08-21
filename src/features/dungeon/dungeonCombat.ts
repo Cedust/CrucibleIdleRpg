@@ -9,6 +9,7 @@ import {
 import { FORMATIONS } from '@/game/encounters/formations';
 import type { SaveData } from '@/features/save/saveSchema';
 import { progressionFromSave } from '@/features/combat/engine/characterStats';
+import { activeRitesFrom } from '@/game/runes/runes';
 import {
   buildCombatState,
   deriveFloorSeed,
@@ -75,5 +76,6 @@ function createDungeonCombat(
       carriedHealth: carriedTeam.find((character) => character.id === id)?.carriedHealth,
     })),
     secondWindConsumed,
+    rites: activeRitesFrom(save.rites, save.runes),
   });
 }

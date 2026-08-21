@@ -165,6 +165,9 @@ export function combatStateFixture(
     round: 1,
     pending: [],
     secondWindConsumed: false,
+    rites: {},
+    riteReservedRounds: {},
+    lingeringEffects: [],
     ...overrides,
   };
 }

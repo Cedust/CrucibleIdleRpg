@@ -93,6 +93,32 @@ describe('ScreenLayout', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
   });
 
+  it('unterstützt den Rune-Grimoire-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="rune-grimoire">
+        <h1>Rune Grimoire</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="rune-grimoire"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/rune-grimoire-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
+  it('unterstützt den Runescribe-Hintergrund mit lesbarem Kontrast-Overlay', () => {
+    const { container } = render(
+      <ScreenLayout background="runescribe">
+        <h1>Runescribe</h1>
+      </ScreenLayout>,
+    );
+
+    expect(container.querySelector('[data-screen-background="runescribe"]')).toHaveClass(
+      'bg-[url(/assets/backgrounds/runescribe-view.png)]',
+    );
+    expect(container.querySelectorAll('[aria-hidden="true"]')[1]).toHaveClass('bg-background/28');
+  });
+
   it('rendert full-height und scrollt per Default im Content-Wrapper', () => {
     render(
       <ScreenLayout as="main">

@@ -43,9 +43,15 @@ const SEEDED_SAVE = {
   craftCounter: 0,
   playbackSpeed: 1,
   characters: { korvin: LEVEL_ONE, rhaya: LEVEL_ONE, quinn: LEVEL_ONE },
-  currencies: { gold: 0, relicShards: 0, cinder: 0 },
+  currencies: { gold: 0, relicShards: 0, cinder: 0, runewords: 0 },
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
   sigils: {},
+  runes: {},
+  rites: {
+    korvin: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+    rhaya: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+    quinn: { triggerRuneId: null, effectRuneId: null, modifierRuneId: null },
+  },
   firstVictories: [],
   crucible: { 'anvil.armory': 2 },
   armor: { korvin: ARMOR_ITEMS, rhaya: ARMOR_ITEMS, quinn: ARMOR_ITEMS },
@@ -83,33 +89,27 @@ async function scrollState(page: Page, selector: string) {
   });
 }
 
-test('arranges talisman, signature weapon, armor column and detail without document scroll', async ({
+test('arranges signature weapon, armor column and detail without document scroll', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await openLoadout(page);
 
-  const talisman = page.getByRole('button', { name: 'Talisman, Locked' });
   const weapon = page.getByRole('button', { name: 'Signature Weapon WARHAMMER' });
   const armorColumn = page.getByTestId('loadout-armor-column');
   const detail = page.getByTestId('loadout-detail');
-  await expect(talisman).toBeVisible();
   await expect(weapon).toBeVisible();
   await expect(weapon).toHaveAttribute('aria-pressed', 'true');
 
-  const [talismanBox, weaponBox, armorBox, detailBox] = await Promise.all([
-    talisman.boundingBox(),
+  const [weaponBox, armorBox, detailBox] = await Promise.all([
     weapon.boundingBox(),
     armorColumn.boundingBox(),
     detail.boundingBox(),
   ]);
-  if (talismanBox === null || weaponBox === null || armorBox === null || detailBox === null) {
+  if (weaponBox === null || armorBox === null || detailBox === null) {
     throw new Error('Loadout layout must be visible');
   }
-  // Links oben Talisman, links unten die Signaturwaffe.
-  expect(talismanBox.y + talismanBox.height).toBeLessThanOrEqual(weaponBox.y);
-  expect(Math.abs(talismanBox.x - weaponBox.x)).toBeLessThanOrEqual(1);
-  // Rechts davon die anatomische Armor-Säule, außen die Detailkarte.
+  // Rechts von der Signaturwaffe liegen Armor-Säule und Detailkarte.
   expect(armorBox.x).toBeGreaterThanOrEqual(weaponBox.x + weaponBox.width);
   expect(detailBox.x).toBeGreaterThanOrEqual(armorBox.x + armorBox.width);
 
@@ -162,10 +162,7 @@ test('selection only swaps the detail card and locked slots stay inert', async (
   await expect(lockedHead).toContainText('Locked');
   await expect(page.locator('button[data-loadout-slot="head"]')).toHaveCount(0);
 
-  const talisman = page.getByRole('button', { name: 'Talisman, Locked' });
-  await talisman.click();
-  await expect(detail.getByRole('heading', { name: 'Talisman' })).toBeVisible();
-  await expect(detail.getByText(/Unlocks with Runes \(M5\)/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /Talisman/ })).toHaveCount(0);
 });
 
 test('follows the shared character switcher and stacks on narrow viewports', async ({ page }) => {

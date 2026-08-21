@@ -307,10 +307,10 @@ export function RiteConfigurationPanel({ characterId }: { characterId: Character
       <div className="grid min-w-0 gap-4 @min-[54rem]:grid-cols-[minmax(16rem,0.82fr)_minmax(22rem,1.18fr)]">
         <Panel
           as="aside"
-          variant="ornate"
+          variant="standard"
           padding="lg"
           aria-label={`${character.name} Talisman`}
-          className="relative min-h-80 overflow-hidden"
+          className="relative min-h-80 overflow-visible"
         >
           <div
             aria-hidden="true"

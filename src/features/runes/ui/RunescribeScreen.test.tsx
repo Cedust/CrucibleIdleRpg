@@ -77,6 +77,13 @@ describe('RuneGrimoireScreen', () => {
       container.querySelector('[data-rune-id="rune.trigger.on-counter"]'),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Inscribe TRIGGERS' })).toBeEnabled();
+
+    for (const label of ['TRIGGERS', 'EFFECTS', 'MODIFIERS']) {
+      const chapter = screen.getByLabelText(`${label} rune chapter`);
+      expect(chapter).toHaveClass('overflow-visible');
+      expect(chapter.querySelector('.border-image-standard')).toBeInTheDocument();
+    }
+    expect(screen.getByTestId('rune-grimoire-chapters-scroll')).toHaveClass('p-3', 'pb-4');
   });
 
   it('inscribes through the keyboard and redraws the persistent Rune knowledge', async () => {
@@ -128,6 +135,11 @@ describe('RunescribeScreen', () => {
     expect(document.querySelectorAll('[data-character-id]')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Korvin TRIGGER slot, empty' })).toBeEnabled();
     expect(screen.queryByText('Rite of Rhaya')).not.toBeInTheDocument();
+    const talisman = screen.getByLabelText('Korvin Talisman');
+    expect(talisman).toHaveClass('overflow-visible');
+    expect(talisman.querySelector('.border-image-standard')).toBeInTheDocument();
+    expect(talisman).not.toHaveClass('border-image-ornate');
+    expect(screen.getByTestId('runescribe-rite-scroll')).toHaveClass('p-3', 'pb-4');
     expect(
       screen.queryByRole('button', { name: 'Rhaya EFFECT slot, empty' }),
     ).not.toBeInTheDocument();

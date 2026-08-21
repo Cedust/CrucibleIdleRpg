@@ -217,6 +217,31 @@ test('separates the character-bound Runescribe from the shared Rune Grimoire', a
   await expect(page.locator('[data-character-id]')).toHaveCount(0);
 });
 
+test('keeps Rune Grimoire frame outsets inside its local scroller', async ({ page }) => {
+  await page.setViewportSize({ width: 2048, height: 560 });
+  await page.addInitScript((save) => {
+    if (localStorage.getItem('crucible-idle-rpg:save') === null) {
+      localStorage.setItem('crucible-idle-rpg:save', JSON.stringify(save));
+    }
+  }, RITE_CONFIGURATION_SAVE);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'RUNE GRIMOIRE', exact: true }).click();
+
+  const scroller = page.getByTestId('rune-grimoire-chapters-scroll');
+  const chapter = page.getByLabel('TRIGGERS rune chapter');
+  await expect(chapter.locator('.border-image-standard')).toBeVisible();
+  await expect(scroller).toHaveCSS('padding-top', '12px');
+
+  const [scrollerBox, chapterBox] = await Promise.all([
+    scroller.boundingBox(),
+    chapter.boundingBox(),
+  ]);
+  if (scrollerBox === null || chapterBox === null) {
+    throw new Error('Rune Grimoire chapter scroller must stay visible');
+  }
+  expect(chapterBox.y - scrollerBox.y).toBeGreaterThanOrEqual(12);
+});
+
 test('persists a bound Rite Modifier and keeps the Runescribe inside the viewport', async ({
   page,
 }) => {

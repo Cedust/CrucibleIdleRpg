@@ -189,7 +189,7 @@ function RuneCategoryPanel({
       variant="standard"
       padding="md"
       aria-label={`${label} rune chapter`}
-      className="flex min-w-0 flex-col overflow-hidden"
+      className="flex min-w-0 flex-col overflow-visible"
     >
       <header className="flex items-start gap-3 border-b border-ornament/35 pb-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-ornament bg-background/80 text-accent-strong shadow-glow-accent-sm">
@@ -309,7 +309,10 @@ export function RuneGrimoireScreen() {
             </p>
           </Panel>
         ) : (
-          <div className="mt-5 min-h-0 flex-1 overflow-y-auto pb-4 pr-1">
+          <div
+            data-testid="rune-grimoire-chapters-scroll"
+            className="mt-5 min-h-0 flex-1 overflow-y-auto p-3 pb-4"
+          >
             <div className="grid min-w-0 gap-4 @min-[58rem]:grid-cols-3">
               {(['trigger', 'effect', 'modifier'] as const).map((category) => (
                 <RuneCategoryPanel

@@ -48,7 +48,10 @@ export function RunescribeScreen() {
           </dl>
         </ScreenHeader>
 
-        <div className="mt-5 min-h-0 flex-1 overflow-y-auto pb-4 pr-1">
+        <div
+          data-testid="runescribe-rite-scroll"
+          className="mt-5 min-h-0 flex-1 overflow-y-auto p-3 pb-4"
+        >
           <RiteConfigurationPanel key={characterId} characterId={characterId} />
         </div>
       </section>

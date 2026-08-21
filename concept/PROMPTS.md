@@ -1792,6 +1792,76 @@ imperial style, gilded ruins mood, strict left-right mirror symmetry, perfectly 
 horizontal axis, crisp clean vector-like edges, no background, no text, no watermark.
 ```
 
+## 42. Rune-Grimoire-View-Hintergrund — Archiv der Entdeckungen
+
+- **Zieldatei:** `public/assets/backgrounds/rune-grimoire-view.png`
+- **Format:** Querformat 16:9, 1672×941
+- **Verwendung:** Vollflächiger Hintergrund der Rune-Grimoire-Ansicht unter Überschrift und
+  drei Kapitel-Panels. Das Archiv bleibt im oberen und mittleren Bereich ruhig, dunkel und
+  kontrastarm. Das Katalogpodest sitzt niedrig genug, um unter den Panels sichtbar zu bleiben.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial Rune Grimoire archive, the team-wide living catalogue where
+discovered runes are inscribed and etched into memory; clearly different from a Sigil Codex
+library and from a crafting workshop
+Scene/backdrop: a circular stone scriptorium with three tall concentric archive alcoves, orderly
+shelves of sealed dark folios at the outer edges, and a low three-tiered stone catalogue dais in
+the lower center holding a closed brass-bound grimoire, blank wax tablets, and small unlettered
+geometric rune seals
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained detail,
+strong architectural silhouettes, heavy stone-carved imperial style, and gilded ruins mood
+Composition/framing: wide 16:9 landscape, center-bottom anchored and crop-safe down to 4:5;
+keep the central and upper-middle field dark, calm, low-contrast, and low-detail for the heading
+and three tall collection panels; keep the upper-left especially quiet
+Lighting/mood: cool blue-black archive shadows, restrained violet-blue dust around the catalogue
+dais, dim amber archive lamps at the far sides; solemn and contemplative discovery
+Color palette: deep blue-black and cool slate, black stone, tarnished brass and aged gold,
+muted parchment, sparse localized violet-blue arcane accents
+Constraints: no border, frame, text, letters, readable runes, numbers, icons, characters, hands,
+logos, interface elements, watermark, giant open book, or central lectern
+Avoid: a forge, jeweler workbench, talisman apparatus, bright full-frame magic, excessive bloom,
+busy clutter, modern elements, horror imagery, photorealistic photography
+```
+
+## 43. Runescribe-View-Hintergrund — Werkbank des Talismans
+
+- **Zieldatei:** `public/assets/backgrounds/runescribe-view.png`
+- **Format:** Querformat 16:9, 1672×941
+- **Verwendung:** Vollflächiger Hintergrund der Runescribe-Station hinter Überschrift und
+  Talisman-/Rite-Konfiguration. Die Werkbank markiert die Persona wie Blacksmith und Jeweler;
+  sie bindet die drei Runen eines Rite in den Talisman des gewählten Charakters.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen dark fantasy game UI background
+Primary request: an ancient imperial Runescribe sanctum, the dedicated station where a chosen
+hero's Talisman is fitted with the three runes of a Rite; the runic counterpart of a blacksmith
+forge and jeweler atelier, but not a library, codex, generic altar, or oversized hero prop
+Scene/backdrop: a vaulted stone craft chamber around a low black-stone runescribe workbench in
+the lower central third; a precise brass-and-black-iron suspension arm holds one small plain
+dark-metal talisman pendant with three distinct empty circular sockets just above the central
+workbench tray; unlettered stone seals rest in shallow trays, with fine engraving tools and cord
+spools only at the far edges
+Style/medium: cinematic painterly dark fantasy environment concept art with restrained detail,
+strong architectural silhouettes, heavy stone-carved imperial style, and gilded ruins mood
+Composition/framing: wide 16:9 landscape, center-bottom anchored and crop-safe down to 4:5;
+keep the upper and central field dark, calm, low-contrast, and low-detail for the heading and
+large configuration panels; keep the upper-left especially quiet
+Lighting/mood: a tiny controlled pale violet-blue glow from the three talisman sockets mingles
+with a low warm amber task lamp; the rest of the chamber stays in cool shadow with subtle dust
+haze
+Color palette: deep blue-black and cool slate, blackened iron, aged leather, tarnished brass and
+gold, muted parchment, sparse localized violet-blue light around the empty sockets
+Constraints: no border, frame, text, letters, readable runes, numbers, icons, characters, hands,
+logos, interface elements, watermark, open books, or generic central altar; one talisman only
+with exactly three clearly empty sockets; keep the pendant below 10 percent of the image height
+Avoid: a library, archive shelves, codex pedestal, blacksmith forge, jeweler lens or gem cutter,
+weapon workshop, a large focal talisman, bright magical beam, excessive bloom, busy clutter,
+modern elements, horror imagery, photorealistic photography
+```
+
 ## Hinweise zur Ablage
 
 1. Bild generieren, Datei unter dem genannten Zielpfad ablegen.

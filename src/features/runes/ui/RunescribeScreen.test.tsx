@@ -63,6 +63,7 @@ describe('RuneGrimoireScreen', () => {
     const { container } = render(<RuneGrimoireScreen />);
 
     expect(screen.getByRole('heading', { name: 'Rune Grimoire' })).toBeInTheDocument();
+    expect(container.querySelector('[data-screen-background="rune-grimoire"]')).toBeInTheDocument();
     expect(screen.getByLabelText('Runewords amount')).toHaveTextContent('100');
     expect(screen.getByText('2 / 17 RUNES')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'TRIGGERS' })).toBeInTheDocument();
@@ -120,9 +121,10 @@ describe('RunescribeScreen', () => {
 
   it('shows only the selected character Talisman with rank-gated Rite sockets', () => {
     saveStore.setState({ data: riteReadySave(), status: 'ready' });
-    render(<RunescribeScreen />);
+    const { container } = render(<RunescribeScreen />);
 
     expect(screen.getByLabelText('Korvin Talisman and Rite')).toBeInTheDocument();
+    expect(container.querySelector('[data-screen-background="runescribe"]')).toBeInTheDocument();
     expect(document.querySelectorAll('[data-character-id]')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Korvin TRIGGER slot, empty' })).toBeEnabled();
     expect(screen.queryByText('Rite of Rhaya')).not.toBeInTheDocument();

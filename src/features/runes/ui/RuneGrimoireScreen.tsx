@@ -249,7 +249,7 @@ export function RuneGrimoireScreen() {
 
   if (save === null) {
     return (
-      <ScreenLayout background="sigil-codex">
+      <ScreenLayout background="rune-grimoire">
         <p aria-live="polite" className="text-text-muted">
           Opening Rune Grimoire…
         </p>
@@ -263,7 +263,7 @@ export function RuneGrimoireScreen() {
   const knownRunes = Object.keys(save.runes).length;
 
   return (
-    <ScreenLayout background="sigil-codex" scroll={false}>
+    <ScreenLayout background="rune-grimoire" scroll={false}>
       <section
         aria-label="Rune Grimoire"
         className="mx-auto flex min-h-0 w-full max-w-page flex-1 flex-col"

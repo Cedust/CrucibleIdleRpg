@@ -36,8 +36,6 @@ erstattete Mastery Points`; die Formel selbst ist verbindlich. → [Weapon Maste
 - [ ] Sigil-Drop-Chance je Wiederholungs-Kill, Auswahl-Gewichte des Akt-3-Bosses und
       Imprint-Stärke je Sigil-Level. → [Sigils](../spec/ITEMS.md#5-sigils--sigil-codex)
 - [ ] Diamond-Effekte sowie Runewords-, Rune-Katalog-, Rune-Stärke- und Trigger-Kurven. → [Runen](../spec/RUNES.md)
-- [ ] Zeitpunkt und Zielreihenfolge der Rite-Effects, insbesondere bei Reprisal, Chain, Prism und
-      Lingering. → [Runen](../spec/RUNES.md#4-auslösung-verbindlich)
 
 ## 2. Offene Spec-Punkte
 

@@ -1,16 +1,15 @@
 # 037 — Rite-Auslösung & Basis-Effects
 
-| Feld             | Wert      |
-| ---------------- | --------- |
-| **Status**       | `blocked` |
-| **Meilenstein**  | M5        |
-| **Hängt ab von** | 036       |
+| Feld             | Wert    |
+| ---------------- | ------- |
+| **Status**       | `ready` |
+| **Meilenstein**  | M5      |
+| **Hängt ab von** | 036     |
 
 ## Ziel
 
-Ein vollständiger Rite ohne Modifier reagiert in der reinen Kampf-Engine auf das erste passende
-eigene Event einer Runde, führt seinen Basis-Effect lesbar aus und bleibt bei gleichen Inputs
-deterministisch.
+Ein vollständiger Rite ohne Modifier prüft beim ersten passenden eigenen Event einer Runde seine
+Auslösechance, führt seinen Basis-Effect lesbar aus und bleibt bei gleichen Inputs deterministisch.
 
 ## Nicht-Ziel
 
@@ -18,23 +17,16 @@ Echo, Chain, Prism, Surge und Lingering folgen in
 [038](038-rite-modifier-m5-abschluss.md). Konkrete Rune-Stärken bleiben deklarativer
 Balancing-Content; dieser Task implementiert weder neue Items noch Akt-2-/Akt-3-Content.
 
-## Blockiert durch
-
-[036](036-talisman-rite-konfiguration.md) liefert aktive Rites. Zusätzlich müssen Zeitpunkt und
-Zielreihenfolge der Effects in [OPEN_ISSUES](../OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)
-in die SPEC überführt werden; ohne diese fachliche Regel darf der Task die Reihenfolge nicht im
-Code erfinden.
-
 ## Verbindliche Spec-Anker
 
 - [Grundsatz & Abgrenzung](../../spec/RUNES.md#1-grundsatz--abgrenzung) — Rune-Effekte sind
   qualitativ und verletzen keine Kampf-Endlichkeit
 - [Aufbau eines Rite](../../spec/RUNES.md#3-aufbau-eines-rite) — Trigger und die sechs
   Basis-Effects
-- [Auslösung](../../spec/RUNES.md#4-auslösung-verbindlich) — erstes eigenes Event, einmal pro
-  Runde, keine Rune-Ketten und seedbarer Zufall
-- [Rune-Level](../../spec/RUNES.md#5-rune-level) — Effect- und Trigger-Level bestimmen
-  Magnitude und Attunement
+- [Auslösung](../../spec/RUNES.md#4-auslösung-verbindlich) — erstes eigenes Event, einmaliger
+  Trigger-Wurf, keine Rune-Ketten und seedbarer Zufall
+- [Rune-Level](../../spec/RUNES.md#5-rune-level) — Effect-Level bestimmt Magnitude,
+  Trigger-Level die Auslösechance
 - [Rundenablauf](../../spec/COMBAT-RUN.md#11-rundenablauf) — bestehende Aktionsreihenfolge,
   Barrier und Endlichkeits-Zusicherung
 - [Ausgehender Schaden](../../spec/DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden) und
@@ -44,8 +36,8 @@ Code erfinden.
 ## Akzeptanzkriterien
 
 - [ ] Die Engine ordnet Trigger exakt ihren eigenen Crit-, Multi-Hit-, Splash-, Counter-, Block-
-      und Evade-Events zu und löst einen vollständigen Rite beim ersten qualifizierenden Event
-      des Trägers höchstens einmal je Runde aus
+      und Evade-Events zu, würfelt beim ersten qualifizierenden Event höchstens einmal je Runde
+      und sperrt den Rite danach bis zum Rundenende
 - [ ] Heal, Barrier, Bolt, Empower, Mark und Reprisal folgen der vorab entschiedenen
       Ausführungs- und Zielregel; Bolt ignoriert Bulwark, Reprisal bleibt ein Basisangriff und
       rune-erzeugte Effekte erzeugen keine neuen Trigger
@@ -61,7 +53,7 @@ Code erfinden.
 - `src/features/combat/engine/` — Event-Auswertung, temporärer Kampfzustand und Basis-Effects
 - `src/features/combat/ui/` — strukturierte Rite-Events im Combat Log
 - `src/features/dungeon/` — aktive Rites beim Aufbau eines Dungeon-Kampfs übergeben
-- `src/game/runes/` — deklarative Effect- und Attunement-Skalierung
+- `src/game/runes/` — deklarative Effect- und Trigger-Chance-Skalierung
 
 ## Definition of Done
 

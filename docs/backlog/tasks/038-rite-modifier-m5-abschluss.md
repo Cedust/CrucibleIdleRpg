@@ -18,9 +18,7 @@ entsteht keine Modifier-Kompatibilitätsmatrix und kein zweiter Rite pro Charakt
 
 ## Blockiert durch
 
-[037](037-rite-ausloesung-effects.md) liefert Basis-Effects und Event-Anbindung. Die offene
-Ausführungs- und Zielregel aus [OPEN_ISSUES](../OPEN_ISSUES.md#1-offene-balancing-fragen--tuning-notizen)
-muss vorher verbindlich in die SPEC wandern.
+[037](037-rite-ausloesung-effects.md) liefert Basis-Effects und Event-Anbindung.
 
 ## Verbindliche Spec-Anker
 
@@ -36,9 +34,9 @@ muss vorher verbindlich in die SPEC wandern.
 
 ## Akzeptanzkriterien
 
-- [ ] Echo verändert nur die Frequenz, Chain und Prism nur die Zielmenge, Surge nur die
-      Magnitude und Lingering nur die Dauer; jede Trigger/Effect/Modifier-Kombination bleibt ohne
-      Sondermatrix definiert
+- [ ] Echo verändert nur die Frequenz, Chain nur die Zielmenge, Prism nur die Trigger-Chance,
+      Surge nur die Magnitude und Lingering nur die Dauer; jede Trigger/Effect/Modifier-
+      Kombination bleibt ohne Sondermatrix definiert
 - [ ] Kein Modifier umgeht das Eine-Auslösung-pro-Runde-Limit, löst Folge-Trigger aus oder
       erzeugt ungebundene Zufallsquellen; Effect- und Modifier-Level skalieren getrennt
 - [ ] Modifier-Auflösungen, Ziele und verzögerte Effekte erscheinen in deterministischer

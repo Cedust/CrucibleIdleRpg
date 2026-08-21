@@ -59,17 +59,21 @@ Ein Kampf besteht aus **Runden**. In jeder Runde handelt jeder lebende Akteur
 
 1. **Rundenbeginn:** Für jeden lebenden Charakter wird die **Barrier** neu gesetzt
    (Höhe = Barrier-Stat). Nicht verbrauchte Barrier der Vorrunde **verfällt** — Barrier
-   **stackt nicht** über Runden.
+   **stackt nicht** über Runden. Danach laufen fällige
+   [Lingering-Effects](RUNES.md#43-modifier-auflösung) in Slot-Reihenfolge, bevor die erste
+   Queue-Aktion beginnt.
 2. **Aktionen** in Initiative-Reihenfolge:
    - **Charakter am Zug:** ein Basisangriff auf sein priorisiertes Ziel
      ([§1.2](#12-zielauswahl)), inklusive der Offensiv-Procs
-     ([Ausgehender Schaden](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)). **Direkt nach der eigenen Handlung**
+     ([Ausgehender Schaden](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)). Danach folgen
+     [Mark und Rite](RUNES.md#41-ausführungsreihenfolge); **direkt nach der eigenen Handlung**
      heilt die Regeneration den Charakter.
    - **Gegner am Zug:** ein Angriff gegen das **gesamte Team** (Team-weit, verteilt über die
      Schadenspipeline [§2.3](DAMAGE-SYSTEM.md#13-eingehender-schaden-schadenspipeline)). Gegner wählen **keine**
      Einzelziele. **Nachdem** die Pipeline für **alle** Charaktere abgeschlossen ist, lösen die
      Counter aus ([Ausgehender Schaden](DAMAGE-SYSTEM.md#11-charakter-zug-ausgehender-schaden)) — in **Slot-Reihenfolge**
-     (Korvin → Rhaya → Quinn), nicht verschachtelt in die Verteilung.
+     (Korvin → Rhaya → Quinn), nicht verschachtelt in die Verteilung. Danach folgen fällige
+     [Rites](RUNES.md#41-ausführungsreihenfolge) derselben Slot-Reihenfolge.
    - **Suppression** ([Suppression](SIGNATURES.md#13-suppression-quinn-ranged)) kann die noch offene Aktion eines
      Gegners **innerhalb der Runde nach hinten** verschieben — maximal bis an das Rundenende.
      Jeder lebende Gegner handelt weiterhin **genau einmal** pro Runde; eine Aktion entfällt

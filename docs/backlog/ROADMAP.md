@@ -161,13 +161,13 @@ Kampfereignisse ([Runen](../spec/RUNES.md)).
 | 2           | [034 — Runewords-Drops & Reward-Commit](tasks/034-runewords-drops.md)           | done    | 033          |
 | 3           | [035 — Runescribe: Inscribe & Etch](tasks/035-runescribe-inscribe-etch.md)      | done    | 033, 034     |
 | 4           | [036 — Talisman & Rite-Konfiguration](tasks/036-talisman-rite-konfiguration.md) | done    | 033, 035     |
-| 5           | [037 — Rite-Auslösung & Basis-Effects](tasks/037-rite-ausloesung-effects.md)    | blocked | 036          |
+| 5           | [037 — Rite-Auslösung & Basis-Effects](tasks/037-rite-ausloesung-effects.md)    | ready   | 036          |
 | 6           | [038 — Rite-Modifier & M5-Abschluss](tasks/038-rite-modifier-m5-abschluss.md)   | blocked | 037          |
 
-**033 → 034 → 035 → 036** etabliert zuerst das vollständige, streng validierte M5-Modell und
-seinen Spieler-Loop. **037** und **038** sind zusätzlich durch die offene fachliche Entscheidung
-zu Zeitpunkt und Zielreihenfolge der Rite-Effects blockiert; Runen-Katalog, Drop-Kurven, Kosten
-und Stärken bleiben bis zum Balancing-Pass ausdrücklich deklarativer Content. Der Talisman
+**033 → 034 → 035 → 036 → 037** etabliert zuerst das vollständige, streng validierte M5-Modell und
+seinen Spieler-Loop. **038** baut anschließend auf der verbindlichen Ausführungs- und Zielregel
+der Rite-Effects auf; Runen-Katalog, Drop-Kurven, Kosten und Stärken bleiben bis zum
+Balancing-Pass ausdrücklich deklarativer Content. Der Talisman
 verlässt mit 036 die Heroes-Loadout-Ansicht und wird ausschließlich in Runescribe konfiguriert,
 wie es die SPEC verlangt.
 

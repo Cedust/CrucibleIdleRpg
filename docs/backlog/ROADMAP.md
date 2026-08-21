@@ -158,8 +158,8 @@ Kampfereignisse ([Runen](../spec/RUNES.md)).
 | Reihenfolge | Task                                                                            | Status  | Hängt ab von |
 | ----------- | ------------------------------------------------------------------------------- | ------- | ------------ |
 | 1           | [033 — Rune-Grimoire-Fundament](tasks/033-rune-grimoire-fundament.md)           | done    | 031          |
-| 2           | [034 — Runewords-Drops & Reward-Commit](tasks/034-runewords-drops.md)           | ready   | 033          |
-| 3           | [035 — Runescribe: Inscribe & Etch](tasks/035-runescribe-inscribe-etch.md)      | blocked | 033, 034     |
+| 2           | [034 — Runewords-Drops & Reward-Commit](tasks/034-runewords-drops.md)           | done    | 033          |
+| 3           | [035 — Runescribe: Inscribe & Etch](tasks/035-runescribe-inscribe-etch.md)      | ready   | 033, 034     |
 | 4           | [036 — Talisman & Rite-Konfiguration](tasks/036-talisman-rite-konfiguration.md) | blocked | 033, 035     |
 | 5           | [037 — Rite-Auslösung & Basis-Effects](tasks/037-rite-ausloesung-effects.md)    | blocked | 036          |
 | 6           | [038 — Rite-Modifier & M5-Abschluss](tasks/038-rite-modifier-m5-abschluss.md)   | blocked | 037          |

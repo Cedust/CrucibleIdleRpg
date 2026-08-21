@@ -193,6 +193,11 @@ export function runeLevelCap(ranks: CrucibleRanks): number {
   return Math.min(5, 1 + (ranks[CRUCIBLE_IDS.runeMastery] ?? 0));
 }
 
+/** Vor diesem permanenten Anvil-Kauf existieren weder Runewords noch Rune-Drops. */
+export function isRuneGrimoireUnlocked(ranks: CrucibleRanks): boolean {
+  return (ranks[CRUCIBLE_IDS.runeGrimoire] ?? 0) >= 1;
+}
+
 /** Trigger- und Effect-Slot folgen Talisman, Modifier folgt dem gleichrangigen Runic Focus. */
 export function unlockedRiteSlots(
   ranks: CrucibleRanks,
@@ -236,7 +241,7 @@ export function grantRuneGrimoireStarters(
   grimoire: RuneGrimoire,
   ranks: CrucibleRanks,
 ): RuneGrimoire {
-  if ((ranks[CRUCIBLE_IDS.runeGrimoire] ?? 0) < 1) return grimoire;
+  if (!isRuneGrimoireUnlocked(ranks)) return grimoire;
   return {
     ...grimoire,
     [STARTER_RUNES[0]]: grimoire[STARTER_RUNES[0]] ?? 1,

@@ -25,11 +25,14 @@ import { useState } from 'react';
 function RunRewardSummary() {
   const currencies = useSaveStore((state) => state.data?.currencies ?? null);
   const gems = useSaveStore((state) => state.data?.gems ?? null);
-  const [startingCurrencies] = useState(() => currencies ?? { gold: 0, relicShards: 0, cinder: 0 });
+  const [startingCurrencies] = useState(
+    () => currencies ?? { gold: 0, relicShards: 0, cinder: 0, runewords: 0 },
+  );
   const [startingGems] = useState(() => gems ?? createEmptyGemStock());
   const gold = Math.max((currencies?.gold ?? 0) - startingCurrencies.gold, 0);
   const relicShards = Math.max((currencies?.relicShards ?? 0) - startingCurrencies.relicShards, 0);
   const cinder = Math.max((currencies?.cinder ?? 0) - startingCurrencies.cinder, 0);
+  const runewords = Math.max((currencies?.runewords ?? 0) - startingCurrencies.runewords, 0);
 
   return (
     <dl aria-label="Run rewards" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
@@ -57,8 +60,8 @@ function RunRewardSummary() {
       <div className="flex items-center gap-1.5">
         <ScrollText aria-hidden="true" className="size-4 text-text-muted" />
         <dt className="sr-only">Runewords</dt>
-        <dd aria-label="Runewords amount" className="font-semibold text-text-muted">
-          —
+        <dd aria-label="Runewords amount" className="font-semibold text-accent">
+          {formatNumber(runewords)}
         </dd>
       </div>
       {GEM_COLORS.map((color) => (

@@ -9,6 +9,7 @@ const M1_REWARD = {
   loot: {
     gems: { amber: 2, ruby: 0, sapphire: 1, emerald: 0, diamond: 0 },
     cinder: 1,
+    runewords: 0,
     sigil: null,
   },
 } as const;
@@ -64,6 +65,18 @@ describe('commitFloorVictory', () => {
 
     expect(result.save.sigils).toEqual({ 'sigil.tempered-edge': 1 });
     expect(formatLootGains(result.reward.loot)).toContain('Sigil of Tempered Edge — Level 1');
+  });
+
+  it('commits Runewords atomically into the global currency and reward text', () => {
+    const reward = {
+      ...M1_REWARD,
+      loot: { ...M1_REWARD.loot, runewords: 7 },
+    } as const;
+
+    const result = commitFloorVictory(createDefaultSave(1), reward);
+
+    expect(result.save.currencies.runewords).toBe(7);
+    expect(formatLootGains(result.reward.loot)).toContain('+7 Runewords');
   });
 });
 

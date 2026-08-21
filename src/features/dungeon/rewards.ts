@@ -54,6 +54,9 @@ export function formatLootGains(loot: FloorLoot): string | null {
   if (loot.cinder > 0) {
     parts.push(`+${loot.cinder} Cinder`);
   }
+  if (loot.runewords > 0) {
+    parts.push(`+${loot.runewords} Runewords`);
+  }
   if (loot.sigil !== null) {
     parts.push(`${sigilDisplayName(loot.sigil.sigilId)} — Level ${loot.sigil.level}`);
   }
@@ -92,7 +95,7 @@ export function commitFloorVictory(save: SaveData, input: FloorRewardDefinition)
         gold: save.currencies.gold + input.gold,
         relicShards: save.currencies.relicShards + relicShards,
         cinder: save.currencies.cinder + input.loot.cinder,
-        runewords: save.currencies.runewords,
+        runewords: save.currencies.runewords + input.loot.runewords,
       },
       gems: addGems(save.gems, input.loot.gems),
       sigils: applySigilDrop(save.sigils, input.loot.sigil),

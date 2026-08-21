@@ -58,10 +58,12 @@ export type RegularGemColor = (typeof REGULAR_GEM_COLORS)[number];
 /** Globale Gem-Zähler — als Bestand persistiert und als Gewinn eines Floor-Siegs gemeldet. */
 export type GemStock = Readonly<Record<GemColor, number>>;
 
-/** Loot eines Floor-Siegs (docs/spec/ITEMS.md#6-drops-gems-cinder--sigils). */
+/** Loot eines Floor-Siegs (ITEMS §6 und RUNES §6). */
 export interface FloorLoot {
   gems: GemStock;
   cinder: number;
+  /** Globale Rune-Währung; vor Freischaltung des Rune Grimoire garantiert `0`. */
+  runewords: number;
   /** Ein Codex-Fortschritt statt eines Inventar-Gegenstands; `null` = kein Sigil-Drop. */
   sigil: SigilDrop | null;
 }

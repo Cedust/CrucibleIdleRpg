@@ -21,6 +21,7 @@ import { createSaveStore } from './saveStore';
 const NO_LOOT = {
   gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
   cinder: 0,
+  runewords: 0,
   sigil: null,
 } as const;
 
@@ -84,6 +85,7 @@ describe('createSaveStore', () => {
       loot: {
         gems: { amber: 1, ruby: 0, sapphire: 0, emerald: 2, diamond: 0 },
         cinder: 1,
+        runewords: 4,
         sigil: null,
       },
     });
@@ -95,7 +97,7 @@ describe('createSaveStore', () => {
       gold: 10,
       relicShards: 1,
       cinder: 1,
-      runewords: 0,
+      runewords: 4,
     });
     expect(reloaded.getState().data?.gems).toEqual({
       amber: 1,
@@ -135,6 +137,7 @@ describe('createSaveStore', () => {
       loot: {
         gems: { amber: 0, ruby: 0, sapphire: 0, emerald: 0, diamond: 0 },
         cinder: 0,
+        runewords: 0,
         sigil: null,
       },
     });

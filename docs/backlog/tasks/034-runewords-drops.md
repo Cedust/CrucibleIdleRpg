@@ -1,10 +1,10 @@
 # 034 — Runewords-Drops & Reward-Commit
 
-| Feld             | Wert    |
-| ---------------- | ------- |
-| **Status**       | `ready` |
-| **Meilenstein**  | M5      |
-| **Hängt ab von** | 033     |
+| Feld             | Wert   |
+| ---------------- | ------ |
+| **Status**       | `done` |
+| **Meilenstein**  | M5     |
+| **Hängt ab von** | 033    |
 
 ## Ziel
 

@@ -343,10 +343,9 @@ Seitennode und ist keine Voraussetzung der zentralen Linie.
 
 ## 7. Weapon-Mastery-Ansicht
 
-- `WEAPON MASTERY` ist ein eigener Sidebar-Eintrag direkt nach `CRUCIBLE`.
-- Die gemeinsame App-Sidebar zeigt direkt unter dem aktiven, charakterbezogenen Menüpunkt einen
-  kompakten Portrait-Switcher. Er gilt auch für Heroes, Blacksmith, Jeweler und Runescribe; immer
-  genau ein Charakter ist aktiv und die Auswahl bleibt während der Sitzung view-übergreifend.
+- `WEAPON MASTERY` ist ein eigener Sidebar-Eintrag im charaktergebundenen Block. Reihenfolge,
+  Blöcke und Portrait-Switcher stehen im
+  [Viewport- und Screen-Contract](UI.md#1-viewport--und-screen-contract).
 - Oben stehen die fünf Discipline-Tabs. Investierte Punkte werden nur bei einem Wert größer
   null in eckigen Klammern angezeigt, etwa `FINESSE [12]`; es gibt keinen Maximalwert im Tab.
 - Der Hauptbereich zeigt die fünf Ranks horizontal von Initiate bis Grandmaster. Innerhalb einer

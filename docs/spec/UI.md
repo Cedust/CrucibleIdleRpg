@@ -41,6 +41,13 @@ Invarianten dieser Kette:
 - Ein Dungeon-Run belegt den gesamten Viewport ohne Navigation
   ([Fortschritt §4](PROGRESSION.md#4-checkpoints-wipe--abbruch)); der Run-Branch der AppShell ist
   der Schalter.
+- Die Sidebar trägt neun Einträge in drei Blöcken: global (`DUNGEONS`, `CRUCIBLE`),
+  charaktergebunden (`HEROES`, `WEAPON MASTERY`, `BLACKSMITH`, `JEWELER`, `RUNESCRIBE`) und
+  teamweite Sammlungen (`SIGIL CODEX`, `RUNE GRIMOIRE`). Ein `thin`-Divider markiert jede
+  Blockgrenze. Die Navigation ist einstufig: jeder Eintrag schaltet direkt seine View.
+  Reihenfolge und Blöcke stehen in `src/app/navigationStore.ts`.
+- Unter dem aktiven Eintrag des charaktergebundenen Blocks steht der kompakte Portrait-Switcher.
+  Genau ein Charakter ist aktiv; die Auswahl gilt view-übergreifend für die Dauer der Sitzung.
 - Neue Screens docken über denselben Contract an: `ScreenLayout` (`scroll` wählen) +
   `ScreenHeader` + ein Screen-Cap + Container-Queries + `stateAttrs`/Fragmente.
 
@@ -183,10 +190,11 @@ Kompositionsregeln:
   für ruhige Log-Flächen; ornate und thin bleiben als Varianten erhalten, werden aber aktuell
   nirgends eingesetzt. Das Padding folgt der Rolle in einer bewussten Rhythmus-Skala von Dialogen
   bis zu kompakten Slots.
-- **Divider-Rollen:** ornate (Default) trägt das große Ornament unter dem Sidebar-Titel, thin den
-  feinen Trenner zwischen den Stat-Gruppen der Heroes-Panels. Beide skalieren ein vollbreites
-  Asset per `object-cover` auf die Höhe ihres Streifens; die thin-Variante trägt zusätzlich eine
-  Haarlinie, damit die Trennung auch ohne geladenes Asset steht.
+- **Divider-Rollen:** ornate (Default) trägt das große Ornament unter dem Sidebar-Titel, thin die
+  Blockgrenzen der Sidebar-Navigation und den feinen Trenner zwischen den Stat-Gruppen der
+  Heroes-Panels. Beide skalieren ein vollbreites Asset per `object-cover` auf die Höhe ihres
+  Streifens; die thin-Variante trägt zusätzlich eine Haarlinie, damit die Trennung auch ohne
+  geladenes Asset steht.
 - Ein Screen nutzt vorhandene Primitive; ein neues Primitive entsteht mit dem zweiten Konsumenten.
 - Ein Primitive bleibt zustandslos gegenüber Spiellogik: Es empfängt State über Props und
   `stateAttrs`.

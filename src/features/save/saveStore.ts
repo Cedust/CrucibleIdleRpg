@@ -11,7 +11,18 @@ import { applyAttune, applyInlay, applyRecut, craftLootPrng } from '@/game/craft
 import { createTeamArmor } from '@/game/items/armor';
 import { activeImprintSigilIds } from '@/game/sigils/imprints';
 import type { SigilId } from '@/game/sigils/types';
-import { grantRuneGrimoireStarters } from '@/game/runes/runes';
+import {
+  etchCost,
+  etchRune,
+  grantRuneGrimoireStarters,
+  inscribeCost,
+  inscribeRune,
+  isRuneLevel,
+  isRuneGrimoireUnlocked,
+  runeDepthFromFirstVictories,
+  runeLevelCap,
+} from '@/game/runes/runes';
+import type { RuneCategory, RuneId } from '@/game/runes/types';
 import { redistributeAttributePoints, spendAttributePoint } from '@/game/rewards/xpRewards';
 import type {
   ArmorSlot,
@@ -50,6 +61,8 @@ export interface SaveStoreState {
   buyMasteryNode: (characterId: CharacterId, nodeId: string) => Promise<boolean>;
   respecDiscipline: (characterId: CharacterId, discipline: DisciplineId) => Promise<boolean>;
   buyCrucibleNode: (nodeId: string) => Promise<boolean>;
+  inscribeRune: (category: RuneCategory) => Promise<boolean>;
+  etchRune: (runeId: RuneId) => Promise<boolean>;
   respecCrucible: (tree: RespeccableTreeId) => Promise<boolean>;
   temperArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
   masterworkArmor: (characterId: CharacterId, slot: ArmorSlot) => Promise<boolean>;
@@ -277,6 +290,85 @@ export function createSaveStore(service: SaveService, options: SaveStoreOptions 
               // Armor-Menge und -Basis folgen atomar dem neuen Armory-Rang.
               armor: createTeamArmor(purchase.ranks),
               currencies: { ...current.currencies, relicShards: purchase.relicShards },
+            },
+            result: true,
+          };
+        }),
+
+      // Inscribe zieht ausschließlich aus dem aktuellen, tiefen-gestaffelten Unbekannt-Pool.
+      // Bezahlung, Craft-Roll, Counter und Wissensstand werden als eine Save-Transaktion geplant.
+      inscribeRune: (category) =>
+        persist((current) => {
+          if (!canOptimize() || !isRuneGrimoireUnlocked(current.crucible)) {
+            return { next: null, result: false };
+          }
+
+          const cost = inscribeCost(category);
+          if (
+            current.currencies.gold < cost.gold ||
+            current.currencies.runewords < cost.runewords
+          ) {
+            return { next: null, result: false };
+          }
+
+          const outcome = inscribeRune(
+            current.runes,
+            category,
+            runeDepthFromFirstVictories(current.firstVictories),
+            craftLootPrng(current.saveSeed, current.craftCounter),
+          );
+          if (outcome === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              craftCounter: current.craftCounter + 1,
+              currencies: {
+                ...current.currencies,
+                gold: current.currencies.gold - cost.gold,
+                runewords: current.currencies.runewords - cost.runewords,
+              },
+              runes: outcome.grimoire,
+            },
+            result: true,
+          };
+        }),
+
+      // Etch ist RNG-frei: nur die bekannte Rune, ihre beiden Kosten und der Save ändern sich.
+      etchRune: (runeId) =>
+        persist((current) => {
+          if (!canOptimize() || !isRuneGrimoireUnlocked(current.crucible)) {
+            return { next: null, result: false };
+          }
+
+          const currentLevel = current.runes[runeId];
+          if (currentLevel === undefined || !isRuneLevel(currentLevel)) {
+            return { next: null, result: false };
+          }
+          const cost = etchCost(currentLevel);
+          if (
+            current.currencies.gold < cost.gold ||
+            current.currencies.runewords < cost.runewords
+          ) {
+            return { next: null, result: false };
+          }
+
+          const runes = etchRune(current.runes, runeId, runeLevelCap(current.crucible));
+          if (runes === null) {
+            return { next: null, result: false };
+          }
+
+          return {
+            next: {
+              ...current,
+              currencies: {
+                ...current.currencies,
+                gold: current.currencies.gold - cost.gold,
+                runewords: current.currencies.runewords - cost.runewords,
+              },
+              runes,
             },
             result: true,
           };

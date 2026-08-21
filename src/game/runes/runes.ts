@@ -1,6 +1,7 @@
 import { TEAM_ORDER } from '@/game/characters/characters';
 import { CRUCIBLE_IDS, type CrucibleRanks } from '@/game/crucible/crucible';
 import type { CharacterId } from '@/game/types';
+import type { Prng } from '@/shared/utils/prng';
 import {
   EFFECT_RUNE_IDS,
   MODIFIER_RUNE_IDS,
@@ -24,6 +25,25 @@ export const RUNE_BALANCING = {
   effectMagnitude: [1, 1.25, 1.5, 1.75, 2],
   modifierStrength: [1, 1.25, 1.5, 1.75, 2],
 } as const;
+
+/**
+ * PLATZHALTER — Inscribe- und Etch-Kosten sind bis zum Balancing-Pass deklarativer Content.
+ * Die getrennten Kategorie-Rezepte und die wachsenden Etch-Kosten sind dagegen verbindlich.
+ */
+export const RUNE_ECONOMY_BALANCING = {
+  inscribe: {
+    trigger: { gold: 40, runewords: 6 },
+    effect: { gold: 60, runewords: 8 },
+    modifier: { gold: 80, runewords: 10 },
+  },
+  etchGoldPerNextLevel: 50,
+  etchRunewordsPerNextLevel: 4,
+} as const;
+
+export interface RuneCost {
+  gold: number;
+  runewords: number;
+}
 
 const TRIGGER_SCALING = {
   facet: 'attunement',
@@ -177,6 +197,70 @@ export function runeById(runeId: string): RuneDefinition | undefined {
 /** Geschlossene, deklarative Kategorie-Pools in stabiler Katalogreihenfolge. */
 export function runesForCategory(category: RuneCategory): readonly RuneDefinition[] {
   return RUNES.filter((rune) => rune.category === category);
+}
+
+/** Höchste erreichte Floor-Nummer steuert die Sichtbarkeit und den Inscribe-Pool. */
+export function runeDepthFromFirstVictories(firstVictories: readonly string[]): number {
+  return firstVictories.reduce((highestDepth, floorId) => {
+    const depth = Number(floorId.slice(floorId.lastIndexOf('-') + 1));
+    return Number.isInteger(depth) ? Math.max(highestDepth, depth) : highestDepth;
+  }, 0);
+}
+
+/** Sichtbare, aber noch unbekannte Runen eines Kategorie-Pools an der erreichten Tiefe. */
+export function undiscoveredRunes(
+  grimoire: RuneGrimoire,
+  category: RuneCategory,
+  reachedDepth: number,
+): readonly RuneDefinition[] {
+  return runesForCategory(category).filter(
+    (rune) => rune.minimumDepth <= reachedDepth && grimoire[rune.id] === undefined,
+  );
+}
+
+/** Ein Kategorie-Rezept zieht ausschließlich aus diesem erreichbaren, unbekannten Pool. */
+export function inscribeCandidates(
+  grimoire: RuneGrimoire,
+  category: RuneCategory,
+  reachedDepth: number,
+): readonly RuneDefinition[] {
+  return undiscoveredRunes(grimoire, category, reachedDepth);
+}
+
+/** Deklaratives Inscribe-Rezept je Rune-Kategorie. */
+export function inscribeCost(category: RuneCategory): RuneCost {
+  return RUNE_ECONOMY_BALANCING.inscribe[category];
+}
+
+/** Etch steigt mit dem Level, auf das die Rune angehoben wird. */
+export function etchCost(currentLevel: RuneLevel): RuneCost {
+  const nextLevel = currentLevel + 1;
+  return {
+    gold: RUNE_ECONOMY_BALANCING.etchGoldPerNextLevel * nextLevel,
+    runewords: RUNE_ECONOMY_BALANCING.etchRunewordsPerNextLevel * nextLevel,
+  };
+}
+
+/** Zieht genau eine unbekannte Rune; ein leerer Pool verursacht keinen Fehlzug. */
+export function inscribeRune(
+  grimoire: RuneGrimoire,
+  category: RuneCategory,
+  reachedDepth: number,
+  prng: Prng,
+): { grimoire: RuneGrimoire; runeId: RuneId } | null {
+  const candidates = inscribeCandidates(grimoire, category, reachedDepth);
+  if (candidates.length === 0) return null;
+  const selected = candidates[prng.nextInt(0, candidates.length - 1)];
+  if (selected === undefined) return null;
+
+  return { grimoire: { ...grimoire, [selected.id]: 1 }, runeId: selected.id };
+}
+
+/** Hebt eine bekannte Rune ohne Zufall um genau eine Stufe, nie über das aktuelle Cap. */
+export function etchRune(grimoire: RuneGrimoire, runeId: RuneId, cap: number): RuneGrimoire | null {
+  const currentLevel = grimoire[runeId];
+  if (currentLevel === undefined || currentLevel >= cap) return null;
+  return { ...grimoire, [runeId]: (currentLevel + 1) as RuneLevel };
 }
 
 /** Prüft den auf 1–5 begrenzten, persistierbaren Rune-Level. */

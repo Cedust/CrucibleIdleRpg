@@ -41,6 +41,8 @@ export const PRNG_STREAM = {
   init: 'init',
   /** Drops eines Floors. */
   loot: 'loot',
+  /** Ein einzelner, persistierter Craft-Roll für Jeweler und Runescribe. */
+  craft: 'craft',
 } as const;
 
 export type PrngStream = (typeof PRNG_STREAM)[keyof typeof PRNG_STREAM];

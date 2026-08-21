@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { CRUCIBLE_IDS } from '@/game/crucible/crucible';
+import type { Prng } from '@/shared/utils/prng';
 import {
   createEmptyTeamRites,
+  etchCost,
+  etchRune,
   grantRuneGrimoireStarters,
+  inscribeCandidates,
+  inscribeRune,
+  runeDepthFromFirstVictories,
   runeLevelCap,
   unlockedRiteSlots,
   validateRuneCatalog,
@@ -85,5 +91,74 @@ describe('Rune Grimoire grant and Rite validation', () => {
       rhaya: { ...rites.rhaya, triggerRuneId: 'rune.trigger.on-crit' as const },
     };
     expect(validateTeamRites(duplicate, grimoire, talismanRanks)).not.toBeNull();
+  });
+});
+
+describe('Rune Grimoire actions', () => {
+  const lastCandidatePrng: Prng = {
+    seed: 1,
+    next: () => 0.999,
+    nextInt: (_min, max) => max,
+    chance: () => false,
+  };
+
+  it('derives the reachable depth and only inscribes an unknown rune from that category pool', () => {
+    const grimoire = {
+      'rune.trigger.on-crit': 1,
+      'rune.effect.heal': 1,
+    } as const;
+    const depth = runeDepthFromFirstVictories(['A1-D1-01', 'A1-D2-03', 'malformed']);
+
+    expect(depth).toBe(3);
+    expect(inscribeCandidates(grimoire, 'trigger', depth).map((rune) => rune.id)).toEqual([
+      'rune.trigger.on-multi-hit',
+      'rune.trigger.on-splash',
+    ]);
+    expect(inscribeRune(grimoire, 'trigger', depth, lastCandidatePrng)).toEqual({
+      grimoire: {
+        ...grimoire,
+        'rune.trigger.on-splash': 1,
+      },
+      runeId: 'rune.trigger.on-splash',
+    });
+  });
+
+  it('never spends a random draw for an exhausted or unreachable category pool', () => {
+    const noDrawPrng: Prng = {
+      seed: 2,
+      next: () => 0,
+      nextInt: () => {
+        throw new Error('no candidate may draw from the craft stream');
+      },
+      chance: () => false,
+    };
+
+    expect(inscribeRune({}, 'modifier', 1, noDrawPrng)).toBeNull();
+    expect(
+      inscribeRune(
+        {
+          'rune.trigger.on-crit': 1,
+          'rune.trigger.on-multi-hit': 1,
+          'rune.trigger.on-splash': 1,
+          'rune.trigger.on-counter': 1,
+          'rune.trigger.on-block': 1,
+          'rune.trigger.on-evade': 1,
+        },
+        'trigger',
+        6,
+        noDrawPrng,
+      ),
+    ).toBeNull();
+  });
+
+  it('etches one known rune without RNG, with rising cost and a strict cap', () => {
+    const grimoire = { 'rune.trigger.on-crit': 1 } as const;
+
+    expect(etchCost(1)).toEqual({ gold: 100, runewords: 8 });
+    expect(etchCost(2)).toEqual({ gold: 150, runewords: 12 });
+    expect(etchRune(grimoire, 'rune.trigger.on-crit', 2)).toEqual({
+      'rune.trigger.on-crit': 2,
+    });
+    expect(etchRune({ 'rune.trigger.on-crit': 2 }, 'rune.trigger.on-crit', 2)).toBeNull();
   });
 });

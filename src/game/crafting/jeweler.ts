@@ -3,7 +3,7 @@ import { RARITY_LABEL } from '@/game/crafting/blacksmith';
 import { RARITY_LAYER } from '@/game/items/itemLayers';
 import { lootStreamPrng } from '@/game/rewards/lootRewards';
 import type { ArmorItem, GemStock, Range, RegularGemColor, SocketedGem } from '@/game/types';
-import { deriveSeed, type Prng, type ResumablePrng } from '@/shared/utils/prng';
+import { deriveSeed, PRNG_STREAM, type Prng, type ResumablePrng } from '@/shared/utils/prng';
 
 /**
  * Jeweler — Inlay-, Attune- und Recut-Regeln samt Kosten-Content
@@ -16,15 +16,13 @@ import { deriveSeed, type Prng, type ResumablePrng } from '@/shared/utils/prng';
  * Ableitungs-Label der Craft-Seeds — Teil des Determinismus, deshalb Konstante
  * (docs/spec/SIMULATION.md#4-seeds-und-zufalls-ströme).
  */
-const CRAFT_SEED_LABEL = 'craft';
-
 /**
  * Loot-Strom eines Handwerks-Rolls. Der `craftCounter` ist wie der `runCounter` ein monoton
  * steigender, mit der Aktion persistierter Zähler: ein Reload liefert denselben Zähler und
  * damit exakt denselben Roll — Save-Scumming ist unmöglich.
  */
 export function craftLootPrng(saveSeed: number, craftCounter: number): ResumablePrng {
-  return lootStreamPrng(deriveSeed(saveSeed, CRAFT_SEED_LABEL, craftCounter));
+  return lootStreamPrng(deriveSeed(saveSeed, PRNG_STREAM.craft, craftCounter));
 }
 
 /**

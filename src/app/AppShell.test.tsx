@@ -52,7 +52,7 @@ describe('AppShell', () => {
 
     await user.click(screen.getByRole('button', { name: 'RUNESCRIBE' }));
 
-    expect(screen.getByRole('heading', { name: 'RUNESCRIBE' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Runescribe' })).toBeInTheDocument();
     expect(useNavigationStore.getState().activeView).toBe('runescribe');
   });
 

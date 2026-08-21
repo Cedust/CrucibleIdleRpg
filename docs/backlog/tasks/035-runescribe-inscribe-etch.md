@@ -2,7 +2,7 @@
 
 | Feld             | Wert     |
 | ---------------- | -------- |
-| **Status**       | `ready`  |
+| **Status**       | `done`   |
 | **Meilenstein**  | M5       |
 | **Hängt ab von** | 033, 034 |
 
@@ -36,17 +36,17 @@ Task führt keine Rite-Kampfauslösung und keine Modifier-Kampfwirkung ein.
 
 ## Akzeptanzkriterien
 
-- [ ] `runescribe` rendert einen zugänglichen Rune-Grimoire-Screen statt des Platzhalters; er
+- [x] `runescribe` rendert einen zugänglichen Rune-Grimoire-Screen statt des Platzhalters; er
       zeigt Runewords, bekannte Runen mit Level und bei erreichter Mindesttiefe die kategorisierte
       Silhouette unbekannter Runen
-- [ ] Inscribe bietet je Kategorie genau ein Rezept, zieht nur eine erreichbare und noch
+- [x] Inscribe bietet je Kategorie genau ein Rezept, zieht nur eine erreichbare und noch
       unbekannte Rune, zieht nie doppelt und entfernt das Rezept bei vollständiger Entdeckung
-- [ ] Jeder Inscribe-Roll kostet Runewords und Gold, verwendet den Craft-Seed und erhöht den
+- [x] Jeder Inscribe-Roll kostet Runewords und Gold, verwendet den Craft-Seed und erhöht den
       `craftCounter` zusammen mit Bezahlung und Ergebnis atomar; unzureichende Mittel oder ein
       leerer Pool verändern keinen Save
-- [ ] Etch erhöht ausschließlich eine bekannte Rune um eine Stufe bis zum aktuellen Cap, kostet
+- [x] Etch erhöht ausschließlich eine bekannte Rune um eine Stufe bis zum aktuellen Cap, kostet
       die steigenden Runewords- und Goldwerte und enthält keinen Zufallswurf
-- [ ] Unit-, Store- und Component-Tests decken Mindesttiefe, unbekannten Pool, fehlende Mittel,
+- [x] Unit-, Store- und Component-Tests decken Mindesttiefe, unbekannten Pool, fehlende Mittel,
       Cap, Craft-Determinismus, Reload und Tastaturbedienung ab
 
 ## Betroffene Dateien

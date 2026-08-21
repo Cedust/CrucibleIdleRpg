@@ -274,6 +274,96 @@ describe('createSaveStore', () => {
     });
   });
 
+  it('inscribes one reachable unknown Rune atomically through the persisted craft stream', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 500, runewords: 100 },
+        firstVictories: ['A1-D1-03'],
+        crucible: { 'anvil.rune-grimoire': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+
+    await expect(store.getState().inscribeRune('trigger')).resolves.toBe(true);
+    const inscribed = store.getState().data;
+    expect(inscribed?.craftCounter).toBe(1);
+    expect(inscribed?.currencies).toMatchObject({ gold: 460, runewords: 94 });
+    expect(Object.keys(inscribed?.runes ?? {})).toHaveLength(3);
+    expect(inscribed?.runes['rune.trigger.on-crit']).toBe(1);
+    expect(inscribed?.runes['rune.effect.heal']).toBe(1);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(inscribed);
+  });
+
+  it('etches a known Rune atomically without consuming the craft stream', async () => {
+    const port = memoryPort();
+    const service = createSaveService(port, () => createDefaultSave(7));
+    const store = createSaveStore(service);
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 500, runewords: 100 },
+        crucible: { 'anvil.rune-grimoire': 1, 'anvil.rune-mastery': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+
+    await expect(store.getState().etchRune('rune.trigger.on-crit')).resolves.toBe(true);
+    const etched = store.getState().data;
+    expect(etched?.runes['rune.trigger.on-crit']).toBe(2);
+    expect(etched?.currencies).toMatchObject({ gold: 400, runewords: 92 });
+    expect(etched?.craftCounter).toBe(0);
+
+    const reloaded = createSaveStore(service);
+    await reloaded.getState().hydrate();
+    expect(reloaded.getState().data).toEqual(etched);
+  });
+
+  it('rejects impossible Rune actions without a save write', async () => {
+    let writes = 0;
+    const port: SavePort = {
+      load: () => Promise.resolve(null),
+      save: () => {
+        writes += 1;
+        return Promise.resolve();
+      },
+      clear: () => Promise.resolve(),
+    };
+    const store = createSaveStore(createSaveService(port, () => createDefaultSave(7)));
+    await store.getState().hydrate();
+
+    const base = store.getState().data;
+    if (base === null) throw new Error('Save fehlt');
+    store.setState({
+      data: {
+        ...base,
+        currencies: { ...base.currencies, gold: 0, runewords: 0 },
+        crucible: { 'anvil.rune-grimoire': 1 },
+        runes: { 'rune.trigger.on-crit': 1, 'rune.effect.heal': 1 },
+      },
+    });
+    const before = store.getState().data;
+
+    await expect(store.getState().inscribeRune('trigger')).resolves.toBe(false);
+    await expect(store.getState().etchRune('rune.trigger.on-crit')).resolves.toBe(false);
+    expect(store.getState().data).toEqual(before);
+    expect(writes).toBe(0);
+  });
+
   it('creates all three permanent Common +1 Armor bases atomically with each Armory rank and reloads them', async () => {
     const port = memoryPort();
     const service = createSaveService(port, () => createDefaultSave(7));
